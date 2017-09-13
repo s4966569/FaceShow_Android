@@ -1,4 +1,4 @@
-package faceshow.srt.com.faceshow;
+package com.yanxiu.gphone.faceshow;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

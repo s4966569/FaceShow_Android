@@ -1,0 +1,7 @@
+{
+	"server":"http://mobile.hwk.yanxiu.com/app",
+	"loginServer":"http://mobile.hwk.yanxiu.com/app",
+	"uploadServer":"http://appadmin.yanxiu.com",
+	"initializeUrl":"http://mobile.yanxiu.com/v14/api",
+	"mode":"release"
+}
