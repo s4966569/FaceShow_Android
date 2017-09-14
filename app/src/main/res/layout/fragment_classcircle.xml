@@ -5,13 +5,9 @@
     android:background="@android:color/white">
 
 
-    <TextView
+    <com.yanxiu.gphone.faceshow.view.LoadMoreRecyclerView
+        android:id="@+id/lm_class_circle"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_layout_height"
-        android:textSize="20sp"
-        android:textColor="#666666"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:text="33333"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
