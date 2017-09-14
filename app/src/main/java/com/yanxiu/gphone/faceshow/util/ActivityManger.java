@@ -2,7 +2,7 @@ package com.yanxiu.gphone.faceshow.util;
 
 import android.app.Activity;
 
-import com.yanxiu.gphone.faceshow.MainActivity;
+import com.yanxiu.gphone.faceshow.homepage.MainActivity;
 
 import java.util.ArrayList;
 

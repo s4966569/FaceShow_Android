@@ -1,38 +1,34 @@
-package com.yanxiu.gphone.faceshow;
+package com.yanxiu.gphone.faceshow.homepage;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {
 
-    private View mBottomNaviLayout;
-    private View[] mNavBarViews = new View[4];
-    private ImageView[] mNavIconViews = new ImageView[4];
-    private TextView[] mNavTextViews = new TextView[4];
+    private final int mNavBarViewsCount = 4;
+    private View[] mNavBarViews = new View[mNavBarViewsCount];
+    private ImageView[] mNavIconViews = new ImageView[mNavBarViewsCount];
+    private TextView[] mNavTextViews = new TextView[mNavBarViewsCount];
     private int mNormalNavTxtColor, mSelNavTxtColor;
 
-    private final int INDEX_1 = 0;//1tab
-    private final int INDEX_2 = 1;//2tab
-    private final int INDEX_3 = 2;//3tab
+    private final int INDEX_HOME_TAB = 0;//首页tab
+    private final int INDEX_NOTICE_TAB = 1;//通知tab
+    private final int INDEX_CLASSCIRCLE_TAB = 2;//班级圈tab
     private final int INDEX_MY = 3;//我的tab
     private int mLastSelectIndex = -1;
 
-//    public NaviFragmentFactory mNaviFragmentFactory;
-//    public FragmentManager mFragmentManager;
+    public NaviFragmentFactory mNaviFragmentFactory;
+    public FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +44,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void initView() {
-        mBottomNaviLayout = findViewById(R.id.navi_switcher);
-//        mFragmentManager = getSupportFragmentManager();
-//        mNaviFragmentFactory = new NaviFragmentFactory();
+        mFragmentManager = getSupportFragmentManager();
+        mNaviFragmentFactory = new NaviFragmentFactory();
         initBottomBar();
         showCurrentFragment(0);
     }
@@ -62,7 +57,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mNavBarViews[1] = findViewById(R.id.navi_2);
         mNavBarViews[2] = findViewById(R.id.navi_3);
         mNavBarViews[3] = findViewById(R.id.navi_my);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < mNavBarViews.length; i++) {
             mNavBarViews[i].setOnClickListener(this);
             mNavIconViews[i] = (ImageView) mNavBarViews[i].findViewById(R.id.nav_icon);
             mNavTextViews[i] = (TextView) mNavBarViews[i].findViewById(R.id.nav_txt);
@@ -72,24 +67,24 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        int curItem = INDEX_1;
+        int curItem = INDEX_HOME_TAB;
         switch (view.getId()) {
             case R.id.navi_1:
-                curItem = INDEX_1;
+                curItem = INDEX_HOME_TAB;
                 mNavIconViews[0].setEnabled(false);
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(true);
                 break;
             case R.id.navi_2:
-                curItem = INDEX_2;
+                curItem = INDEX_NOTICE_TAB;
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(false);
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(true);
                 break;
             case R.id.navi_3:
-                curItem = INDEX_3;
+                curItem = INDEX_CLASSCIRCLE_TAB;
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(false);
@@ -105,22 +100,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             default:
                 break;
         }
-//        if (mNaviFragmentFactory.getCurrentItem() != curItem) {
-        showCurrentFragment(curItem);
-//        }
-    }
-
-    private void checkBottomBarProcess(int index) {
-        if (index >= 0 && index < 4) {
-            resetBottomBar();
-            mNavTextViews[index].setTextColor(mSelNavTxtColor);
-
+        if (mNaviFragmentFactory.getCurrentItem() != curItem) {
+            showCurrentFragment(curItem);
         }
     }
 
-    private void resetBottomBar() {
-        for (int i = 0; i < 4; i++) {
-            mNavTextViews[i].setTextColor(mNormalNavTxtColor);
+    private void checkBottomBar(int index) {
+        if (index >= 0 && index < mNavBarViews.length) {
+            for (int i = 0; i < mNavBarViews.length; i++) {
+                if (i == index) {
+                    mNavTextViews[index].setTextColor(mSelNavTxtColor);
+                } else {
+                    mNavTextViews[i].setTextColor(mNormalNavTxtColor);
+                }
+            }
         }
     }
 
@@ -129,14 +122,14 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             return;
         }
         mLastSelectIndex = index;
-        checkBottomBarProcess(index);
-//        if (mNaviFragmentFactory == null) {
-//            mNaviFragmentFactory = new NaviFragmentFactory();
-//        }
-//        if (mFragmentManager == null) {
-//            mFragmentManager = getSupportFragmentManager();
-//        }
-//        mNaviFragmentFactory.hideAndShowFragment(mFragmentManager, index);
+        checkBottomBar(index);
+        if (mNaviFragmentFactory == null) {
+            mNaviFragmentFactory = new NaviFragmentFactory();
+        }
+        if (mFragmentManager == null) {
+            mFragmentManager = getSupportFragmentManager();
+        }
+        mNaviFragmentFactory.hideAndShowFragment(mFragmentManager, index);
     }
 
     /**
