@@ -25,7 +25,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         PublicLoadLayout rootView=new PublicLoadLayout(getContext());
-        rootView.setContentView(R.layout.fragment_3);
+        rootView.setContentView(R.layout.fragment_classcircle);
         initView(rootView);
         listener();
         initData();
