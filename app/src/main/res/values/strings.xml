@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">面授</string>
+    <string name="app_name">培训通</string>
 
     <string name="app_exit_tip">再按一次退出客户端</string>
 
@@ -17,4 +17,10 @@
     <string name="retry">点击重试</string>
 
     <!--publicloadlayout end-->
+
+    <!--loginActivity-->
+    <string name="logo_name">logo</string>
+    <string name="sign_in">登录</string>
+    <string name="please_input_account_number">请输入账号</string>
+    <string name="please_input_password">请输入密码</string>
 </resources>

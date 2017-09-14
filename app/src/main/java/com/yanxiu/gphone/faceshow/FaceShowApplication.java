@@ -17,6 +17,7 @@ public class FaceShowApplication extends LitePalApplication {
         return instance;
     }
 
+
     @Override
     public void onCreate() {
         super.onCreate();
