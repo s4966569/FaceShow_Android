@@ -18,7 +18,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_2, container, false);
+        View view = inflater.inflate(R.layout.fragment_notice, container, false);
         return view;
     }
 }

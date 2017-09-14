@@ -18,7 +18,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_3, container, false);
+        View view = inflater.inflate(R.layout.fragment_classcircle, container, false);
         return view;
     }
 }

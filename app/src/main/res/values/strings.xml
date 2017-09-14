@@ -17,4 +17,11 @@
     <string name="retry">点击重试</string>
 
     <!--publicloadlayout end-->
+
+    <!--首页相关 start-->
+    <string name="homepage">首页</string>
+    <string name="notice">通知</string>
+    <string name="classcircle">班级圈</string>
+    <string name="my">我</string>
+    <!--首页相关 end-->
 </resources>

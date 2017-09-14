@@ -57,7 +57,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mNavBarViews[0] = findViewById(R.id.navi_1);
         mNavBarViews[1] = findViewById(R.id.navi_2);
         mNavBarViews[2] = findViewById(R.id.navi_3);
-        mNavBarViews[3] = findViewById(R.id.navi_my);
+        mNavBarViews[3] = findViewById(R.id.navi_4);
         for (int i = 0; i < mNavBarViews.length; i++) {
             mNavBarViews[i].setOnClickListener(this);
             mNavIconViews[i] = (ImageView) mNavBarViews[i].findViewById(R.id.nav_icon);

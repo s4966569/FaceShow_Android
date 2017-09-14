@@ -28,8 +28,8 @@
             layout="@layout/home_nav_bar_3_layout" />
 
         <include
-            android:id="@+id/navi_my"
-            layout="@layout/home_nav_bar_my_layout" />
+            android:id="@+id/navi_4"
+            layout="@layout/home_nav_bar_4_layout" />
     </LinearLayout>
 
     <FrameLayout
