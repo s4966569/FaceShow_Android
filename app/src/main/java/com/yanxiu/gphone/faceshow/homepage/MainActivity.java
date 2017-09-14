@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -154,5 +155,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         } else {
             return super.dispatchKeyEvent(event);
         }
+    }
+
+    /**
+     * 跳转MainActivity
+     *
+     * @param activity
+     */
+    public static void invoke(Activity activity) {
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
     }
 }

@@ -26,19 +26,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".homepage.MainActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:launchMode="singleTask"
+            android:name=".homepage.WelcomeActivity"
             android:screenOrientation="portrait"
-            android:taskAffinity="com.yanxiu.gphone.faceshow"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
-
+            android:taskAffinity="com.yanxiu.gphone.faceshow">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+        <activity
+            android:name=".homepage.MainActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
