@@ -91,7 +91,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[2].setEnabled(false);
                 mNavIconViews[3].setEnabled(true);
                 break;
-            case R.id.navi_my:
+            case R.id.navi_4:
                 curItem = INDEX_MY;
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(true);

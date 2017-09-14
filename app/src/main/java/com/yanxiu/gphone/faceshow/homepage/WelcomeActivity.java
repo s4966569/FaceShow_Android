@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,6 +9,8 @@ import android.widget.RelativeLayout;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.login.LoginActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -29,11 +32,13 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     private final static int GO_LOGIN = 0x0001;
     private final static int GO_MAIN = 0x0002;
 
+    private Context mContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+        mContext = this;
         initView();
     }
 
@@ -44,11 +49,11 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     }
 
     /**
-     * 检查用户状态
+     * 检查用户
      */
     private void checkUserStatus() {
         //TODO @荣成 判断用户信息是否登录
-        if (false) {
+        if (!SpManager.isLogined()) {
             //用户信息不完整,跳转登录页
             mHander.sendEmptyMessageDelayed(GO_LOGIN, LOAD_TIME);
         } else {
@@ -72,8 +77,8 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             switch (msg.what) {
                 case GO_LOGIN:
                     //TODO  @荣成 登录页
-//                    LoginActivity.LaunchActivity(activity);
-//                    activity.finish();
+                    LoginActivity.toThisAct(activity);
+                    activity.finish();
                     break;
                 case GO_MAIN:
                     //进入首页
