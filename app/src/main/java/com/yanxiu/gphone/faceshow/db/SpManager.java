@@ -14,6 +14,18 @@ public class SpManager {
     public static final String SP_NAME = "faceshow_sp";
     private static SharedPreferences mySharedPreferences = FaceShowApplication.getInstance().getContext()
             .getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+
+    private static SpManager instance;
+
+    public static SpManager getInstance() {
+        if (instance == null) {
+            instance = new SpManager();
+            mySharedPreferences = FaceShowApplication.getContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        }
+
+        return instance;
+    }
+
     /**
      * 第一次启动
      */
@@ -22,6 +34,9 @@ public class SpManager {
      * 版本号
      */
     private static final String APP_VERSION_CODE = "version_code";
+    /*用户是否已经登录成功*/
+    private static final String IS_LOGINED = "is_login";
+
 
     public static void setFristStartUp(boolean isFristStartUp) {
         SharedPreferences.Editor editor = mySharedPreferences.edit();
@@ -57,5 +72,25 @@ public class SpManager {
     public static int getAppVersionCode() {
         return mySharedPreferences.getInt(APP_VERSION_CODE, -1);
     }
+
+    /**
+     * 是否已经登录
+     *
+     * @return false:未登录   true :登录
+     */
+    public static boolean isLogined() {
+        return mySharedPreferences.getBoolean(IS_LOGINED, false);
+    }
+
+
+    /**
+     * 设置为登录状态
+     */
+    public static void haveSignIn() {
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putBoolean(IS_LOGINED, true);
+        editor.commit();
+    }
+
 
 }

@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 
 public class NaviFragmentFactory {
     private int mCurrItem = 0;

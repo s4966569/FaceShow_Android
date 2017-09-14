@@ -27,5 +27,5 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/home_nav_bar_marginleft"
         android:gravity="center_vertical"
-        android:text="2"/>
+        android:text="@string/notice"/>
 </LinearLayout>

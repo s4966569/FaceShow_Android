@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -56,7 +57,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mNavBarViews[0] = findViewById(R.id.navi_1);
         mNavBarViews[1] = findViewById(R.id.navi_2);
         mNavBarViews[2] = findViewById(R.id.navi_3);
-        mNavBarViews[3] = findViewById(R.id.navi_my);
+        mNavBarViews[3] = findViewById(R.id.navi_4);
         for (int i = 0; i < mNavBarViews.length; i++) {
             mNavBarViews[i].setOnClickListener(this);
             mNavIconViews[i] = (ImageView) mNavBarViews[i].findViewById(R.id.nav_icon);
@@ -90,7 +91,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[2].setEnabled(false);
                 mNavIconViews[3].setEnabled(true);
                 break;
-            case R.id.navi_my:
+            case R.id.navi_4:
                 curItem = INDEX_MY;
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(true);
@@ -154,5 +155,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         } else {
             return super.dispatchKeyEvent(event);
         }
+    }
+
+    /**
+     * 跳转MainActivity
+     *
+     * @param activity
+     */
+    public static void invoke(Activity activity) {
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
     }
 }

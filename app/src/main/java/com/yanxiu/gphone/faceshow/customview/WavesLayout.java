@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.view;
+package com.yanxiu.gphone.faceshow.customview;
 
 import android.content.Context;
 import android.content.res.TypedArray;

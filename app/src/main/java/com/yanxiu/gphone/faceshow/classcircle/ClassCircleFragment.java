@@ -1,7 +1,6 @@
-package com.yanxiu.gphone.faceshow.homepage;
+package com.yanxiu.gphone.faceshow.classcircle;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -11,8 +10,8 @@ import android.view.ViewGroup;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
-import com.yanxiu.gphone.faceshow.view.LoadMoreRecyclerView;
-import com.yanxiu.gphone.faceshow.view.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 
 
 /**
@@ -60,6 +59,5 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void onClick(View v) {
-
     }
 }

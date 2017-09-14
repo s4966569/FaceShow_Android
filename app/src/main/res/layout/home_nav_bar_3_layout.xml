@@ -25,5 +25,5 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/home_nav_bar_marginleft"
         android:gravity="center_vertical"
-        android:text="3" />
+        android:text="@string/classcircle" />
 </LinearLayout>

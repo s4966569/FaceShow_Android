@@ -25,4 +25,8 @@
     <dimen name="wavesRadius">5dp</dimen>
 
     <!--publicLoadLayout end-->
+
+    <!--commontitlelayout end-->
+    <dimen name="commontitle_margin_left">10dp</dimen>
+    <!--commontitlelayout end-->
 </resources>
