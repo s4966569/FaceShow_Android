@@ -32,7 +32,7 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
     private boolean isActive = true;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityManger.addActicity(this);
     }

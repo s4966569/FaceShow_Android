@@ -1,11 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/color_ffffff">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <LinearLayout
+        android:id="@+id/navi_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_bottom_bar_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/home_bottom_bar_paddingleft"
+        android:paddingRight="@dimen/home_bottom_bar_paddingright">
 
-</LinearLayout>
+        <include
+            android:id="@+id/navi_1"
+            layout="@layout/home_nav_bar_1_layout" />
+
+        <include
+            android:id="@+id/navi_2"
+            layout="@layout/home_nav_bar_2_layout" />
+
+        <include
+            android:id="@+id/navi_3"
+            layout="@layout/home_nav_bar_3_layout" />
+
+        <include
+            android:id="@+id/navi_my"
+            layout="@layout/home_nav_bar_my_layout" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/content_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/navi_switcher"
+        android:layout_alignParentTop="true"></FrameLayout>
+
+</RelativeLayout>

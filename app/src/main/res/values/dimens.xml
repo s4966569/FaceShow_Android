@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="home_bottom_bar_height">65dp</dimen>
+    <dimen name="home_bottom_bar_paddingtop">7dp</dimen>
+    <dimen name="home_bottom_bar_paddingbottom">6dp</dimen>
+    <dimen name="home_bottom_bar_paddingleft">3dp</dimen>
+    <dimen name="home_bottom_bar_paddingright">3dp</dimen>
+    <!--<dimen name="home_nav_bar_height">47dp</dimen>-->
+    <!--<dimen name="home_nav_bar_margin">3dp</dimen>-->
+    <dimen name="home_nav_bar_marginleft">1dp</dimen>
+    <dimen name="home_nav_bar__style_marginleft">8dp</dimen>
+    <dimen name="nav_icon_width">35dp</dimen>
+    <dimen name="home_nav_bar_textsize">14dp</dimen>
+
+
+    <!--publicLoadLayout start-->
+    <dimen name="top_layout_height">55dp</dimen>
+    <dimen name="net_error_layout_height">220dp</dimen>
+    <dimen name="net_error_layout_retrybutton_top">55dp</dimen>
+    <dimen name="net_error_layout_margintop">22dp</dimen>
+    <dimen name="text_size_16">16dp</dimen>
+    <dimen name="net_error_layout_retrybutton_width">125dp</dimen>
+    <dimen name="net_error_layout_retrybutton_height">40dp</dimen>
+    <dimen name="wavesRadius">5dp</dimen>
+
+    <!--publicLoadLayout end-->
+</resources>
