@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.view;
+package com.yanxiu.gphone.faceshow.customview;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;

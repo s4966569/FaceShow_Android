@@ -25,7 +25,7 @@
         android:textSize="@dimen/text_size_16" />
 
 
-    <com.yanxiu.gphone.faceshow.view.WavesLayout
+    <com.yanxiu.gphone.faceshow.customview.WavesLayout
         android:id="@+id/wavesLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,6 +45,6 @@
             android:clickable="true"
             android:textColor="@drawable/selector_refresh_text_color"
             android:background="@drawable/selector_refresh_button_net_error"/>
-    </com.yanxiu.gphone.faceshow.view.WavesLayout>
+    </com.yanxiu.gphone.faceshow.customview.WavesLayout>
 
 </RelativeLayout>
