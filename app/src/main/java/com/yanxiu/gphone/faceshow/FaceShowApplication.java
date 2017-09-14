@@ -3,9 +3,9 @@ package com.yanxiu.gphone.faceshow;
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.yanxiu.gphone.faceshow.constant.Constants;
-import com.yanxiu.gphone.faceshow.http.EnvConfigBean;
-import com.yanxiu.gphone.faceshow.http.UrlBean;
-import com.yanxiu.gphone.faceshow.http.UrlRepository;
+import com.yanxiu.gphone.faceshow.http.envconfig.EnvConfigBean;
+import com.yanxiu.gphone.faceshow.http.envconfig.UrlBean;
+import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 
 import org.litepal.LitePalApplication;
