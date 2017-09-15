@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.http;
+package com.yanxiu.gphone.faceshow.http.envconfig;
 
 import java.io.Serializable;
 

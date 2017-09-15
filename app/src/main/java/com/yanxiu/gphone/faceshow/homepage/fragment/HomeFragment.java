@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.homepage;
+package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
 import android.os.Bundle;
@@ -11,14 +11,14 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 
 
 /**
- * 首页 “我的”Fragment
+ * 首页 “首页”Fragment
  */
-public class MyFragment extends FaceShowBaseFragment {
-    private final static String TAG = MyFragment.class.getSimpleName();
+public class HomeFragment extends FaceShowBaseFragment {
+    private final static String TAG = HomeFragment.class.getSimpleName();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
         return view;
     }
 }

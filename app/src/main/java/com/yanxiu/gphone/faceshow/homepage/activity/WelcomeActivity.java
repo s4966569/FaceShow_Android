@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.homepage;
+package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.content.Context;
 import android.os.Bundle;

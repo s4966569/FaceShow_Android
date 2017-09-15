@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.homepage;
+package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {

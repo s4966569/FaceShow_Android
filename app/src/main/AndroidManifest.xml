@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".homepage.WelcomeActivity"
+            android:name=".homepage.activity.WelcomeActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow">
             <intent-filter>
@@ -38,7 +38,7 @@
 
         </activity>
         <activity
-            android:name=".homepage.MainActivity"
+            android:name=".homepage.activity.MainActivity"
             android:configChanges="keyboardHidden|orientation"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -55,10 +55,7 @@
         <activity
             android:name=".login.LoginActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize">
-
-
-        </activity>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
 
     </application>
 

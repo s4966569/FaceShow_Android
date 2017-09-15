@@ -22,7 +22,7 @@
         android:layout_centerInParent="true"
         android:gravity="center"
         android:layout_weight="1"
-        tools:text="title"/>
+        android:text="title"/>
 
     <ImageView
         android:id="@+id/title_layout_right_img"

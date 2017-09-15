@@ -26,14 +26,58 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/color_00cccc" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:gravity="center_vertical">
+
         <TextView
-            android:id="@+id/courseArrange"
+            android:id="@+id/courseArrange_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""/>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/course" />
+
+        <TextView
+            android:id="@+id/resources_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/resources" />
+
+        <TextView
+            android:id="@+id/projectTask_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/projectTask" />
+
+        <TextView
+            android:id="@+id/schedule_tab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/schedule" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/color_00cccc" />
+
+    <FrameLayout
+        android:id="@+id/homefragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 
 </LinearLayout>
