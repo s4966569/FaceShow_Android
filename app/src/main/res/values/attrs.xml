@@ -16,4 +16,8 @@
         <attr name="waves_radius_bottom_right" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="ViewfinderView">
+        <attr name="firstLineStr" format="string" />
+        <attr name="secondLineStr" format="string" />
+    </declare-styleable>
 </resources>
