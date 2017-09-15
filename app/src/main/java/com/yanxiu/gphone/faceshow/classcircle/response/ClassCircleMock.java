@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class ClassCircleMock {
 
+    public String userId;
     public String name;
     public String headimg;
     public String content;
