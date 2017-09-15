@@ -29,6 +29,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private final int INDEX_MY = 3;//我的tab
     private int mLastSelectIndex = -1;
 
+    private View mBottomView;
+
     public NaviFragmentFactory mNaviFragmentFactory;
     public FragmentManager mFragmentManager;
 
@@ -48,6 +50,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void initView() {
         mFragmentManager = getSupportFragmentManager();
         mNaviFragmentFactory = new NaviFragmentFactory();
+        mBottomView=findViewById(R.id.navi_switcher);
         initBottomBar();
         showCurrentFragment(0);
     }
@@ -167,4 +170,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
     }
+
+    public void setBottomVisibility(int visibility){
+        if (mBottomView!=null) {
+            mBottomView.setVisibility(visibility);
+        }
+    }
+
 }

@@ -1,13 +1,24 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white">
-
 
     <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
         android:id="@+id/lm_class_circle"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ed_comment"/>
+
+    <EditText
+        android:id="@+id/ed_comment"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone" />
+
+    <com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView
+        android:id="@+id/sc_adjustpan"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+</RelativeLayout>

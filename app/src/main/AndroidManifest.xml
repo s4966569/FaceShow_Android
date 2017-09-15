@@ -43,7 +43,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
