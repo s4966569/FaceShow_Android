@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/title"
-        layout="@layout/title_layout" />
+        layout="@layout/check_in_title_layout" />
 
     <View
         android:layout_below="@id/title"

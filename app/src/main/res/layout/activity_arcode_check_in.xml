@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity">
 
-    <include layout="@layout/title_layout" />
+    <include layout="@layout/check_in_title_layout" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

@@ -50,4 +50,7 @@
     <string name="check_in_now">本次签到</string>
     <string name="check_in_detail">签到详情</string>
     <string name="sure">确定</string>
+    <string name="notification">通知</string>
+    <string name="notification_detail">通知详情</string>
+    <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
 </resources>

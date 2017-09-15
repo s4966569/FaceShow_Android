@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,65 +41,15 @@ public class LoginActivity extends FaceShowBaseActivity {
     private Context mContext;
     private PublicLoadLayout rootView;
     @BindView(R.id.edt_account_number)
-    ClearEditText edt_account_number;
+    EditText edt_account_number;
     @BindView(R.id.edt_account_password)
-    ClearEditText edt_account_password;
+    EditText edt_account_password;
     @BindView(R.id.img_show_password)
     ImageView img_show_password;
     @BindView(R.id.tv_sign_in)
     TextView tv_sign_in;
     private boolean isPasswordShow = false;
-    private boolean isCanSignIn = false;
     private UUID mSignInRequestUUID;
-    private TextWatcher accountNumberTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            if (edt_account_password.getText().length() > 0 && charSequence.length() > 0) {
-                isCanSignIn = true;
-                tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_bg);
-                tv_sign_in.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
-            } else {
-                isCanSignIn = false;
-                tv_sign_in.setBackgroundResource(R.drawable.shape_password_bg);
-                tv_sign_in.setTextColor(ContextCompat.getColor(mContext, R.color.color_white));
-            }
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-
-        }
-    };
-    private TextWatcher accountPasswordTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            if (edt_account_number.getText().length() > 0 && charSequence.length() > 0) {
-                isCanSignIn = true;
-                tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_bg);
-                tv_sign_in.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
-            } else {
-                isCanSignIn = false;
-                tv_sign_in.setBackgroundResource(R.drawable.shape_password_bg);
-                tv_sign_in.setTextColor(ContextCompat.getColor(mContext, R.color.color_white));
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-
-        }
-    };
 
     public static void toThisAct(Activity activity) {
         activity.startActivity(new Intent(activity, LoginActivity.class));
@@ -111,12 +62,10 @@ public class LoginActivity extends FaceShowBaseActivity {
         rootView = new PublicLoadLayout(mContext);
         rootView.setContentView(R.layout.activity_login);
         setContentView(rootView);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            StatusBarUtils.setStatusBarFullScreen(LoginActivity.this);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            StatusBarUtils.setStatusBarFullScreen(LoginActivity.this);
+//        }
         unbinder = ButterKnife.bind(this);
-        edt_account_number.addTextChangedListener(accountNumberTextWatcher);
-        edt_account_password.addTextChangedListener(accountPasswordTextWatcher);
         if (SpManager.isFristStartUp())
             SpManager.setFristStartUp(false);
     }
@@ -144,12 +93,12 @@ public class LoginActivity extends FaceShowBaseActivity {
                 }
                 break;
             case R.id.tv_sign_in:
-                if (isCanSignIn) {
-                    signInRequest();
-                } else if (edt_account_number.getText().length() <= 0) {
+                if (edt_account_number.getText().length() <= 0) {
                     Toast.makeText(mContext, "账户名不能为空", Toast.LENGTH_SHORT).show();
                 } else if (edt_account_password.getText().length() <= 0) {
                     Toast.makeText(mContext, "账户密码不能为空", Toast.LENGTH_SHORT).show();
+                } else {
+                    signInRequest();
                 }
 
                 break;

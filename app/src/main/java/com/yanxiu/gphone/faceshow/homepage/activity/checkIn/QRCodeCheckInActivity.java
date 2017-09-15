@@ -90,6 +90,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                cameraManager[0].closeDriver();
             }
 
             @Override
@@ -108,7 +109,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
 //            mDialog.setCancelable(false);
 //            mDialog.show();
 //        }
-        cameraManager[0].closeDriver();
+
         tv_title.setText(R.string.check_in);
         hasSurface = false;
     }

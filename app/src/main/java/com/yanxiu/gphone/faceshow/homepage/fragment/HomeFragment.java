@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
@@ -13,6 +14,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 
 
 /**
@@ -37,6 +39,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private TextView mProjectTask_tab;//项目任务
     private TextView mSchedule_tab;//日程计划
 
+    private ImageView mCheckInEnter;//签到入口l
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getContext());
@@ -51,6 +55,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mResources_tab = (TextView) mRootView.findViewById(R.id.resources_tab);
         mProjectTask_tab = (TextView) mRootView.findViewById(R.id.projectTask_tab);
         mSchedule_tab = (TextView) mRootView.findViewById(R.id.schedule_tab);
+        mCheckInEnter = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
 
         mFragmentManager = getChildFragmentManager();
         mFragmentFactory = new HomeFragmentFactory();
@@ -62,6 +67,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mResources_tab.setOnClickListener(this);
         mProjectTask_tab.setOnClickListener(this);
         mSchedule_tab.setOnClickListener(this);
+        mCheckInEnter.setOnClickListener(this);
     }
 
     @Override
@@ -95,6 +101,9 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
 //                mNavIconViews[1].setEnabled(true);
 //                mNavIconViews[2].setEnabled(true);
 //                mNavIconViews[3].setEnabled(false);
+                break;
+            case R.id.title_layout_right_img:
+                QRCodeCheckInActivity.toThisAct(getActivity());
                 break;
             default:
                 break;

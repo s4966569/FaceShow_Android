@@ -50,6 +50,7 @@
         </activity>
         <activity
             android:name=".login.LoginActivity"
+            android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
@@ -61,7 +62,6 @@
             android:name=".homepage.activity.checkIn.QRCodeCheckInActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
-
         <activity
             android:name=".homepage.activity.checkIn.CheckInSuccessActivity"
             android:screenOrientation="portrait"
@@ -74,6 +74,7 @@
             android:name=".homepage.activity.checkIn.CheckInDetailActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity android:name=".notification.NotificationDetailActivity"></activity>
     </application>
 
 </manifest>
