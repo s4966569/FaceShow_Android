@@ -5,7 +5,7 @@
     android:background="@android:color/white">
 
 
-    <com.yanxiu.gphone.faceshow.view.LoadMoreRecyclerView
+    <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
         android:id="@+id/lm_class_circle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

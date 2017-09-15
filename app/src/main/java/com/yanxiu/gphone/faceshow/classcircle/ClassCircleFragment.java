@@ -1,6 +1,5 @@
 package com.yanxiu.gphone.faceshow.classcircle;
 
-
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -10,9 +9,9 @@ import android.view.ViewGroup;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
+import com.yanxiu.gphone.faceshow.classcircle.mock.MockUtil;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-
 
 /**
  * 首页 “班级圈”Fragment
@@ -25,7 +24,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         PublicLoadLayout rootView=new PublicLoadLayout(getContext());
-        rootView.setContentView(R.layout.fragment_3);
+        rootView.setContentView(R.layout.fragment_classcircle);
         initView(rootView);
         listener();
         initData();
@@ -44,7 +43,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     private void initData(){
-
+        mClassCircleAdapter.setData(MockUtil.getClassCircleMockList());
     }
 
     @Override

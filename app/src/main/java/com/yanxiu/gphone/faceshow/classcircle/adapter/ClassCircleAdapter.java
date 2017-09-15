@@ -18,13 +18,13 @@ import java.util.List;
  */
 public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final int TYPE_TITLE=0x0000;
-    private static final int TYPE_DEFAULT=0x0001;
+    private static final int TYPE_TITLE = 0x0000;
+    private static final int TYPE_DEFAULT = 0x0001;
 
-    private List<ClassCircleMock> mData=new ArrayList<>();
+    private List<ClassCircleMock> mData = new ArrayList<>();
 
-    public void setData(List<ClassCircleMock> list){
-        if (list==null){
+    public void setData(List<ClassCircleMock> list) {
+        if (list == null) {
             return;
         }
         this.mData.clear();
@@ -32,22 +32,22 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.notifyDataSetChanged();
     }
 
-    public void addData(List<ClassCircleMock> list){
-        if (list==null){
+    public void addData(List<ClassCircleMock> list) {
+        if (list == null) {
             return;
         }
         this.mData.addAll(list);
         this.notifyDataSetChanged();
     }
 
-    public void clear(){
+    public void clear() {
         this.mData.clear();
         this.notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position==0){
+        if (position == 0) {
             return TYPE_TITLE;
         }
         return TYPE_DEFAULT;
@@ -55,38 +55,38 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = null;
-        if (viewType==TYPE_TITLE){
-            view= LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_class_circle_title,parent,false);
+        View view;
+        if (viewType == TYPE_TITLE) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_class_circle_title, parent, false);
             return new TitleViewHolder(view);
-        }else {
-            view=LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_class_circle_item,parent,false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_class_circle_item, parent, false);
             return new ClassCircleViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof TitleViewHolder){
+        if (holder instanceof TitleViewHolder) {
 
-        }else if (holder instanceof ClassCircleViewHolder){
+        } else if (holder instanceof ClassCircleViewHolder) {
 
         }
     }
 
     @Override
     public int getItemCount() {
-        return mData!=null?mData.size()+1:1;
+        return mData != null ? mData.size() + 1 : 1;
     }
 
-    class ClassCircleViewHolder extends RecyclerView.ViewHolder{
+    class ClassCircleViewHolder extends RecyclerView.ViewHolder {
 
         public ClassCircleViewHolder(View itemView) {
             super(itemView);
         }
     }
 
-    class TitleViewHolder extends RecyclerView.ViewHolder{
+    class TitleViewHolder extends RecyclerView.ViewHolder {
 
         public TitleViewHolder(View itemView) {
             super(itemView);
