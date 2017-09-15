@@ -14,6 +14,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {
 
@@ -34,11 +35,14 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     public NaviFragmentFactory mNaviFragmentFactory;
     public FragmentManager mFragmentManager;
 
+    private ImageView mScannView;//扫描img
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        initListener();
     }
 
     @Override
@@ -48,11 +52,17 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void initView() {
+        mScannView = (ImageView) findViewById(R.id.title_layout_right_img);
+        mScannView.setVisibility(View.VISIBLE);
         mFragmentManager = getSupportFragmentManager();
         mNaviFragmentFactory = new NaviFragmentFactory();
         mBottomView=findViewById(R.id.navi_switcher);
         initBottomBar();
         showCurrentFragment(0);
+    }
+
+    private void initListener() {
+        mScannView.setOnClickListener(this);
     }
 
     private void initBottomBar() {
@@ -101,6 +111,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(false);
+                break;
+            case R.id.title_layout_right_img:
+                ToastUtil.showToast(getApplicationContext(), "扫描");
                 break;
             default:
                 break;

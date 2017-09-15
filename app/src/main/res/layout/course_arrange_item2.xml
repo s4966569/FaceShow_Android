@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/course_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/course_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="国培计划"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/course_time"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="2上午 12.00"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/course_teacher"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="李老师"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/course_location"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="30dp"
+        android:gravity="center_vertical"
+        android:text="2017年9月15日15:37:41"
+        android:textStyle="bold" />
+
+    <include layout="@layout/line" />
+</LinearLayout>

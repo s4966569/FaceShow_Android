@@ -35,4 +35,19 @@
     <string name="sign_in">登录</string>
     <string name="please_input_account_number">请输入账号</string>
     <string name="please_input_password">请输入密码</string>
+    <string name="check_in">签到</string>
+
+
+    <string name="please_put_qr_into_scan_area">将二维码放入扫描区域 </string>
+    <string name="check_in_success">签到成功</string>
+    <string name="check_in_fail">签到失败</string>
+    <string name="check_in_time">签到时间</string>
+    <string name="check_in_qr_already_expired">签到二维码已过期</string>
+    <string name="check_in_qr_already_invalid">无效签到二维码</string>
+    <string name="please_scan_new_check_in_qr">请扫描最新签到二维码</string>
+    <string name="check_in_agin">重新签到</string>
+    <string name="check_in_time_plan">签到时间安排</string>
+    <string name="check_in_now">本次签到</string>
+    <string name="check_in_detail">签到详情</string>
+    <string name="sure">确定</string>
 </resources>

@@ -5,11 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.CourseArrangeFragment;
-import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
-import com.yanxiu.gphone.faceshow.homepage.fragment.MyFragment;
-import com.yanxiu.gphone.faceshow.homepage.fragment.NoticeFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.ProjectTaskFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.ResourcesFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.ScheduleFragment;

@@ -38,6 +38,7 @@ public class SpManager {
     private static final String IS_LOGINED = "is_login";
 
 
+
     public static void setFristStartUp(boolean isFristStartUp) {
         SharedPreferences.Editor editor = mySharedPreferences.edit();
         editor.putBoolean(FRIST_START_UP, isFristStartUp);
@@ -91,6 +92,8 @@ public class SpManager {
         editor.putBoolean(IS_LOGINED, true);
         editor.commit();
     }
+
+
 
 
 }

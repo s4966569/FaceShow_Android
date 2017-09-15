@@ -80,7 +80,7 @@ public class LoadMoreRecyclerView extends RecyclerView {
             if (loadMoreEnable) {
                 LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (manager.findLastVisibleItemPosition() == recyclerView.getAdapter().getItemCount() - 1) {
-                    if(mListener != null){
+                    if (mListener != null) {
                         loadMoreEnable = false;
                         mListener.onLoadMore(LoadMoreRecyclerView.this);
                     }
