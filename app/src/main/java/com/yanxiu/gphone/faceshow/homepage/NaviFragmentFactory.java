@@ -10,6 +10,9 @@ import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.MyFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.NoticeFragment;
 
+/**
+ * HomeActivity的fragment控制类
+ */
 public class NaviFragmentFactory {
     private int mCurrItem = 0;
     private HomeFragment mHomeFragment;//首页
