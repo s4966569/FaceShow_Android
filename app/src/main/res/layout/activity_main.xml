@@ -4,6 +4,10 @@
     android:layout_height="match_parent"
     android:background="@color/color_ffffff">
 
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/common_title_layout" />
+
     <LinearLayout
         android:id="@+id/navi_switcher"
         android:layout_width="match_parent"
@@ -37,6 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/navi_switcher"
-        android:layout_alignParentTop="true"></FrameLayout>
+        android:layout_below="@id/title_bar"></FrameLayout>
 
 </RelativeLayout>
