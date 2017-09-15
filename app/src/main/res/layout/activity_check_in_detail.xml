@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_white"
+    tools:context="com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivity">
+
+    <include
+        android:id="@+id/title"
+        layout="@layout/title_layout" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/title"
+        android:background="@color/color_EBEFF2" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tv_check_in_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/color_333333"
+            android:textSize="18dp"
+            tools:text="国培计划-高级教师研修班" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="29dp"
+            android:text="@string/check_in_time_plan"
+            android:textColor="@color/color_999999"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/tv_check_in_time_plan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/color_333333"
+            android:textSize="14dp"
+            tools:text="2017.8.27 8:00 -2017.8.27 8:30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="29dp"
+            android:text="@string/check_in_now"
+            android:textColor="@color/color_999999"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/tv_check_in_statue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="9dp"
+            android:textColor="@color/color_1da1f2"
+            android:textSize="18dp"
+            tools:text="您还未签到" />
+
+        <TextView
+            android:id="@+id/tv_check_in_here"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="55dp"
+            android:text="请点击下面按钮，扫描二维码进行现场签到"
+            android:textColor="@color/color_999999"
+            android:textSize="13dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_check_in"
+            android:layout_width="112dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/selector_check_in_again_bg"
+            android:gravity="center"
+            android:text="签到"
+            android:textColor="@color/selector_check_in_again_color"
+            android:textSize="14dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="29dp"
+            android:text="签到时间"
+            android:textColor="@color/color_999999"
+            android:textSize="13dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_check_in_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/color_1da1f2"
+            android:textSize="14dp"
+            android:visibility="visible"
+            tools:text="2017.8.27 8:00" />
+    </LinearLayout>
+</RelativeLayout>

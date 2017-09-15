@@ -51,4 +51,12 @@
     <color name="color_66000000">#66000000</color>
     <color name="color_white">#FFFFFF</color>
     <color name="color_4691a6">#4691a6</color>
+    <color name="color_EBEFF2">#ebeff2</color>
+    <color name="color_1da1f2">#1da1f2</color>
+
+    !--qr code-->
+    <color name="viewfinder_mask">#33000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="color_ccffffff">#ccffffff</color>
 </resources>
