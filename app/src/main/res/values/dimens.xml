@@ -15,7 +15,7 @@
 
 
     <!--publicLoadLayout start-->
-    <dimen name="top_layout_height">55dp</dimen>
+    <dimen name="top_layout_height">44dp</dimen>
     <dimen name="net_error_layout_height">220dp</dimen>
     <dimen name="net_error_layout_retrybutton_top">55dp</dimen>
     <dimen name="net_error_layout_margintop">22dp</dimen>
@@ -27,6 +27,15 @@
     <!--publicLoadLayout end-->
 
     <!--commontitlelayout end-->
-    <dimen name="commontitle_margin_left">10dp</dimen>
+    <dimen name="commontitle_margin_left">5dp</dimen>
+    <dimen name="commontitle_title_textsize">20dp</dimen>
+    <dimen name="commontitle_singin_textsize">17dp</dimen>
+    <dimen name="commontitle_title_rightIcon_width">30dp</dimen>
     <!--commontitlelayout end-->
+
+    <!--首页相关 start-->
+    <dimen name="tab_bar_textsize">15dp</dimen>
+    <dimen name="tab_bar_bottomline_height">2dp</dimen>
+    <dimen name="segmentationLine_height">5dp</dimen>
+    <!--首页相关 end-->
 </resources>

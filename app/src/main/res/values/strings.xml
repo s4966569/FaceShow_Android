@@ -27,6 +27,8 @@
     <string name="resources">资源</string>
     <string name="projectTask">项目任务</string>
     <string name="schedule">日程计划</string>
+    <string name="signIn">签到</string>
+    <string name="currentProject">当前项目</string>
 
     <!--首页相关 end-->
 

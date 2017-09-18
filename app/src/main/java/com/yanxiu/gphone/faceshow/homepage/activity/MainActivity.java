@@ -35,8 +35,6 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     public NaviFragmentFactory mNaviFragmentFactory;
     public FragmentManager mFragmentManager;
 
-    private ImageView mScannView;//扫描img
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +50,6 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void initView() {
-        mScannView = (ImageView) findViewById(R.id.title_layout_right_img);
-        mScannView.setVisibility(View.VISIBLE);
         mFragmentManager = getSupportFragmentManager();
         mNaviFragmentFactory = new NaviFragmentFactory();
         mBottomView=findViewById(R.id.navi_switcher);
@@ -62,7 +58,6 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void initListener() {
-        mScannView.setOnClickListener(this);
     }
 
     private void initBottomBar() {

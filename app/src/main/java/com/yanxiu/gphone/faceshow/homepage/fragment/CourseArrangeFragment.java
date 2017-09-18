@@ -2,13 +2,12 @@ package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
@@ -24,7 +23,7 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 /**
  * 首页tab里 “课程安排”Fragment
  */
-public class CourseArrangeFragment extends FaceShowBaseFragment implements OnRecyclerViewItemClickListener {
+public class CourseArrangeFragment extends FaceShowBaseFragment implements View.OnClickListener, OnRecyclerViewItemClickListener {
 
     private PublicLoadLayout mRootView;
 
@@ -36,6 +35,7 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements OnRec
         mRootView = new PublicLoadLayout(getActivity());
         mRootView.setContentView(R.layout.fragment_course_arrange);
         initView();
+        initListener();
         return mRootView;
     }
 
@@ -47,9 +47,19 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements OnRec
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    private void initListener() {
+    }
+
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-        ToastUtil.showToast(getActivity(),position+"");
+        ToastUtil.showToast(getActivity(), position + "");
         CourseActivity.invoke(getActivity());
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        }
+
     }
 }
