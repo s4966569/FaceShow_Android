@@ -22,7 +22,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="35dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="15dp"
             android:orientation="vertical">
@@ -34,6 +34,7 @@
                 android:maxLines="1"
                 android:textColor="@color/color_333333"
                 android:textSize="14dp"
+                android:ellipsize="end"
                 tools:text="报道/用餐时间及地点用餐时间及地点用餐时间,用餐时间及地点用餐时间及地点用餐时间" />
 
             <TextView

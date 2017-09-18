@@ -54,11 +54,11 @@ public abstract class FaceShowMockRequest extends FaceShowBaseRequest {
                             if (random.nextInt(100) < errorMax) {
                                 callback.onFail(request, new Error("data error"));
                             } else {
-                                if (response.getStatus().getCode() == 0) {
+//                                if (response.getStatus().getCode() == 0) {
                                     callback.onSuccess(request, ret);
-                                } else {
-                                    callback.onFail(request, new Error(response.getStatus().getCode() + ""));
-                                }
+//                                } else {
+//                                    callback.onFail(request, new Error(response.getStatus().getCode() + ""));
+//                                }
                             }
                         }
 
