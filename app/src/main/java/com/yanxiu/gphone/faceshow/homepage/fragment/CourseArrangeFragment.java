@@ -7,8 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
@@ -17,6 +18,8 @@ import com.yanxiu.gphone.faceshow.homepage.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
 import com.yanxiu.gphone.faceshow.homepage.adapter.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
+import com.yanxiu.gphone.faceshow.http.course.CourseRequest;
+import com.yanxiu.gphone.faceshow.http.course.CourseResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 
@@ -34,8 +37,11 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getActivity());
         mRootView.setContentView(R.layout.fragment_course_arrange);
+        mRootView.setRetryButtonOnclickListener(this);
+        mRootView.setErrorLayoutFullScreen();
         initView();
         initListener();
+        requestData();
         return mRootView;
     }
 
@@ -43,8 +49,6 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new CourseArrangeAdapter(getActivity(), this);
-        mAdapter.setData(CourseArrangeBean.getMockData());
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     private void initListener() {
@@ -59,7 +63,34 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.retry_button:
+                requestData();
+                break;
         }
+    }
+
+    private void requestData() {
+        mRootView.showLoadingView();
+        CourseRequest courseRequest = new CourseRequest();
+        courseRequest.startRequest(CourseResponse.class, new HttpCallback<CourseResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, CourseResponse ret) {
+                mRootView.hiddenLoadingView();
+                if (ret == null || ret.getStatus().getCode() == 0) {
+                    mAdapter.setData(CourseArrangeBean.getMockData());
+                    mRecyclerView.setAdapter(mAdapter);
+                } else {
+                    mRootView.showOtherErrorView();
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+                mRootView.showNetErrorView();
+
+            }
+        });
 
     }
 }
