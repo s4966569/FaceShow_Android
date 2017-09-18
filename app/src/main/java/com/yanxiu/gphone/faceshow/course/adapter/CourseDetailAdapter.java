@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.homepage.adapter;
+package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,45 +9,46 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
+import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
 
 import java.util.ArrayList;
 
 
 /**
  * Created by 戴延枫
- * 课程安排adapter
+ * 课程详情adapter
  */
 
-public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
 
-    private final int COURSE_DATE = 1;//课程日期
-    private final int COURSE_COTENT = 2;//内容
+    private final int HEADER = 1;//头部
+    private final int ITEM = 2;//列表item
 
-    private ArrayList<CourseArrangeBean> mList;
+    private ArrayList<CourseDetailBean> mList;
 
     private OnRecyclerViewItemClickListener mListener;
 
-    public CourseArrangeAdapter(Context context, OnRecyclerViewItemClickListener listener) {
+    public CourseDetailAdapter(Context context, OnRecyclerViewItemClickListener listener) {
         mContext = context;
         mListener = listener;
     }
 
-    public void setData(ArrayList<CourseArrangeBean> list) {
+    public void setData(ArrayList<CourseDetailBean> list) {
         mList = list;
     }
 
     @Override
     public int getItemViewType(int position) {
-        CourseArrangeBean bean = mList.get(position);
+        CourseDetailBean bean = mList.get(position);
         if (TextUtils.isEmpty(bean.getCourseDate())) {
-            return COURSE_COTENT;
+            return HEADER;
         } else {
             //课程日期
-            return COURSE_DATE;
+            return ITEM;
         }
     }
 
@@ -72,7 +73,7 @@ public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final CourseArrangeBean data = mList.get(position);
+        final CourseDetailBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 1:
                 CourseDateViewHolder holder1 = (CourseDateViewHolder) holder;

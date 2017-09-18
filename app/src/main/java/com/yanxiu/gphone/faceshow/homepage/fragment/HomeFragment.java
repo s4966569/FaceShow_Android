@@ -41,6 +41,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private View mProjectTask_tab;//项目任务taba
     private View mSchedule_tab;//日程计划tab
 
+    private TextView mTitle;
     private ImageView mCheckInEnter;//签到入口l
     private TextView mCheckInEnterTV;//签到入口文字描述
 
@@ -54,6 +55,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     private void initView() {
+        mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
+        mTitle.setText(R.string.homepage);
         mCheckInEnter = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
         mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
         mCheckInEnterTV.setVisibility(View.VISIBLE);

@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="135dp"
-        android:background="@color/colorPrimary">
+        android:background="@drawable/homepage_bg">
 
         <TextView
             android:id="@+id/currentProject"
@@ -51,6 +51,7 @@
             android:text="19号一班"
             android:textColor="@color/color_ffffff"
             android:textSize="15sp"
+            android:background="@drawable/shape_homepage_class"
             android:textStyle="bold" />
 
     </RelativeLayout>
@@ -79,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/course"
+                android:text="@string/courseArrange"
                 android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 

@@ -23,7 +23,7 @@
     <string name="notice">通知</string>
     <string name="classcircle">班级圈</string>
     <string name="my">我</string>
-    <string name="course">课程安排</string>
+    <string name="courseArrange">课程安排</string>
     <string name="resources">资源</string>
     <string name="projectTask">项目任务</string>
     <string name="schedule">日程计划</string>
@@ -60,4 +60,8 @@
     <string name="notification_detail">通知详情</string>
     <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
     <string name="check_in_notes">签到记录</string>
+
+    <!--课程 start-->
+    <string name="course">课程</string>
+    <!--课程 end-->
 </resources>

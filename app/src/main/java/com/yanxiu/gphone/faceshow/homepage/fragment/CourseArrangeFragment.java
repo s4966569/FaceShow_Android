@@ -14,12 +14,12 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.activity.CourseActivity;
+import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
-import com.yanxiu.gphone.faceshow.homepage.adapter.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
-import com.yanxiu.gphone.faceshow.http.course.CourseRequest;
-import com.yanxiu.gphone.faceshow.http.course.CourseResponse;
+import com.yanxiu.gphone.faceshow.http.course.CourseListRequest;
+import com.yanxiu.gphone.faceshow.http.course.CourseListResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 
@@ -71,11 +71,11 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
 
     private void requestData() {
         mRootView.showLoadingView();
-        CourseRequest courseRequest = new CourseRequest();
-        courseRequest.startRequest(CourseResponse.class, new HttpCallback<CourseResponse>() {
+        CourseListRequest courseListRequest = new CourseListRequest();
+        courseListRequest.startRequest(CourseListResponse.class, new HttpCallback<CourseListResponse>() {
             @Override
-            public void onSuccess(RequestBase request, CourseResponse ret) {
-                mRootView.hiddenLoadingView();
+            public void onSuccess(RequestBase request, CourseListResponse ret) {
+                mRootView.finish();
                 if (ret == null || ret.getStatus().getCode() == 0) {
                     mAdapter.setData(CourseArrangeBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);

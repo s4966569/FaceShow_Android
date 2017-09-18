@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.homepage.bean;
+package com.yanxiu.gphone.faceshow.course.bean;
 
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 
@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 /**
  * 课程安排
- * Created by 戴延枫 on 2017/9/15.
+ * Created by 戴延枫 on 2017/9/18.
  */
 
-public class CourseArrangeBean extends BaseBean {
+public class CourseDetailBean extends BaseBean {
     private String courseDate;//日期--分割标题
     private String courseName;//课程名称
     private String time;//时间
@@ -57,12 +57,12 @@ public class CourseArrangeBean extends BaseBean {
         this.location = location;
     }
 
-    public static ArrayList<CourseArrangeBean> getMockData() {
+    public static ArrayList<CourseDetailBean> getMockData() {
         ArrayList list = new ArrayList();
         for (int i = 0; i < 10; i++) {
-            CourseArrangeBean bean = new CourseArrangeBean();
+            CourseDetailBean bean = new CourseDetailBean();
             if (i % 3 == 0) {
-                bean.setCourseDate("1");
+                bean.setCourseDate("2017年9月18日15:41:57");
             } else {
                 bean.setCourseName("按揭客户达数据库里");
                 bean.setLocation("第三会议室");

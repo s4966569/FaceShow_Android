@@ -3,15 +3,15 @@ package com.yanxiu.gphone.faceshow.http.course;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
 
 /**
- * 课程安排请求
+ * 课程详情请求
  */
 
-public class CourseRequest extends FaceShowMockRequest {
+public class CourseDetailRequest extends FaceShowMockRequest {
     public String id;
 
     @Override
     protected String urlPath() {
-        return "/courseList";
+        return "/courseDetail";
     }
 
     @Override
