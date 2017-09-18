@@ -18,4 +18,9 @@
         <item name="android:duplicateParentState">true</item>
     </style>
 
+    <style name="pop_anim">
+        <item name="android:windowEnterAnimation">@anim/pop_in</item>
+        <item name="android:windowExitAnimation">@anim/pop_exit</item>
+    </style>
+
 </resources>
