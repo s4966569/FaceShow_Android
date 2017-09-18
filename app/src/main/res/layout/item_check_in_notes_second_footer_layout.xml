@@ -2,8 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:background="@color/color_EBEFF2">
+    android:layout_height="wrap_content"
+    android:background="@color/color_EBEFF2"
+    android:minHeight="60dp">
 
     <TextView
         android:id="@+id/tv_training_statue"
@@ -25,8 +26,7 @@
         android:layout_toStartOf="@+id/tv_training_statue"
         android:background="@android:color/holo_red_dark"
         android:contentDescription="@null" />
-    <TextView
-        android:id="@+id/tv_training_name"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -34,8 +34,25 @@
         android:layout_marginEnd="10dp"
         android:layout_marginStart="15dp"
         android:layout_toStartOf="@id/img_training_statue"
-        android:textColor="@color/color_333333"
-        android:textSize="14dp"
-        tools:text="针对项目的培训" />
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/tv_training_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_333333"
+            android:textSize="14dp"
+            tools:text="针对项目的培训" />
+
+        <TextView
+            android:id="@+id/tv_training_check_in_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/color_999999"
+            android:textSize="11dp"
+            android:visibility="gone"
+            tools:text="签到时间： 2017.08.19 13:24" />
+
+    </LinearLayout>
 </RelativeLayout>

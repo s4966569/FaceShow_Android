@@ -16,6 +16,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 
 import butterknife.BindString;
@@ -44,6 +45,7 @@ public class MyFragment extends FaceShowBaseFragment {
     LinearLayout ll_logout;
     @BindView(R.id.title_layout_title)
     TextView title_layout_title;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
@@ -60,6 +62,7 @@ public class MyFragment extends FaceShowBaseFragment {
                 startActivity(i);
                 break;
             case R.id.registration://点击签到记录
+                CheckInNotesActivity.toThisAct(getActivity());
                 break;
             case R.id.ll_logout:
                 break;

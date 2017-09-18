@@ -43,11 +43,7 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkInNotes.get(position).getCheckInStatue().equals("0")) {
-                    CheckInDetailActivity.toThisAct(holder.itemView.getContext());
-                } else {
-                    QRCodeCheckInActivity.toThisAct(holder.itemView.getContext());
-                }
+                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position).getCheckInStatue());
             }
         });
 
@@ -75,7 +71,7 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_training_statue, tv_training_name;
+        private TextView tv_training_statue, tv_training_name, tv_training_check_in_time;
         private ImageView img_training_statue;
 
         public ViewHolder(View itemView) {
@@ -83,6 +79,7 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
             tv_training_name = (TextView) itemView.findViewById(R.id.tv_training_name);
             tv_training_statue = (TextView) itemView.findViewById(R.id.tv_training_statue);
             img_training_statue = (ImageView) itemView.findViewById(R.id.img_training_statue);
+            tv_training_check_in_time = (TextView) itemView.findViewById(R.id.tv_training_check_in_time);
         }
 
         public void setData(GetCheckInNotesResponse.CheckInNotesBean checkInNotesBean) {
@@ -90,7 +87,10 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
 
             if (checkInNotesBean.getCheckInStatue().equals("0")) {
                 tv_training_statue.setText("已签到");
+                tv_training_check_in_time.setVisibility(View.VISIBLE);
+                tv_training_check_in_time.setText(checkInNotesBean.getCheckInTime());
             } else {
+                tv_training_check_in_time.setVisibility(View.GONE);
                 tv_training_statue.setText("未签到");
             }
         }
