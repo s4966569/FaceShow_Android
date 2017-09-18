@@ -79,14 +79,14 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/course"
+                android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
             <View
                 android:id="@+id/courseArrange_line"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_bottomline_height"
-                android:background="@color/color_1da1f2"
-                android:visibility="invisible" />
+                android:background="@drawable/selector_homepage_tab_line" />
 
         </LinearLayout>
 
@@ -105,14 +105,14 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/resources"
+                android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
             <View
                 android:id="@+id/resources_line"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_bottomline_height"
-                android:background="@color/color_1da1f2"
-                android:visibility="invisible" />
+                android:background="@drawable/selector_homepage_tab_line" />
 
         </LinearLayout>
 
@@ -131,14 +131,14 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/projectTask"
+                android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
             <View
                 android:id="@+id/projectTask_line"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_bottomline_height"
-                android:background="@color/color_1da1f2"
-                android:visibility="invisible" />
+                android:background="@drawable/selector_homepage_tab_line" />
 
         </LinearLayout>
 
@@ -157,14 +157,14 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/schedule"
+                android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
             <View
                 android:id="@+id/schedule_line"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_bottomline_height"
-                android:background="@color/color_1da1f2"
-                android:visibility="invisible" />
+                android:background="@drawable/selector_homepage_tab_line" />
 
         </LinearLayout>
     </LinearLayout>
