@@ -62,7 +62,7 @@ public class CourseArrangeBean extends BaseBean {
         for (int i = 0; i < 10; i++) {
             CourseArrangeBean bean = new CourseArrangeBean();
             if (i % 3 == 0) {
-                bean.setCourseDate("1");
+                bean.setCourseDate("2017年9月18日15:41:57");
             } else {
                 bean.setCourseName("按揭客户达数据库里");
                 bean.setLocation("第三会议室");

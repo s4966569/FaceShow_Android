@@ -60,4 +60,5 @@
     <color name="result_view">#b0000000</color>
     <color name="possible_result_points">#c0ffff00</color>
     <color name="color_ccffffff">#ccffffff</color>
+    <color name="color_979fad">#979fad</color>
 </resources>

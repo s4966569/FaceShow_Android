@@ -32,6 +32,10 @@
 
     <!--首页相关 end-->
 
+    <!--课程相关 start-->
+    <string name="time">时间</string>
+    <!--课程相关 end-->
+
     <!--loginActivity-->
     <string name="logo_name">logo</string>
     <string name="sign_in">登录</string>
