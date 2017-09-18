@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -64,7 +65,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
     private Dialog mDialog;
 
 
-    public static void toThisAct(Activity activity) {
+    public static void toThisAct(Context activity) {
         Intent intent = new Intent(activity
                 , QRCodeCheckInActivity.class);
         activity.startActivity(intent);

@@ -21,6 +21,7 @@ import com.yanxiu.gphone.faceshow.notification.adapter.NotificationAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,6 +42,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
 
     private NotificationAdapter mNotificationAdapter;
     private List<NotificationResponse.Notification> mNotificationList = new ArrayList<>();
+    private UUID mNotificationRequestUUID;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,7 +74,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
 
     private void getNotifications() {
         NotificationRequest notificationRequest = new NotificationRequest();
-        notificationRequest.startRequest(NotificationResponse.class, new HttpCallback<NotificationResponse>() {
+        mNotificationRequestUUID = notificationRequest.startRequest(NotificationResponse.class, new HttpCallback<NotificationResponse>() {
             @Override
             public void onSuccess(RequestBase request, NotificationResponse ret) {
                 mRootView.hiddenLoadingView();
@@ -81,6 +83,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
                     if (ret.getNotificationList() != null && ret.getNotificationList().size() > 0)
                         mNotificationList.addAll(ret.getNotificationList());
                     mNotificationAdapter.update(mNotificationList);
+                    mRootView.hiddenOtherErrorView();
+                    mRootView.hiddenNetErrorView();
                 } else {
                     mRootView.showOtherErrorView();
                 }
@@ -126,5 +130,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        if (mNotificationRequestUUID != null) {
+            RequestBase.cancelRequestWithUUID(mNotificationRequestUUID);
+        }
     }
 }

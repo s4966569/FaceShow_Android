@@ -59,4 +59,5 @@
     <string name="notification">通知</string>
     <string name="notification_detail">通知详情</string>
     <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
+    <string name="check_in_notes">签到记录</string>
 </resources>

@@ -1,0 +1,98 @@
+{
+  "status": {
+    "code": 0,
+    "desc": "success"
+  },
+  "data": [
+    {
+      "projectName": "国培计划（２０１７）－专职培训团队研修",
+      "className": "19号一班",
+      "checkInNotes": [
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "１"
+        }
+      ]
+    },
+    {
+      "projectName": "国培计划（２０１７）－专职培训团队研修",
+      "className": "19号二班",
+      "checkInNotes": [
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "１"
+        }
+      ]
+    },
+    {
+      "projectName": "国培计划（２０１７）－专职培训团队研修",
+      "className": "19号三班",
+      "checkInNotes": [
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "1"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "1"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        }
+      ]
+    },
+    {
+      "projectName": "国培计划（２０１７）－专职培训团队研修",
+      "className": "19号四班",
+      "checkInNotes": [
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        }
+      ]
+    },
+    {
+      "projectName": "国培计划（２０１７）－专职培训团队研修",
+      "className": "19号五班",
+      "checkInNotes": [
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "1"
+        },
+        {
+          "TrainingName": "针对整体项目的培训",
+          "checkInTime": "2017.08.19 13:24",
+          "checkInStatue": "0"
+        }
+      ]
+    }
+  ]
+}
