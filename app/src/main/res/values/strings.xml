@@ -64,4 +64,7 @@
     <!--课程 start-->
     <string name="course">课程</string>
     <!--课程 end-->
+
+    <string name="has_completed">已完成</string>
+    <string name="has_uncompleted">未完成</string>
 </resources>
