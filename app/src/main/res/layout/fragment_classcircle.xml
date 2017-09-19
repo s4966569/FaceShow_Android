@@ -1,24 +1,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/color_EBEFF2">
 
     <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
         android:id="@+id/lm_class_circle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ed_comment"/>
+        android:layout_above="@+id/ll_edit" />
 
-    <EditText
-        android:id="@+id/ed_comment"
+    <RelativeLayout
+        android:id="@+id/ll_edit"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
         android:layout_alignParentBottom="true"
-        android:visibility="gone" />
+        android:background="@color/color_fafafa"
+        android:visibility="gone"
+        android:layout_height="52dp">
+
+        <EditText
+            android:id="@+id/ed_comment"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@drawable/shape_class_circle_edittext"
+            android:layout_centerVertical="true"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:hint="评论"/>
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/il_title"
+        layout="@layout/common_title_layout" />
 
     <com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView
         android:id="@+id/sc_adjustpan"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_edit" />
 
 </RelativeLayout>

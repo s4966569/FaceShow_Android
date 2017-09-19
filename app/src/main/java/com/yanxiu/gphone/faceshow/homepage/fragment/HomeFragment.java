@@ -63,11 +63,11 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     private void intListener() {
-        mCourseArrange_tab.setOnClickListener(this);
-        mResources_tab.setOnClickListener(this);
-        mProjectTask_tab.setOnClickListener(this);
-        mSchedule_tab.setOnClickListener(this);
-        mCheckInEnter.setOnClickListener(this);
+//        mCourseArrange_tab.setOnClickListener(this);
+//        mResources_tab.setOnClickListener(this);
+//        mProjectTask_tab.setOnClickListener(this);
+//        mSchedule_tab.setOnClickListener(this);
+//        mCheckInEnter.setOnClickListener(this);
     }
 
     @Override

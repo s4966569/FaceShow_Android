@@ -53,7 +53,8 @@
     <color name="color_4691a6">#4691a6</color>
     <color name="color_EBEFF2">#ebeff2</color>
     <color name="color_1da1f2">#1da1f2</color>
-
+    <color name="color_1a90d9">#1a90d9</color>
+    <color name="color_fcfcfc">#fcfcfc</color>
     !--qr code-->
     <color name="viewfinder_mask">#33000000</color>
     <color name="result_view">#b0000000</color>

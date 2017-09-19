@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.classcircle.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,9 +15,9 @@ public class ClassCircleMock {
     public String headimg;
     public String content;
     public String time;
-    public List<String> imgUrls;
-    public List<ThumbUp> thumbs;
-    public List<Comment> comments;
+    public ArrayList<String> imgUrls;
+    public ArrayList<ThumbUp> thumbs;
+    public ArrayList<Comment> comments;
 
     public class ThumbUp{
         public String userId;

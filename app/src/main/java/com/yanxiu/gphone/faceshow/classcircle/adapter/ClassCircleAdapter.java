@@ -1,6 +1,9 @@
 package com.yanxiu.gphone.faceshow.classcircle.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleMock;
+import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.UnMoveGridView;
@@ -108,18 +113,33 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleMock circleMock = mData.get(position - 1);
 
-            Glide.with(mContext).load(circleMock.headimg).into(classCircleViewHolder.mHeadImgView);
+            Glide.with(mContext).load(circleMock.headimg).asBitmap().centerCrop().into(new CornersImageTarget(classCircleViewHolder.mHeadImgView));
+            if (circleMock.imgUrls!=null&&circleMock.imgUrls.size()>0) {
+                classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
+                classCircleViewHolder.mContentImageView.setVisibility(View.GONE);
+                Glide.with(mContext).load(circleMock.imgUrls.get(0)).into(classCircleViewHolder.mContentImageView);
+                classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PhotoActivity.LaunchActivity(mContext,circleMock.imgUrls,0,mContext.hashCode(),PhotoActivity.DELETE_CANNOT);
+                    }
+                });
+            }else {
+                classCircleViewHolder.mContentImageView.setVisibility(View.GONE);
+            }
             classCircleViewHolder.mNameView.setText(circleMock.name);
             classCircleViewHolder.mContentView.setText(circleMock.content);
             classCircleViewHolder.mTimeView.setText(circleMock.time);
-            if (animPosition!=position) {
-                classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
-            }
+            classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
             classCircleViewHolder.mAnimLayout.setEnabled(false);
+//            classCircleViewHolder.mCircleThumbView.setData(circleMock.thumbs);
+//            classCircleViewHolder.mCircleCommentLayout.setData(circleMock.comments);
+            classCircleViewHolder.mCircleThumbView.setData(null);
+            classCircleViewHolder.mCircleCommentLayout.setData(null);
             classCircleViewHolder.mFunctionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setViewAnim(classCircleViewHolder.getLayoutPosition(), classCircleViewHolder.mAnimLayout);
+                    setViewAnim(classCircleViewHolder.getAdapterPosition(), classCircleViewHolder.mAnimLayout);
                 }
             });
             classCircleViewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
@@ -139,18 +159,42 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onClick(View v) {
                     if (mCommentClickListener != null) {
-                        mCommentClickListener.commentClick(classCircleViewHolder.getLayoutPosition(), circleMock, null, true);
+                        mCommentClickListener.commentClick(classCircleViewHolder.getAdapterPosition(), circleMock, null, true);
                     }
-//                    classCircleViewHolder.mAnimLayout.setVisibility(View.GONE);
-//                    animPosition=ANIM_POSITION_DEFAULT;
+                    classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
+                    classCircleViewHolder.mAnimLayout.setEnabled(false);
+                    animPosition=ANIM_POSITION_DEFAULT;
+                }
+            });
+            classCircleViewHolder.mCommentView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction()==MotionEvent.ACTION_DOWN){
+                        classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_right);
+                    }else if (event.getAction()==MotionEvent.ACTION_UP||event.getAction()==MotionEvent.ACTION_CANCEL){
+                        classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime);
+                    }
+                    return false;
                 }
             });
             classCircleViewHolder.mThumbView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(mContext, "点赞", Toast.LENGTH_SHORT).show();
-                    classCircleViewHolder.mAnimLayout.setVisibility(View.GONE);
+                    classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
+                    classCircleViewHolder.mAnimLayout.setEnabled(false);
                     animPosition = ANIM_POSITION_DEFAULT;
+                }
+            });
+            classCircleViewHolder.mThumbView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction()==MotionEvent.ACTION_DOWN){
+                        classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_left);
+                    }else if (event.getAction()==MotionEvent.ACTION_UP||event.getAction()==MotionEvent.ACTION_CANCEL){
+                        classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime);
+                    }
+                    return false;
                 }
             });
         }
@@ -195,23 +239,40 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 view.setEnabled(true);
                 if (animType == ANIM_OPEN) {
                     view.setVisibility(View.VISIBLE);
+                    view.setEnabled(true);
                 }
             }
 
             @Override
             public void onAnimationEnd(View view) {
                 if (animType == ANIM_CLOSE) {
-                    view.setVisibility(View.GONE);
+                    view.setVisibility(View.INVISIBLE);
+                    view.setEnabled(false);
                 }
             }
 
             @Override
             public void onAnimationCancel(View view) {
                 if (animType == ANIM_CLOSE) {
-                    view.setVisibility(View.GONE);
+                    view.setVisibility(View.INVISIBLE);
+                    view.setEnabled(false);
                 }
             }
         }).start();
+    }
+
+    private class CornersImageTarget extends BitmapImageViewTarget {
+
+        CornersImageTarget(ImageView view) {
+            super(view);
+        }
+
+        @Override
+        protected void setResource(Bitmap resource) {
+            RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(view.getContext().getResources(), resource);
+            circularBitmapDrawable.setCornerRadius(10);
+            view.setBackground(circularBitmapDrawable);
+        }
     }
 
     @Override
@@ -232,7 +293,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         @BindView(R.id.iv_function)
         ImageView mFunctionView;
         @BindView(R.id.gv_imgs)
-        UnMoveGridView mUnMoveGridView;
+        ImageView mContentImageView;
         @BindView(R.id.cc_thumb)
         ClassCircleThumbView mCircleThumbView;
         @BindView(R.id.cc_comments)
