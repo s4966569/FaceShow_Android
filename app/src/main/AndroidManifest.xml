@@ -84,6 +84,10 @@
         <activity android:name="com.yanxiu.gphone.faceshow.user.ProfileActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity android:name=".classcircle.activity.SendClassCircleActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
     </application>
 
 </manifest>

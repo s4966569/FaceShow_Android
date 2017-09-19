@@ -66,6 +66,7 @@ public class ClassCircleCommentLayout extends RelativeLayout {
         }
 
         public void setData(ArrayList<ClassCircleMock.Comment> list){
+            mData.clear();
             mData.addAll(list);
             notifyDataSetChanged();
         }

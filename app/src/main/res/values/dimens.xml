@@ -49,4 +49,6 @@
     <dimen name="tag_marginleft">10dp</dimen>
 
     <!--课程相关 end-->
+
+    <dimen name="dialog_class_circle">167dp</dimen>
 </resources>

@@ -23,7 +23,7 @@ public class ClassCirclePopupWindow {
 
     private ClassCirclePopupWindow(Context context){
         mPopupWindow=new PopupWindow(context);
-        View view= LayoutInflater.from(context).inflate(R.layout.popupwindow_classcircle,null);
+        View view= LayoutInflater.from(context).inflate(R.layout.dialog_classcircle,null);
         mPopupWindow.setContentView(view);
         mPopupWindow.setOutsideTouchable(true);
     }

@@ -15,7 +15,7 @@
         <ImageView
             android:id="@+id/iv_head_img"
             android:layout_width="40dp"
-            android:layout_height="40dp"/>
+            android:layout_height="40dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,20 +28,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:textColor="#333333"
                 android:includeFontPadding="false"
-                android:textStyle="bold"
-                android:textSize="16dp" />
+                android:textColor="#333333"
+                android:textSize="16dp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="0dp"
+                android:layout_marginTop="3dp"
                 android:gravity="top"
                 android:includeFontPadding="false"
-                android:layout_marginTop="3dp"
                 android:lineSpacingExtra="4dp"
+                android:padding="0dp"
                 android:textColor="#333333"
                 android:textSize="16dp" />
 
@@ -89,32 +89,69 @@
 
                 <LinearLayout
                     android:id="@+id/ll_anim"
-                    android:layout_width="160dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="55dp"
-                    android:background="@drawable/shape_class_circle_aime"
+                    android:background="@drawable/shape_class_circle_aime_normal"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <RelativeLayout
                         android:id="@+id/tv_thumb"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="点赞"
-                        android:textColor="#ffffff"
-                        android:textSize="16dp" />
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent">
 
-                    <TextView
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_centerInParent="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginEnd="3dp"
+                                android:background="#ff0000" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="点赞"
+                                android:textColor="#ffffff"
+                                android:textSize="16dp" />
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:id="@+id/tv_comment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="评论"
-                        android:textColor="#ffffff"
-                        android:textSize="16dp" />
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_centerInParent="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="#ff0000"
+                                android:layout_marginEnd="3dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="评论"
+                                android:textColor="#ffffff"
+                                android:textSize="16dp" />
+                        </LinearLayout>
+                    </RelativeLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,8 +164,8 @@
                         android:id="@+id/cc_thumb"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"/>
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp" />
 
                     <com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout
                         android:id="@+id/cc_comments"
