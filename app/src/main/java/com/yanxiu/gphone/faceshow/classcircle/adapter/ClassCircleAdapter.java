@@ -23,6 +23,7 @@ import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleMock;
 import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +125,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+            titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
+            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().centerCrop().into(titleViewHolder.mHeadImgView);
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleMock circleMock = mData.get(position - 1);
@@ -131,7 +134,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             Glide.with(mContext).load(circleMock.headimg).asBitmap().centerCrop().into(new CornersImageTarget(classCircleViewHolder.mHeadImgView));
             if (circleMock.imgUrls!=null&&circleMock.imgUrls.size()>0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                Glide.with(mContext).load(circleMock.imgUrls.get(0)).into(classCircleViewHolder.mContentImageView);
+                Glide.with(mContext).load(circleMock.imgUrls.get(0)).asBitmap().into(classCircleViewHolder.mContentImageView);
                 classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -232,7 +235,13 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private boolean checkIsThumb(ClassCircleMock mock){
-        return true;
+        ArrayList<ClassCircleMock.ThumbUp> thumbs=mock.thumbs;
+        for (ClassCircleMock.ThumbUp thumbUp:thumbs){
+            if (thumbUp.userId.equals(UserInfo.getInstance().getInfo().getUserId())){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setViewAnim(int position, View view) {
@@ -346,10 +355,15 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private class TitleViewHolder extends RecyclerView.ViewHolder {
+    class TitleViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.iv_head_img)
+        ImageView mHeadImgView;
+        @BindView(R.id.tv_name)
+        TextView mNameView;
 
         TitleViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this,itemView);
         }
     }
 }

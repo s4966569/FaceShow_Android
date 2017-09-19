@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -20,10 +21,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.zxing.camera.CameraManager;
 
@@ -46,22 +49,22 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private Unbinder unbinder;
     private Context mContext;
     private PublicLoadLayout rootView;
-    @BindView(R.id.tv_change_img)
-    TextView tv_change_img;
+    @BindView(R.id.person_img)
+    ImageView mHeadImgView;
     @BindView(R.id.tv_name)
-    TextView tv_name;
+    TextView mNameView;
     @BindView(R.id.tv_phone)
-    TextView tv_phone;
+    TextView mMobileView;
     @BindView(R.id.tv_gender)
-    TextView tv_gender;
+    TextView mSexView;
     @BindView(R.id.tv_segment)
-    TextView tv_segment;
+    TextView mStageView;
     @BindView(R.id.tv_stduy)
-    TextView tv_stduy;
+    TextView mSubjectView;
     @BindView(R.id.title_layout_title)
-    TextView title_layout_title;
+    TextView mTitleView;
     @BindView(R.id.title_layout_left_img)
-    ImageView title_layout_left_img;
+    ImageView mBackView;
 
 
     private PopupWindow picPopupWindow;
@@ -78,16 +81,34 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         rootView.setContentView(R.layout.activity_profile);
         setContentView(rootView);
         unbinder = ButterKnife.bind(this);
-        title_layout_title.setText(R.string.my);
+        mTitleView.setText(R.string.my);
         initData();
     }
 
     private void initData() {
-        tv_name.setText("孙长龙");
-        tv_phone.setText("13910154678");
-        tv_gender.setText("男");
-        tv_segment.setText("高中");
-        tv_stduy.setText("数学");
+        mBackView.setVisibility(View.VISIBLE);
+
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(mHeadImgView);
+        mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
+        mMobileView.setText(UserInfo.getInstance().getInfo().getPhone());
+        mSexView.setText(getSex());
+        mStageView.setText(UserInfo.getInstance().getInfo().getStageName());
+        mSubjectView.setText(UserInfo.getInstance().getInfo().getSubjectName());
+    }
+
+    private String getSex(){
+        String sex=UserInfo.getInstance().getInfo().getSex();
+        String sexTxt="";
+        if (!TextUtils.isEmpty(sex)) {
+            if (sex.equals("0")) {
+                sexTxt="女";
+            } else if (sex.equals("1")) {
+                sexTxt="男";
+            }
+        }else {
+            sexTxt="未知";
+        }
+        return sexTxt;
     }
 
     @OnClick({R.id.person_info, R.id.title_layout_left_img})
@@ -321,5 +342,11 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 Toast.makeText(this, "没有存储权限", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }

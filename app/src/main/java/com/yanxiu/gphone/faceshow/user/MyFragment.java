@@ -35,24 +35,16 @@ public class MyFragment extends FaceShowBaseFragment {
     private Unbinder unbinder;
     private PublicLoadLayout rootView;
     @BindView(R.id.person_img)
-    ImageView person_img;
-    @BindView(R.id.pregistration_img)
-    ImageView pregistration_img;
-    @BindView(R.id.person_info)
-    RelativeLayout person_info;
-    @BindView(R.id.registration)
-    RelativeLayout registration;
-    @BindView(R.id.ll_logout)
-    LinearLayout ll_logout;
+    ImageView mHeadImgView;
     @BindView(R.id.title_layout_title)
-    TextView title_layout_title;
+    TextView mTitleView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         unbinder = ButterKnife.bind(this, view);
-        title_layout_title.setText(R.string.my);
-        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).into(person_img);
+        mTitleView.setText(R.string.my);
+        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().centerCrop().into(mHeadImgView);
         return view;
     }
 

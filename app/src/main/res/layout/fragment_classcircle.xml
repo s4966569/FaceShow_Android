@@ -3,33 +3,40 @@
     android:layout_height="match_parent"
     android:background="@color/color_EBEFF2">
 
-    <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
-        android:id="@+id/lm_class_circle"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ll_edit" />
+        android:layout_above="@+id/ll_edit" >
+
+        <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
+            android:id="@+id/lm_class_circle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <RelativeLayout
         android:id="@+id/ll_edit"
         android:layout_width="match_parent"
-        android:paddingStart="15dp"
-        android:paddingEnd="15dp"
+        android:layout_height="52dp"
         android:layout_alignParentBottom="true"
         android:background="@color/color_fafafa"
-        android:visibility="gone"
-        android:layout_height="52dp">
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/ed_comment"
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:background="@drawable/shape_class_circle_edittext"
             android:layout_centerVertical="true"
-            android:singleLine="true"
+            android:background="@drawable/shape_class_circle_edittext"
+            android:hint="评论"
             android:imeOptions="actionSend"
-            android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:hint="评论"/>
+            android:paddingStart="10dp"
+            android:singleLine="true" />
     </RelativeLayout>
 
     <include

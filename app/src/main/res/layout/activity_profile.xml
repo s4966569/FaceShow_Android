@@ -20,8 +20,7 @@
             android:layout_height="@dimen/net_error_layout_retrybutton_top"
             android:layout_centerVertical="true"
             android:layout_marginEnd="5dp"
-            android:layout_toLeftOf="@+id/iv_enter"
-            android:background="@drawable/selector_go" />
+            android:layout_toLeftOf="@+id/iv_enter" />
 
         <TextView
             android:id="@+id/tv_change_img"
