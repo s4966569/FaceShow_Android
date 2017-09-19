@@ -92,6 +92,14 @@ public class SpManager {
         editor.putBoolean(IS_LOGINED, true);
         editor.commit();
     }
+    /**
+     * 设置为登出
+     */
+    public static void loginOut() {
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putBoolean(IS_LOGINED, false);
+        editor.commit();
+    }
 
 
 

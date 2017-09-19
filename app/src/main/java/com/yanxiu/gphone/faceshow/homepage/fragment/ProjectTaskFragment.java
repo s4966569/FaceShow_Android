@@ -11,12 +11,12 @@ import android.view.ViewGroup;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.adapter.HomeResourcesAdapter;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.homepage.bean.ProjectTaskBean;
 import com.yanxiu.gphone.faceshow.homepage.bean.ResourceBean;
-import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 

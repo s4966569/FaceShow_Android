@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.user;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,12 +13,12 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
-import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
-import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -64,7 +63,11 @@ public class MyFragment extends FaceShowBaseFragment {
             case R.id.registration://点击签到记录
                 CheckInNotesActivity.toThisAct(getActivity());
                 break;
-            case R.id.ll_logout:
+            case R.id.ll_logout://退出登录
+                LoginActivity.toThisAct(getActivity());
+                UserInfo.info =null;
+                SpManager.loginOut();//设置为登出状态
+                getActivity().finish();
                 break;
         }
     }

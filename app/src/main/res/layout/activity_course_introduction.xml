@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/common_title_layout" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/color_EBEFF2"/>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/introduction_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="25dp"
+        android:lineSpacingExtra="7dp"
+        android:text="随着城市经济不断发展，城市化进程不断加快，大中城市交通愈益紧张，“行车难”、“乘车难”的矛盾日益突出，只有充分利用城市空间、地面和地下空间资源，大力发展以地下铁道为骨干的大运量、快速交通系统才是解决城市客运交通问题的有效途径。《地下铁道》课程系统讲授城市地下铁道（含轻轨）的规划、建筑、结构设计原理和施工技术，介绍地下铁道建设经验，归纳总结近年来地下铁道建设的新理念、新技术、新材料和新方法。\n
+
+课程内容系统，理论与实践并重，强调地下工程施工技术。课程由理论教学和案例分析(48学时)、实验教学(6学时)、课外讲座(6学时)、课程设计(1周)和网络自学等五个模块构成，将地下铁道结构构造、设计原理和施工知识有机的结合起来，引导学生视地质条件、环境条件等变化灵活应用，培养学生分析问题、解决问题的能力。\n
+
+在教学实践中，不断研究探索，灵活运用多种教学方法与手段。实现新技术与典型案例分析相结合、传统教学与多媒体视频相结合、理论教学与实践课程相结合、课堂学习与网络自学相结合，使“工程课程教育工程化”，激发学生学习兴趣，提高主动学习能力，锻炼学生的综合素质。\n
+
+地下铁道课程伴随城市地铁大发展的历史，经过3代教师的建设发展，教学内容保持新颖，结合课程组丰硕的科研成果，应用案例分析教学，适时介绍国内外地铁建设新成就，将学术前沿内容引进教学，使得课程具有良好的前沿性和时代性。形成“理论与实践并重，强调地下工程施工技术”特色，教学方法先进，达到毕业生“下得去、用得上、干得好、发展快”教学效果，具有国内显著特色的一流教学水平。
+"
+        android:textColor="@color/color_333333"
+        android:textSize="@dimen/text_size_16" />
+    </ScrollView>
+</LinearLayout>

@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
-import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 

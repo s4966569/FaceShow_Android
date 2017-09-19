@@ -7,22 +7,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
-import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
-import com.yanxiu.gphone.faceshow.http.course.CourseListRequest;
-import com.yanxiu.gphone.faceshow.http.course.CourseListResponse;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * 课程
@@ -82,7 +81,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
             public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getStatus().getCode() == 0) {
-                    mAdapter.setData(CourseDetailBean.getMockData());
+                    mAdapter.setData(CourseDetailBean.getMockData().getCourseItem());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -112,6 +111,10 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-
+        CourseDetailBean.CourseDetailBeanItem itemBean = (CourseDetailBean.CourseDetailBeanItem) baseBean;
+        ToastUtil.showToast(this, "" + position);
+//        WebViewActivity.loadThisAct(CourseActivity.this,itemBean.getImgUrl());
+        Intent i = new Intent(this, SpecialistIntroductionActivity.class);
+        startActivity(i);
     }
 }

@@ -81,13 +81,19 @@
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <activity android:name=".homepage.activity.checkIn.CheckInNotesActivity" />
-        <activity android:name="com.yanxiu.gphone.faceshow.user.ProfileActivity"
+        <activity
+            android:name="com.yanxiu.gphone.faceshow.user.ProfileActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <activity android:name=".classcircle.activity.SendClassCircleActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".common.activity.WebViewActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".course.activity.SpecialistIntroductionActivity"/>
+        <activity android:name=".course.activity.CourseIntroductionActivity"/>
     </application>
 
 </manifest>

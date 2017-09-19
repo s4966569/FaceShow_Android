@@ -86,6 +86,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                     tvNotificationTitle.setText(ret.getData().getNotificationTitle());
                     tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getNotificationCreator(), ret.getData().getNotificationCreateTime()));
                     tvNotificationContent.setText(ret.getData().getNotificationContent());
+                    // TODO: 17-9-19 缺少占位图
                     Glide.with(mContext).load(ret.getData().getNotificationPic()).asBitmap().into(imgNotification);
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();

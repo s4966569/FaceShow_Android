@@ -1,17 +1,19 @@
 package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.course.activity.CourseIntroductionActivity;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
-import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 
@@ -28,7 +30,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int HEADER = 1;//头部
     private final int ITEM = 2;//列表item
 
-    private ArrayList<CourseDetailBean> mList;
+    private ArrayList<CourseDetailBean.CourseDetailBeanItem> mList;
 
     private OnRecyclerViewItemClickListener mListener;
 
@@ -37,14 +39,14 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         mListener = listener;
     }
 
-    public void setData(ArrayList<CourseDetailBean> list) {
+    public void setData(ArrayList<CourseDetailBean.CourseDetailBeanItem> list) {
         mList = list;
     }
 
     @Override
     public int getItemViewType(int position) {
-        CourseDetailBean bean = mList.get(position);
-        if (TextUtils.isEmpty(bean.getCourseDate())) {
+        CourseDetailBean.CourseDetailBeanItem bean = mList.get(position);
+        if (bean.isHeader()) {
             return HEADER;
         } else {
             //课程日期
@@ -58,12 +60,12 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         RecyclerView.ViewHolder viewHolder = null;
         switch (viewType) {
             case 1:
-                View view1 = inflater.inflate(R.layout.course_arrange_item1, parent, false);
-                viewHolder = new CourseDateViewHolder(view1);
+                View header = inflater.inflate(R.layout.course_detail_header, parent, false);
+                viewHolder = new CourseHeaderViewHolder(header);
                 break;
             case 2:
-                View view2 = inflater.inflate(R.layout.course_arrange_item2, parent, false);
-                viewHolder = new CourseContentViewHolder(view2);
+                View item = inflater.inflate(R.layout.course_detail_item, parent, false);
+                viewHolder = new CourseItemViewHolder(item);
                 break;
 
         }
@@ -73,19 +75,28 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final CourseDetailBean data = mList.get(position);
+        final CourseDetailBean.CourseDetailBeanItem data = mList.get(position);
         switch (getItemViewType(position)) {
             case 1:
-                CourseDateViewHolder holder1 = (CourseDateViewHolder) holder;
-                holder1.course_date.setText(data.getCourseDate());
+                CourseHeaderViewHolder holder1 = (CourseHeaderViewHolder) holder;
+                holder1.course_detail_time.setText(data.getTime());
+                holder1.course_name.setText(data.getCourseName());
+                holder1.course_detail_location.setText(data.getLocation());
+                holder1.course_detail_teacher.setText(data.getTeacher());
+                holder1.course_detail_txt.setText(data.getCourse_detail());
+                holder1.course_detail_all.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(mContext,CourseIntroductionActivity.class );
+                        mContext.startActivity(i);
+                    }
+                });
                 break;
             case 2:
-                CourseContentViewHolder holder2 = (CourseContentViewHolder) holder;
-                holder2.course_name.setText(data.getCourseName());
-                holder2.course_location.setText(data.getLocation());
-                holder2.course_teacher.setText(data.getTeacher());
-                holder2.course_time.setText(data.getTime());
-                holder2.course_layout.setOnClickListener(new View.OnClickListener() {
+                CourseItemViewHolder holder2 = (CourseItemViewHolder) holder;
+                holder2.course_detail_item_txt.setText(data.getCourse_detail_item_txt());
+                Glide.with(mContext).load(data.getImgUrl()).asBitmap().into(holder2.course_detail_item_icon);
+                holder2.course_detail_item_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (mListener != null) {
@@ -105,34 +116,40 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     /**
-     * 课程日期
+     * 课程详情头部
      */
-    class CourseDateViewHolder extends RecyclerView.ViewHolder {
-        private TextView course_date;
+    class CourseHeaderViewHolder extends RecyclerView.ViewHolder {
+        private final TextView course_detail_all;
+        private TextView course_name;
+        private TextView course_detail_time;
+        private TextView course_detail_teacher;
+        private TextView course_detail_location;
+        private TextView course_detail_txt;
 
-        public CourseDateViewHolder(View itemView) {
+        public CourseHeaderViewHolder(View itemView) {
             super(itemView);
-            course_date = (TextView) itemView.findViewById(R.id.course_date);
+            course_name = (TextView) itemView.findViewById(R.id.course_detaile_name);
+            course_detail_time = (TextView) itemView.findViewById(R.id.course_detaile_name);
+            course_detail_teacher = (TextView) itemView.findViewById(R.id.course_detail_teacher);
+            course_detail_location = (TextView) itemView.findViewById(R.id.course_detail_location);
+            course_detail_txt = (TextView) itemView.findViewById(R.id.course_detail_txt);
+            course_detail_all = (TextView) itemView.findViewById(R.id.course_detail_all);
         }
     }
 
     /**
-     * 课程内容
+     * 课程item
      */
-    class CourseContentViewHolder extends RecyclerView.ViewHolder {
-        private View course_layout;
-        private TextView course_name;
-        private TextView course_time;
-        private TextView course_teacher;
-        private TextView course_location;
+    class CourseItemViewHolder extends RecyclerView.ViewHolder {
+        private View course_detail_item_layout;
+        private TextView course_detail_item_txt;
+        private ImageView course_detail_item_icon;
 
-        public CourseContentViewHolder(View itemView) {
+        public CourseItemViewHolder(View itemView) {
             super(itemView);
-            course_layout = itemView.findViewById(R.id.course_layout);
-            course_name = (TextView) itemView.findViewById(R.id.course_name);
-            course_time = (TextView) itemView.findViewById(R.id.course_time);
-            course_teacher = (TextView) itemView.findViewById(R.id.course_teacher);
-            course_location = (TextView) itemView.findViewById(R.id.course_location);
+            course_detail_item_layout = itemView.findViewById(R.id.course_detail_item_layout);
+            course_detail_item_txt = (TextView) itemView.findViewById(R.id.course_detail_item_txt);
+            course_detail_item_icon = (ImageView) itemView.findViewById(R.id.course_detail_item_icon);
 //            TextTypefaceUtil.setViewTypeface(TextTypefaceUtil.TypefaceType.METRO_PLAY, mPrefixNumber, mPostfixNumber);
         }
     }

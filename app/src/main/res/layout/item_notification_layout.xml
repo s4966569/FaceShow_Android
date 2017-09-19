@@ -13,12 +13,26 @@
         android:layout_marginStart="15dp"
         android:orientation="horizontal">
 
-        <ImageView
+        <RelativeLayout
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:background="@android:color/holo_red_dark"
-            android:contentDescription="@null" />
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/img_notification_head"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@android:color/holo_blue_bright"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/img_red_circle"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:contentDescription="@null"
+                android:src="@drawable/shape_red_circle"
+                android:visibility="invisible" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -31,10 +45,10 @@
                 android:id="@+id/tv_notification_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/color_333333"
                 android:textSize="14dp"
-                android:ellipsize="end"
                 tools:text="报道/用餐时间及地点用餐时间及地点用餐时间,用餐时间及地点用餐时间及地点用餐时间" />
 
             <TextView
