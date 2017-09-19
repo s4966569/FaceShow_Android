@@ -95,7 +95,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
 
     private void getCheckInNotes() {
         GetCheckInNotesRequest getCheckInNotesRequest = new GetCheckInNotesRequest();
-        getCheckInNotesRequest.id = UserInfo.info.getUserId();
+        getCheckInNotesRequest.id = UserInfo.getInstance().getInfo().getUserId();
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {

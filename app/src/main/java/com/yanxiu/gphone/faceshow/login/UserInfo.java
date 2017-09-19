@@ -7,10 +7,27 @@ package com.yanxiu.gphone.faceshow.login;
  */
 public class UserInfo {
 
-    public static Info info = new Info();
+    private static UserInfo instance;
+
+    public static UserInfo getInstance() {
+        if (instance == null) {
+            instance = new UserInfo();
+        }
+        return instance;
+    }
 
 
-    public static class Info {
+    private Info info;
+
+    public Info getInfo() {
+        return info;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
+    }
+
+    public class Info {
         private boolean isLogined;
         private String userId;
         private String userName;

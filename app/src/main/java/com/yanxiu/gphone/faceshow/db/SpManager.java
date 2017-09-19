@@ -36,7 +36,8 @@ public class SpManager {
     private static final String APP_VERSION_CODE = "version_code";
     /*用户是否已经登录成功*/
     private static final String IS_LOGINED = "is_login";
-
+    /*用户唯一标示token*/
+    private static final String TOKEN = "token";
 
 
     public static void setFristStartUp(boolean isFristStartUp) {
@@ -92,6 +93,7 @@ public class SpManager {
         editor.putBoolean(IS_LOGINED, true);
         editor.commit();
     }
+
     /**
      * 设置为登出
      */
@@ -101,7 +103,23 @@ public class SpManager {
         editor.commit();
     }
 
+    /**
+     * 保存token
+     *
+     * @param token 唯一标示
+     */
+    public static void saveToken(String token) {
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString(TOKEN, token);
+        editor.commit();
+    }
 
-
-
+    /**
+     * 获取token
+     *
+     * @return token
+     */
+    public static String getToken() {
+        return mySharedPreferences.getString(TOKEN, "");
+    }
 }
