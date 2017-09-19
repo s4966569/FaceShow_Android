@@ -3,6 +3,8 @@ package com.yanxiu.gphone.faceshow.homepage.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -10,11 +12,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
+import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
+import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import java.util.UUID;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {
 
@@ -31,9 +39,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private int mLastSelectIndex = -1;
 
     private View mBottomView;
-
+    private ImageView mRedCircle;
     public NaviFragmentFactory mNaviFragmentFactory;
     public FragmentManager mFragmentManager;
+
+    private UUID mGetHasNotificationsNeedReadRequestUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +62,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void initView() {
         mFragmentManager = getSupportFragmentManager();
         mNaviFragmentFactory = new NaviFragmentFactory();
-        mBottomView=findViewById(R.id.navi_switcher);
+        mBottomView = findViewById(R.id.navi_switcher);
         initBottomBar();
         showCurrentFragment(0);
     }
@@ -73,6 +83,46 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             mNavTextViews[i] = (TextView) mNavBarViews[i].findViewById(R.id.nav_txt);
         }
         mNavIconViews[0].setEnabled(false);
+        mRedCircle = (ImageView) findViewById(R.id.img_red_circle);
+        pollingRedPointer();
+    }
+
+    /**
+     * 轮询小红点
+     */
+    private void pollingRedPointer() {
+        getRedPointersRequest();
+
+    }
+   private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what==1){
+                getRedPointersRequest();
+            }
+        }
+    };
+
+    private void getRedPointersRequest() {
+        GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
+        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetNotificationDetailResponse.class, new HttpCallback<GetNotificationDetailResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetNotificationDetailResponse ret) {
+                if (ret.getStatus().getCode() == 0) {
+                    if (mRedCircle.getVisibility() == View.INVISIBLE) {
+                        mRedCircle.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                }
+                handler.sendEmptyMessageDelayed(1, 10000);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                handler.sendEmptyMessageDelayed(1, 10000);
+            }
+        });
     }
 
     @Override
@@ -179,10 +229,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         activity.startActivity(intent);
     }
 
-    public void setBottomVisibility(int visibility){
-        if (mBottomView!=null) {
+    public void setBottomVisibility(int visibility) {
+        if (mBottomView != null) {
             mBottomView.setVisibility(visibility);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mGetHasNotificationsNeedReadRequestUUID != null) {
+            RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
+        }
+    }
+
+
 
 }

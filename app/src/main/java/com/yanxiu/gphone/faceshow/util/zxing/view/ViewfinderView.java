@@ -132,7 +132,7 @@ public final class ViewfinderView extends View {
         resultColor = resources.getColor(R.color.result_view);
 
         resultPointColor = resources.getColor(R.color.possible_result_points);
-        possibleResultPoints = new HashSet<ResultPoint>(5);
+        possibleResultPoints = new HashSet<>(5);
     }
 
     private String mFirstStr = "";
@@ -174,35 +174,8 @@ public final class ViewfinderView extends View {
             canvas.drawBitmap(resultBitmap, frame.left, frame.top, paint);
         } else {
 
-            //��ɨ�����ϵĽǣ��ܹ�8������
-            /*paint.setColor(Color.GREEN);
-            canvas.drawRect(frame.left, frame.top, frame.left + ScreenRate,
-					frame.top + CORNER_WIDTH, paint);
-			canvas.drawRect(frame.left, frame.top, frame.left + CORNER_WIDTH, frame.top
-					+ ScreenRate, paint);
-			canvas.drawRect(frame.right - ScreenRate, frame.top, frame.right,
-					frame.top + CORNER_WIDTH, paint);
-			canvas.drawRect(frame.right - CORNER_WIDTH, frame.top, frame.right, frame.top
-					+ ScreenRate, paint);
-			canvas.drawRect(frame.left, frame.bottom - CORNER_WIDTH, frame.left
-					+ ScreenRate, frame.bottom, paint);
-			canvas.drawRect(frame.left, frame.bottom - ScreenRate,
-					frame.left + CORNER_WIDTH, frame.bottom, paint);
-			canvas.drawRect(frame.right - ScreenRate, frame.bottom - CORNER_WIDTH,
-					frame.right, frame.bottom, paint);
-			canvas.drawRect(frame.right - CORNER_WIDTH, frame.bottom - ScreenRate,
-					frame.right, frame.bottom, paint);*/
 
             paint.setColor(Color.GREEN);
-            //���м��ʮ�ּ�  绘制中间的图片
-//			Rect centerRect = new Rect();
-//			int horCenter = (frame.right - frame.left)/2;
-//			int virCenter = (frame.bottom - frame.top)/2;
-//			centerRect.left = frame.left + horCenter - 18;
-//			centerRect.right = frame.left + horCenter + 18;
-//			centerRect.top = frame.top  + virCenter - 18;
-//			centerRect.bottom = frame.top  + virCenter + 18;
-//			canvas.drawBitmap(((BitmapDrawable)(getResources().getDrawable(R.drawable.scan_center))).getBitmap(), null, centerRect, paint);
 
             //�����м����,ÿ��ˢ�½��棬�м���������ƶ�SPEEN_DISTANCE
             slideTop += SPEEN_DISTANCE;
@@ -219,7 +192,8 @@ public final class ViewfinderView extends View {
                             .getDrawable(R.drawable.qrcode_scan_line))).getBitmap(),
                     null, lineRect, paint);
 
-            paint.setColor(getResources().getColor(R.color.color_ccffffff));
+            paint.setColor(getResources().getColor(R.color.color_1da1f2));
+            paint.setStrokeWidth(5);
             //���߿���  �����
             float leftStartX = frame.left;
             float leftStopX = frame.left + 1;
@@ -248,45 +222,11 @@ public final class ViewfinderView extends View {
             float bottomStopY = frame.bottom;
             canvas.drawLine(bottomStartX, bottomStartY, bottomStopX, bottomStopY, paint);
 
-            paint.setColor(Color.GREEN);
-            //�����Ͻǵ�ͼ  左上角
-            Rect leftTopRect = new Rect();
-            leftTopRect.left = frame.left;
-            leftTopRect.right = frame.left + 50;
-            leftTopRect.top = frame.top;
-            leftTopRect.bottom = frame.top + 50;
-            canvas.drawBitmap(((BitmapDrawable) (getResources().getDrawable(R.drawable.scan_left_top))).getBitmap(), null, leftTopRect, paint);
-
-            //�����Ͻǵ�ͼ  右上角
-            Rect rightTopRect = new Rect();
-            rightTopRect.left = frame.right - 50;
-            rightTopRect.right = frame.right;
-            rightTopRect.top = frame.top;
-            rightTopRect.bottom = frame.top + 50;
-            canvas.drawBitmap(((BitmapDrawable) (getResources().getDrawable(R.drawable.scan_right_top))).getBitmap(), null, rightTopRect, paint);
-
-            //�����½ǵ�ͼ 左下角
-            Rect leftBottomRect = new Rect();
-            leftBottomRect.left = frame.left;
-            leftBottomRect.right = frame.left + 50;
-            leftBottomRect.top = frame.bottom - 50;
-            leftBottomRect.bottom = frame.bottom;
-            canvas.drawBitmap(((BitmapDrawable) (getResources().getDrawable(R.drawable.scan_left_bottom))).getBitmap(), null, leftBottomRect, paint);
-
-//			//�����½ǵ�ͼ 右下角
-            Rect rightBottomRect = new Rect();
-            rightBottomRect.left = frame.right - 50;
-            rightBottomRect.right = frame.right;
-            rightBottomRect.top = frame.bottom - 50;
-            rightBottomRect.bottom = frame.bottom;
-            canvas.drawBitmap(((BitmapDrawable) (getResources().getDrawable(R.drawable.scan_right_bottom))).getBitmap(), null, rightBottomRect, paint);
 
 
             //��ɨ����������
-            paint.setColor(getResources().getColor(R.color.color_4691a6));
+            paint.setColor(getResources().getColor(R.color.color_1da1f2));
             paint.setTextSize(TEXT_SIZE * density);
-            //paint.setAlpha(0x40);
-//			paint.setTypeface(Typeface.create("System", Typeface.BOLD));
             canvas.drawText(mFirstStr, frame.left + 20 * density, (float) (frame.bottom + (float) TEXT_PADDING_TOP * density), paint);
             canvas.drawText(mSecondStr, frame.left + 14 * density, (float) (frame.bottom + (float) (TEXT_PADDING_TOP + TEXT_LINE_PADDING) * density), paint);
 
