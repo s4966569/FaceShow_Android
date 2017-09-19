@@ -100,12 +100,14 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                                 Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                                activity.finish();
                             }
                         }
 
                         @Override
                         public void onFail(RequestBase request, Error error) {
                             Toast.makeText(activity, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            activity.finish();
 
                         }
                     });
