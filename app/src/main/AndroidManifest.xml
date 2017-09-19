@@ -88,6 +88,9 @@
         <activity
             android:name=".common.activity.WebViewActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".common.activity.EvaluationActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

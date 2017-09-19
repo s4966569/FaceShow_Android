@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title_layout" />
+
+    <include layout="@layout/big_line" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
+            android:id="@+id/evlaution_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView>
+
+        <TextView
+            android:id="@+id/submit"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/selector_evaluation_submit_bg"
+            android:gravity="center"
+            android:text="提  交"
+            android:textColor="@drawable/selector_evaluation_submit_text"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+
+</LinearLayout>
