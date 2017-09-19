@@ -12,9 +12,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.ProjectTaskBean;
 import com.yanxiu.gphone.faceshow.homepage.bean.ResourceBean;
-import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 
