@@ -113,6 +113,8 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, SignInResponse ret) {
                 rootView.hiddenLoadingView();
                 if (ret.getStatus().getCode() == 0) {
+                    UserInfo.getInstance().setInfo(ret.getData());
+                    SpManager.saveToken(ret.getData().getToken());
                     Toast.makeText(mContext, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
                     // TODO: 17-9-14
                 } else {

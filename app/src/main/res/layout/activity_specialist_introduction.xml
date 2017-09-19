@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/common_title_layout" />
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_EBEFF2">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/specialist_backimg"
+            android:layout_width="match_parent"
+            android:layout_height="135dp"
+            android:src="@drawable/homepage_bg" />
+
+        <ImageView
+            android:id="@+id/specialist_img"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="-59dp"
+            android:src="@color/color_bfff7a05" />
+
+        <View
+            android:layout_width="70dp"
+            android:layout_height="1dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/viewfinder_mask" />
+
+        <TextView
+            android:id="@+id/specialist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="21dp"
+            android:text="孙长龙"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/commontitle_title_textsize" />
+
+
+        <TextView
+            android:id="@+id/introduction_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="25dp"
+            android:lineSpacingExtra="7dp"
+            android:text="屠呦呦（1930～），浙江省宁波市人，1955年毕业于北京医学院（现北京大学医学部）药学系。\n
+
+屠呦呦1955年分配到卫生部中医研究院（现中国中医科学院）中药研究所工作至今，中国中医科学院终身研究员、首席研究员。1959～1962年参加卫生部全国第三期西医离职学习中医班。历任中药所化学室主任，现任中国中医科学院青蒿素研究中心主任、博士研究生导师。曾任中国妇女联合会执委及联合国第四次世界妇女大会中国政府代表团代表。
+
+屠呦呦60年来以其“西学中”知识结构优势，从事中药化学、生药学、炮制等领域的研究，成绩卓著。国家首批授予有突出贡献的中青年专家，享受国务院政府特殊津贴。1979年荣获发明奖章，1985年应邀参与筹建中国发明协会，并任理事会理事，1979年、2012年分别获得全国三八红旗手、红旗手标兵荣誉称号，1992年被中国中医科学院聘为终身研究员，1994年被中央国家机关授予十杰妇女称号，1995年当选为全国先进工作者称号，2002年由全国妇女联合会、国家知识产权局、中国发明协会共同授予首届新世纪巾帼发明家称号，2003年获泰国玛希顿皇家医学贡献奖，2009年获唐氏中药发展奖，2011年获美国拉斯克－狄贝基临床医学研究奖，以表彰她在青蒿素的发现及其应用于治疗疟疾方面所做出的杰出贡献，2012年被评为“北京大学杰出校友”，2015年荣获哈佛大学医学院华伦?阿尔波特奖和诺贝尔生理学或医学奖。目前获6个《新药证书》，1个临床批件和2个中国发明专利。
+
+屠呦呦的最大成就贡献主要是发现新型抗疟药——青蒿素和双氢青蒿素。\n
+
+疟疾是全球古今的三大传染病之一，迄今受威胁人口达30余亿人，年发病人3～6亿。十七世纪欧洲使用金鸡纳树皮，十九世纪推广奎宁，1945年氯喹成为抗疟首选药物。上世纪六十年代开始出现抗氯喹的恶性疟原虫，并迅速在全球蔓延，氯喹逐渐失去原有疗效。1964年美国侵越战争，双方因抗性疟感染成军队减员主因。应越南之请，1967年我国领导人决定将（代号523）防治疟疾药物研究作为国家的紧急战备任务，发动全国相关部门共同攻关。期间虽从上万种中草药中进行筛选，未获满意结果。
+
+1969年1月，523办公室商请本院参与抗疟药物研究，屠呦呦被院所领导确定负责组建课题组，从系统收集整理历代医籍、本草、民间方药入手，在收集2000余方药基础上，编写了640种药物为主的《抗疟方药集》。经课题组开展实验研究对200多种中药的380余种提取物进行鼠疟筛选未获满意结果。后集重点于中药青蒿上，特别从《肘后备急方》“青蒿一握，以水二升渍，绞取汁，尽服之”得到启迪，通过对确定其正品、药用部位、采收季节，尤其是提取方法的反复研究，终于1971年发现中药青蒿叶子的乙醚提取中性部分（简称“醚中干”）对疟原虫有100％抑制率；1972年夏，经批准试用于30例临床，全部有效。与此同时，屠呦呦及其课题组继续对“醚中干”进行分离优化，1972年11月得到抗疟有效单体，命名为青蒿素。以后的化学和临床研究表明，青蒿素不同于氯喹，是不含氮、而有双氧桥的新型抗疟化合物，具有“高效、速效、低毒”的优点。1986年“青蒿素”获得了中国新药审批办法实施以来的第一个一类新药证书（86卫药证字X-01号）。
+
+1973年为确证青蒿素结构中的羰基，又创制了在青蒿素结构中引入羟基的还原衍生物，即双氢青蒿素。经构效关系研究，明确在青蒿素结构中过氧是主要抗疟活性基团，在保留过氧的前提下，羰基还原为羟基可以增效，为国内外开展青蒿素衍生物研究打开局面。1992年“双氢青蒿素及其片剂”获一类新药证书和当年“全国十大科技成就”。\n
+
+“醚中干”、青蒿素、双氢青蒿素的发现，受到国内同道的高度关注，在工艺、衍生物等进行了改进和发展；1979年向国际公开后，也受到国外学术界的重视。2001年世界卫生组织将青蒿素类为主的复合疗法（ACT疗法）向所有疟区国家推荐作为疟疾的首选方案，2010年全球采用ACT治疗的约1.8亿人，治愈率达97%。\n
+
+屠呦呦已到耄耋之年，仍在关注青蒿素的研究进展，仍活跃在科研岗位上，可谓是老骥伏枥。她的有关事迹先后被编入《当代中国发明》、《中国卫生科技成果荟萃》、《365个第一次----共和国50年珍贵图录》、《中国科学技术专家传略》、《中国当代发明家大辞典》、《中国当代医学名家荟萃》、《中西医结合事业》及《20世纪中国学术大典—生物学卷》、《20世纪中国知名科学家学术成就概览---医学卷药学分册》等。她主编的《青蒿素及青蒿素类药物》于2009年出版。"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/text_size_16" />
+    </LinearLayout>
+</ScrollView>
+</LinearLayout>

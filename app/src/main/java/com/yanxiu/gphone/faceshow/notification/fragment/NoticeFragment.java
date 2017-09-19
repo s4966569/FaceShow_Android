@@ -43,6 +43,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private NotificationAdapter mNotificationAdapter;
     private List<NotificationResponse.Notification> mNotificationList = new ArrayList<>();
     private UUID mNotificationRequestUUID;
+    private int mPageIdx = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
             @Override
             public void onClick(View view) {
                 mRootView.showLoadingView();
+                mNotificationList.clear();
                 getNotifications();
             }
         });
@@ -67,7 +69,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            mNotificationList.clear();
+            mPageIdx = 0;
             getNotifications();
         }
     };
@@ -80,13 +82,19 @@ public class NoticeFragment extends FaceShowBaseFragment {
                 mRootView.hiddenLoadingView();
                 swipeRefreshLayout.setRefreshing(false);
                 if (ret.getStatus().getCode() == 0) {
-                    if (ret.getNotificationList() != null && ret.getNotificationList().size() > 0)
+                    if (ret.getNotificationList() != null && ret.getNotificationList().size() > 0) {
+                        if (mPageIdx == 0) {
+                            mNotificationList.clear();
+                        }
                         mNotificationList.addAll(ret.getNotificationList());
+                    }
                     mNotificationAdapter.update(mNotificationList);
                     mRootView.hiddenOtherErrorView();
                     mRootView.hiddenNetErrorView();
                 } else {
-                    mRootView.showOtherErrorView();
+                    if (mNotificationList.size() <= 0) {
+                        mRootView.showOtherErrorView();
+                    }
                 }
             }
 
@@ -121,6 +129,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mNotificationAdapter.setItemClickListener(new NotificationAdapter.ItemClickListener() {
             @Override
             public void itemClick(int position) {
+                // TODO: 17-9-19 消耗小红点的网络请求   小红点消耗请求失败怎么办？
+
                 NotificationDetailActivity.toThisAct(getActivity(), mNotificationList.get(position).getNotificationId());
             }
         });

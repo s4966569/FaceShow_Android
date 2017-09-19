@@ -25,6 +25,8 @@
             android:layout_height="35dp"
             android:background="@drawable/shape_class_circle_edittext"
             android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:imeOptions="actionSend"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:hint="评论"/>

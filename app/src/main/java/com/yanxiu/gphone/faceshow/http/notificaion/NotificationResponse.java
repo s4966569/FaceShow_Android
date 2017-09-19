@@ -29,6 +29,16 @@ public class NotificationResponse extends FaceShowBaseResponse {
         private String notificationName;
         @SerializedName("time")
         private String notificationCreatedTime;
+        @SerializedName("statue")
+        private String notificationStatue;
+
+        public String getNotificationStatue() {
+            return notificationStatue;
+        }
+
+        public void setNotificationStatue(String notificationStatue) {
+            this.notificationStatue = notificationStatue;
+        }
 
         public String getNotificationName() {
             return notificationName;

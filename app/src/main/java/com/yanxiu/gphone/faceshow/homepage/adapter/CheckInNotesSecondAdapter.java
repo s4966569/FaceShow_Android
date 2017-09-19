@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.adapter;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivity;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
  * Created by frc on 17-9-18.
  */
 
-public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondAdapter.ViewHolder> {
+class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondAdapter.ViewHolder> {
     private List<GetCheckInNotesResponse.CheckInNotesBean> checkInNotes = new ArrayList<>();
 
     private final int NORMAL = 0x001;
@@ -63,7 +63,7 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
         return checkInNotes.size();
     }
 
-    public void update(List<GetCheckInNotesResponse.CheckInNotesBean> checkInNotes) {
+    void update(List<GetCheckInNotesResponse.CheckInNotesBean> checkInNotes) {
         this.checkInNotes = checkInNotes;
         notifyDataSetChanged();
 
@@ -74,7 +74,7 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
         private TextView tv_training_statue, tv_training_name, tv_training_check_in_time;
         private ImageView img_training_statue;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             tv_training_name = (TextView) itemView.findViewById(R.id.tv_training_name);
             tv_training_statue = (TextView) itemView.findViewById(R.id.tv_training_statue);
@@ -89,9 +89,11 @@ public class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotes
                 tv_training_statue.setText("已签到");
                 tv_training_check_in_time.setVisibility(View.VISIBLE);
                 tv_training_check_in_time.setText(checkInNotesBean.getCheckInTime());
+                tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
             } else {
                 tv_training_check_in_time.setVisibility(View.GONE);
                 tv_training_statue.setText("未签到");
+                tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_999999));
             }
         }
     }

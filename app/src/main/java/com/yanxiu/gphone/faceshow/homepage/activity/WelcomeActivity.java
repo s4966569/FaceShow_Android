@@ -6,11 +6,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
+import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 import java.lang.ref.WeakReference;
 
@@ -72,7 +78,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
         @Override
         public void handleMessage(Message msg) {
-            WelcomeActivity activity = mActivity.get();
+            final WelcomeActivity activity = mActivity.get();
 
             switch (msg.what) {
                 case GO_LOGIN:
@@ -82,8 +88,28 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     break;
                 case GO_MAIN:
                     //进入首页
-                    MainActivity.invoke(activity);
-                    activity.finish();
+                    // TODO: 17-9-19 此处需要个根据token登录的接口
+                    SignInRequest signInRequest = new SignInRequest();
+                    signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
+                        @Override
+                        public void onSuccess(RequestBase request, SignInResponse ret) {
+                            if (ret.getStatus().getCode() == 0) {
+                                UserInfo.getInstance().setInfo(ret.getData());
+                                MainActivity.invoke(activity);
+                                activity.finish();
+                                Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFail(RequestBase request, Error error) {
+                            Toast.makeText(activity, error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
                     break;
             }
         }

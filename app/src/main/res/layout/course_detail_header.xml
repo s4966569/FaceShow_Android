@@ -124,6 +124,7 @@
         android:textSize="16dp" />
 
     <TextView
+        android:id="@+id/course_detail_all"
         android:layout_width="85dp"
         android:layout_height="31dp"
         android:layout_gravity="center_horizontal"

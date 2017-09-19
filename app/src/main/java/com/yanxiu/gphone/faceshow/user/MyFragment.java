@@ -1,9 +1,9 @@
 package com.yanxiu.gphone.faceshow.user;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +12,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
-import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
-import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -51,6 +52,7 @@ public class MyFragment extends FaceShowBaseFragment {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         unbinder = ButterKnife.bind(this, view);
         title_layout_title.setText(R.string.my);
+        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).into(person_img);
         return view;
     }
 
@@ -64,7 +66,12 @@ public class MyFragment extends FaceShowBaseFragment {
             case R.id.registration://点击签到记录
                 CheckInNotesActivity.toThisAct(getActivity());
                 break;
-            case R.id.ll_logout:
+            case R.id.ll_logout://退出登录
+                LoginActivity.toThisAct(getActivity());
+                UserInfo.getInstance().setInfo(null);
+                SpManager.saveToken("");
+                SpManager.loginOut();//设置为登出状态
+                getActivity().finish();
                 break;
         }
     }

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_ffffff">
+
     <LinearLayout
         android:id="@+id/navi_switcher"
         android:layout_width="match_parent"
@@ -18,9 +19,50 @@
             android:id="@+id/navi_1"
             layout="@layout/home_nav_bar_1_layout" />
 
-        <include
+        <LinearLayout
             android:id="@+id/navi_2"
-            layout="@layout/home_nav_bar_2_layout" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/home_bottom_bar_paddingbottom"
+            android:layout_marginTop="@dimen/home_bottom_bar_paddingtop"
+            android:layout_weight="1"
+            android:duplicateParentState="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="@dimen/nav_icon_width"
+                android:layout_height="@dimen/nav_icon_width">
+
+                <ImageView
+                    android:id="@+id/img_red_circle"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/shape_red_circle"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/nav_icon"
+                    android:layout_width="@dimen/nav_icon_width"
+                    android:layout_height="@dimen/nav_icon_width"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/selector_my" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/nav_txt"
+                style="@style/HomeNavBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/home_nav_bar_marginleft"
+                android:gravity="center_vertical"
+                android:text="@string/notice" />
+        </LinearLayout>
+
 
         <include
             android:id="@+id/navi_3"
