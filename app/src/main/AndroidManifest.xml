@@ -101,6 +101,7 @@
         <activity android:name=".course.activity.CourseIntroductionActivity" />
         <activity android:name=".common.activity.VoteActivity" />
         <activity android:name=".common.activity.VoteResultActivity" />
+        <activity android:name="com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity" />
     </application>
 
 </manifest>

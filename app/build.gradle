@@ -55,6 +55,8 @@ android {
         compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
         compile "com.android.support:support-v4:$rootProject.supportLibraryVersion"
         compile "com.github.bumptech.glide:glide:$rootProject.glideLibraryVersion"
+        compile 'com.github.barteksc:android-pdf-viewer:2.5.1'
+        compile 'com.zhy:okhttputils:2.6.1'
         compile files('libs/umeng_social_api.jar')
         compile files('libs/umeng_social_net.jar')
         compile files('libs/umeng_social_tool.jar')

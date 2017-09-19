@@ -21,8 +21,14 @@ import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.customview.LoadingView;
+import com.yanxiu.gphone.faceshow.http.checkin.CheckInRequest;
+import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.zxing.camera.CameraManager;
 import com.yanxiu.gphone.faceshow.util.zxing.decoding.CaptureActivityHandler;
 import com.yanxiu.gphone.faceshow.util.zxing.decoding.InactivityTimer;
@@ -175,6 +181,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
         super.onDestroy();
     }
 
+
     /**
      * @param result
      * @param barcode
@@ -183,10 +190,28 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
     public void handleDecode(Result result, Bitmap barcode) {
 
         String resultString = result.getText();
+        // TODO: 17-9-19 此处需要个网络请求
         if (resultString != null) {
-            // TODO: 17-9-15 签到成功
-            startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
-            QRCodeCheckInActivity.this.finish();
+            CheckInRequest checkInRequest = new CheckInRequest();
+            checkInRequest.scanString = resultString;
+            checkInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
+                @Override
+                public void onSuccess(RequestBase request, CheckInResponse ret) {
+                    if (ret.getStatus().getCode() == 0) {
+                        // TODO: 17-9-15 签到成功
+                        startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
+                        QRCodeCheckInActivity.this.finish();
+                    } else {
+                        ToastUtil.showToast(QRCodeCheckInActivity.this, ret.getStatus().getDesc());
+                    }
+                }
+
+                @Override
+                public void onFail(RequestBase request, Error error) {
+                    ToastUtil.showToast(QRCodeCheckInActivity.this, error.getMessage());
+                }
+            });
+
 
         } else {
             Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
@@ -194,7 +219,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
             startActivity(intent);
             QRCodeCheckInActivity.this.finish();
             // TODO: 17-9-15 签到失败
-            Toast.makeText(this, "Scan failed!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "二维码扫描失败", Toast.LENGTH_SHORT).show();
             return;
         }
 

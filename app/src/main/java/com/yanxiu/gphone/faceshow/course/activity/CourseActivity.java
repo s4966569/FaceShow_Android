@@ -16,14 +16,16 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.common.activity.VoteActivity;
+import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
+import com.yanxiu.gphone.faceshow.common.activity.VoteResultActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
+import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * 课程
@@ -115,15 +117,34 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     public void onItemClick(int position, BaseBean baseBean) {
 //        CourseDetailBean.CourseDetailBeanItem itemBean = (CourseDetailBean.CourseDetailBeanItem) baseBean;
 //        ToastUtil.showToast(this, "" + position);
-//        WebViewActivity.loadThisAct(CourseActivity.this, itemBean.getImgUrl());
         if (position == 2) {
             EvaluationActivity.invoke(this, false);
         }
         if (position == 3) {
             VoteActivity.invoke(this);
         }
+        if (position == 4) {
+            VoteResultActivity.invoke(this);
+        }
+        if (position == 0) {
+            WebViewActivity.loadThisAct(CourseActivity.this, "http://www.sina.com");
+        }
 
-//        Intent i = new Intent(this, SpecialistIntroductionActivity.class);
-//        startActivity(i);
+        Intent intent;
+        if (position == 5) {
+            intent = new Intent(this, SpecialistIntroductionActivity.class);
+            startActivity(intent);
+        } else if (position == 1) {
+            PdfBean pdfbean = new PdfBean();
+            pdfbean.setName("pdfTest");
+            pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
+            pdfbean.setRecord(0);
+
+            intent = new Intent(this, PDFViewActivity.class);
+            Bundle mBundle = new Bundle();
+            mBundle.putSerializable("pdfbean", pdfbean);
+            intent.putExtras(mBundle);
+            startActivity(intent);
+        }
     }
 }
