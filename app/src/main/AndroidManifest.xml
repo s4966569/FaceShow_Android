@@ -99,6 +99,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".course.activity.SpecialistIntroductionActivity" />
         <activity android:name=".course.activity.CourseIntroductionActivity" />
+        <activity android:name="com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity"/>
     </application>
 
 </manifest>
