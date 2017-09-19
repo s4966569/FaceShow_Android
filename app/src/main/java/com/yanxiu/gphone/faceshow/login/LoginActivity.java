@@ -3,11 +3,7 @@ package com.yanxiu.gphone.faceshow.login;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -20,13 +16,11 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
-import com.yanxiu.gphone.faceshow.util.statueBar.StatusBarUtils;
 
 import java.util.UUID;
 
@@ -35,6 +29,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+/**
+ * 登录页面
+ * created by frc
+ */
 public class LoginActivity extends FaceShowBaseActivity {
 
     private Unbinder unbinder;
@@ -62,7 +60,7 @@ public class LoginActivity extends FaceShowBaseActivity {
         rootView = new PublicLoadLayout(mContext);
         rootView.setContentView(R.layout.activity_login);
         setContentView(rootView);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//    如果修改状态栏则ｓｃｒｏｌｌＶｉｅｗ失效    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //            StatusBarUtils.setStatusBarFullScreen(LoginActivity.this);
 //        }
         unbinder = ButterKnife.bind(this);
@@ -94,9 +92,9 @@ public class LoginActivity extends FaceShowBaseActivity {
                 break;
             case R.id.tv_sign_in:
                 if (edt_account_number.getText().length() <= 0) {
-                    Toast.makeText(mContext, "账户名不能为空", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.account_name_can_not_be_null, Toast.LENGTH_SHORT).show();
                 } else if (edt_account_password.getText().length() <= 0) {
-                    Toast.makeText(mContext, "账户密码不能为空", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.account_password_can_not_be_null, Toast.LENGTH_SHORT).show();
                 } else {
                     signInRequest();
                 }
@@ -115,7 +113,10 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, SignInResponse ret) {
                 rootView.hiddenLoadingView();
                 if (ret.getStatus().getCode() == 0) {
+                    Toast.makeText(mContext, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
                     // TODO: 17-9-14
+                } else {
+                    Toast.makeText(mContext, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
                 }
                 toMainActivity();
             }
@@ -123,8 +124,8 @@ public class LoginActivity extends FaceShowBaseActivity {
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
+                Toast.makeText(mContext, R.string.net_error, Toast.LENGTH_SHORT).show();
                 toMainActivity();
-//                Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -13,7 +13,6 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
-import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 
 
@@ -34,12 +33,17 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private final int INDEX_MY = 3;//我的tab
     private int mLastSelectIndex = -1;
 
-    private TextView mCourseArrange_tab;//课程安排
-    private TextView mResources_tab;//资源
-    private TextView mProjectTask_tab;//项目任务
-    private TextView mSchedule_tab;//日程计划
+    private final int mNavBarViewsCount = 4;
+    private View[] mNavBarViews = new View[mNavBarViewsCount];
 
+    private View mCourseArrange_tab;//课程安排tab
+    private View mResources_tab;//资源tab
+    private View mProjectTask_tab;//项目任务taba
+    private View mSchedule_tab;//日程计划tab
+
+    private TextView mTitle;
     private ImageView mCheckInEnter;//签到入口l
+    private TextView mCheckInEnterTV;//签到入口文字描述
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,23 +55,42 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     private void initView() {
-        mCourseArrange_tab = (TextView) mRootView.findViewById(R.id.courseArrange_tab);
-        mResources_tab = (TextView) mRootView.findViewById(R.id.resources_tab);
-        mProjectTask_tab = (TextView) mRootView.findViewById(R.id.projectTask_tab);
-        mSchedule_tab = (TextView) mRootView.findViewById(R.id.schedule_tab);
+        mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
+        mTitle.setText(R.string.homepage);
         mCheckInEnter = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
-
+        mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
+        mCheckInEnterTV.setVisibility(View.VISIBLE);
+        mCheckInEnter.setVisibility(View.VISIBLE);
+        initTabBar();
         mFragmentManager = getChildFragmentManager();
         mFragmentFactory = new HomeFragmentFactory();
         showCurrentFragment(0);
     }
 
+    private void initTabBar() {
+        mCourseArrange_tab = mRootView.findViewById(R.id.courseArrange_tab);
+        mResources_tab = mRootView.findViewById(R.id.resources_tab);
+        mProjectTask_tab = mRootView.findViewById(R.id.projectTask_tab);
+        mSchedule_tab = mRootView.findViewById(R.id.schedule_tab);
+
+        mNavBarViews[0] = mCourseArrange_tab;
+        mNavBarViews[1] = mResources_tab;
+        mNavBarViews[2] = mProjectTask_tab;
+        mNavBarViews[3] = mSchedule_tab;
+
+
+    }
+
     private void intListener() {
-//        mCourseArrange_tab.setOnClickListener(this);
-//        mResources_tab.setOnClickListener(this);
-//        mProjectTask_tab.setOnClickListener(this);
-//        mSchedule_tab.setOnClickListener(this);
-//        mCheckInEnter.setOnClickListener(this);
+        mCourseArrange_tab.setOnClickListener(this);
+        mResources_tab.setOnClickListener(this);
+        mProjectTask_tab.setOnClickListener(this);
+        mSchedule_tab.setOnClickListener(this);
+        mCheckInEnter.setOnClickListener(this);
+        for (int i = 0; i < mNavBarViews.length; i++) {
+            mNavBarViews[i].setOnClickListener(this);
+
+        }
     }
 
     @Override
@@ -76,31 +99,51 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         switch (view.getId()) {
             case R.id.courseArrange_tab:
                 curItem = INDEX_HOME_TAB;
-//                mNavIconViews[0].setEnabled(false);
-//                mNavIconViews[1].setEnabled(true);
-//                mNavIconViews[2].setEnabled(true);
-//                mNavIconViews[3].setEnabled(true);
+                mNavBarViews[0].setEnabled(false);
+                mNavBarViews[1].setEnabled(true);
+                mNavBarViews[2].setEnabled(true);
+                mNavBarViews[3].setEnabled(true);
+
+                mNavBarViews[0].setSelected(true);
+                mNavBarViews[1].setSelected(false);
+                mNavBarViews[2].setSelected(false);
+                mNavBarViews[3].setSelected(false);
                 break;
             case R.id.resources_tab:
                 curItem = INDEX_NOTICE_TAB;
-//                mNavIconViews[0].setEnabled(true);
-//                mNavIconViews[1].setEnabled(false);
-//                mNavIconViews[2].setEnabled(true);
-//                mNavIconViews[3].setEnabled(true);
+                mNavBarViews[0].setEnabled(true);
+                mNavBarViews[1].setEnabled(false);
+                mNavBarViews[2].setEnabled(true);
+                mNavBarViews[3].setEnabled(true);
+
+                mNavBarViews[0].setSelected(false);
+                mNavBarViews[1].setSelected(true);
+                mNavBarViews[2].setSelected(false);
+                mNavBarViews[3].setSelected(false);
                 break;
             case R.id.projectTask_tab:
                 curItem = INDEX_CLASSCIRCLE_TAB;
-//                mNavIconViews[0].setEnabled(true);
-//                mNavIconViews[1].setEnabled(true);
-//                mNavIconViews[2].setEnabled(false);
-//                mNavIconViews[3].setEnabled(true);
+                mNavBarViews[0].setEnabled(true);
+                mNavBarViews[1].setEnabled(true);
+                mNavBarViews[2].setEnabled(false);
+                mNavBarViews[3].setEnabled(true);
+
+                mNavBarViews[0].setSelected(false);
+                mNavBarViews[1].setSelected(false);
+                mNavBarViews[2].setSelected(true);
+                mNavBarViews[3].setSelected(false);
                 break;
             case R.id.schedule_tab:
                 curItem = INDEX_MY;
-//                mNavIconViews[0].setEnabled(true);
-//                mNavIconViews[1].setEnabled(true);
-//                mNavIconViews[2].setEnabled(true);
-//                mNavIconViews[3].setEnabled(false);
+                mNavBarViews[0].setEnabled(true);
+                mNavBarViews[1].setEnabled(true);
+                mNavBarViews[2].setEnabled(true);
+                mNavBarViews[3].setEnabled(false);
+
+                mNavBarViews[0].setSelected(false);
+                mNavBarViews[1].setSelected(false);
+                mNavBarViews[2].setSelected(false);
+                mNavBarViews[3].setSelected(true);
                 break;
             case R.id.title_layout_right_img:
                 QRCodeCheckInActivity.toThisAct(getActivity());
@@ -116,6 +159,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private void showCurrentFragment(int index) {
         if (index == mLastSelectIndex) {
             return;
+        }
+        if (index == 0) { //默认选项
+            mNavBarViews[0].setEnabled(false);
+            mNavBarViews[0].setSelected(true);
         }
         mLastSelectIndex = index;
         if (mFragmentFactory == null) {

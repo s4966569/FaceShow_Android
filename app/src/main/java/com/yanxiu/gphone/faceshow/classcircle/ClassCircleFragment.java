@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +23,8 @@ import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.util.ClassCircleTimeUtils;
+import com.yanxiu.gphone.faceshow.util.Logger;
 
 /**
  * 首页 “班级圈”Fragment
@@ -98,19 +98,16 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.title_layout_right_img:
-//                mClassCircleRecycleView.scrollTo(0, heightMoves);
                 break;
         }
 
     }
 
-    private int heightMoves;
-
     @Override
     public void commentClick(final int position, ClassCircleMock mock, ClassCircleMock.Comment comment, boolean isCommentMaster) {
         Toast.makeText(getContext(), mock.userId, Toast.LENGTH_SHORT).show();
 
-        Log.d("onSizeChanged","commentClick");
+        Logger.d("onSizeChanged","commentClick");
 
         mCommentLayout.setVisibility(View.VISIBLE);
         mCommentView.setFocusable(true);
@@ -123,7 +120,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void sizeChanged(int visibility, int height) {
 
-                Log.d("onSizeChanged","visibility  "+visibility);
+                Logger.d("onSizeChanged","visibility  "+visibility);
                 mVisibility=visibility;
                 if (visibility == View.VISIBLE) {
                     mHeight=height;
@@ -138,36 +135,43 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         imm.showSoftInput(mCommentView,0);
     }
 
-    private void setScroll(int position,int height){
-        Log.d("mClassCircleRecycleView","adapter  position  "+position);
+    private void setScroll(final int position, final int height){
+        Logger.d("mClassCircleRecycleView","adapter  position  "+position);
         mClassCircleRecycleView.scrollToPosition(position);
 //        ((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).scrollToPositionWithOffset(position,0);
-        int n = position - ((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
-        Log.d("mClassCircleRecycleView","visibile position  "+((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition());
-        Log.d("mClassCircleRecycleView","position  "+n);
+        ClassCircleTimeUtils.creat().start(new ClassCircleTimeUtils.onTimeUplistener() {
+            @Override
+            public void onTimeUp() {
+                setSrcollBy(position, height);
+            }
+        });
+    }
+
+    private void setSrcollBy(final int position, final int height){
+        int visibleIndex=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
+        int n = position - visibleIndex;
+        Logger.d("mClassCircleRecycleView","visibile position  "+visibleIndex);
+        Logger.d("mClassCircleRecycleView","position  "+n);
         if ( 0 <= n && n < mClassCircleRecycleView.getChildCount()) {
             int top = mClassCircleRecycleView.getChildAt(n).getTop();
             int bottom=mClassCircleRecycleView.getChildAt(n).getBottom();
 
-            Log.d("mClassCircleRecycleView","top "+top);
-            Log.d("mClassCircleRecycleView","bottom "+bottom);
-            Log.d("mClassCircleRecycleView","height "+height);
+            Logger.d("mClassCircleRecycleView","top "+top);
+            Logger.d("mClassCircleRecycleView","bottom "+bottom);
+            Logger.d("mClassCircleRecycleView","height "+height);
 
-            final int heightMove=height-bottom;
-            heightMoves=heightMove;
+            final int heightMove=bottom-height;
             if (heightMove!=0&&bottom!=height) {
-                Log.d("mClassCircleRecycleView","heightMoves "+heightMoves);
+                Logger.d("mClassCircleRecycleView","heightMoves "+heightMove);
                 mClassCircleRecycleView.post(new Runnable() {
                     @Override
                     public void run() {
-                        mClassCircleRecycleView.scrollBy(0, heightMove+5);
-//                        mClassCircleRecycleView.scrollTo(0, heightMove);
+                        mClassCircleRecycleView.scrollBy(0, heightMove);
                     }
                 });
             }
         }
-
-        Log.d("mClassCircleRecycleView"," ");
+        Logger.d("mClassCircleRecycleView"," ");
     }
 
     @Override

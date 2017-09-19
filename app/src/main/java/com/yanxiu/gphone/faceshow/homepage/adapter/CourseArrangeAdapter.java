@@ -1,18 +1,16 @@
 package com.yanxiu.gphone.faceshow.homepage.adapter;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
-import com.yanxiu.gphone.faceshow.util.TextTypefaceUtil;
+import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 

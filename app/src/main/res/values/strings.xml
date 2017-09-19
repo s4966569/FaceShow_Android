@@ -12,8 +12,8 @@
     <string name="no_storage_permissions">存储权限被禁用，请在权限设置中开启</string>
 
     <!--publicloadlayout start-->
-    <string name="no_wrong_data">真棒!还没有错题哦</string>
-    <string name="net_data_error">页面加载失败...</string>
+    <string name="no_wrong_data">暂无课程</string>
+    <string name="net_data_error">无网络数据，请点击刷新</string>
     <string name="retry">点击重试</string>
 
     <!--publicloadlayout end-->
@@ -23,12 +23,18 @@
     <string name="notice">通知</string>
     <string name="classcircle">班级圈</string>
     <string name="my">我</string>
-    <string name="course">课程安排</string>
+    <string name="courseArrange">课程安排</string>
     <string name="resources">资源</string>
     <string name="projectTask">项目任务</string>
     <string name="schedule">日程计划</string>
+    <string name="signIn">签到</string>
+    <string name="currentProject">当前项目</string>
 
     <!--首页相关 end-->
+
+    <!--课程相关 start-->
+    <string name="time">时间</string>
+    <!--课程相关 end-->
 
     <!--loginActivity-->
     <string name="logo_name">logo</string>
@@ -53,4 +59,17 @@
     <string name="notification">通知</string>
     <string name="notification_detail">通知详情</string>
     <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
+    <string name="check_in_notes">签到记录</string>
+
+    <!--课程 start-->
+    <string name="course">课程</string>
+    <!--课程 end-->
+
+    <string name="has_completed">已完成</string>
+    <string name="has_uncompleted">未完成</string>
+
+    <string name="net_error">网络异常</string>
+    <string name="account_name_can_not_be_null">账户名不能为空</string>
+    <string name="account_password_can_not_be_null">账户密码不能为空</string>
+    <string name="you_have_check_in_success">你已成功签到</string>
 </resources>

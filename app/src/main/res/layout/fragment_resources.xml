@@ -5,13 +5,11 @@
     android:background="@android:color/white">
 
 
-    <TextView
+    <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/top_layout_height"
-        android:textSize="20sp"
-        android:textColor="#666666"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:text="资源"/>
+        android:layout_height="match_parent">
+
+    </com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView>
 
 </LinearLayout>

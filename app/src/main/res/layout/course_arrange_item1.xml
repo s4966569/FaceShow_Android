@@ -1,16 +1,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="55dp"
+    android:background="@android:color/white"
     android:gravity="center_vertical"
-    android:background="@android:color/white">
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/segmentationLine_height"
+        android:background="@color/color_EBEFF2" />
 
     <TextView
         android:id="@+id/course_date"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
         android:gravity="center_vertical"
-        android:textStyle="bold"
-        android:text="2017年9月15日15:37:41" />
+        android:text="2017年9月15日15:37:41"
+        android:textColor="@color/color_1da1f2"
+        android:textStyle="bold" />
 
+    <include
+        layout="@layout/line" />
 </LinearLayout>

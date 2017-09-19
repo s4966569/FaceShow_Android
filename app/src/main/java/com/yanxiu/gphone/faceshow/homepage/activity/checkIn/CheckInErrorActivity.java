@@ -1,6 +1,5 @@
 package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;

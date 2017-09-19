@@ -1,42 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/color_ffffff"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/common_title_layout" />
 
-    <LinearLayout
-        android:id="@+id/top"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/color_ffffff"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
+    <!--<LinearLayout-->
+    <!--android:id="@+id/top"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_alignParentBottom="true"-->
+    <!--android:background="@color/color_ffffff"-->
+    <!--android:gravity="center_vertical"-->
+    <!--android:orientation="vertical">-->
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/color_002c0f">
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:background="@color/color_002c0f">-->
 
-            <TextView
-                android:id="@+id/course_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:text="'国培计划'时间花经验"
-                android:textColor="@color/color_ffffff" />
+    <!--<TextView-->
+    <!--android:id="@+id/course_name"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="30dp"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:text="'国培计划'时间花经验"-->
+    <!--android:textColor="@color/color_ffffff" />-->
 
-        </RelativeLayout>
+    <!--</RelativeLayout>-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/content_main"
+        android:id="@+id/course_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@color/color_ffffff" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/course_backView"
+        android:layout_width="@dimen/commontitle_title_rightIcon_width"
+        android:layout_height="@dimen/commontitle_title_rightIcon_width"
+        android:layout_marginLeft="@dimen/commontitle_margin_left"
+        android:background="@color/color_1da1f2" />
+
+</RelativeLayout>

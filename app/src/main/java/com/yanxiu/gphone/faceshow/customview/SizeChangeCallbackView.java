@@ -3,8 +3,9 @@ package com.yanxiu.gphone.faceshow.customview;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+
+import com.yanxiu.gphone.faceshow.util.Logger;
 
 /**
  * Created by Canghaixiao.
@@ -39,12 +40,12 @@ public class SizeChangeCallbackView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        Log.d("onSizeChanged", "height" + h);
+        Logger.d("onSizeChanged", "height" + h);
         if (mHeight == 0) {
-            mHeight = h;
+            mHeight = h*2/3;
         }
         int visibility;
-        if (h == mHeight) {
+        if (h > mHeight) {
             visibility = INVISIBLE;
         } else {
             visibility = VISIBLE;

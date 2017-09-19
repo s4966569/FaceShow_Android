@@ -27,10 +27,11 @@
             android:id="@+id/tv_check_in_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/color_333333"
             android:textSize="18dp"
-            tools:text="国培计划-高级教师研修班" />
+         />
 
         <TextView
             android:layout_width="wrap_content"
@@ -95,6 +96,7 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/tv_check_in_time_here"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

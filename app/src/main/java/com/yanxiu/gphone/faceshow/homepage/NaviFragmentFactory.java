@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
-import com.yanxiu.gphone.faceshow.homepage.fragment.MyFragment;
+import com.yanxiu.gphone.faceshow.user.MyFragment;
 import com.yanxiu.gphone.faceshow.notification.fragment.NoticeFragment;
 
 /**

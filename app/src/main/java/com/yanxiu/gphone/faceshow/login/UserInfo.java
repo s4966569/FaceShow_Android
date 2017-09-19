@@ -10,7 +10,7 @@ public class UserInfo {
     public static Info info = new Info();
 
 
-    static class Info {
+    public static class Info {
         private boolean isLogined;
         private String userId;
         private String userName;
