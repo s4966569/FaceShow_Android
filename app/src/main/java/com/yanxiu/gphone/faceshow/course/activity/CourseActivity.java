@@ -15,6 +15,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.activity.EvaluationActivity;
+import com.yanxiu.gphone.faceshow.common.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
@@ -116,8 +117,12 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 //        ToastUtil.showToast(this, "" + position);
 //        WebViewActivity.loadThisAct(CourseActivity.this, itemBean.getImgUrl());
         if (position == 2) {
-            EvaluationActivity.invoke(this, "");
+            EvaluationActivity.invoke(this, false);
         }
+        if (position == 3) {
+            VoteActivity.invoke(this);
+        }
+
 //        Intent i = new Intent(this, SpecialistIntroductionActivity.class);
 //        startActivity(i);
     }

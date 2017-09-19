@@ -5,29 +5,22 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.common.bean.EvaluationBean;
-import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.ChooseLayout;
-
-import org.w3c.dom.Text;
+import com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
-import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_MULTI;
-import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_SINGLE;
-import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_TEXT;
+import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_SINGLE;
+import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_TEXT;
 
 
 /**
@@ -35,28 +28,25 @@ import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_TEXT;
  * 评价adapter
  */
 
-public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ChooseLayout.onItemClickListener {
+public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements VoteRuseltLayout.onItemClickListener {
 
     private Context mContext;
 
-    private ArrayList<EvaluationBean> mList;
+    private ArrayList<VoteBean> mList;
 
-    private CanSubmitListener mListener;
     private boolean mOnlyLook;
 
-    public EvaluationAdapter(Context context, CanSubmitListener listener, boolean onlyLook) {
+    public VoteResultAdapter(Context context) {
         mContext = context;
-        mListener = listener;
-        mOnlyLook = onlyLook;
     }
 
-    public void setData(ArrayList<EvaluationBean> list) {
+    public void setData(ArrayList<VoteBean> list) {
         mList = list;
     }
 
     @Override
     public int getItemViewType(int position) {
-        EvaluationBean bean = mList.get(position);
+        VoteBean bean = mList.get(position);
         return bean.getType();
     }
 
@@ -67,7 +57,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         switch (viewType) {
             case TYPE_SINGLE:
             case TYPE_MULTI:
-                View multi = inflater.inflate(R.layout.evaluation_choose_layout, parent, false);
+                View multi = inflater.inflate(R.layout.vote_result__layout, parent, false);
                 viewHolder = new ChooseViewHolder(multi);
                 break;
             case TYPE_TEXT:
@@ -82,31 +72,20 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final EvaluationBean data = mList.get(position);
+        final VoteBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.evaluation_title.setText(data.getTitle());
-                holder1.chooseLayout.setChooseType(getItemViewType(position));
-                holder1.chooseLayout.setIsClick(!mOnlyLook);
-                holder1.chooseLayout.setData(data.getChooseList());
-                holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());
-                holder1.chooseLayout.setSelectItemListener(this);
+                holder1.voteResult_title.setText(data.getTitle());
+                holder1.voteResult_Layout.setChooseType(getItemViewType(position));
+                holder1.voteResult_Layout.setData(data.getChooseList());
+                holder1.voteResult_Layout.setSaveChooceResultList(data.getAnswerList());
+                holder1.voteResult_Layout.setSelectItemListener(this);
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
-                holder2.evaluation_title.setText(data.getTitle());
-//                holder2.evalution_editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//                    @Override
-//                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                        return false;
-//                    }
-//                });
-                if (mOnlyLook && !TextUtils.isEmpty(data.getFeedBackText())) {
-                    holder2.evalution_editText.setText(data.getFeedBackText());
-                    holder2.evalution_editText.setEnabled(false);
-                }
+                holder2.voteResult_title.setText(data.getTitle());
                 holder2.evalution_editText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -121,7 +100,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void afterTextChanged(Editable s) {
                         com.yanxiu.gphone.faceshow.util.Logger.e("dyf", s.toString());
-                        EvaluationBean bean = mList.get(position);
+                        VoteBean bean = mList.get(position);
                         bean.setFeedBackText(s.toString());
                     }
                 });
@@ -139,7 +118,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onChooseItemClick(int position, boolean isSelected) {
         boolean allChoose = true;
         for (int i = 0; i < getItemCount(); i++) {
-            EvaluationBean bean = mList.get(i);
+            VoteBean bean = mList.get(i);
             if (bean.getType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
                 allChoose = false;
                 break;
@@ -149,26 +128,21 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
             }
 
-//            for (int j = 0; j < bean.getAnswerList().size(); j++) {
-//                Log.e("dyf", "第: " + i + "个数据 =" + bean.getAnswerList().get(j));
-//            }
-//            Log.i("dyf", "第: " + i + "个反馈 =" + bean.getFeedBackText());
         }
-        mListener.canSubmit(allChoose);
     }
 
     /**
      * 评价单双选
      */
     class ChooseViewHolder extends RecyclerView.ViewHolder {
-        private TextView evaluation_title;
-        private ChooseLayout chooseLayout;
+        private TextView voteResult_title;
+        private VoteRuseltLayout voteResult_Layout;
 
 
         public ChooseViewHolder(View itemView) {
             super(itemView);
-            evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
-            chooseLayout = (ChooseLayout) itemView.findViewById(R.id.chooseLayout);
+            voteResult_title = (TextView) itemView.findViewById(R.id.voteResult_title);
+            voteResult_Layout = (VoteRuseltLayout) itemView.findViewById(R.id.voteResult_Layout);
         }
     }
 
@@ -176,19 +150,16 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      * 评价文本
      */
     class TextViewHolder extends RecyclerView.ViewHolder {
-        private TextView evaluation_title;
+        private TextView voteResult_title;
         private EditText evalution_editText;
 
         public TextViewHolder(View itemView) {
             super(itemView);
-            evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
+            voteResult_title = (TextView) itemView.findViewById(R.id.voteResult_title);
             evalution_editText = (EditText) itemView.findViewById(R.id.evalution_editText);
         }
     }
 
-    public interface CanSubmitListener {
-        void canSubmit(boolean is);
-    }
 }
 
 

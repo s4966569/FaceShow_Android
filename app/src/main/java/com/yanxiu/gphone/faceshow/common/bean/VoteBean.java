@@ -5,9 +5,9 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
 import java.util.ArrayList;
 
 /**
- * 评价封装类
+ * 投票封装类
  */
-public class EvaluationBean extends BaseBean {
+public class VoteBean extends BaseBean {
     public static final int TYPE_SINGLE = 0x000;
     public static final int TYPE_MULTI = 0x001;
     public static final int TYPE_TEXT = 0x002;
@@ -60,11 +60,11 @@ public class EvaluationBean extends BaseBean {
         this.feedBackText = feedBackText;
     }
 
-    public static ArrayList<EvaluationBean> getMockData() {
+    public static ArrayList<VoteBean> getMockData() {
         ArrayList list = new ArrayList();
 
         for (int i = 0; i < 10; i++) {
-            EvaluationBean bean = new EvaluationBean();
+            VoteBean bean = new VoteBean();
             if (i % 2 == 0) {
                 bean.setType(TYPE_SINGLE);
                 bean.getChooseList().add("满意");

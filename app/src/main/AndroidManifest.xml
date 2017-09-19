@@ -99,6 +99,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".course.activity.SpecialistIntroductionActivity" />
         <activity android:name=".course.activity.CourseIntroductionActivity" />
+        <activity android:name=".common.activity.VoteActivity" />
+        <activity android:name=".common.activity.VoteResultActivity" />
     </application>
 
 </manifest>

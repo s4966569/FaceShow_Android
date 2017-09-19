@@ -14,17 +14,17 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.adapter.EvaluationAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.EvaluationBean;
-import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
+import com.yanxiu.gphone.faceshow.common.adapter.VoteAdapter;
+import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
 import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
- * 评价页面
+ * 投票页面
  */
-public class EvaluationActivity extends FaceShowBaseActivity implements View.OnClickListener, EvaluationAdapter.CanSubmitListener {
+public class VoteActivity extends FaceShowBaseActivity implements View.OnClickListener, VoteAdapter.CanSubmitListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -32,19 +32,16 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private TextView mSubmit;
 
     private RecyclerView mRecyclerView;
-    private EvaluationAdapter mAdapter;
-
-    private boolean onlyLook;
+    private VoteAdapter mAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRootView = new PublicLoadLayout(this);
-        mRootView.setContentView(R.layout.activity_evaluation);
+        mRootView.setContentView(R.layout.activity_vote);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
-        onlyLook = getIntent().getBooleanExtra("onlyLook", false);
         initView();
         initListener();
         requestData();
@@ -56,15 +53,10 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
         mSubmit.setEnabled(false);
-        if (onlyLook) {
-            mSubmit.setVisibility(View.GONE);
-            mTitle.setText("我的课程评价");
-        } else {
-            mTitle.setText("课程评价");
-        }
+        mTitle.setText("课程投票");
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new EvaluationAdapter(this, this, onlyLook);
+        mAdapter = new VoteAdapter(this, this);
 
     }
 
@@ -99,7 +91,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getStatus().getCode() == 0) {
-                    mAdapter.setData(EvaluationBean.getMockData());
+                    mAdapter.setData(VoteBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -110,19 +102,13 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
-
             }
         });
 
     }
 
-    /**
-     * @param context
-     * @param onlyLook true 我的评价(选项不可点击)
-     */
-    public static void invoke(Context context, boolean onlyLook) {
-        Intent intent = new Intent(context, EvaluationActivity.class);
-        intent.putExtra("onlyLook", onlyLook);
+    public static void invoke(Context context) {
+        Intent intent = new Intent(context, VoteActivity.class);
         context.startActivity(intent);
     }
 

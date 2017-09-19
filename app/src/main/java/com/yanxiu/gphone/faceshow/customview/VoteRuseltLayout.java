@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 选择控件
+ * 投票结果控件
  * dyf
  */
-public class ChooseLayout extends LinearLayout implements View.OnClickListener {
+public class VoteRuseltLayout extends LinearLayout implements View.OnClickListener {
 
     public static final int TYPE_SINGLE = 0x000;
     public static final int TYPE_MULTI = 0x001;
@@ -36,17 +36,17 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
         void onChooseItemClick(int position, boolean isSelected);
     }
 
-    public ChooseLayout(Context context) {
+    public VoteRuseltLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public ChooseLayout(Context context, @Nullable AttributeSet attrs) {
+    public VoteRuseltLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public ChooseLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VoteRuseltLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -100,7 +100,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                 holder.mQuestionSelectView.setVisibility(GONE);
             }
 
-            view.setOnClickListener(ChooseLayout.this);
+            view.setOnClickListener(VoteRuseltLayout.this);
             view.setTag(holder);
             this.addView(view);
         }
