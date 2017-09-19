@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -112,6 +113,8 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     public void onItemClick(int position, BaseBean baseBean) {
         CourseDetailBean.CourseDetailBeanItem itemBean = (CourseDetailBean.CourseDetailBeanItem) baseBean;
         ToastUtil.showToast(this, "" + position);
-        WebViewActivity.loadThisAct(CourseActivity.this,itemBean.getImgUrl());
+//        WebViewActivity.loadThisAct(CourseActivity.this,itemBean.getImgUrl());
+        Intent i = new Intent(this, SpecialistIntroductionActivity.class);
+        startActivity(i);
     }
 }

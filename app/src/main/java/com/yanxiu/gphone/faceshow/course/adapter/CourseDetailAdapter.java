@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.course.activity.CourseIntroductionActivity;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 
@@ -82,6 +84,13 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 holder1.course_detail_location.setText(data.getLocation());
                 holder1.course_detail_teacher.setText(data.getTeacher());
                 holder1.course_detail_txt.setText(data.getCourse_detail());
+                holder1.course_detail_all.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(mContext,CourseIntroductionActivity.class );
+                        mContext.startActivity(i);
+                    }
+                });
                 break;
             case 2:
                 CourseItemViewHolder holder2 = (CourseItemViewHolder) holder;
@@ -110,6 +119,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * 课程详情头部
      */
     class CourseHeaderViewHolder extends RecyclerView.ViewHolder {
+        private final TextView course_detail_all;
         private TextView course_name;
         private TextView course_detail_time;
         private TextView course_detail_teacher;
@@ -123,6 +133,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             course_detail_teacher = (TextView) itemView.findViewById(R.id.course_detail_teacher);
             course_detail_location = (TextView) itemView.findViewById(R.id.course_detail_location);
             course_detail_txt = (TextView) itemView.findViewById(R.id.course_detail_txt);
+            course_detail_all = (TextView) itemView.findViewById(R.id.course_detail_all);
         }
     }
 

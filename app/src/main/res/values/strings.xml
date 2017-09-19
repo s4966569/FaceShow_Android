@@ -64,6 +64,7 @@
     <!--课程 start-->
     <string name="course">课程</string>
     <string name="course_jianjie">课程简介</string>
+    <string name="specialist_title">专家介绍</string>
     <!--课程 end-->
 
     <string name="has_completed">已完成</string>

@@ -88,6 +88,8 @@
         <activity
             android:name=".common.activity.WebViewActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".course.activity.SpecialistIntroductionActivity"/>
+        <activity android:name=".course.activity.CourseIntroductionActivity"/>
     </application>
 
 </manifest>
