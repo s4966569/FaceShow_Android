@@ -66,7 +66,7 @@ public class MyFragment extends FaceShowBaseFragment {
             case R.id.ll_logout://退出登录
                 LoginActivity.toThisAct(getActivity());
                 UserInfo.info =null;
-                SpManager.loginOut();
+                SpManager.loginOut();//设置为登出状态
                 getActivity().finish();
                 break;
         }
