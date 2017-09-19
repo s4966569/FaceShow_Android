@@ -16,7 +16,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
-import com.yanxiu.gphone.faceshow.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
 import com.yanxiu.gphone.faceshow.http.course.CourseListRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseListResponse;

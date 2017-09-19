@@ -1,0 +1,151 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/course_img_bg_height"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/homepage_bg" />
+
+    <TextView
+        android:id="@+id/course_detaile_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="阿斯顿发放事发地点阿斯顿发放事阿斯顿发放事发地点阿斯顿发放事发地点阿斯顿发放事发地点发地点阿斯顿发放事发地点"
+        android:textColor="@color/color_333333"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/course_img_Height"
+            android:layout_height="@dimen/course_img_Height"
+            android:background="@color/color_00cccc" />
+
+        <TextView
+            android:id="@+id/course_detail_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/course_text_marginLeft"
+            android:gravity="center_vertical"
+            android:text="上午 08:30"
+            android:textColor="@color/color_666666"
+            android:textSize="@dimen/course_text_textsize" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginTop="@dimen/course_marginTop"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/course_img_Height"
+            android:layout_height="@dimen/course_img_Height"
+            android:background="@color/color_00cccc" />
+
+        <TextView
+            android:id="@+id/course_detail_teacher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/course_text_marginLeft"
+            android:gravity="center_vertical"
+            android:text="李小冉"
+            android:textColor="@color/color_666666"
+            android:textSize="@dimen/course_text_textsize" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginTop="@dimen/course_marginTop"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="@dimen/course_img_Height"
+            android:layout_height="@dimen/course_img_Height"
+            android:background="@color/color_00cccc" />
+
+        <TextView
+            android:id="@+id/course_detail_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/course_text_marginLeft"
+            android:gravity="center_vertical"
+            android:text="西城区北广大厦"
+            android:textColor="@color/color_666666"
+            android:textSize="@dimen/course_text_textsize" />
+    </LinearLayout>
+
+    <include layout="@layout/big_line" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:gravity="center_vertical"
+        android:text="@string/course_jianjie"
+        android:textColor="@color/color_999999"
+        android:textSize="18dp" />
+
+    <include layout="@layout/line" />
+
+    <TextView
+        android:id="@+id/course_detail_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:layout_marginTop="@dimen/course_marginleft"
+        android:ellipsize="end"
+        android:maxLines="5"
+        android:lineSpacingExtra="5dp"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp" />
+
+    <TextView
+        android:layout_width="85dp"
+        android:layout_height="31dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/shape_course_seeall"
+        android:gravity="center"
+        android:text="查看全部"
+        android:textColor="@color/color_1da1f2"
+        android:textSize="11dp"
+        android:textStyle="bold" />
+
+    <include layout="@layout/big_line" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:gravity="center_vertical"
+        android:text="课程目录"
+        android:textColor="@color/color_999999"
+        android:textSize="18dp" />
+
+    <include layout="@layout/line" />
+</LinearLayout>

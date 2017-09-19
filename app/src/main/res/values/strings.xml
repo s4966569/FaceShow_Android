@@ -63,5 +63,6 @@
 
     <!--课程 start-->
     <string name="course">课程</string>
+    <string name="course_jianjie">课程简介</string>
     <!--课程 end-->
 </resources>

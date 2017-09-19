@@ -47,6 +47,12 @@
     <dimen name="tag_textsize">13dp</dimen>
     <dimen name="text_textsize">15dp</dimen>
     <dimen name="tag_marginleft">10dp</dimen>
+    <dimen name="course_marginleft">15dp</dimen>
+    <dimen name="course_marginTop">2dp</dimen>
+    <dimen name="course_img_bg_height">135dp</dimen>
+    <dimen name="course_img_Height">22dp</dimen>
+    <dimen name="course_text_marginLeft">7dp</dimen>
+    <dimen name="course_text_textsize">13dp</dimen>
 
     <!--课程相关 end-->
 </resources>

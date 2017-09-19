@@ -78,9 +78,13 @@
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <activity android:name=".homepage.activity.checkIn.CheckInNotesActivity" />
-        <activity android:name="com.yanxiu.gphone.faceshow.user.ProfileActivity"
+        <activity
+            android:name="com.yanxiu.gphone.faceshow.user.ProfileActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".common.activity.WebViewActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

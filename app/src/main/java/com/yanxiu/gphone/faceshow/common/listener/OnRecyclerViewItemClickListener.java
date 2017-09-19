@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.listener;
+package com.yanxiu.gphone.faceshow.common.listener;
 
 /**
  * RecyclerView的item点击事件
