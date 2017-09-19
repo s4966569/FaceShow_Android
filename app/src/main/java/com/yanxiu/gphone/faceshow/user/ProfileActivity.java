@@ -90,10 +90,10 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         tv_stduy.setText("数学");
     }
 
-    @OnClick({R.id.tv_change_img, R.id.title_layout_left_img})
+    @OnClick({R.id.person_info, R.id.title_layout_left_img})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.tv_change_img://点击修改头像
+            case R.id.person_info://点击修改头像
                 showPopWindow();
                 break;
             case R.id.title_layout_left_img:
