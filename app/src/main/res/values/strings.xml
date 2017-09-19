@@ -65,4 +65,12 @@
     <string name="course">课程</string>
     <string name="course_jianjie">课程简介</string>
     <!--课程 end-->
+
+    <string name="has_completed">已完成</string>
+    <string name="has_uncompleted">未完成</string>
+
+    <string name="net_error">网络异常</string>
+    <string name="account_name_can_not_be_null">账户名不能为空</string>
+    <string name="account_password_can_not_be_null">账户密码不能为空</string>
+    <string name="you_have_check_in_success">你已成功签到</string>
 </resources>

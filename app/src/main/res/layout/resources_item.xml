@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/resource_layout"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@drawable/selector_resource_adapter_item">
+
+    <ImageView
+        android:id="@+id/resource_img"
+        android:layout_width="@dimen/commontitle_title_rightIcon_width"
+        android:layout_height="@dimen/commontitle_title_rightIcon_width"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:background="@drawable/selector_go" />
+
+
+    <TextView
+        android:id="@+id/resource_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/resource_img"
+        android:layout_marginTop="14dp"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:text="资源名称"
+        android:textColor="@color/color_333333"
+        android:textSize="@dimen/home_nav_bar_textsize" />
+
+    <TextView
+        android:id="@+id/resource_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/resource_img"
+        android:layout_below="@id/resource_name"
+        android:layout_marginTop="@dimen/home_bottom_bar_paddingtop"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:text="2017.08.19 13:22"
+        android:textColor="@color/color_999999"
+        android:textSize="11dp" />
+
+    <View android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_d7dde0"/>
+</RelativeLayout>

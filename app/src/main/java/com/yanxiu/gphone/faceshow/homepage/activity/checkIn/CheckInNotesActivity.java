@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +26,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * 签到记录页面
+ * created by frc
+ */
 public class CheckInNotesActivity extends FaceShowBaseActivity {
     @BindView(R.id.img_left)
     ImageView imgLeft;
@@ -36,6 +42,10 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     private PublicLoadLayout mRootView;
     private UUID mGetCheckInNotesRequestUUID;
     private CheckInNotesAdapter mCheckInNotesAdapter;
+
+    public static void toThisAct(Activity activity) {
+        activity.startActivity(new Intent(activity, CheckInNotesActivity.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

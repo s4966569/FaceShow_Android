@@ -185,7 +185,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
     public void handleDecode(Result result, Bitmap barcode) {
 
         String resultString = result.getText();
-        if (resultString == null) {
+        if (resultString != null) {
             // TODO: 17-9-15 签到成功
             startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
             QRCodeCheckInActivity.this.finish();

@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.yanxiu.gphone.faceshow.util.Logger;
+
 /**
  * Created by Canghaixiao.
  * Time : 2017/9/15 17:21.
@@ -13,9 +15,10 @@ import android.view.View;
 public class SizeChangeCallbackView extends View {
 
     private onViewSizeChangedCallback mViewSizeChangedCallback;
+    private int mHeight;
 
-    public interface onViewSizeChangedCallback{
-        void sizeChanged(int visibility);
+    public interface onViewSizeChangedCallback {
+        void sizeChanged(int visibility, int bottom);
     }
 
     public SizeChangeCallbackView(Context context) {
@@ -30,21 +33,25 @@ public class SizeChangeCallbackView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setViewSizeChangedCallback(onViewSizeChangedCallback viewSizeChangedCallback){
-        this.mViewSizeChangedCallback=viewSizeChangedCallback;
+    public void setViewSizeChangedCallback(onViewSizeChangedCallback viewSizeChangedCallback) {
+        this.mViewSizeChangedCallback = viewSizeChangedCallback;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        int visibility;
-        if (h>oldh){
-            visibility=INVISIBLE;
-        }else {
-            visibility=VISIBLE;
+        Logger.d("onSizeChanged", "height" + h);
+        if (mHeight == 0) {
+            mHeight = h*2/3;
         }
-        if (mViewSizeChangedCallback!=null){
-            mViewSizeChangedCallback.sizeChanged(visibility);
+        int visibility;
+        if (h > mHeight) {
+            visibility = INVISIBLE;
+        } else {
+            visibility = VISIBLE;
+        }
+        if (mViewSizeChangedCallback != null) {
+            mViewSizeChangedCallback.sizeChanged(visibility, h);
         }
     }
 }
