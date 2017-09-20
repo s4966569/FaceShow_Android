@@ -7,17 +7,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.common.activity.EvaluationActivity;
-import com.yanxiu.gphone.faceshow.common.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
-import com.yanxiu.gphone.faceshow.common.activity.VoteResultActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;

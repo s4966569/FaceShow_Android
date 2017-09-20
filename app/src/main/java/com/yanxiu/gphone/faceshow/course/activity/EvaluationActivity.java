@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.common.activity;
+package com.yanxiu.gphone.faceshow.course.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,18 +13,17 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.common.adapter.VoteResultAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
+import com.yanxiu.gphone.faceshow.course.adapter.EvaluationAdapter;
+import com.yanxiu.gphone.faceshow.common.bean.EvaluationBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
 import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
-
-import static android.view.View.GONE;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
- * 投票结果页面
+ * 评价页面
  */
-public class VoteResultActivity extends FaceShowBaseActivity implements View.OnClickListener {
+public class EvaluationActivity extends FaceShowBaseActivity implements View.OnClickListener, EvaluationAdapter.CanSubmitListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -32,16 +31,19 @@ public class VoteResultActivity extends FaceShowBaseActivity implements View.OnC
     private TextView mSubmit;
 
     private RecyclerView mRecyclerView;
-    private VoteResultAdapter mAdapter;
+    private EvaluationAdapter mAdapter;
+
+    private boolean onlyLook;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRootView = new PublicLoadLayout(this);
-        mRootView.setContentView(R.layout.activity_vote);
+        mRootView.setContentView(R.layout.activity_evaluation);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
+        onlyLook = getIntent().getBooleanExtra("onlyLook", false);
         initView();
         initListener();
         requestData();
@@ -52,16 +54,22 @@ public class VoteResultActivity extends FaceShowBaseActivity implements View.OnC
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
-        mSubmit.setVisibility(GONE);
-        mTitle.setText("课程投票结果");
+        mSubmit.setEnabled(false);
+        if (onlyLook) {
+            mSubmit.setVisibility(View.GONE);
+            mTitle.setText("我的课程评价");
+        } else {
+            mTitle.setText("课程评价");
+        }
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new VoteResultAdapter(this);
+        mAdapter = new EvaluationAdapter(this, this, onlyLook);
 
     }
 
     private void initListener() {
         mBackView.setOnClickListener(this);
+        mSubmit.setOnClickListener(this);
     }
 
 
@@ -73,6 +81,9 @@ public class VoteResultActivity extends FaceShowBaseActivity implements View.OnC
                 break;
             case R.id.retry_button:
                 requestData();
+                break;
+            case R.id.submit:
+                ToastUtil.showToast(getApplication(), "asdasd");
                 break;
             default:
                 break;
@@ -87,7 +98,7 @@ public class VoteResultActivity extends FaceShowBaseActivity implements View.OnC
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getStatus().getCode() == 0) {
-                    mAdapter.setData(VoteBean.getMockData());
+                    mAdapter.setData(EvaluationBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -98,13 +109,24 @@ public class VoteResultActivity extends FaceShowBaseActivity implements View.OnC
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
+
             }
         });
 
     }
 
-    public static void invoke(Context context) {
-        Intent intent = new Intent(context, VoteResultActivity.class);
+    /**
+     * @param context
+     * @param onlyLook true 我的评价(选项不可点击)
+     */
+    public static void invoke(Context context, boolean onlyLook) {
+        Intent intent = new Intent(context, EvaluationActivity.class);
+        intent.putExtra("onlyLook", onlyLook);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void canSubmit(boolean is) {
+        mSubmit.setEnabled(is);
     }
 }

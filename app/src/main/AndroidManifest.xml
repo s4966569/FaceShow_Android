@@ -95,12 +95,15 @@
             android:name=".common.activity.WebViewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".common.activity.EvaluationActivity"
+            android:name=".course.activity.EvaluationActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".course.activity.SpecialistIntroductionActivity" />
         <activity android:name=".course.activity.CourseIntroductionActivity" />
-        <activity android:name=".common.activity.VoteActivity" />
-        <activity android:name=".common.activity.VoteResultActivity" />
+        <activity
+            android:name=".course.activity.CourseDiscussActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity android:name=".course.activity.VoteActivity" />
+        <activity android:name=".course.activity.VoteResultActivity" />
         <activity android:name="com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity" />
     </application>
 

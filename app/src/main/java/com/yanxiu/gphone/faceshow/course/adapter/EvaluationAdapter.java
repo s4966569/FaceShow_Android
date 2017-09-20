@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.common.adapter;
+package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

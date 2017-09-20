@@ -1,6 +1,6 @@
-package com.yanxiu.gphone.faceshow.common.activity;
+package com.yanxiu.gphone.faceshow.course.activity;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,39 +12,34 @@ import android.widget.TextView;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.common.adapter.EvaluationAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.EvaluationBean;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
+import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
-import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
+import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 
 /**
- * 评价页面
+ * 课程讨论
  */
-public class EvaluationActivity extends FaceShowBaseActivity implements View.OnClickListener, EvaluationAdapter.CanSubmitListener {
+public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
     private TextView mTitle;
-    private TextView mSubmit;
 
     private RecyclerView mRecyclerView;
-    private EvaluationAdapter mAdapter;
-
-    private boolean onlyLook;
-
+    private CourseDetailAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRootView = new PublicLoadLayout(this);
-        mRootView.setContentView(R.layout.activity_evaluation);
+        mRootView.setContentView(R.layout.activity_course_discuss);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
-        onlyLook = getIntent().getBooleanExtra("onlyLook", false);
         initView();
         initListener();
         requestData();
@@ -53,38 +48,26 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private void initView() {
         mBackView = (ImageView) findViewById(R.id.title_layout_left_img);
         mTitle = (TextView) findViewById(R.id.title_layout_title);
-        mSubmit = (TextView) findViewById(R.id.submit);
-        mBackView.setVisibility(View.VISIBLE);
-        mSubmit.setEnabled(false);
-        if (onlyLook) {
-            mSubmit.setVisibility(View.GONE);
-            mTitle.setText("我的课程评价");
-        } else {
-            mTitle.setText("课程评价");
-        }
-        mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
+        mTitle.setText("课程讨论");
+        mRecyclerView = (RecyclerView) findViewById(R.id.discuss_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new EvaluationAdapter(this, this, onlyLook);
+        mAdapter = new CourseDetailAdapter(this, this);
 
     }
 
     private void initListener() {
         mBackView.setOnClickListener(this);
-        mSubmit.setOnClickListener(this);
     }
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.course_backView:
+            case R.id.title_layout_left_img:
                 finish();
                 break;
             case R.id.retry_button:
                 requestData();
-                break;
-            case R.id.submit:
-                ToastUtil.showToast(getApplication(), "asdasd");
                 break;
             default:
                 break;
@@ -93,13 +76,13 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
 
     private void requestData() {
         mRootView.showLoadingView();
-        EvaluationRequest courseEvalutionlRequest = new EvaluationRequest();
-        courseEvalutionlRequest.startRequest(EvalutionResponse.class, new HttpCallback<EvalutionResponse>() {
+        CourseDetailRequest courseDetailRequest = new CourseDetailRequest();
+        courseDetailRequest.startRequest(CourseDetailResponse.class, new HttpCallback<CourseDetailResponse>() {
             @Override
-            public void onSuccess(RequestBase request, EvalutionResponse ret) {
+            public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getStatus().getCode() == 0) {
-                    mAdapter.setData(EvaluationBean.getMockData());
+                    mAdapter.setData(CourseDetailBean.getMockData().getCourseItem());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -116,18 +99,19 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
 
     }
 
+
     /**
-     * @param context
-     * @param onlyLook true 我的评价(选项不可点击)
+     * 跳转CourseActivity
+     *
+     * @param activity
      */
-    public static void invoke(Context context, boolean onlyLook) {
-        Intent intent = new Intent(context, EvaluationActivity.class);
-        intent.putExtra("onlyLook", onlyLook);
-        context.startActivity(intent);
+    public static void invoke(Activity activity) {
+        Intent intent = new Intent(activity, CourseDiscussActivity.class);
+        activity.startActivity(intent);
     }
 
     @Override
-    public void canSubmit(boolean is) {
-        mSubmit.setEnabled(is);
+    public void onItemClick(int position, BaseBean baseBean) {
+
     }
 }
