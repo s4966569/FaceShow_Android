@@ -34,8 +34,6 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private ArrayList<VoteBean> mList;
 
-    private boolean mOnlyLook;
-
     public VoteResultAdapter(Context context) {
         mContext = context;
     }
@@ -83,7 +81,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
                 holder2.voteResult_title.setText(data.getTitle());
-                holder2.voteResult_personnumber.setText("参与人数:"+data.getPersonCount());
+                holder2.voteResult_personnumber.setText("参与人数:" + data.getPersonCount());
 //                String text = "我的回复:"+"/n"+data.getFeedBackTime()+"/n"+;
                 holder2.voteResult_time.setText(data.getFeedBackTime());
                 holder2.voteResult_editText.setText(data.getFeedBackText());

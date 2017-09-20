@@ -15,14 +15,20 @@
         <include layout="@layout/big_line" />
     </LinearLayout>
 
-
-    <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
-        android:id="@+id/discuss_recyclerView"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/top"
-        android:clipToPadding="false"
-        android:paddingBottom="52dp" />
+        android:layout_below="@id/top">
+
+        <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
+            android:id="@+id/discuss_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="52dp" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <RelativeLayout
         android:id="@+id/ll_edit"

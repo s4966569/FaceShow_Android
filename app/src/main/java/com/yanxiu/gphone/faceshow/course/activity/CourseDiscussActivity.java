@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.course.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -16,10 +17,14 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
+import com.yanxiu.gphone.faceshow.course.adapter.CourseDiscussAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
+import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
+import com.yanxiu.gphone.faceshow.http.course.DiscussRequest;
+import com.yanxiu.gphone.faceshow.http.course.DiscussResponse;
 
 /**
  * 课程讨论
@@ -30,8 +35,9 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private ImageView mBackView;
     private TextView mTitle;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
-    private CourseDetailAdapter mAdapter;
+    private CourseDiscussAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +55,16 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mBackView = (ImageView) findViewById(R.id.title_layout_left_img);
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mTitle.setText("课程讨论");
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mRecyclerView = (RecyclerView) findViewById(R.id.discuss_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new CourseDetailAdapter(this, this);
+        mAdapter = new CourseDiscussAdapter(this, this);
 
     }
 
     private void initListener() {
         mBackView.setOnClickListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener( new );
     }
 
 
@@ -76,13 +84,13 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     private void requestData() {
         mRootView.showLoadingView();
-        CourseDetailRequest courseDetailRequest = new CourseDetailRequest();
-        courseDetailRequest.startRequest(CourseDetailResponse.class, new HttpCallback<CourseDetailResponse>() {
+        DiscussRequest discussRequest = new DiscussRequest();
+        discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
-            public void onSuccess(RequestBase request, CourseDetailResponse ret) {
+            public void onSuccess(RequestBase request, DiscussResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getStatus().getCode() == 0) {
-                    mAdapter.setData(CourseDetailBean.getMockData().getCourseItem());
+                    mAdapter.setData(DiscussBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();

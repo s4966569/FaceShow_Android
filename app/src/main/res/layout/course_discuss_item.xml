@@ -1,0 +1,90 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingBottom="15dp">
+
+
+    <ImageView
+        android:id="@+id/discuss_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:id="@+id/discuss_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="18dp"
+        android:layout_toRightOf="@id/discuss_img"
+        android:gravity="top"
+        android:maxLines="1"
+        android:text="葛小平"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/discuss_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/discuss_name"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="7dp"
+        android:layout_toRightOf="@id/discuss_img"
+        android:gravity="top"
+        android:text="葛小平"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/discuss_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/discuss_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="18dp"
+        android:layout_toRightOf="@id/discuss_img"
+        android:text="3分钟前"
+        android:textColor="@color/color_999999"
+        android:textSize="13dp" />
+
+    <LinearLayout
+        android:id="@+id/laud_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/discuss_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/discuss_laud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2dp"
+            android:text="1234"
+            android:textColor="@color/color_333333"
+            android:textSize="15dp" />
+
+        <ImageView
+            android:id="@+id/discuss_laud_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@color/color_1da1f2" />
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:layout_below="@id/laud_layout"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_marginTop="15dp"
+        android:background="@color/color_d7dde0" />
+</RelativeLayout>
