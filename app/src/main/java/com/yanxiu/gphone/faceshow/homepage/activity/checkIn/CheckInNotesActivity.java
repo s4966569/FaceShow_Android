@@ -43,6 +43,9 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     private UUID mGetCheckInNotesRequestUUID;
     private CheckInNotesAdapter mCheckInNotesAdapter;
 
+    private final String PAGE_SIZE = "10";
+    private int mOffset = 0;
+
     public static void toThisAct(Activity activity) {
         activity.startActivity(new Intent(activity, CheckInNotesActivity.class));
     }
@@ -95,7 +98,8 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
 
     private void getCheckInNotes() {
         GetCheckInNotesRequest getCheckInNotesRequest = new GetCheckInNotesRequest();
-        getCheckInNotesRequest.id = UserInfo.getInstance().getInfo().getUserId();
+        getCheckInNotesRequest.pageSize =PAGE_SIZE;
+        getCheckInNotesRequest.offset =String.valueOf(mOffset);
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {

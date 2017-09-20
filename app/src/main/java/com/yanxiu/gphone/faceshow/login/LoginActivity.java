@@ -106,27 +106,27 @@ public class LoginActivity extends FaceShowBaseActivity {
     private void signInRequest() {
         rootView.showLoadingView();
         SignInRequest signInRequest = new SignInRequest();
-        signInRequest.accountNumber = edt_account_number.getText().toString();
-        signInRequest.accountPassword = edt_account_password.getText().toString();
+        signInRequest.loginName = edt_account_number.getText().toString();
+        signInRequest.password = edt_account_password.getText().toString();
         mSignInRequestUUID = signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignInResponse ret) {
                 rootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
                     UserInfo.getInstance().setInfo(ret.getData());
-                    SpManager.saveToken(ret.getData().getToken());
-                    Toast.makeText(mContext, ret.getMessage(), Toast.LENGTH_SHORT).show();
+                    SpManager.saveToken(UserInfo.getInstance().getInfo().getToken());
+                    toMainActivity();
                     // TODO: 17-9-14
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                toMainActivity();
+
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                Toast.makeText(mContext, R.string.net_error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_SHORT).show();
                 toMainActivity();
             }
         });

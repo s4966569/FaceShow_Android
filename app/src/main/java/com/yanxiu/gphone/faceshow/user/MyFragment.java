@@ -3,16 +3,12 @@ package com.yanxiu.gphone.faceshow.user;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
@@ -44,7 +40,6 @@ public class MyFragment extends FaceShowBaseFragment {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         unbinder = ButterKnife.bind(this, view);
         mTitleView.setText(R.string.my);
-        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().centerCrop().into(mHeadImgView);
         return view;
     }
 

@@ -77,4 +77,5 @@
 
     <string name="cancle">取消</string>
     <string name="send">发表</string>
+    <string name="check_in_plan">%1$s - %2$s</string>
 </resources>

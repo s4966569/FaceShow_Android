@@ -9,14 +9,50 @@
       "className": "19号一班",
       "checkInNotes": [
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 8,
+          "title": "2017-09-15上午签到",
+          "startTime": "2017-09-15 08:00:00",
+          "endTime": "2017-09-15 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 4,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": null
         },
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "１"
+          "id": 10,
+          "title": "2017-09-16上午签到",
+          "startTime": "2017-09-16 00:00:00",
+          "endTime": "2017-09-16 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 6,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": {
+            "id": 1,
+            "userId": 10145096,
+            "signinId": 10,
+            "signinStatus": 1,
+            "signinTime": "2017-09-16 00:09:00",
+            "signinRemark": null,
+            "signinDevice": "pc",
+            "userName": null,
+            "avatar": null
+          }
         }
       ]
     },
@@ -25,14 +61,50 @@
       "className": "19号二班",
       "checkInNotes": [
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 8,
+          "title": "2017-09-15上午签到",
+          "startTime": "2017-09-15 08:00:00",
+          "endTime": "2017-09-15 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 4,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": null
         },
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "１"
+          "id": 10,
+          "title": "2017-09-16上午签到",
+          "startTime": "2017-09-16 00:00:00",
+          "endTime": "2017-09-16 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 6,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": {
+            "id": 1,
+            "userId": 10145096,
+            "signinId": 10,
+            "signinStatus": 1,
+            "signinTime": "2017-09-16 00:09:00",
+            "signinRemark": null,
+            "signinDevice": "pc",
+            "userName": null,
+            "avatar": null
+          }
         }
       ]
     },
@@ -41,24 +113,50 @@
       "className": "19号三班",
       "checkInNotes": [
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 8,
+          "title": "2017-09-15上午签到",
+          "startTime": "2017-09-15 08:00:00",
+          "endTime": "2017-09-15 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 4,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": null
         },
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "1"
-        },
-        {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "1"
-        },
-        {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 10,
+          "title": "2017-09-16上午签到",
+          "startTime": "2017-09-16 00:00:00",
+          "endTime": "2017-09-16 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 6,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": {
+            "id": 1,
+            "userId": 10145096,
+            "signinId": 10,
+            "signinStatus": 1,
+            "signinTime": "2017-09-16 00:09:00",
+            "signinRemark": null,
+            "signinDevice": "pc",
+            "userName": null,
+            "avatar": null
+          }
         }
       ]
     },
@@ -67,14 +165,50 @@
       "className": "19号四班",
       "checkInNotes": [
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 8,
+          "title": "2017-09-15上午签到",
+          "startTime": "2017-09-15 08:00:00",
+          "endTime": "2017-09-15 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 4,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": null
         },
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 10,
+          "title": "2017-09-16上午签到",
+          "startTime": "2017-09-16 00:00:00",
+          "endTime": "2017-09-16 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 6,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": {
+            "id": 1,
+            "userId": 10145096,
+            "signinId": 10,
+            "signinStatus": 1,
+            "signinTime": "2017-09-16 00:09:00",
+            "signinRemark": null,
+            "signinDevice": "pc",
+            "userName": null,
+            "avatar": null
+          }
         }
       ]
     },
@@ -83,14 +217,50 @@
       "className": "19号五班",
       "checkInNotes": [
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "1"
+          "id": 8,
+          "title": "2017-09-15上午签到",
+          "startTime": "2017-09-15 08:00:00",
+          "endTime": "2017-09-15 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 4,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": null
         },
         {
-          "TrainingName": "针对整体项目的培训",
-          "checkInTime": "2017.08.19 13:24",
-          "checkInStatue": "0"
+          "id": 10,
+          "title": "2017-09-16上午签到",
+          "startTime": "2017-09-16 00:00:00",
+          "endTime": "2017-09-16 10:00:00",
+          "antiCheat": 1,
+          "successPrompt": "签到成功，感谢您的参与！",
+          "openStatus": 7,
+          "bizId": 6,
+          "bizSource": "clazs",
+          "createTime": "2017-09-15 11:50:32",
+          "stepId": 6,
+          "totalUserNum": 0,
+          "signInUserNum": 0,
+          "opentStatusName": "已结束",
+          "percent": 0,
+          "userSignIn": {
+            "id": 1,
+            "userId": 10145096,
+            "signinId": 10,
+            "signinStatus": 1,
+            "signinTime": "2017-09-16 00:09:00",
+            "signinRemark": null,
+            "signinDevice": "pc",
+            "userName": null,
+            "avatar": null
+          }
         }
       ]
     }
