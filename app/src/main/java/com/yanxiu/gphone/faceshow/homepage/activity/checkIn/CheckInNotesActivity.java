@@ -18,8 +18,10 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CheckInNotesAdapter;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
-import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -42,9 +44,39 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     private PublicLoadLayout mRootView;
     private UUID mGetCheckInNotesRequestUUID;
     private CheckInNotesAdapter mCheckInNotesAdapter;
-
-    private final String PAGE_SIZE = "10";
     private int mOffset = 0;
+    private List<GetCheckInNotesResponse.DataBean> mCheckInNotesList = new ArrayList<>();
+
+
+    LoadMoreRecyclerView.LoadMoreListener loadMoreListener = new LoadMoreRecyclerView.LoadMoreListener() {
+        @Override
+        public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
+            mRootView.showLoadingView();
+            mOffset = mCheckInNotesList.size();
+            getCheckInNotes();
+        }
+
+        @Override
+        public void onLoadmoreComplte() {
+
+        }
+    };
+
+    SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            mOffset = 0;
+            getCheckInNotes();
+        }
+    };
+
+    private View.OnClickListener retryClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            mRootView.showLoadingView();
+            getCheckInNotes();
+        }
+    };
 
     public static void toThisAct(Activity activity) {
         activity.startActivity(new Intent(activity, CheckInNotesActivity.class));
@@ -57,49 +89,23 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mRootView.setContentView(R.layout.activity_check_in_notes);
         setContentView(mRootView);
         ButterKnife.bind(this);
-        mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mRootView.showLoadingView();
-                getCheckInNotes();
-            }
-        });
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getCheckInNotes();
-            }
-        });
+        mRootView.setRetryButtonOnclickListener(retryClick);
+        swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
         tvTitle.setText(R.string.check_in_notes);
         mRootView.showLoadingView();
         getCheckInNotes();
-        mCheckInNotesAdapter = new CheckInNotesAdapter()
-
-        ;
+        mCheckInNotesAdapter = new CheckInNotesAdapter();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         loadMoreRecyclerView.setLayoutManager(linearLayoutManager);
         loadMoreRecyclerView.setAdapter(mCheckInNotesAdapter);
-        loadMoreRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
-            @Override
-            public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
-                mRootView.showLoadingView();
-                getCheckInNotes();
-            }
-
-            @Override
-            public void onLoadmoreComplte() {
-
-            }
-        });
-
-
+        loadMoreRecyclerView.setLoadMoreListener(loadMoreListener);
     }
 
     private void getCheckInNotes() {
         GetCheckInNotesRequest getCheckInNotesRequest = new GetCheckInNotesRequest();
-        getCheckInNotesRequest.pageSize =PAGE_SIZE;
-        getCheckInNotesRequest.offset =String.valueOf(mOffset);
+        getCheckInNotesRequest.pageSize = "10";
+        getCheckInNotesRequest.offset = String.valueOf(mOffset);
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {
@@ -108,12 +114,20 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 if (ret.getCode() == 0) {
-                    mCheckInNotesAdapter.update(ret.getData());
+                    if (ret.getData() != null && ret.getData().size() > 0) {
+                        if (mOffset == 0)
+                            mCheckInNotesList.clear();
+                        mCheckInNotesList.addAll(ret.getData());
+
+                    }
+
+                    mCheckInNotesAdapter.update(mCheckInNotesList);
                     mRootView.hiddenOtherErrorView();
                     mRootView.hiddenNetErrorView();
 
                 } else {
-                    mRootView.showOtherErrorView();
+                    if (mCheckInNotesList.size() <= 0)
+                        mRootView.showOtherErrorView();
                 }
 
             }
@@ -124,7 +138,11 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 mRootView.hiddenLoadingView();
-                mRootView.showNetErrorView();
+                if (mCheckInNotesList.size() <= 0) {
+                    mRootView.showNetErrorView();
+                } else {
+                    ToastUtil.showToast(CheckInNotesActivity.this, error.getMessage());
+                }
 
             }
         });
