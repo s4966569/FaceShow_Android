@@ -104,7 +104,9 @@ public abstract class RequestBase {
         Request request = null;
         try {
             request = generateRequest(uuid);
-
+            if (shouldLog()){
+                Log.e("requestUrl",request.toString());
+            }
         } catch (Exception e) {
         }
         if (request == null) {

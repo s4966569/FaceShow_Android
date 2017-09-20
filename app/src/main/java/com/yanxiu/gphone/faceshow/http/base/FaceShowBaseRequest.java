@@ -11,11 +11,11 @@ import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 
 public abstract class FaceShowBaseRequest extends RequestBase {
     // TODO 这里的参数，需要根据server的协议来定，目前都是易学易练的公用参数
-    public String osType = Constants.osType;
-    public String pcode = Constants.pcode;
+//    public String osType = Constants.osType;
+//    public String pcode = Constants.pcode;
     public String token;
     public String trace_uid;
-    public String version = Constants.version;
+//    public String version = Constants.version;
 
     @Override
     protected String urlServer() {
@@ -24,24 +24,24 @@ public abstract class FaceShowBaseRequest extends RequestBase {
 
     @Override
     protected boolean shouldLog() {
-        return false;
+        return true;
     }
 
-    public String getOsType() {
-        return osType;
-    }
-
-    public void setOsType(String osType) {
-        this.osType = osType;
-    }
-
-    public String getPcode() {
-        return pcode;
-    }
-
-    public void setPcode(String pcode) {
-        this.pcode = pcode;
-    }
+//    public String getOsType() {
+//        return osType;
+//    }
+//
+//    public void setOsType(String osType) {
+//        this.osType = osType;
+//    }
+//
+//    public String getPcode() {
+//        return pcode;
+//    }
+//
+//    public void setPcode(String pcode) {
+//        this.pcode = pcode;
+//    }
 
     public String getToken() {
         return token;
@@ -59,11 +59,11 @@ public abstract class FaceShowBaseRequest extends RequestBase {
         this.trace_uid = trace_uid;
     }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
+//    public String getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(String version) {
+//        this.version = version;
+//    }
 }

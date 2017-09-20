@@ -16,11 +16,11 @@ public class NotificationListRequest extends FaceShowBaseRequest {
     /*每页多少条 默认10*/
     public String pageSize;
     /*搜索关键字*/
-    public String title;
+    public String title="";
 
     @Override
     protected String urlPath() {
-        return "";
+        return null;
     }
 
 }
