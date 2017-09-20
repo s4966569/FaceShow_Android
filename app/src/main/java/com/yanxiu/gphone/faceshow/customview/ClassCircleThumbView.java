@@ -5,22 +5,17 @@ import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleMock;
+import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 
 import java.util.ArrayList;
 
@@ -50,7 +45,7 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
         this.mContext=context;
     }
 
-    public void setData(ArrayList<ClassCircleMock.ThumbUp> list){
+    public void setData(ArrayList<ClassCircleResponse.Data.Moments.Likes> list){
         if (list == null || list.size() <= 0) {
             setVisibility(GONE);
             return;
@@ -59,8 +54,8 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(setImageSpan());
         for (int i = 0; i < list.size(); i++) {
-            ClassCircleMock.ThumbUp item = list.get(i);
-            builder.append(setClickableSpan(item.userName, item));
+            ClassCircleResponse.Data.Moments.Likes item = list.get(i);
+            builder.append(setClickableSpan(item.publisher.realName, item));
             if (i != list.size() - 1) {
                 builder.append(" , ");
             } else {
@@ -71,12 +66,12 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
         setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    public SpannableString setClickableSpan(final String item, final ClassCircleMock.ThumbUp bean) {
+    public SpannableString setClickableSpan(final String item, final ClassCircleResponse.Data.Moments.Likes bean) {
         final SpannableString string = new SpannableString(item);
         ClickableSpan span = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
-                Toast.makeText(mContext, bean.userName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, bean.publisher.realName, Toast.LENGTH_SHORT).show();
             }
 
             @Override

@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -31,7 +30,7 @@ import com.yanxiu.gphone.faceshow.classcircle.activity.SendClassCircleActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
 import com.yanxiu.gphone.faceshow.classcircle.mock.MockUtil;
-import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleMock;
+import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView;
@@ -54,7 +53,7 @@ import java.util.TimerTask;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, View.OnKeyListener, ClassCircleAdapter.onThumbClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, View.OnKeyListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final int REQUEST_CODE_ALBUM=0x000;
     private static final int REQUEST_CODE_CAMERA=0x001;
@@ -227,7 +226,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void commentClick(final int position, ClassCircleMock mock, ClassCircleMock.Comment comment, boolean isCommentMaster) {
+    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments, ClassCircleResponse.Data.Moments.Comments comment, boolean isCommentMaster) {
         Toast.makeText(getContext(), "评论"+position, Toast.LENGTH_SHORT).show();
 
         Logger.d("onSizeChanged","commentClick");
@@ -324,12 +323,14 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode== event.getKeyCode()&&event.getAction()==KeyEvent.ACTION_UP){
             String comment=mCommentView.getText().toString();
-            ClassCircleMock mock=mClassCircleAdapter.getDataFromPosition(mCommentPosition);
-            ClassCircleMock.Comment commentMock=mock.new Comment();
-            commentMock.content=comment;
-            commentMock.userId=UserInfo.getInstance().getInfo().getUserId();
-            commentMock.userName=UserInfo.getInstance().getInfo().getUserName();
-            mock.comments.add(commentMock);
+            ClassCircleResponse.Data.Moments moments=mClassCircleAdapter.getDataFromPosition(mCommentPosition);
+            ClassCircleResponse.Data.Moments.Comments comments=moments.new Comments();
+            ClassCircleResponse.Data.Moments.Comments.Publisher publisher=moments.new Comments().new Publisher();
+            comments.publisher=publisher;
+            comments.content=comment;
+            comments.publisher.userId=UserInfo.getInstance().getInfo().getUserId();
+            comments.publisher.realName=UserInfo.getInstance().getInfo().getUserName();
+            moments.comments.add(comments);
             mClassCircleAdapter.notifyItemChanged(mCommentPosition);
             mCommentView.setText("");
             commentFinish();
@@ -339,12 +340,14 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void thumbClick(int position, ClassCircleMock mock) {
+    public void likeClick(int position, ClassCircleResponse.Data.Moments moments) {
         Toast.makeText(getContext(), "点赞"+position, Toast.LENGTH_SHORT).show();
-        ClassCircleMock.ThumbUp thumbUp=mock.new ThumbUp();
-        thumbUp.userName= UserInfo.getInstance().getInfo().getUserName();
-        thumbUp.userId=UserInfo.getInstance().getInfo().getUserId();
-        mock.thumbs.add(thumbUp);
+        ClassCircleResponse.Data.Moments.Likes likes=moments.new Likes();
+        ClassCircleResponse.Data.Moments.Likes.Publisher publisher=moments.new Likes().new Publisher();
+        likes.publisher=publisher;
+        likes.publisher.realName= UserInfo.getInstance().getInfo().getUserName();
+        likes.publisher.userId=UserInfo.getInstance().getInfo().getUserId();
+        moments.likes.add(likes);
         mClassCircleAdapter.notifyItemChanged(position);
     }
 

@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.customview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.GridView;
 import android.widget.ListView;
 
@@ -35,5 +36,10 @@ public class UnMoveListView extends ListView {
                 MeasureSpec.AT_MOST);
         super.onMeasure(widthMeasureSpec, expandSpec);
 
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return false;
     }
 }
