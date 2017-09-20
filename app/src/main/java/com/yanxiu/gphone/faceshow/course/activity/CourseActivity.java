@@ -125,6 +125,9 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
         if (position == 0) {
             WebViewActivity.loadThisAct(CourseActivity.this, "http://www.sina.com");
         }
+        if (position == 6) {
+            CourseDiscussActivity.invoke(CourseActivity.this);
+        }
 
         Intent intent;
         if (position == 5) {

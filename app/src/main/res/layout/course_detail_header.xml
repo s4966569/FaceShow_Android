@@ -4,28 +4,34 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/course_img_bg_height"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/homepage_bg" />
-
-    <TextView
-        android:id="@+id/course_detaile_title"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-66dp"
-        android:layout_gravity="center_horizontal"
-        android:text="课l程l详l情"
-        android:textColor="@color/color_white"
-        android:textStyle="bold"
-        android:textSize="21dp" />
+        android:layout_marginBottom="20dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/course_img_bg_height"
+            android:background="@drawable/homepage_bg" />
+
+        <TextView
+            android:id="@+id/course_detaile_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="49dp"
+            android:text="课l程l详l情"
+            android:textColor="@color/color_white"
+            android:textSize="21dp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
 
     <TextView
         android:id="@+id/course_detaile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
@@ -130,8 +136,8 @@
         android:layout_marginRight="@dimen/course_marginleft"
         android:layout_marginTop="@dimen/course_marginleft"
         android:ellipsize="end"
-        android:maxLines="5"
         android:lineSpacingExtra="5dp"
+        android:maxLines="5"
         android:textColor="@color/color_333333"
         android:textSize="16dp" />
 
