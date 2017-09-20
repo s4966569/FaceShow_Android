@@ -13,13 +13,11 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.common.adapter.VoteAdapter;
 import com.yanxiu.gphone.faceshow.common.adapter.VoteResultAdapter;
 import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
 import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import static android.view.View.GONE;
 

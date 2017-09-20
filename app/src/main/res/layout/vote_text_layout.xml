@@ -1,0 +1,79 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/voteResult_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:layout_marginTop="25dp"
+        android:gravity="center_vertical"
+        android:text="课程目录"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/voteResult_personnumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:layout_marginTop="25dp"
+        android:gravity="center_vertical"
+        android:text="参与人数:10"
+        android:textColor="@color/color_1da1f2"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:background="@drawable/shape_evaluation"
+        android:minHeight="180dp"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/course_marginleft"
+        android:paddingRight="@dimen/course_marginleft">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="top"
+            android:text="我的回复:"
+            android:textColor="@color/color_666666"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/voteResult_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:layout_marginTop="7dp"
+            android:textColor="@color/color_999999"
+            android:textSize="13dp"
+            tools:text="2017年9月20日10:20:10" />
+
+        <TextView
+            android:id="@+id/voteResult_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_333333"
+            android:textColorHint="@color/color_999999"
+            android:textSize="16dp"
+            tools:text="hahahahhaahhaa" />
+
+    </LinearLayout>
+
+    <include layout="@layout/line" />
+</LinearLayout>

@@ -14,8 +14,11 @@ public class VoteBean extends BaseBean {
     private int type;
     private String title;
     private String feedBackText;//反馈信息
+    private int personCount;//参与人数
+    private String feedBackTime;//回复时间
     private ArrayList<String> chooseList = new ArrayList();
     private ArrayList<String> answerList = new ArrayList<>();//保存选项结果
+    private ArrayList<VoteResultBean> resultList = new ArrayList<>();//保存选项结果
 
     public int getType() {
         return type;
@@ -60,6 +63,61 @@ public class VoteBean extends BaseBean {
         this.feedBackText = feedBackText;
     }
 
+    public ArrayList<VoteResultBean> getResultList() {
+        return resultList;
+    }
+
+    public void setResultList(ArrayList<VoteResultBean> resultList) {
+        this.resultList = resultList;
+    }
+
+    public int getPersonCount() {
+        return personCount;
+    }
+
+    public void setPersonCount(int personCount) {
+        this.personCount = personCount;
+    }
+
+    public String getFeedBackTime() {
+        return feedBackTime;
+    }
+
+    public void setFeedBackTime(String feedBackTime) {
+        this.feedBackTime = feedBackTime;
+    }
+
+
+    public static class VoteResultBean {
+        private String chooseContent;//选项的文字
+        private int totalCount;//总的投票数量
+        private int count;//投票数量
+
+        public String getChooseContent() {
+            return chooseContent;
+        }
+
+        public void setChooseContent(String chooseContent) {
+            this.chooseContent = chooseContent;
+        }
+
+        public void setTotalCount(int totalCount) {
+            this.totalCount = totalCount;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public int getTotalCount() {
+            return totalCount;
+        }
+    }
+
     public static ArrayList<VoteBean> getMockData() {
         ArrayList list = new ArrayList();
 
@@ -72,18 +130,35 @@ public class VoteBean extends BaseBean {
                 bean.getChooseList().add("满意2");
                 bean.getChooseList().add("满意3");
                 bean.getAnswerList().add(String.valueOf(1));
+                for (int j = 0; j < 4; j++) {
+                    VoteResultBean vrb = new VoteResultBean();
+                    vrb.setCount(10);
+                    vrb.setTotalCount(100);
+                    vrb.setChooseContent("满意");
+                    bean.getResultList().add(vrb);
+                }
             } else if (i % 3 == 0) {
                 bean.setType(TYPE_MULTI);
                 bean.getChooseList().add("满意");
                 bean.getChooseList().add("不满意");
                 bean.getChooseList().add("满意2");
                 bean.getChooseList().add("满意3");
-                for(int k =0;k < 3;k++){
+                for (int k = 0; k < 3; k++) {
                     bean.getAnswerList().add(String.valueOf(k));
+                }
+
+                for (int j = 0; j < 3; j++) {
+                    VoteResultBean vrb = new VoteResultBean();
+                    vrb.setCount(30);
+                    vrb.setTotalCount(100);
+                    vrb.setChooseContent("满意");
+                    bean.getResultList().add(vrb);
                 }
 
             } else {
                 bean.setType(TYPE_TEXT);
+                bean.setPersonCount(5);
+                bean.setFeedBackTime("2017年9月20日10:05:40");
                 bean.setFeedBackText("asdasdasdsdadsd");
             }
             bean.setTitle(i + "、这是标题");

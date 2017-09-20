@@ -28,7 +28,7 @@ import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_TEXT;
  * 评价adapter
  */
 
-public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements VoteRuseltLayout.onItemClickListener {
+public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
 
@@ -61,7 +61,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 viewHolder = new ChooseViewHolder(multi);
                 break;
             case TYPE_TEXT:
-                View item3 = inflater.inflate(R.layout.evaluation_text_layout, parent, false);
+                View item3 = inflater.inflate(R.layout.vote_text_layout, parent, false);
                 viewHolder = new TextViewHolder(item3);
                 break;
 
@@ -78,32 +78,15 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
                 holder1.voteResult_title.setText(data.getTitle());
-                holder1.voteResult_Layout.setChooseType(getItemViewType(position));
-                holder1.voteResult_Layout.setData(data.getChooseList());
-                holder1.voteResult_Layout.setSaveChooceResultList(data.getAnswerList());
-                holder1.voteResult_Layout.setSelectItemListener(this);
+                holder1.voteResult_Layout.setData(data.getResultList());
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
                 holder2.voteResult_title.setText(data.getTitle());
-                holder2.evalution_editText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        com.yanxiu.gphone.faceshow.util.Logger.e("dyf", s.toString());
-                        VoteBean bean = mList.get(position);
-                        bean.setFeedBackText(s.toString());
-                    }
-                });
+                holder2.voteResult_personnumber.setText("参与人数:"+data.getPersonCount());
+//                String text = "我的回复:"+"/n"+data.getFeedBackTime()+"/n"+;
+                holder2.voteResult_time.setText(data.getFeedBackTime());
+                holder2.voteResult_editText.setText(data.getFeedBackText());
                 break;
         }
 
@@ -114,22 +97,22 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return mList.size();
     }
 
-    @Override
-    public void onChooseItemClick(int position, boolean isSelected) {
-        boolean allChoose = true;
-        for (int i = 0; i < getItemCount(); i++) {
-            VoteBean bean = mList.get(i);
-            if (bean.getType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
-                allChoose = false;
-                break;
-            }
-            if ((bean.getType() == TYPE_SINGLE || bean.getType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
-                allChoose = false;
-                break;
-            }
-
-        }
-    }
+//    @Override
+//    public void onChooseItemClick(int position, boolean isSelected) {
+//        boolean allChoose = true;
+//        for (int i = 0; i < getItemCount(); i++) {
+//            VoteBean bean = mList.get(i);
+//            if (bean.getType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
+//                allChoose = false;
+//                break;
+//            }
+//            if ((bean.getType() == TYPE_SINGLE || bean.getType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
+//                allChoose = false;
+//                break;
+//            }
+//
+//        }
+//    }
 
     /**
      * 评价单双选
@@ -151,12 +134,16 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
      */
     class TextViewHolder extends RecyclerView.ViewHolder {
         private TextView voteResult_title;
-        private EditText evalution_editText;
+        private TextView voteResult_personnumber;
+        private TextView voteResult_editText;
+        private TextView voteResult_time;
 
         public TextViewHolder(View itemView) {
             super(itemView);
             voteResult_title = (TextView) itemView.findViewById(R.id.voteResult_title);
-            evalution_editText = (EditText) itemView.findViewById(R.id.evalution_editText);
+            voteResult_time = (TextView) itemView.findViewById(R.id.voteResult_time);
+            voteResult_personnumber = (TextView) itemView.findViewById(R.id.voteResult_personnumber);
+            voteResult_editText = (TextView) itemView.findViewById(R.id.voteResult_editText);
         }
     }
 
