@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.util.YXPictureManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,10 +44,15 @@ public class SpecialistIntroductionActivity extends FaceShowBaseActivity impleme
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
         unbinder = ButterKnife.bind(this);
-        title_layout_title.setText(R.string.specialist_title);
-        title_layout_left_img.setVisibility(View.VISIBLE);
+        initView();
         initListener();
         requestData();
+    }
+
+    private void initView() {
+        title_layout_title.setText(R.string.specialist_title);
+        title_layout_left_img.setVisibility(View.VISIBLE);
+        YXPictureManager.getInstance().showRoundPic(this,"http://scc.jsyxw.cn/answer/images/2017/0831/file_59a7d19f6cc53.jpg", specialist_img, 5, R.mipmap.ic_launcher);
     }
 
     private void initListener() {
