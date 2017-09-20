@@ -1,5 +1,5 @@
 {
-	"server":"http://dev.hwk.yanxiu.com/app",
+	"server":"http://orz.yanxiu.com/pxt/platform/data.api",
 	"loginServer":"http://dev.hwk.yanxiu.com/app",
 	"uploadServer":"http://dev.hwk.yanxiu.com",
 	"initializeUrl":"http://mobile.yanxiu.com/test/api",

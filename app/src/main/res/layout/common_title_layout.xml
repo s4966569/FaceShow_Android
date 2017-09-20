@@ -51,7 +51,6 @@
         android:layout_marginRight="7dp"
         android:layout_toLeftOf="@id/title_layout_right_img"
         android:gravity="center"
-        android:text="@string/signIn"
         android:textColor="#1da1f2"
         android:textSize="@dimen/commontitle_singin_textsize"
         android:visibility="gone" />
@@ -65,6 +64,7 @@
         android:layout_marginRight="15dp"
         android:gravity="center"
         android:textColor="#1da1f2"
+        android:text="@string/signIn"
         android:textSize="@dimen/commontitle_singin_textsize"
         android:visibility="gone" />
 

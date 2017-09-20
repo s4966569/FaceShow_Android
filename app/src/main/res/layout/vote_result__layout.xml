@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/voteResult_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:layout_marginTop="25dp"
+        android:gravity="center_vertical"
+        android:text="课程目录"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout
+        android:id="@+id/voteResult_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout>
+
+    <include layout="@layout/line" />
+</LinearLayout>

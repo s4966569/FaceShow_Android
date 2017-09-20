@@ -42,7 +42,6 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private View mSchedule_tab;//日程计划tab
 
     private TextView mTitle;
-    private ImageView mCheckInEnter;//签到入口l
     private TextView mCheckInEnterTV;//签到入口文字描述
 
     @Override
@@ -57,10 +56,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private void initView() {
         mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
         mTitle.setText(R.string.homepage);
-        mCheckInEnter = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
-        mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
+        mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_right_txt);
         mCheckInEnterTV.setVisibility(View.VISIBLE);
-        mCheckInEnter.setVisibility(View.VISIBLE);
         initTabBar();
         mFragmentManager = getChildFragmentManager();
         mFragmentFactory = new HomeFragmentFactory();
@@ -86,7 +83,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mResources_tab.setOnClickListener(this);
         mProjectTask_tab.setOnClickListener(this);
         mSchedule_tab.setOnClickListener(this);
-        mCheckInEnter.setOnClickListener(this);
+        mCheckInEnterTV.setOnClickListener(this);
         for (int i = 0; i < mNavBarViews.length; i++) {
             mNavBarViews[i].setOnClickListener(this);
 
@@ -145,7 +142,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[2].setSelected(false);
                 mNavBarViews[3].setSelected(true);
                 break;
-            case R.id.title_layout_right_img:
+            case R.id.title_layout_right_txt:
                 QRCodeCheckInActivity.toThisAct(getActivity());
                 break;
             default:

@@ -56,5 +56,27 @@
 
     <!--课程相关 end-->
 
+    <!--chooselayout start-->
+    <dimen name="question_fragment_q_margin_l">34dp</dimen>
+    <dimen name="question_fragment_q_margin_r">14dp</dimen>
+    <dimen name="question_fragment_a_margin_t">25dp</dimen>
+    <dimen name="question_fragment_q_text_size">19dp</dimen>
+    <dimen name="question_fragment_q_line_space">10dp</dimen>
+
+    <dimen name="choose_fragment_item_text_size">22dp</dimen>
+    <dimen name="choose_fragment_item_margin_t_b">15dp</dimen>
+    <dimen name="choose_fragment_item_content_text_size">16dp</dimen>
+    <dimen name="choose_fragment_item_content_line_space">8dp</dimen>
+    <dimen name="choose_fragment_item_content_width_yesno">39dp</dimen>
+    <dimen name="choose_fragment_item_content_width_yesno2">8dp</dimen>
+
+    <dimen name="choose_fragment_unselect_round_w_h">24dp</dimen>
+    <dimen name="choose_fragment_round_stroke_w">2dp</dimen>
+    <dimen name="choose_fragment_select_round_margin">5dp</dimen>
+    <dimen name="choose_fragment_line_h">1dp</dimen>
+    <dimen name="question_bottom_shadow">2dp</dimen>
+
+    <dimen name="vote_result_width">260dp</dimen>
+    <!--chooselayout end-->
     <dimen name="dialog_class_circle">167dp</dimen>
 </resources>

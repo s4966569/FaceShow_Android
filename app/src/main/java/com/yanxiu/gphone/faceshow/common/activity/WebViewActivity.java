@@ -14,11 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 
 /**
  * 网络浏览页面
  */
-public class WebViewActivity extends Activity {
+public class WebViewActivity extends FaceShowBaseActivity {
 
     private WebView mWebView;
     private LinearLayout mRootView;

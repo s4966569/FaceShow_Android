@@ -65,9 +65,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         }
 
         public void setData(NotificationResponse.Notification notification) {
-            tv_notification_name.setText(notification.getNotificationName());
-            tv_notification_created_time.setText(notification.getNotificationCreatedTime());
-            if (notification.getNotificationStatue().equals("0")) {//消息未读
+            tv_notification_name.setText(notification.getTitle());
+            tv_notification_created_time.setText(notification.getUpdateTime());
+            if (!notification.isViewed()) {//消息未读
                 img_red_circle.setVisibility(View.VISIBLE);
             } else {
                 img_red_circle.setVisibility(View.INVISIBLE);

@@ -72,7 +72,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             @Override
             public void onSuccess(RequestBase request, CheckInDetailResponse ret) {
                 mRootView.hiddenLoadingView();
-                if (ret.getStatus().getCode() == 0) {
+                if (ret.getCode() == 0) {
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
 

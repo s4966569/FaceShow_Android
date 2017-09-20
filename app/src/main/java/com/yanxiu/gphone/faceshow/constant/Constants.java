@@ -24,5 +24,5 @@ public class Constants {
     public static final String DIR_ROOT = "/FaceShow";
     public static final String DIR_APP = "/app";
     public static final String DIR_IMAGE = "/image";
-
+    public static final String DIR_PDF = DIR_ROOT + DIR_APP + "/pdf/";
 }

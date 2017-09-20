@@ -77,17 +77,17 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
     private void getNotificationDetailRequest() {
         mRootView.showLoadingView();
         GetNotificationDetailRequest getNotificationDetailRequest = new GetNotificationDetailRequest();
-        getNotificationDetailRequest.id = mNotificationID;
+        getNotificationDetailRequest.noticeId = mNotificationID;
         mGetNotificationDetailRequestUUID = getNotificationDetailRequest.startRequest(GetNotificationDetailResponse.class, new HttpCallback<GetNotificationDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetNotificationDetailResponse ret) {
                 mRootView.hiddenLoadingView();
-                if (ret.getStatus().getCode() == 0) {
-                    tvNotificationTitle.setText(ret.getData().getNotificationTitle());
-                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getNotificationCreator(), ret.getData().getNotificationCreateTime()));
-                    tvNotificationContent.setText(ret.getData().getNotificationContent());
+                if (ret.getCode() == 0) {
+                    tvNotificationTitle.setText(ret.getData().getTitle());
+                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName(), ret.getData().getCreateTime()));
+                    tvNotificationContent.setText(ret.getData().getContent());
                     // TODO: 17-9-19 缺少占位图
-                    Glide.with(mContext).load(ret.getData().getNotificationPic()).asBitmap().into(imgNotification);
+                    Glide.with(mContext).load(ret.getData().getAttachUrl()).asBitmap().into(imgNotification);
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
                 } else {

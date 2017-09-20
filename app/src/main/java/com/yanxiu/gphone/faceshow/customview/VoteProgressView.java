@@ -1,0 +1,87 @@
+package com.yanxiu.gphone.faceshow.customview;
+
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.View;
+
+import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.util.ScreenUtils;
+
+/**
+ * 查看投票的进度条，不通用
+ * Created by 戴延枫 on 2017年9月19日19:41:15.
+ */
+
+public class VoteProgressView extends View {
+    /**
+     * 进度条最大值
+     */
+    private float maxCount;
+    /**
+     * 进度条当前值
+     */
+    private float mCurrentProgress;
+    /**
+     * 每一道题的增长比例
+     */
+    private float mPercent;
+    /**
+     * 屏幕宽度
+     */
+    private int mScreenWidth;
+
+    public VoteProgressView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView(context);
+    }
+
+    public VoteProgressView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView(context);
+    }
+
+    public VoteProgressView(Context context) {
+        super(context);
+        initView(context);
+    }
+
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        mScreenWidth = getMeasuredWidth();
+//    }
+
+    private void initView(Context context) {
+        if (isInEditMode()) {
+            return;
+        }
+        mScreenWidth = context.getResources().getDimensionPixelSize(R.dimen.vote_result_width);
+    }
+
+    /***
+     * 设置最大的进度值
+     *
+     * @param maxCount
+     */
+    public void setMaxCount(float maxCount) {
+        this.maxCount = maxCount;
+        mPercent = mScreenWidth / maxCount;//每一道题的进度值
+    }
+
+    /***
+     * 更新当前的进度值
+     * @ currentProgress 当前答题的数量
+     */
+    public void updateProgress(int currentAnswerNumber) {
+        if (mCurrentProgress >= 0 && mCurrentProgress <= mScreenWidth) {
+            mCurrentProgress = currentAnswerNumber * mPercent;
+//            mCurrentProgress += mPercent;
+            if (mCurrentProgress <= mScreenWidth) {
+                getLayoutParams().width = (int) mCurrentProgress;
+                requestLayout();
+            }
+        }
+    }
+
+}

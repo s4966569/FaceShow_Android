@@ -14,7 +14,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.http.notificaion.NotificationRequest;
+import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
 import com.yanxiu.gphone.faceshow.notification.NotificationDetailActivity;
 import com.yanxiu.gphone.faceshow.notification.adapter.NotificationAdapter;
@@ -43,7 +43,10 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private NotificationAdapter mNotificationAdapter;
     private List<NotificationResponse.Notification> mNotificationList = new ArrayList<>();
     private UUID mNotificationRequestUUID;
-    private int mPageIdx = 0;
+    /*从第几条开始加载数据*/
+    private int mOffset = 0;
+    /*每页多少条*/
+    private String mPageSize = "10";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,21 +72,24 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-            mPageIdx = 0;
+            mOffset = 0;
             getNotifications();
         }
     };
 
     private void getNotifications() {
-        NotificationRequest notificationRequest = new NotificationRequest();
+        NotificationListRequest notificationRequest = new NotificationListRequest();
+        notificationRequest.offset = String.valueOf(mOffset);
+        notificationRequest.pageSize = mPageSize;
+        notificationRequest.clazzId = "1";
         mNotificationRequestUUID = notificationRequest.startRequest(NotificationResponse.class, new HttpCallback<NotificationResponse>() {
             @Override
             public void onSuccess(RequestBase request, NotificationResponse ret) {
                 mRootView.hiddenLoadingView();
                 swipeRefreshLayout.setRefreshing(false);
-                if (ret.getStatus().getCode() == 0) {
+                if (ret.getCode() == 0) {
                     if (ret.getNotificationList() != null && ret.getNotificationList().size() > 0) {
-                        if (mPageIdx == 0) {
+                        if (mOffset == 0) {
                             mNotificationList.clear();
                         }
                         mNotificationList.addAll(ret.getNotificationList());
@@ -131,7 +137,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
             public void itemClick(int position) {
                 // TODO: 17-9-19 消耗小红点的网络请求   小红点消耗请求失败怎么办？
 
-                NotificationDetailActivity.toThisAct(getActivity(), mNotificationList.get(position).getNotificationId());
+                NotificationDetailActivity.toThisAct(getActivity(), String.valueOf(mNotificationList.get(position).getId()));
             }
         });
     }

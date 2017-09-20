@@ -17,6 +17,7 @@ public abstract class FaceShowBaseRequest extends RequestBase {
     public String trace_uid;
     public String version = Constants.version;
 
+
     @Override
     protected String urlServer() {
         return UrlRepository.getInstance().getServer();
@@ -24,7 +25,7 @@ public abstract class FaceShowBaseRequest extends RequestBase {
 
     @Override
     protected boolean shouldLog() {
-        return false;
+        return true;
     }
 
     public String getOsType() {

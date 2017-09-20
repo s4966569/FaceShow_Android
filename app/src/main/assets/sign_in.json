@@ -1,8 +1,8 @@
 {
-  "status": {
-    "code": 0,
-    "desc": "登录成功"
-  },
+  "code": 0,
+  "message": "",
+  "currentUser": "",
+  "error": null,
   "data": {
     "userId": "123456",
     "userName": "孙长龙",

@@ -1,10 +1,12 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -39,6 +41,29 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     private final static int GO_MAIN = 0x0002;
 
     private Context mContext;
+    private ImageView mImgLogo;
+
+    private Animator.AnimatorListener logoAnimatorListener = new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            checkUserStatus();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,12 +71,15 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_welcome);
         mContext = this;
         initView();
+        /*欢迎页logo的动画效果*/
+        mImgLogo.animate().translationY(-800).setDuration(1000).setListener(logoAnimatorListener);
     }
 
     private void initView() {
         mRootView = (RelativeLayout) findViewById(R.id.root_view);
+        mImgLogo = (ImageView) findViewById(R.id.img_logo);
         mHander = new WelcomeHandler(this);
-        checkUserStatus();
+
     }
 
     /**
@@ -93,19 +121,21 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
                         @Override
                         public void onSuccess(RequestBase request, SignInResponse ret) {
-                            if (ret.getStatus().getCode() == 0) {
+                            if (ret.getCode() == 0) {
                                 UserInfo.getInstance().setInfo(ret.getData());
                                 MainActivity.invoke(activity);
                                 activity.finish();
-                                Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                                activity.finish();
                             }
                         }
 
                         @Override
                         public void onFail(RequestBase request, Error error) {
                             Toast.makeText(activity, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            activity.finish();
 
                         }
                     });

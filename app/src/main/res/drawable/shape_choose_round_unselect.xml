@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"
+    android:useLevel="false">
+    <solid android:color="@color/color_ffffff" />
+    <stroke
+        android:width="@dimen/choose_fragment_round_stroke_w"
+        android:color="@color/color_cccccc" />
+    <size
+        android:width="@dimen/choose_fragment_unselect_round_w_h"
+        android:height="@dimen/choose_fragment_unselect_round_w_h" />
+</shape>
