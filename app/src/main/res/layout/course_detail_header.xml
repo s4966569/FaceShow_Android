@@ -11,9 +11,21 @@
         android:background="@drawable/homepage_bg" />
 
     <TextView
+        android:id="@+id/course_detaile_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-66dp"
+        android:layout_gravity="center_horizontal"
+        android:text="课l程l详l情"
+        android:textColor="@color/color_white"
+        android:textStyle="bold"
+        android:textSize="21dp" />
+
+    <TextView
         android:id="@+id/course_detaile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
