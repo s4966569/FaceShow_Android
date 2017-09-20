@@ -103,7 +103,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
-                if (ret.getStatus().getCode() == 0) {
+                if (ret.getCode() == 0) {
                     mCheckInNotesAdapter.update(ret.getData());
                     mRootView.hiddenOtherErrorView();
                     mRootView.hiddenNetErrorView();

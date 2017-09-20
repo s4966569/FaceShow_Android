@@ -80,7 +80,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
             @Override
             public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getStatus().getCode() == 0) {
+                if (ret == null || ret.getCode() == 0) {
                     mAdapter.setData(CourseDetailBean.getMockData().getCourseItem());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {

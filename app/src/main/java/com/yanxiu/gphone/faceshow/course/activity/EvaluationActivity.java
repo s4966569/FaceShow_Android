@@ -97,7 +97,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             @Override
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getStatus().getCode() == 0) {
+                if (ret == null || ret.getCode() == 0) {
                     mAdapter.setData(EvaluationBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {

@@ -23,6 +23,7 @@ import okhttp3.Response;
 
 /**
  * 在Cookie中添加数据
+ *
  * @author frc
  *         created at 17-6-2.
  */
@@ -49,7 +50,7 @@ public abstract class RequestWithCookie extends RequestBase {
             @Override
             public void onSuccess(RequestBase request, T ret) {
                 FaceShowBaseResponse response = (FaceShowBaseResponse) ret;
-                if (response != null && response.getStatus() != null) {
+                if (response != null) {
                     callback.onSuccess(request, ret);
                 } else {
                     Error error = new Error("数据解析异常");

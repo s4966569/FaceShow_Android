@@ -1,6 +1,6 @@
 {
-  "status": {
-    "code": 0,
-    "desc": "success"
-  }
+  "code": 0,
+  "message": "",
+  "currentUser": "",
+  "error": null
 }

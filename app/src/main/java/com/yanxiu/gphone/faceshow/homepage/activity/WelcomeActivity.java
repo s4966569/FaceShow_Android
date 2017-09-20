@@ -121,13 +121,13 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
                         @Override
                         public void onSuccess(RequestBase request, SignInResponse ret) {
-                            if (ret.getStatus().getCode() == 0) {
+                            if (ret.getCode() == 0) {
                                 UserInfo.getInstance().setInfo(ret.getData());
                                 MainActivity.invoke(activity);
                                 activity.finish();
-                                Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(activity, ret.getStatus().getDesc(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                                 activity.finish();
                             }
                         }

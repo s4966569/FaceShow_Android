@@ -82,7 +82,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetNotificationDetailResponse ret) {
                 mRootView.hiddenLoadingView();
-                if (ret.getStatus().getCode() == 0) {
+                if (ret.getCode() == 0) {
                     tvNotificationTitle.setText(ret.getData().getNotificationTitle());
                     tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getNotificationCreator(), ret.getData().getNotificationCreateTime()));
                     tvNotificationContent.setText(ret.getData().getNotificationContent());

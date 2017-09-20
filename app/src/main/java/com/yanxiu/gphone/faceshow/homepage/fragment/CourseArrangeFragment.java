@@ -76,7 +76,7 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
             @Override
             public void onSuccess(RequestBase request, CourseListResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getStatus().getCode() == 0) {
+                if (ret == null || ret.getCode() == 0) {
                     mAdapter.setData(CourseArrangeBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {

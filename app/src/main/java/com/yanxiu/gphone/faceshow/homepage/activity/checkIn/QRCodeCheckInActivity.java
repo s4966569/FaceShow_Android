@@ -197,12 +197,12 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
             checkInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, CheckInResponse ret) {
-                    if (ret.getStatus().getCode() == 0) {
+                    if (ret.getCode() == 0) {
                         // TODO: 17-9-15 签到成功
                         startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
                         QRCodeCheckInActivity.this.finish();
                     } else {
-                        ToastUtil.showToast(QRCodeCheckInActivity.this, ret.getStatus().getDesc());
+                        ToastUtil.showToast(QRCodeCheckInActivity.this, ret.getError().getMessage());
                     }
                 }
 
