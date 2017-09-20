@@ -1,8 +1,8 @@
 {
-  "status": {
-    "code": 0,
-    "desc": "success"
-  },
+  "code": 0,
+  "message": "",
+  "currentUser": "",
+  "error": null,
   "data": [
     {
       "projectName": "国培计划（２０１７）－专职培训团队研修",

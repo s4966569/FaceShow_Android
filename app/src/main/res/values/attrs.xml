@@ -20,4 +20,15 @@
         <attr name="firstLineStr" format="string" />
         <attr name="secondLineStr" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="MaxLineTextLayout">
+        <attr name="maxLines" format="integer"/>
+        <attr name="contentTextSize" format="dimension"/>
+        <attr name="moreTextSize" format="dimension"/>
+        <attr name="contentTextColor" format="color"/>
+        <attr name="moreTextColor" format="color"/>
+        <attr name="contentSpaceLineHeight" format="dimension"/>
+        <attr name="moreTextMaginTop" format="dimension"/>
+    </declare-styleable>
+
 </resources>

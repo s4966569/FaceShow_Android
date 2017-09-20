@@ -8,8 +8,10 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
 public class GetNotificationDetailResponse extends FaceShowBaseResponse {
 
+
     /**
-     * data : {"notificationTitle":"报道、用餐时间及地点","notificationCreator":"孙长龙","notificationCreateTime":"2014.02.23","notificationContent":"报到、用餐时间及地点、校园WI-FI、第一节课上课时间及地点、班主任联系方式等。请各位同学参见下图","notificationPic":"https://ws4.sinaimg.cn/large/006tKfTcly1fj8lidbk4gj30c909jq34.jpg"}
+     * data : {"id":3,"title":"12314","content":"testceshi","authorId":1,"clazzId":1,"createTime":"2017-09-15 12:03:52","updateTime":"2017-09-15 12:03:52","state":1,"attachUrl":null,"readNum":8,"authorName":null,"createTimeStr":null,"updateTimeStr":null,"noticeNum":null,"noticeReadNumSum":null,"viewed":true}
+     * error : null
      */
 
     private DataBean data;
@@ -22,59 +24,170 @@ public class GetNotificationDetailResponse extends FaceShowBaseResponse {
         this.data = data;
     }
 
+
     public static class DataBean {
         /**
-         * notificationTitle : 报道、用餐时间及地点
-         * notificationCreator : 孙长龙
-         * notificationCreateTime : 2014.02.23
-         * notificationContent : 报到、用餐时间及地点、校园WI-FI、第一节课上课时间及地点、班主任联系方式等。请各位同学参见下图
-         * notificationPic : https://ws4.sinaimg.cn/large/006tKfTcly1fj8lidbk4gj30c909jq34.jpg
+         * id : 3
+         * title : 12314
+         * content : testceshi
+         * authorId : 1
+         * clazzId : 1
+         * createTime : 2017-09-15 12:03:52
+         * updateTime : 2017-09-15 12:03:52
+         * state : 1
+         * attachUrl : null
+         * readNum : 8
+         * authorName : null
+         * createTimeStr : null
+         * updateTimeStr : null
+         * noticeNum : null
+         * noticeReadNumSum : null
+         * viewed : true
          */
 
-        private String notificationTitle;
-        private String notificationCreator;
-        private String notificationCreateTime;
-        private String notificationContent;
-        private String notificationPic;
+        private int id;
+        private String title;
+        private String content;
+        private int authorId;
+        private int clazzId;
+        private String createTime;
+        private String updateTime;
+        private int state;
+        private Object attachUrl;
+        private int readNum;
+        private Object authorName;
+        private Object createTimeStr;
+        private Object updateTimeStr;
+        private Object noticeNum;
+        private Object noticeReadNumSum;
+        private boolean viewed;
 
-        public String getNotificationTitle() {
-            return notificationTitle;
+        public int getId() {
+            return id;
         }
 
-        public void setNotificationTitle(String notificationTitle) {
-            this.notificationTitle = notificationTitle;
+        public void setId(int id) {
+            this.id = id;
         }
 
-        public String getNotificationCreator() {
-            return notificationCreator;
+        public String getTitle() {
+            return title;
         }
 
-        public void setNotificationCreator(String notificationCreator) {
-            this.notificationCreator = notificationCreator;
+        public void setTitle(String title) {
+            this.title = title;
         }
 
-        public String getNotificationCreateTime() {
-            return notificationCreateTime;
+        public String getContent() {
+            return content;
         }
 
-        public void setNotificationCreateTime(String notificationCreateTime) {
-            this.notificationCreateTime = notificationCreateTime;
+        public void setContent(String content) {
+            this.content = content;
         }
 
-        public String getNotificationContent() {
-            return notificationContent;
+        public int getAuthorId() {
+            return authorId;
         }
 
-        public void setNotificationContent(String notificationContent) {
-            this.notificationContent = notificationContent;
+        public void setAuthorId(int authorId) {
+            this.authorId = authorId;
         }
 
-        public String getNotificationPic() {
-            return notificationPic;
+        public int getClazzId() {
+            return clazzId;
         }
 
-        public void setNotificationPic(String notificationPic) {
-            this.notificationPic = notificationPic;
+        public void setClazzId(int clazzId) {
+            this.clazzId = clazzId;
+        }
+
+        public String getCreateTime() {
+            return createTime;
+        }
+
+        public void setCreateTime(String createTime) {
+            this.createTime = createTime;
+        }
+
+        public String getUpdateTime() {
+            return updateTime;
+        }
+
+        public void setUpdateTime(String updateTime) {
+            this.updateTime = updateTime;
+        }
+
+        public int getState() {
+            return state;
+        }
+
+        public void setState(int state) {
+            this.state = state;
+        }
+
+        public Object getAttachUrl() {
+            return attachUrl;
+        }
+
+        public void setAttachUrl(Object attachUrl) {
+            this.attachUrl = attachUrl;
+        }
+
+        public int getReadNum() {
+            return readNum;
+        }
+
+        public void setReadNum(int readNum) {
+            this.readNum = readNum;
+        }
+
+        public Object getAuthorName() {
+            return authorName;
+        }
+
+        public void setAuthorName(Object authorName) {
+            this.authorName = authorName;
+        }
+
+        public Object getCreateTimeStr() {
+            return createTimeStr;
+        }
+
+        public void setCreateTimeStr(Object createTimeStr) {
+            this.createTimeStr = createTimeStr;
+        }
+
+        public Object getUpdateTimeStr() {
+            return updateTimeStr;
+        }
+
+        public void setUpdateTimeStr(Object updateTimeStr) {
+            this.updateTimeStr = updateTimeStr;
+        }
+
+        public Object getNoticeNum() {
+            return noticeNum;
+        }
+
+        public void setNoticeNum(Object noticeNum) {
+            this.noticeNum = noticeNum;
+        }
+
+        public Object getNoticeReadNumSum() {
+            return noticeReadNumSum;
+        }
+
+        public void setNoticeReadNumSum(Object noticeReadNumSum) {
+            this.noticeReadNumSum = noticeReadNumSum;
+        }
+
+        public boolean isViewed() {
+            return viewed;
+        }
+
+        public void setViewed(boolean viewed) {
+            this.viewed = viewed;
         }
     }
 }

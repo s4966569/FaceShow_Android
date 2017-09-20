@@ -20,6 +20,10 @@ android {
             }
         }
 
+        signingConfigs {
+
+        }
+
         manifestPlaceholders = [
                 PACKAGE_NAME: applicationId   //applicationId
         ]
@@ -40,6 +44,9 @@ android {
             assets.srcDirs = ['src/main/assets']
         }
     }
+
+
+
 
     dependencies {
         compile fileTree(include: ['*.jar'], dir: 'libs')

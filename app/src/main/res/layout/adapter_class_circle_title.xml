@@ -24,8 +24,7 @@
             android:layout_height="80dp"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="15dp"
-            android:layout_marginTop="76dp"
-            android:background="#ff0000" />
+            android:layout_marginTop="76dp" />
 
         <TextView
             android:id="@+id/tv_name"

@@ -52,6 +52,9 @@ public class LoadMoreRecyclerView extends RecyclerView {
      */
     public void finishLoadMore() {
         loadMoreEnable = true;
+        if (mListener != null) {
+            mListener.onLoadmoreComplte();
+        }
     }
 
     public LoadMoreRecyclerView(Context context) {

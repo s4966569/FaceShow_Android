@@ -1,8 +1,8 @@
 {
-  "status": {
-    "code": 0,
-    "desc": "success"
-  },
+  "code": 0,
+  "message": "",
+  "currentUser": "",
+  "error": null,
   "data": {
     "notificationTitle":"报道、用餐时间及地点",
     "notificationCreator":"孙长龙",

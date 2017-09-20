@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.customview;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleMock;
+import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Canghaixiao.
@@ -24,7 +22,6 @@ import java.util.List;
  */
 public class ClassCircleCommentLayout extends RelativeLayout {
 
-    private ListView mListView;
     private CommentAdapter adapter;
 
     public ClassCircleCommentLayout(Context context) {
@@ -42,12 +39,12 @@ public class ClassCircleCommentLayout extends RelativeLayout {
 
     private void init(Context context){
         LayoutInflater.from(context).inflate(R.layout.layout_class_circle_comment,this);
-        mListView= (ListView) findViewById(R.id.un_listview);
+        ListView listView= (ListView) findViewById(R.id.un_listview);
         adapter=new CommentAdapter(context);
-        mListView.setAdapter(adapter);
+        listView.setAdapter(adapter);
     }
 
-    public void setData(ArrayList<ClassCircleMock.Comment> list){
+    public void setData(ArrayList<ClassCircleResponse.Data.Moments.Comments> list){
         if (list==null||list.size()==0){
             setVisibility(GONE);
             return;
@@ -59,16 +56,31 @@ public class ClassCircleCommentLayout extends RelativeLayout {
     private class CommentAdapter extends BaseAdapter{
 
         private Context mContext;
-        private ArrayList<ClassCircleMock.Comment> mData=new ArrayList<>();
+        private ArrayList<ClassCircleResponse.Data.Moments.Comments> mData=new ArrayList<>();
 
         CommentAdapter(Context context){
             this.mContext=context;
         }
 
-        public void setData(ArrayList<ClassCircleMock.Comment> list){
+        public void setData(ArrayList<ClassCircleResponse.Data.Moments.Comments> list){
             mData.clear();
             mData.addAll(list);
             notifyDataSetChanged();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return super.isEmpty();
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+            return super.isEnabled(position);
+        }
+
+        @Override
+        public boolean areAllItemsEnabled() {
+            return false;
         }
 
         @Override
@@ -88,14 +100,14 @@ public class ClassCircleCommentLayout extends RelativeLayout {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ClassCircleMock.Comment comment=mData.get(position);
+            ClassCircleResponse.Data.Moments.Comments comment=mData.get(position);
             convertView=LayoutInflater.from(mContext).inflate(R.layout.adapter_classcircle_comment_item,null);
             TextView textView= (TextView) convertView.findViewById(R.id.tv_comment);
-            String text="";
-            if (TextUtils.isEmpty(comment.toUserName)){
-                text=comment.userName+": "+comment.content;
+            String text;
+            if (comment.level.equals("1")){
+                text=comment.publisher.realName+": "+comment.content;
             }else {
-                text=comment.userName+"对"+comment.toUserName+"说"+": "+comment.content;
+                text=comment.publisher.realName+"对"+comment.toUser.realName+"说"+": "+comment.content;
             }
             textView.setText(text);
             return convertView;

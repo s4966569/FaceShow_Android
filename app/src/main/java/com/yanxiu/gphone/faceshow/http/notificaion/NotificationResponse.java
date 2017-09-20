@@ -11,6 +11,7 @@ import java.util.List;
  */
 
 public class NotificationResponse extends FaceShowBaseResponse {
+
     @SerializedName("data")
     private List<Notification> notificationList;
 
@@ -23,45 +24,150 @@ public class NotificationResponse extends FaceShowBaseResponse {
     }
 
     public class Notification {
-        @SerializedName("id")
-        private String notificationId;
-        @SerializedName("name")
-        private String notificationName;
-        @SerializedName("time")
-        private String notificationCreatedTime;
-        @SerializedName("statue")
-        private String notificationStatue;
 
-        public String getNotificationStatue() {
-            return notificationStatue;
+
+        /**
+         * id : 2
+         * title : 12314
+         * content : testceshi
+         * authorId : 1
+         * clazzId : 1
+         * createTime : 2017-09-15 12:03:42
+         * updateTime : 2017-09-15 12:03:42
+         * state : 1
+         * attachUrl : null
+         * readNum : 3
+         * authorName : 111
+         * createTimeStr : 2017-09-15
+         * updateTimeStr : 2017-09-15
+         * viewed : false
+         */
+
+        private int id;
+        private String title;
+        private String content;
+        private int authorId;
+        private int clazzId;
+        private String createTime;
+        private String updateTime;
+        private int state;
+        private Object attachUrl;
+        private int readNum;
+        private String authorName;
+        private String createTimeStr;
+        private String updateTimeStr;
+        private boolean viewed;
+
+        public int getId() {
+            return id;
         }
 
-        public void setNotificationStatue(String notificationStatue) {
-            this.notificationStatue = notificationStatue;
+        public void setId(int id) {
+            this.id = id;
         }
 
-        public String getNotificationName() {
-            return notificationName;
+        public String getTitle() {
+            return title;
         }
 
-        public void setNotificationName(String notificationName) {
-            this.notificationName = notificationName;
+        public void setTitle(String title) {
+            this.title = title;
         }
 
-        public String getNotificationCreatedTime() {
-            return notificationCreatedTime;
+        public String getContent() {
+            return content;
         }
 
-        public void setNotificationCreatedTime(String notificationCreatedTime) {
-            this.notificationCreatedTime = notificationCreatedTime;
+        public void setContent(String content) {
+            this.content = content;
         }
 
-        public String getNotificationId() {
-            return notificationId;
+        public int getAuthorId() {
+            return authorId;
         }
 
-        public void setNotificationId(String notificationId) {
-            this.notificationId = notificationId;
+        public void setAuthorId(int authorId) {
+            this.authorId = authorId;
+        }
+
+        public int getClazzId() {
+            return clazzId;
+        }
+
+        public void setClazzId(int clazzId) {
+            this.clazzId = clazzId;
+        }
+
+        public String getCreateTime() {
+            return createTime;
+        }
+
+        public void setCreateTime(String createTime) {
+            this.createTime = createTime;
+        }
+
+        public String getUpdateTime() {
+            return updateTime;
+        }
+
+        public void setUpdateTime(String updateTime) {
+            this.updateTime = updateTime;
+        }
+
+        public int getState() {
+            return state;
+        }
+
+        public void setState(int state) {
+            this.state = state;
+        }
+
+        public Object getAttachUrl() {
+            return attachUrl;
+        }
+
+        public void setAttachUrl(Object attachUrl) {
+            this.attachUrl = attachUrl;
+        }
+
+        public int getReadNum() {
+            return readNum;
+        }
+
+        public void setReadNum(int readNum) {
+            this.readNum = readNum;
+        }
+
+        public String getAuthorName() {
+            return authorName;
+        }
+
+        public void setAuthorName(String authorName) {
+            this.authorName = authorName;
+        }
+
+        public String getCreateTimeStr() {
+            return createTimeStr;
+        }
+
+        public void setCreateTimeStr(String createTimeStr) {
+            this.createTimeStr = createTimeStr;
+        }
+
+        public String getUpdateTimeStr() {
+            return updateTimeStr;
+        }
+
+        public void setUpdateTimeStr(String updateTimeStr) {
+            this.updateTimeStr = updateTimeStr;
+        }
+
+        public boolean isViewed() {
+            return viewed;
+        }
+
+        public void setViewed(boolean viewed) {
+            this.viewed = viewed;
         }
     }
 

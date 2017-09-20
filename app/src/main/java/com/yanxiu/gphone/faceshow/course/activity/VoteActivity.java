@@ -89,7 +89,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             @Override
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getStatus().getCode() == 0) {
+                if (ret == null || ret.getCode() == 0) {
                     mAdapter.setData(VoteBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {

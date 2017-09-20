@@ -16,15 +16,13 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDiscussAdapter;
-import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
+import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
-import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.http.course.DiscussRequest;
 import com.yanxiu.gphone.faceshow.http.course.DiscussResponse;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * 课程讨论
@@ -36,7 +34,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private TextView mTitle;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView mRecyclerView;
+    private LoadMoreRecyclerView mRecyclerView;
     private CourseDiscussAdapter mAdapter;
 
     @Override
@@ -48,7 +46,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         setContentView(mRootView);
         initView();
         initListener();
-        requestData();
+        requestData(true);
     }
 
     private void initView() {
@@ -56,7 +54,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mTitle.setText("课程讨论");
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-        mRecyclerView = (RecyclerView) findViewById(R.id.discuss_recyclerView);
+        mRecyclerView = (LoadMoreRecyclerView) findViewById(R.id.discuss_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new CourseDiscussAdapter(this, this);
 
@@ -64,7 +62,27 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     private void initListener() {
         mBackView.setOnClickListener(this);
-        mSwipeRefreshLayout.setOnRefreshListener( new );
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                requestData(false);
+            }
+        });
+        mRecyclerView.setLoadMoreEnable(true);
+        mRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
+            @Override
+            public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
+                ToastUtil.showToast(getApplicationContext(), "加载跟多");
+                requestLoarMore();
+            }
+
+            @Override
+            public void onLoadmoreComplte() {
+                ToastUtil.showToast(getApplicationContext(), "加载更多结束");
+            }
+        });
     }
 
 
@@ -75,22 +93,26 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 finish();
                 break;
             case R.id.retry_button:
-                requestData();
+                requestData(true);
                 break;
             default:
                 break;
         }
     }
 
-    private void requestData() {
-        mRootView.showLoadingView();
+    private void requestData(final boolean showLoadingView) {
+        if (showLoadingView)
+            mRootView.showLoadingView();
         DiscussRequest discussRequest = new DiscussRequest();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getStatus().getCode() == 0) {
+                if (!showLoadingView)
+                    mSwipeRefreshLayout.setRefreshing(false);
+                if (ret == null || ret.getCode() == 0) {
                     mAdapter.setData(DiscussBean.getMockData());
+
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -101,6 +123,35 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
+                if (!showLoadingView)
+                    mSwipeRefreshLayout.setRefreshing(false);
+
+            }
+        });
+
+    }
+
+    private void requestLoarMore() {
+        DiscussRequest discussRequest = new DiscussRequest();
+        discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, DiscussResponse ret) {
+                mRootView.finish();
+                mRecyclerView.finishLoadMore();
+                if (ret == null || ret.getCode() == 0) {
+                    mAdapter.setData(DiscussBean.getMockData());
+
+                    mRecyclerView.setAdapter(mAdapter);
+                } else {
+                    mRootView.showOtherErrorView();
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+                mRootView.showNetErrorView();
+                mRecyclerView.finishLoadMore();
 
             }
         });

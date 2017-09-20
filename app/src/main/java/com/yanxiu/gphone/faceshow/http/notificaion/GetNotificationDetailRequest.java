@@ -1,21 +1,21 @@
 package com.yanxiu.gphone.faceshow.http.notificaion;
 
-import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
 
 /**
  * Created by frc on 17-9-18.
  */
 
-public class GetNotificationDetailRequest extends FaceShowMockRequest {
-    public String id;
+public class GetNotificationDetailRequest extends FaceShowBaseRequest {
+
+    /*通知id*/
+    public String noticeId;
+
+    public String method = "notice.detail";
 
     @Override
     protected String urlPath() {
-        return "/getNotificationDetial";
+        return null;
     }
 
-    @Override
-    protected String getMockDataPath() {
-        return "notificationDetail.json";
-    }
 }

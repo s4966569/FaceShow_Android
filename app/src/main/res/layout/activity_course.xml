@@ -42,6 +42,7 @@
         android:layout_width="@dimen/commontitle_title_rightIcon_width"
         android:layout_height="@dimen/commontitle_title_rightIcon_width"
         android:layout_marginLeft="@dimen/commontitle_margin_left"
+        android:layout_marginTop="14dp"
         android:background="@color/color_1da1f2" />
 
 </RelativeLayout>
