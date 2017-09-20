@@ -11,9 +11,7 @@ import java.util.ArrayList;
  */
 public class ClassCircleResponse extends FaceShowBaseResponse{
 
-
     public Data data;
-
 
     public class Data{
 

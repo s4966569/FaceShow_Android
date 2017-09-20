@@ -7,7 +7,7 @@ package com.yanxiu.gphone.faceshow.http.base;
 public class FaceShowBaseResponse {
     private int code;
     private String message;
-    private String currentUser;
+    private Object currentUser;
     private Error error;
 
     public int getCode() {
@@ -26,11 +26,11 @@ public class FaceShowBaseResponse {
         this.message = message;
     }
 
-    public String getCurrentUser() {
+    public Object getCurrentUser() {
         return currentUser;
     }
 
-    public void setCurrentUser(String currentUser) {
+    public void setCurrentUser(Object currentUser) {
         this.currentUser = currentUser;
     }
 

@@ -3,7 +3,6 @@ package com.yanxiu.gphone.faceshow.classcircle.mock;
 import com.google.gson.Gson;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

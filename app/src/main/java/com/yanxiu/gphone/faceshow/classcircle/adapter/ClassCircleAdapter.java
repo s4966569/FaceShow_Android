@@ -94,6 +94,14 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return mData.get(position-1);
     }
 
+    public String getIdFromLastPosition(){
+        if (mData.size()>0) {
+            return mData.get(mData.size() - 1).id;
+        }else {
+            return "0";
+        }
+    }
+
     public void setCommentClickListener(onCommentClickListener commentClickListener) {
         this.mCommentClickListener = commentClickListener;
     }

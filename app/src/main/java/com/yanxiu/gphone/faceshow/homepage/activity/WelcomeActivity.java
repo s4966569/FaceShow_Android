@@ -125,9 +125,9 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                                 UserInfo.getInstance().setInfo(ret.getData());
                                 MainActivity.invoke(activity);
                                 activity.finish();
-                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                                 activity.finish();
                             }
                         }

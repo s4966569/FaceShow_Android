@@ -23,6 +23,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
@@ -30,6 +32,7 @@ import com.yanxiu.gphone.faceshow.classcircle.activity.SendClassCircleActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
 import com.yanxiu.gphone.faceshow.classcircle.mock.MockUtil;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
@@ -72,14 +75,16 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private String mCameraPath;
     private ClassCircleDialog mClassCircleDialog;
     private SwipeRefreshLayout mRefreshView;
+    private PublicLoadLayout rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        PublicLoadLayout rootView = new PublicLoadLayout(getContext());
+        rootView = new PublicLoadLayout(getContext());
         rootView.setContentView(R.layout.fragment_classcircle);
         initView(rootView);
         listener();
         initData();
+        startRequest("0");
         return rootView;
     }
 
@@ -110,6 +115,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mFunctionView.setOnLongClickListener(ClassCircleFragment.this);
         mCommentView.setOnKeyListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
+        rootView.setRetryButtonOnclickListener(this);
     }
 
     private void initData() {
@@ -118,42 +124,54 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mFunctionView.setBackgroundResource(R.mipmap.ic_launcher);
         mClassCircleRecycleView.getItemAnimator().setChangeDuration(0);
         mClassCircleRecycleView.setLoadMoreEnable(true);
-        mClassCircleAdapter.setData(MockUtil.getClassCircleMockList());
         mRefreshView.setProgressViewOffset(false, ScreenUtils.dpToPxInt(getContext(),44),ScreenUtils.dpToPxInt(getContext(),100));
+        mRefreshView.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshView.setRefreshing(true);
+            }
+        });
+    }
+
+    private void startRequest(final String offset){
+        ClassCircleRequest circleRequest=new ClassCircleRequest();
+        circleRequest.claszId="";
+        circleRequest.offset=offset;
+        circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, ClassCircleResponse ret) {
+                if (ret!=null&&ret.data!=null&&ret.data.moments!=null) {
+                    if (offset.equals("0")) {
+                        mRefreshView.setRefreshing(false);
+                        mClassCircleAdapter.setData(ret.data.moments);
+                    }else {
+                        mClassCircleAdapter.addData(ret.data.moments);
+                    }
+                }else {
+                    if (offset.equals("0")) {
+                        rootView.showNetErrorView();
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                if (offset.equals("0")) {
+                    rootView.showNetErrorView();
+                }
+            }
+        });
     }
 
     @Override
     public void onRefresh() {
-        final Timer timer=new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0);
-                timer.cancel();
-            }
-        },2000);
+        startRequest("0");
     }
-
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            mRefreshView.setRefreshing(false);
-            mClassCircleRecycleView.setLoadMoreEnable(true);
-        }
-    };
 
     @Override
     public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
         ToastUtil.showToast(getContext(),"加载更多");
-        final Timer timer=new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0);
-                timer.cancel();
-            }
-        },2000);
+        startRequest(mClassCircleAdapter.getIdFromLastPosition());
     }
 
     @Override
@@ -166,6 +184,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         switch (v.getId()) {
             case R.id.title_layout_right_img:
                 showDialog();
+                break;
+            case R.id.retry_button:
+                mRefreshView.setRefreshing(true);
+                rootView.hiddenNetErrorView();
+                onRefresh();
                 break;
         }
     }
@@ -241,7 +264,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mAdjustPanView.setViewSizeChangedCallback(new SizeChangeCallbackView.onViewSizeChangedCallback() {
             @Override
             public void sizeChanged(int visibility, int height) {
-
                 Logger.d("onSizeChanged","visibility  "+visibility);
                 mVisibility=visibility;
                 if (visibility == View.VISIBLE) {
