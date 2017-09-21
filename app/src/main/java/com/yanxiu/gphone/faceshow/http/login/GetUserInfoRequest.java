@@ -21,4 +21,9 @@ public class GetUserInfoRequest extends FaceShowMockRequest {
     protected double setMockRequestErrorProbability() {
         return 0;
     }
+
+    @Override
+    protected int getDelayTime() {
+        return 0;
+    }
 }

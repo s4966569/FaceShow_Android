@@ -66,8 +66,8 @@ public abstract class FaceShowMockRequest extends FaceShowBaseRequest {
                 }
             }
         };
-        final Random random = new Random();
-        int delayTime = random.nextInt(1000);
+
+        int delayTime = getDelayTime();
         if (setMockDelayTime() > 10 || setMockDelayTime() < 0) {
             throw new Error("delayTime is 0~10");
         }
@@ -77,6 +77,15 @@ public abstract class FaceShowMockRequest extends FaceShowBaseRequest {
                 delayTime);
         return null;
     }
+
+    /**
+     * 设置mok接口反应时间
+     * cwq
+     * */
+    protected int getDelayTime(){
+        final Random random = new Random();
+        return random.nextInt(1000);
+    };
 
     protected abstract String getMockDataPath();
 
