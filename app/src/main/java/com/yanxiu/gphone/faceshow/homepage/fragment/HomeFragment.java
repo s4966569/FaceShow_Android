@@ -6,14 +6,15 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
+import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 
 
 /**
@@ -21,6 +22,9 @@ import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivit
  */
 public class HomeFragment extends FaceShowBaseFragment implements View.OnClickListener {
     private final static String TAG = HomeFragment.class.getSimpleName();
+
+    private MainActivity mActivity;
+    public MainBean mMainBean;
 
     private PublicLoadLayout mRootView;
 
@@ -43,14 +47,22 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
 
     private TextView mTitle;
     private TextView mCheckInEnterTV;//签到入口文字描述
+    private TextView mProject_tv;//项目名称
+    private TextView mClass_tv;//班级
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getContext());
         mRootView.setContentView(R.layout.fragment_home);
+        mActivity = (MainActivity) getActivity();
+        initData();
         initView();
         intListener();
         return mRootView;
+    }
+
+    private void initData() {
+        mMainBean = mActivity.mMainData;
     }
 
     private void initView() {
@@ -58,6 +70,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mTitle.setText(R.string.homepage);
         mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_right_txt);
         mCheckInEnterTV.setVisibility(View.VISIBLE);
+        mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
+        mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
+        mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
+        mClass_tv.setText(mMainBean.getClazsInfo().getClazsName());
         initTabBar();
         mFragmentManager = getChildFragmentManager();
         mFragmentFactory = new HomeFragmentFactory();

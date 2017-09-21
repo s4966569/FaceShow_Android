@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
+import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.View
     private final int COURSE_DATE = 1;//课程日期
     private final int COURSE_COTENT = 2;//内容
 
-    private ArrayList<CourseArrangeBean> mList;
+    private ArrayList<CourseBean> mList;
 
     private OnRecyclerViewItemClickListener mListener;
 
@@ -36,14 +36,14 @@ public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.View
         mListener = listener;
     }
 
-    public void setData(ArrayList<CourseArrangeBean> list) {
+    public void setData(ArrayList<CourseBean> list) {
         mList = list;
     }
 
     @Override
     public int getItemViewType(int position) {
-        CourseArrangeBean bean = mList.get(position);
-        if (TextUtils.isEmpty(bean.getCourseDate())) {
+        CourseBean bean = mList.get(position);
+        if (TextUtils.isEmpty(bean.getDate())) {
             return COURSE_COTENT;
         } else {
             //课程日期
@@ -72,18 +72,18 @@ public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final CourseArrangeBean data = mList.get(position);
+        final CourseBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 1:
                 CourseDateViewHolder holder1 = (CourseDateViewHolder) holder;
-                holder1.course_date.setText(data.getCourseDate());
+                holder1.course_date.setText(data.getDate());
                 break;
             case 2:
                 CourseContentViewHolder holder2 = (CourseContentViewHolder) holder;
                 holder2.course_name.setText(data.getCourseName());
-                holder2.course_location.setText(data.getLocation());
-                holder2.course_teacher.setText(data.getTeacher());
-                holder2.course_time.setText(data.getTime());
+                holder2.course_location.setText(data.getSite());
+                holder2.course_teacher.setText(data.getLecturer());
+                holder2.course_time.setText(data.getStartTime());
                 holder2.course_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

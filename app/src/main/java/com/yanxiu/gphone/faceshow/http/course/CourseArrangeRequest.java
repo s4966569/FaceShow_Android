@@ -6,16 +6,17 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
  * 课程安排请求
  */
 
-public class CourseListRequest extends FaceShowMockRequest {
-    public String id;
+public class CourseArrangeRequest extends FaceShowMockRequest {
+    public String method = "app.clazs.courses";
+    public String clazsId;
 
     @Override
     protected String urlPath() {
-        return "/courseList";
+        return null;
     }
 
     @Override
     protected String getMockDataPath() {
-        return null;
+        return "courseArrange.json";
     }
 }

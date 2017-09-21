@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -52,7 +54,7 @@ public class SpecialistIntroductionActivity extends FaceShowBaseActivity impleme
     private void initView() {
         title_layout_title.setText(R.string.specialist_title);
         title_layout_left_img.setVisibility(View.VISIBLE);
-        YXPictureManager.getInstance().showRoundPic(this,"http://scc.jsyxw.cn/answer/images/2017/0831/file_59a7d19f6cc53.jpg", specialist_img, 5, R.mipmap.ic_launcher);
+        YXPictureManager.getInstance().showRoundPic(this, "http://scc.jsyxw.cn/answer/images/2017/0831/file_59a7d19f6cc53.jpg", specialist_img, 5, R.mipmap.ic_launcher);
     }
 
     private void initListener() {
@@ -74,5 +76,12 @@ public class SpecialistIntroductionActivity extends FaceShowBaseActivity impleme
     }
 
     private void requestData() {
+    }
+
+    /**
+     */
+    public static void invoke(Context context) {
+        Intent intent = new Intent(context, SpecialistIntroductionActivity.class);
+        context.startActivity(intent);
     }
 }

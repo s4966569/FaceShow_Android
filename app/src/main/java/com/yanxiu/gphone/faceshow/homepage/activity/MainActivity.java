@@ -16,7 +16,11 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
+import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
+import com.yanxiu.gphone.faceshow.http.main.MainRequest;
+import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
@@ -25,6 +29,8 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import java.util.UUID;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {
+
+    private PublicLoadLayout mRootView;
 
     private final int mNavBarViewsCount = 4;
     private View[] mNavBarViews = new View[mNavBarViewsCount];
@@ -43,14 +49,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     public NaviFragmentFactory mNaviFragmentFactory;
     public FragmentManager mFragmentManager;
 
+    public MainBean mMainData;
+
     private UUID mGetHasNotificationsNeedReadRequestUUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mRootView = new PublicLoadLayout(this);
+        mRootView.setContentView(R.layout.activity_main);
+        mRootView.setRetryButtonOnclickListener(this);
+        setContentView(mRootView);
         initView();
         initListener();
+        requestData();
     }
 
     @Override
@@ -60,11 +72,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void initView() {
-        mFragmentManager = getSupportFragmentManager();
-        mNaviFragmentFactory = new NaviFragmentFactory();
         mBottomView = findViewById(R.id.navi_switcher);
         initBottomBar();
+    }
+
+    private void initFragment() {
+        mFragmentManager = getSupportFragmentManager();
+        mNaviFragmentFactory = new NaviFragmentFactory();
         showCurrentFragment(0);
+
     }
 
     private void initListener() {
@@ -87,6 +103,35 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         pollingRedPointer();
     }
 
+    private void requestData() {
+        mRootView.showLoadingView();
+        MainRequest mainRequest = new MainRequest();
+        mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, MainResponse ret) {
+                mRootView.finish();
+                if (ret == null || ret.getCode() == 0) {
+                    if (ret.getData() == null) {
+                        mRootView.showOtherErrorView();
+                    } else {
+                        mMainData = ret.getData();
+                        initFragment();
+                    }
+                } else {
+                    mRootView.showOtherErrorView();
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+                mRootView.showNetErrorView();
+
+            }
+        });
+
+    }
+
     /**
      * 轮询小红点
      */
@@ -94,11 +139,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         getRedPointersRequest();
 
     }
-   private Handler handler = new Handler() {
+
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what==1){
+            if (msg.what == 1) {
                 getRedPointersRequest();
             }
         }
@@ -160,10 +206,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             case R.id.title_layout_right_img:
                 ToastUtil.showToast(getApplicationContext(), "扫描");
                 break;
+            case R.id.retry_button:
+                requestData();
+                break;
             default:
                 break;
         }
-        if (mNaviFragmentFactory.getCurrentItem() != curItem) {
+        if (mNaviFragmentFactory != null && mNaviFragmentFactory.getCurrentItem() != curItem) {
             showCurrentFragment(curItem);
         }
     }

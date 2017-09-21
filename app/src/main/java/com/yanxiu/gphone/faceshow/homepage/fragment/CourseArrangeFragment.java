@@ -17,16 +17,15 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.homepage.bean.CourseArrangeBean;
-import com.yanxiu.gphone.faceshow.http.course.CourseListRequest;
-import com.yanxiu.gphone.faceshow.http.course.CourseListResponse;
+import com.yanxiu.gphone.faceshow.http.course.CourseArrangeRequest;
+import com.yanxiu.gphone.faceshow.http.course.CourseArrangeResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 
 /**
  * 首页tab里 “课程安排”Fragment
  */
-public class CourseArrangeFragment extends FaceShowBaseFragment implements View.OnClickListener, OnRecyclerViewItemClickListener {
+public class CourseArrangeFragment extends HomePageBaseFragment implements View.OnClickListener, OnRecyclerViewItemClickListener {
 
     private PublicLoadLayout mRootView;
 
@@ -35,6 +34,7 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         mRootView = new PublicLoadLayout(getActivity());
         mRootView.setContentView(R.layout.fragment_course_arrange);
         mRootView.setRetryButtonOnclickListener(this);
@@ -71,13 +71,14 @@ public class CourseArrangeFragment extends FaceShowBaseFragment implements View.
 
     private void requestData() {
         mRootView.showLoadingView();
-        CourseListRequest courseListRequest = new CourseListRequest();
-        courseListRequest.startRequest(CourseListResponse.class, new HttpCallback<CourseListResponse>() {
+        CourseArrangeRequest courseArrangeRequest = new CourseArrangeRequest();
+        courseArrangeRequest.clazsId = mMainBean.getClazsInfo().getId();
+        courseArrangeRequest.startRequest(CourseArrangeResponse.class, new HttpCallback<CourseArrangeResponse>() {
             @Override
-            public void onSuccess(RequestBase request, CourseListResponse ret) {
+            public void onSuccess(RequestBase request, CourseArrangeResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(CourseArrangeBean.getMockData());
+                    mAdapter.setData(ret.getData().getCourses());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
