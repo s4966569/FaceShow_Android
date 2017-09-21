@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,14 +21,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.activity.SendClassCircleActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
-import com.yanxiu.gphone.faceshow.classcircle.mock.MockUtil;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToMasterRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToUserRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleLikeRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.CommentResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.LikeResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.Publisher;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView;
@@ -47,8 +53,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * 首页 “班级圈”Fragment
@@ -66,21 +71,51 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private ImageView mFunctionView;
     private TextView mTitleView;
     private View mTopView;
+    private int mMomentPosition=-1;
     private int mCommentPosition=-1;
-    private int mVisibility=4;
+    private int mVisibility=View.INVISIBLE;
     private int mHeight;
+    private boolean isCommentMaster;
     private String mCameraPath;
     private ClassCircleDialog mClassCircleDialog;
     private SwipeRefreshLayout mRefreshView;
+    private PublicLoadLayout rootView;
+
+    private UUID mClassCircleRequest;
+    private UUID mClassCircleLikeRequest;
+    private UUID mCommentToMasterRequest;
+    private UUID mCommentToUserRequest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        PublicLoadLayout rootView = new PublicLoadLayout(getContext());
+        rootView = new PublicLoadLayout(getContext());
         rootView.setContentView(R.layout.fragment_classcircle);
         initView(rootView);
         listener();
         initData();
+        startRequest("0");
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mClassCircleRequest!=null){
+            RequestBase.cancelRequestWithUUID(mClassCircleRequest);
+            mClassCircleRequest=null;
+        }
+        if (mClassCircleLikeRequest!=null){
+            RequestBase.cancelRequestWithUUID(mClassCircleLikeRequest);
+            mClassCircleLikeRequest=null;
+        }
+        if (mCommentToMasterRequest!=null){
+            RequestBase.cancelRequestWithUUID(mCommentToMasterRequest);
+            mCommentToMasterRequest=null;
+        }
+        if (mCommentToUserRequest!=null){
+            RequestBase.cancelRequestWithUUID(mCommentToUserRequest);
+            mCommentToUserRequest=null;
+        }
     }
 
     private void initView(View rootView) {
@@ -110,6 +145,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mFunctionView.setOnLongClickListener(ClassCircleFragment.this);
         mCommentView.setOnKeyListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
+        rootView.setRetryButtonOnclickListener(this);
     }
 
     private void initData() {
@@ -118,42 +154,176 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mFunctionView.setBackgroundResource(R.mipmap.ic_launcher);
         mClassCircleRecycleView.getItemAnimator().setChangeDuration(0);
         mClassCircleRecycleView.setLoadMoreEnable(true);
-        mClassCircleAdapter.setData(MockUtil.getClassCircleMockList());
         mRefreshView.setProgressViewOffset(false, ScreenUtils.dpToPxInt(getContext(),44),ScreenUtils.dpToPxInt(getContext(),100));
+        mRefreshView.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshView.setRefreshing(true);
+            }
+        });
+    }
+
+    /**
+     * 班级圈
+     * */
+    private void startRequest(final String offset){
+        ClassCircleRequest circleRequest=new ClassCircleRequest();
+        circleRequest.claszId="";
+        circleRequest.offset=offset;
+        mClassCircleRequest=circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, ClassCircleResponse ret) {
+                mClassCircleRequest=null;
+                if (ret!=null&&ret.data!=null&&ret.data.moments!=null) {
+                    if (offset.equals("0")) {
+                        mRefreshView.setRefreshing(false);
+                        mClassCircleAdapter.setData(ret.data.moments);
+                    }else {
+                        mClassCircleAdapter.addData(ret.data.moments);
+                    }
+                }else {
+                    if (offset.equals("0")) {
+                        rootView.showNetErrorView();
+                        mClassCircleAdapter.clear();
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mClassCircleRequest=null;
+                if (offset.equals("0")) {
+                    rootView.showNetErrorView();
+                    mClassCircleAdapter.clear();
+                }
+            }
+        });
+    }
+
+    /**
+     * 点赞
+     * */
+    private void startLikeRequest(final int position, final ClassCircleResponse.Data.Moments moments){
+        rootView.showLoadingView();
+        ClassCircleLikeRequest classCircleLikeRequest=new ClassCircleLikeRequest();
+        classCircleLikeRequest.momentId=moments.id;
+        mClassCircleLikeRequest=classCircleLikeRequest.startRequest(LikeResponse.class, new HttpCallback<LikeResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, LikeResponse ret) {
+                rootView.hiddenLoadingView();
+                mClassCircleLikeRequest=null;
+                ClassCircleResponse.Data.Moments.Likes likes=moments.new Likes();
+                Publisher publisher=new Publisher();
+                publisher.realName= UserInfo.getInstance().getInfo().getUserName();
+                publisher.userId=String.valueOf(UserInfo.getInstance().getInfo().getUserId());
+                likes.publisher=publisher;
+                moments.likes.add(likes);
+                mClassCircleAdapter.notifyItemChanged(position);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                mClassCircleLikeRequest=null;
+                ToastUtil.showToast(getContext(),error.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 评论
+     * */
+    private void startCommentToMasterRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments){
+        rootView.showLoadingView();
+        ClassCircleCommentToMasterRequest masterRequest=new ClassCircleCommentToMasterRequest();
+        masterRequest.clazsId=moments.claszId;
+        masterRequest.content=content;
+        masterRequest.momentId=moments.id;
+        mCommentToMasterRequest=masterRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, CommentResponse ret) {
+                rootView.hiddenLoadingView();
+                mCommentToMasterRequest=null;
+                ClassCircleResponse.Data.Moments.Comments comments = moments.new Comments();
+                Publisher publisher = new Publisher();
+                publisher.userId = String.valueOf(UserInfo.getInstance().getInfo().getUserId());
+                publisher.realName = UserInfo.getInstance().getInfo().getUserName();
+
+                comments.level="1";
+                comments.publisher = publisher;
+                comments.content = content;
+                moments.comments.add(comments);
+
+                mClassCircleAdapter.notifyItemChanged(position);
+                commentFinish();
+                mCommentView.setText("");
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mCommentToMasterRequest=null;
+                ToastUtil.showToast(getContext(),error.getMessage());
+                rootView.hiddenLoadingView();
+            }
+        });
+    }
+
+    /**
+     * 回复
+     * */
+    private void startCommentToUserRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments,final ClassCircleResponse.Data.Moments.Comments comments){
+        rootView.showLoadingView();
+        ClassCircleCommentToUserRequest userRequest=new ClassCircleCommentToUserRequest();
+        userRequest.clazsId=moments.claszId;
+        userRequest.momentId=moments.id;
+        userRequest.content=content;
+        userRequest.toUserId=comments.publisher.userId;
+        userRequest.commentId=comments.id;
+        mCommentToUserRequest=userRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, CommentResponse ret) {
+                rootView.hiddenLoadingView();
+                mCommentToUserRequest=null;
+
+                ClassCircleResponse.Data.Moments.Comments comments1=moments.new Comments();
+
+                Publisher publisher = new Publisher();
+                publisher.userId = String.valueOf(UserInfo.getInstance().getInfo().getUserId());
+                publisher.realName = UserInfo.getInstance().getInfo().getUserName();
+
+                Publisher toUser = new Publisher();
+                toUser.userId=comments.publisher.userId;
+                toUser.realName=comments.publisher.realName;
+
+                comments1.level="2";
+                comments1.publisher = publisher;
+                comments1.toUser=toUser;
+                comments1.content = content;
+                moments.comments.add(comments1);
+
+                mClassCircleAdapter.notifyItemChanged(position);
+                commentFinish();
+                mCommentView.setText("");
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                mCommentToUserRequest=null;
+                ToastUtil.showToast(getContext(),error.getMessage());
+            }
+        });
     }
 
     @Override
     public void onRefresh() {
-        final Timer timer=new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0);
-                timer.cancel();
-            }
-        },2000);
+        startRequest("0");
     }
-
-    private Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            mRefreshView.setRefreshing(false);
-            mClassCircleRecycleView.setLoadMoreEnable(true);
-        }
-    };
 
     @Override
     public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
         ToastUtil.showToast(getContext(),"加载更多");
-        final Timer timer=new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0);
-                timer.cancel();
-            }
-        },2000);
+        startRequest(mClassCircleAdapter.getIdFromLastPosition());
     }
 
     @Override
@@ -166,6 +336,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         switch (v.getId()) {
             case R.id.title_layout_right_img:
                 showDialog();
+                break;
+            case R.id.retry_button:
+                mRefreshView.setRefreshing(true);
+                rootView.hiddenNetErrorView();
+                onRefresh();
                 break;
         }
     }
@@ -226,28 +401,33 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments, ClassCircleResponse.Data.Moments.Comments comment, boolean isCommentMaster) {
-        Toast.makeText(getContext(), "评论"+position, Toast.LENGTH_SHORT).show();
+    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments,int commentPosition, ClassCircleResponse.Data.Moments.Comments comment, boolean isCommentMaster) {
+        this.isCommentMaster=isCommentMaster;
+        this.mCommentPosition=commentPosition;
+        this.mMomentPosition=position;
+        if (!isCommentMaster){
+            mCommentView.setHint("回复"+comment.publisher.realName+":");
+        }else {
+            mCommentView.setHint("评论");
+        }
 
         Logger.d("onSizeChanged","commentClick");
-        mCommentPosition=position;
         mCommentLayout.setVisibility(View.VISIBLE);
         mCommentView.setFocusable(true);
         mCommentView.clearFocus();
         mCommentView.requestFocus();
         if (mVisibility==View.VISIBLE){
-            setScroll(position,mHeight);
+            setScroll(position,mHeight,false);
         }
         mAdjustPanView.setViewSizeChangedCallback(new SizeChangeCallbackView.onViewSizeChangedCallback() {
             @Override
             public void sizeChanged(int visibility, int height) {
-
                 Logger.d("onSizeChanged","visibility  "+visibility);
                 mVisibility=visibility;
                 if (visibility == View.VISIBLE) {
                     mHeight=height;
                     ((MainActivity) getActivity()).setBottomVisibility(View.GONE);
-                    setScroll(position,height);
+                    setScroll(position,height,true);
                 } else {
                     ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
                 }
@@ -260,10 +440,13 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     /**
      * 将选中item滚动到可见位置
      * */
-    private void setScroll(final int position, final int height){
+    private void setScroll(final int position, final int height,boolean isShouldScroll){
         Logger.d("mClassCircleRecycleView","adapter  position  "+position);
-        mClassCircleRecycleView.scrollToPosition(position);
-//        ((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).scrollToPositionWithOffset(position,0);
+        int visibleStart=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
+        int visibleEnd=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findLastVisibleItemPosition();
+        if ((mMomentPosition<visibleStart||mMomentPosition>visibleEnd)||isShouldScroll) {
+            mClassCircleRecycleView.scrollToPosition(position);
+        }
         ClassCircleTimeUtils.creat().start(new ClassCircleTimeUtils.onTimeUplistener() {
             @Override
             public void onTimeUp() {
@@ -310,6 +493,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
         ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
+        mMomentPosition=-1;
         mCommentPosition=-1;
     }
 
@@ -323,17 +507,12 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode== event.getKeyCode()&&event.getAction()==KeyEvent.ACTION_UP){
             String comment=mCommentView.getText().toString();
-            ClassCircleResponse.Data.Moments moments=mClassCircleAdapter.getDataFromPosition(mCommentPosition);
-            ClassCircleResponse.Data.Moments.Comments comments=moments.new Comments();
-            ClassCircleResponse.Data.Moments.Comments.Publisher publisher=moments.new Comments().new Publisher();
-            comments.publisher=publisher;
-            comments.content=comment;
-            comments.publisher.userId=UserInfo.getInstance().getInfo().getUserId();
-            comments.publisher.realName=UserInfo.getInstance().getInfo().getUserName();
-            moments.comments.add(comments);
-            mClassCircleAdapter.notifyItemChanged(mCommentPosition);
-            mCommentView.setText("");
-            commentFinish();
+            ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
+            if (isCommentMaster) {
+                startCommentToMasterRequest(mMomentPosition,comment,moments);
+            }else {
+                startCommentToUserRequest(mMomentPosition,comment,moments,moments.comments.get(mCommentPosition));
+            }
             return true;
         }
         return false;
@@ -341,14 +520,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void likeClick(int position, ClassCircleResponse.Data.Moments moments) {
-        Toast.makeText(getContext(), "点赞"+position, Toast.LENGTH_SHORT).show();
-        ClassCircleResponse.Data.Moments.Likes likes=moments.new Likes();
-        ClassCircleResponse.Data.Moments.Likes.Publisher publisher=moments.new Likes().new Publisher();
-        likes.publisher=publisher;
-        likes.publisher.realName= UserInfo.getInstance().getInfo().getUserName();
-        likes.publisher.userId=UserInfo.getInstance().getInfo().getUserId();
-        moments.likes.add(likes);
-        mClassCircleAdapter.notifyItemChanged(position);
+        startLikeRequest(position,moments);
     }
 
     @Override

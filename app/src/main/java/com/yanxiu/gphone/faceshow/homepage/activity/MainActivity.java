@@ -21,8 +21,9 @@ import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
-import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
+import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
@@ -152,10 +153,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void getRedPointersRequest() {
         GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
-        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetNotificationDetailResponse.class, new HttpCallback<GetNotificationDetailResponse>() {
+        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
             @Override
-            public void onSuccess(RequestBase request, GetNotificationDetailResponse ret) {
-                if (ret.getCode() == 0) {
+            public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
+                if (ret.getCode() == 0 && ret.getData().isHasUnView()) {
                     if (mRedCircle.getVisibility() == View.INVISIBLE) {
                         mRedCircle.setVisibility(View.VISIBLE);
                     }
@@ -294,6 +295,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         if (mGetHasNotificationsNeedReadRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
         }
+        // TODO: 17-9-21 移除轮讯
     }
 
 }

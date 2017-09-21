@@ -30,6 +30,23 @@ public class SystemUtil {
         return version;
     }
 
+    /**
+     * 获取版本号
+     *
+     * @return 当前应用的版本号
+     */
+    public static String getVersionName() {
+        String version = "";
+        try {
+            PackageManager manager = FaceShowApplication.getInstance().getPackageManager();
+            PackageInfo info = manager.getPackageInfo(FaceShowApplication.getInstance().getPackageName(), 0);
+            version = info.versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return version;
+    }
+
     public static boolean checkBrowser(Context context, String packageName) {
         boolean isInstalled = false;
         try {

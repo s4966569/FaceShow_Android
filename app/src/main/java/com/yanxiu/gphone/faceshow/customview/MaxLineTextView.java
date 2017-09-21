@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 /**
  * Created by Canghaixiao.

@@ -6,29 +6,6 @@
     android:background="@drawable/selector_resource_adapter_item">
 
     <TextView
-        android:id="@+id/project_task_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/course_adapter_marginleft"
-        android:layout_marginTop="14dp"
-        android:ellipsize="end"
-        android:text="任务名称"
-        android:textColor="@color/color_333333"
-        android:textSize="@dimen/home_nav_bar_textsize" />
-
-    <TextView
-        android:id="@+id/project_task_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/project_task_name"
-        android:layout_marginLeft="@dimen/course_adapter_marginleft"
-        android:layout_marginTop="@dimen/home_bottom_bar_paddingtop"
-        android:ellipsize="end"
-        android:text="2017.08.19 13:22"
-        android:textColor="@color/color_999999"
-        android:textSize="11dp" />
-
-    <TextView
         android:id="@+id/project_task_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,6 +26,30 @@
         android:layout_toLeftOf="@id/project_task_status"
         android:background="@drawable/selector_go" />
 
+    <TextView
+        android:id="@+id/project_task_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_marginTop="14dp"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/project_task_img"
+        android:ellipsize="end"
+        android:text="任务名称"
+        android:textColor="@color/color_333333"
+        android:textSize="@dimen/home_nav_bar_textsize" />
+
+    <TextView
+        android:id="@+id/project_task_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/project_task_name"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_marginTop="@dimen/home_bottom_bar_paddingtop"
+        android:ellipsize="end"
+        android:text="2017.08.19 13:22"
+        android:textColor="@color/color_999999"
+        android:textSize="11dp" />
 
     <View
         android:layout_width="match_parent"

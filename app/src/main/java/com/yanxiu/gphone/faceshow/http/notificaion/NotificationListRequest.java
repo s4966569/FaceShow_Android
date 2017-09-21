@@ -10,7 +10,7 @@ public class NotificationListRequest extends FaceShowBaseRequest {
 
     public String method = "app.notice.list";
     /*班级id*/
-    public String clazzId;
+    public String clazsId;
     /*从第几条开始 默认0*/
     public String offset;
     /*每页多少条 默认10*/

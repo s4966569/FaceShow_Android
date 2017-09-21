@@ -11,9 +11,7 @@ import java.util.ArrayList;
  */
 public class ClassCircleResponse extends FaceShowBaseResponse{
 
-
     public Data data;
-
 
     public class Data{
 
@@ -48,12 +46,6 @@ public class ClassCircleResponse extends FaceShowBaseResponse{
              * */
             public String readedNum;
 
-            public class Publisher{
-                public String avatar;
-                public String realName;
-                public String userId;
-            }
-
             public class Likes{
                 public String claszId;
                 public String createTime;
@@ -61,11 +53,6 @@ public class ClassCircleResponse extends FaceShowBaseResponse{
                 public String momentId;
                 public Publisher publisher;
 
-                public class Publisher{
-                    public String avatar;
-                    public String realName;
-                    public String userId;
-                }
             }
 
             public class Comments{
@@ -90,15 +77,6 @@ public class ClassCircleResponse extends FaceShowBaseResponse{
                  * 被评论人
                  * */
                 public Publisher toUser;
-
-                public class Publisher{
-                    /**
-                     * 头像
-                     * */
-                    public String avatar;
-                    public String realName;
-                    public String userId;
-                }
             }
 
             public class Album{

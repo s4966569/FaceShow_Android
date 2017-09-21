@@ -3,13 +3,15 @@ package com.yanxiu.gphone.faceshow.user;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
@@ -22,9 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
@@ -34,12 +36,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import butterknife.internal.Utils;
 
 /**
  * Created by lufengqing on 2017/9/15.
@@ -88,7 +88,14 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private void initData() {
         mBackView.setVisibility(View.VISIBLE);
 
-        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(mHeadImgView);
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(new BitmapImageViewTarget(mHeadImgView){
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable drawable= RoundedBitmapDrawableFactory.create(view.getResources(),resource);
+                drawable.setCornerRadius(12);
+                view.setBackground(drawable);
+            }
+        });
         mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
         mMobileView.setText(UserInfo.getInstance().getInfo().getPhone());
         mSexView.setText(getSex());

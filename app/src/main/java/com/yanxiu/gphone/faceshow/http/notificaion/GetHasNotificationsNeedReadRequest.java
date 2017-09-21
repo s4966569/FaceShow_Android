@@ -1,19 +1,18 @@
 package com.yanxiu.gphone.faceshow.http.notificaion;
 
-import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
 
 /**
+ * 获取是否有未读通知
  * Created by frc on 17-9-19.
  */
 
-public class GetHasNotificationsNeedReadRequest extends FaceShowMockRequest {
-    @Override
-    protected String urlPath() {
-        return "/red_pointer";
-    }
+public class GetHasNotificationsNeedReadRequest extends FaceShowBaseRequest {
+    private String method = "notice.hasUnView";
 
     @Override
-    protected String getMockDataPath() {
-        return "red_pointer.json";
+    protected String urlPath() {
+        return null;
     }
+
 }

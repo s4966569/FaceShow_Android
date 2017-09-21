@@ -20,7 +20,7 @@ public class UserInfo {
     private Info info;
 
     public Info getInfo() {
-        return info;
+        return this.info;
     }
 
     public void setInfo(Info info) {
@@ -28,8 +28,22 @@ public class UserInfo {
     }
 
     public class Info {
-        private boolean isLogined;
-        private String userId;
+        private int id;
+        private int userId;
+        private String realName;
+        private String mobilePhone;
+        private String email;
+        private int stage;
+        private int subject;
+        private int userStatus;
+        private int ucnterId;
+        private String school;
+        private String avatar;
+
+
+
+
+
         private String userName;
         private String headImg;
         private String phone;
@@ -44,19 +58,91 @@ public class UserInfo {
         private String accountNumber;
         private String accountPassword;
 
-        public boolean isLogined() {
-            return isLogined;
+        public int getId() {
+            return id;
         }
 
-        public void setLogined(boolean logined) {
-            isLogined = logined;
+        public void setId(int id) {
+            this.id = id;
         }
 
-        public String getUserId() {
+        public String getRealName() {
+            return realName;
+        }
+
+        public void setRealName(String realName) {
+            this.realName = realName;
+        }
+
+        public String getMobilePhone() {
+            return mobilePhone;
+        }
+
+        public void setMobilePhone(String mobilePhone) {
+            this.mobilePhone = mobilePhone;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public int getStage() {
+            return stage;
+        }
+
+        public void setStage(int stage) {
+            this.stage = stage;
+        }
+
+        public int getSubject() {
+            return subject;
+        }
+
+        public void setSubject(int subject) {
+            this.subject = subject;
+        }
+
+        public int getUserStatus() {
+            return userStatus;
+        }
+
+        public void setUserStatus(int userStatus) {
+            this.userStatus = userStatus;
+        }
+
+        public int getUcnterId() {
+            return ucnterId;
+        }
+
+        public void setUcnterId(int ucnterId) {
+            this.ucnterId = ucnterId;
+        }
+
+        public String getSchool() {
+            return school;
+        }
+
+        public void setSchool(String school) {
+            this.school = school;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+
+        public int getUserId() {
             return userId;
         }
 
-        public void setUserId(String userId) {
+        public void setUserId(int userId) {
             this.userId = userId;
         }
 

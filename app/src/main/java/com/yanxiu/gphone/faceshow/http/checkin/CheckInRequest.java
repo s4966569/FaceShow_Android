@@ -1,21 +1,19 @@
 package com.yanxiu.gphone.faceshow.http.checkin;
 
-import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
 
 /**
  * Created by frc on 17-9-19.
  */
 
-public class CheckInRequest extends FaceShowMockRequest {
+public class CheckInRequest extends FaceShowBaseRequest {
     public String scanString;
+    public String method="interact.replenishSignIn";
+    public String stepId;
 
     @Override
     protected String urlPath() {
-        return "/checkin";
+        return null;
     }
 
-    @Override
-    protected String getMockDataPath() {
-        return "consume_red_pointer.json";
-    }
 }

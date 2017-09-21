@@ -81,7 +81,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
         NotificationListRequest notificationRequest = new NotificationListRequest();
         notificationRequest.offset = String.valueOf(mOffset);
         notificationRequest.pageSize = mPageSize;
-        notificationRequest.clazzId = "1";
+        notificationRequest.clazsId = "1";
         mNotificationRequestUUID = notificationRequest.startRequest(NotificationResponse.class, new HttpCallback<NotificationResponse>() {
             @Override
             public void onSuccess(RequestBase request, NotificationResponse ret) {

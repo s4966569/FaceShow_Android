@@ -1,24 +1,31 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facebook.stetho.common.StringUtil;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -87,7 +94,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
      */
     private void checkUserStatus() {
         //TODO @荣成 判断用户信息是否登录
-        if (!SpManager.isLogined()) {
+        if (TextUtils.isEmpty(SpManager.getToken())) {
             //用户信息不完整,跳转登录页
             mHander.sendEmptyMessageDelayed(GO_LOGIN, LOAD_TIME);
         } else {
@@ -110,42 +117,41 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
             switch (msg.what) {
                 case GO_LOGIN:
-                    //TODO  @荣成 登录页
                     LoginActivity.toThisAct(activity);
                     activity.finish();
                     break;
                 case GO_MAIN:
                     //进入首页
-                    // TODO: 17-9-19 此处需要个根据token登录的接口
-                    SignInRequest signInRequest = new SignInRequest();
-                    signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
-                        @Override
-                        public void onSuccess(RequestBase request, SignInResponse ret) {
-                            if (ret.getCode() == 0) {
-                                UserInfo.getInstance().setInfo(ret.getData());
-                                MainActivity.invoke(activity);
-                                activity.finish();
-//                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(activity, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
-                                activity.finish();
-                            }
-                        }
-
-                        @Override
-                        public void onFail(RequestBase request, Error error) {
-                            Toast.makeText(activity, error.getMessage(), Toast.LENGTH_SHORT).show();
-                            activity.finish();
-
-                        }
-                    });
-
+                    getUserInfo(activity);
                     break;
             }
         }
     }
 
-    ;
+    private static void getUserInfo(final Activity activity) {
+        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                if (ret.getCode() == 0) {
+                    UserInfo.getInstance().setInfo(ret.getData());
+                    MainActivity.invoke(activity);
+                } else {
+                    LoginActivity.toThisAct(activity);
+                    activity.finish();
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
+                LoginActivity.toThisAct(activity);
+                activity.finish();
+
+            }
+        });
+    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

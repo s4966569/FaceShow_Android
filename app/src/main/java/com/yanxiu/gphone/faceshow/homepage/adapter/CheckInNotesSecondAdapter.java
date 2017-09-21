@@ -43,7 +43,7 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position).getCheckInStatue());
+                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position));
             }
         });
 
@@ -83,12 +83,12 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
         }
 
         public void setData(GetCheckInNotesResponse.CheckInNotesBean checkInNotesBean) {
-            tv_training_name.setText(checkInNotesBean.getTrainingName());
+            tv_training_name.setText(checkInNotesBean.getTitle());
 
-            if (checkInNotesBean.getCheckInStatue().equals("0")) {
+            if (checkInNotesBean.getUserSignIn() != null && checkInNotesBean.getUserSignIn().getSigninStatus() == 1) {
                 tv_training_statue.setText("已签到");
                 tv_training_check_in_time.setVisibility(View.VISIBLE);
-                tv_training_check_in_time.setText(checkInNotesBean.getCheckInTime());
+                tv_training_check_in_time.setText(checkInNotesBean.getUserSignIn().getSigninTime());
                 tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
             } else {
                 tv_training_check_in_time.setVisibility(View.GONE);

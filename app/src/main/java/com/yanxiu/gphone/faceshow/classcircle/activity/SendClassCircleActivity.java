@@ -9,11 +9,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.classcircle.request.SendClassCircleRequest;
+import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Canghaixiao.
@@ -38,6 +44,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private TextView mFunctionView;
     private TextView mBackView;
 
+    private UUID mSendDataRequest;
+
     public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths){
         Intent intent=new Intent(context,SendClassCircleActivity.class);
         intent.putExtra(KEY_TYPE,type);
@@ -61,6 +69,15 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         initView();
         listener();
         initData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mSendDataRequest!=null){
+            RequestBase.cancelRequestWithUUID(mSendDataRequest);
+            mSendDataRequest=null;
+        }
     }
 
     private void initView() {
@@ -99,12 +116,37 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 this.finish();
                 break;
             case R.id.title_layout_signIn:
+                String content=mContentView.getText().toString();
                 if (mType.equals(TYPE_IMAGE)){
-
+                    uploadImg();
+                }else {
+                    uploadData(content,"");
                 }
                 break;
         }
     }
 
+    private void uploadImg(){
 
+    }
+
+    private void uploadData(String content,String resourceIds){
+        SendClassCircleRequest sendClassCircleRequest=new SendClassCircleRequest();
+        sendClassCircleRequest.content=content;
+        sendClassCircleRequest.resourceIds=resourceIds;
+        mSendDataRequest=sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, ClassCircleResponse ret) {
+                ToastUtil.showToast(mContext,R.string.send_success);
+                mSendDataRequest=null;
+                SendClassCircleActivity.this.finish();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mSendDataRequest=null;
+                ToastUtil.showToast(mContext,error.getMessage());
+            }
+        });
+    }
 }
