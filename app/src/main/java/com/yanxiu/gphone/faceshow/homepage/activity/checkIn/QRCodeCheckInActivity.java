@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
@@ -22,11 +24,16 @@ import android.widget.Toast;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.OkHttpClientManager;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.customview.LoadingView;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.http.checkin.UserSignInResponse;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.zxing.camera.CameraManager;
@@ -41,6 +48,11 @@ import java.util.Vector;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 二维码扫描签到页面
@@ -67,7 +79,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
     private static final float BEEP_VOLUME = 0.10f;
     private boolean vibrate;
     private Dialog mDialog;
-
+    private LoadingDialogView mLoadingDialogView;
 
     public static void toThisAct(Context activity) {
         Intent intent = new Intent(activity
@@ -190,38 +202,69 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
     public void handleDecode(Result result, Bitmap barcode) {
 
         String resultString = result.getText();
-        // TODO: 17-9-19 此处需要个网络请求
-        if (resultString != null) {
-            CheckInRequest checkInRequest = new CheckInRequest();
-            checkInRequest.scanString = resultString;
-            checkInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
-                @Override
-                public void onSuccess(RequestBase request, CheckInResponse ret) {
-                    if (ret.getCode() == 0) {
-                        // TODO: 17-9-15 签到成功
+        if (TextUtils.isEmpty(resultString)) {
+            Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
+            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_INVALID);
+            startActivity(intent);
+            QRCodeCheckInActivity.this.finish();
+        } else {
+            Log.e("frc", resultString + "&token=" + SpManager.getToken());
+            goCheckIn(resultString + "&token=" + SpManager.getToken());
+        }
+
+
+    }
+
+    private void goCheckIn(String resultString) {
+        if (mLoadingDialogView == null)
+            mLoadingDialogView = new LoadingDialogView(QRCodeCheckInActivity.this);
+        mLoadingDialogView.show();
+        Request request = new Request.Builder().url(resultString).build();
+        OkHttpClient client = OkHttpClientManager.getInstance();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                mLoadingDialogView.dismiss();
+                ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    if (call.isCanceled()) {
+                        return;
+                    }
+                } catch (Exception e) {
+                }
+
+                String bodyString = response.body().string();
+
+                if (!response.isSuccessful()) {
+                    ToastUtil.showToast(FaceShowApplication.getContext(), "服务器数据异常");
+                    return;
+                }
+                try {
+                    UserSignInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, UserSignInResponse.class);
+                    if (userSignInResponse.getCode() == 0) {
                         startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
                         QRCodeCheckInActivity.this.finish();
                     } else {
-                        ToastUtil.showToast(QRCodeCheckInActivity.this, ret.getError().getMessage());
+                        Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
+                        intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
+                        startActivity(intent);
+                        QRCodeCheckInActivity.this.finish();
                     }
+                } catch (Exception e) {
+                    Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
+                    intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_INVALID);
+                    startActivity(intent);
+                    QRCodeCheckInActivity.this.finish();
                 }
+                mLoadingDialogView.dismiss();
+            }
 
-                @Override
-                public void onFail(RequestBase request, Error error) {
-                    ToastUtil.showToast(QRCodeCheckInActivity.this, error.getMessage());
-                }
-            });
-
-
-        } else {
-            Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
-            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
-            startActivity(intent);
-            QRCodeCheckInActivity.this.finish();
-            // TODO: 17-9-15 签到失败
-            //Toast.makeText(this, "二维码扫描失败", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        });
 
     }
 

@@ -14,13 +14,17 @@ import android.widget.Toast;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
 import java.util.UUID;
@@ -112,12 +116,13 @@ public class LoginActivity extends FaceShowBaseActivity {
         mSignInRequestUUID = signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignInResponse ret) {
-                rootView.hiddenLoadingView();
+
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(ret.getToken());
-                    toMainActivity();
+                    getUserInfo(LoginActivity.this);
                 } else {
-                    Toast.makeText(mContext, ret.getData(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                    rootView.hiddenLoadingView();
                 }
 
             }
@@ -126,7 +131,29 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
                 Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_SHORT).show();
-                toMainActivity();
+            }
+        });
+    }
+
+
+    private void getUserInfo(final Activity activity) {
+        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                if (ret.getCode() == 0) {
+                    UserInfo.getInstance().setInfo(ret.getData());
+                    MainActivity.invoke(activity);
+                } else {
+                    ToastUtil.showToast(activity, ret.getError().getMessage());
+                }
+                rootView.hiddenLoadingView();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
             }
         });
     }

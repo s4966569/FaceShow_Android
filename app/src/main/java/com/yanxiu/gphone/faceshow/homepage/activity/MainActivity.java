@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
@@ -23,6 +24,7 @@ import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
+import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
@@ -56,25 +58,6 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_main);
         initView();
         initListener();
-        getUserInfo();
-    }
-
-    private void getUserInfo() {
-        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
-        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
-                if (ret.getCode()==0) {
-                    UserInfo.getInstance().setInfo(ret.getData());
-                }
-
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-
-            }
-        });
     }
 
     @Override

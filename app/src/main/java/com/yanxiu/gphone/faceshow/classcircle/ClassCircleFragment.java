@@ -215,7 +215,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 ClassCircleResponse.Data.Moments.Likes likes=moments.new Likes();
                 Publisher publisher=new Publisher();
                 publisher.realName= UserInfo.getInstance().getInfo().getUserName();
-                publisher.userId=UserInfo.getInstance().getInfo().getUserId();
+                publisher.userId=String.valueOf(UserInfo.getInstance().getInfo().getUserId());
                 likes.publisher=publisher;
                 moments.likes.add(likes);
                 mClassCircleAdapter.notifyItemChanged(position);
@@ -246,7 +246,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mCommentToMasterRequest=null;
                 ClassCircleResponse.Data.Moments.Comments comments = moments.new Comments();
                 Publisher publisher = new Publisher();
-                publisher.userId = UserInfo.getInstance().getInfo().getUserId();
+                publisher.userId = String.valueOf(UserInfo.getInstance().getInfo().getUserId());
                 publisher.realName = UserInfo.getInstance().getInfo().getUserName();
 
                 comments.level="1";
@@ -288,7 +288,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 ClassCircleResponse.Data.Moments.Comments comments1=moments.new Comments();
 
                 Publisher publisher = new Publisher();
-                publisher.userId = UserInfo.getInstance().getInfo().getUserId();
+                publisher.userId = String.valueOf(UserInfo.getInstance().getInfo().getUserId());
                 publisher.realName = UserInfo.getInstance().getInfo().getUserName();
 
                 Publisher toUser = new Publisher();
