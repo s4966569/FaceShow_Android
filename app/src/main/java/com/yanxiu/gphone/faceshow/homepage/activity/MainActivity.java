@@ -17,8 +17,13 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
+import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
+import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
@@ -51,6 +56,25 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_main);
         initView();
         initListener();
+        getUserInfo();
+    }
+
+    private void getUserInfo() {
+        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                if (ret.getCode()==0) {
+                    UserInfo.getInstance().setInfo(ret.getData());
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
     }
 
     @Override
@@ -94,11 +118,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         getRedPointersRequest();
 
     }
-   private Handler handler = new Handler() {
+
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what==1){
+            if (msg.what == 1) {
                 getRedPointersRequest();
             }
         }
@@ -106,10 +131,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void getRedPointersRequest() {
         GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
-        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetNotificationDetailResponse.class, new HttpCallback<GetNotificationDetailResponse>() {
+        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
             @Override
-            public void onSuccess(RequestBase request, GetNotificationDetailResponse ret) {
-                if (ret.getCode() == 0) {
+            public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
+                if (ret.getCode() == 0 && ret.getData().isHasUnView()) {
                     if (mRedCircle.getVisibility() == View.INVISIBLE) {
                         mRedCircle.setVisibility(View.VISIBLE);
                     }
@@ -245,6 +270,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         if (mGetHasNotificationsNeedReadRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
         }
+        // TODO: 17-9-21 移除轮讯
     }
 
 }
