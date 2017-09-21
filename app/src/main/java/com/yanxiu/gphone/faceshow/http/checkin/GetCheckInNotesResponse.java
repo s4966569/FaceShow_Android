@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.http.checkin;
 
+import com.google.gson.annotations.SerializedName;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
 import java.io.Serializable;
@@ -17,26 +18,78 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
      * data : [{"projectName":"国培计划（２０１７）－专职培训团队研修","className":"19号一班","checkInNotes":[{"id":8,"title":"2017-09-15上午签到","startTime":"2017-09-15 08:00:00","endTime":"2017-09-15 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":4,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":null},{"id":10,"title":"2017-09-16上午签到","startTime":"2017-09-16 00:00:00","endTime":"2017-09-16 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":6,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":{"id":1,"userId":10145096,"signinId":10,"signinStatus":1,"signinTime":"2017-09-16 00:09:00","signinRemark":null,"signinDevice":"pc","userName":null,"avatar":null}}]},{"projectName":"国培计划（２０１７）－专职培训团队研修","className":"19号二班","checkInNotes":[{"id":8,"title":"2017-09-15上午签到","startTime":"2017-09-15 08:00:00","endTime":"2017-09-15 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":4,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":null},{"id":10,"title":"2017-09-16上午签到","startTime":"2017-09-16 00:00:00","endTime":"2017-09-16 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":6,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":{"id":1,"userId":10145096,"signinId":10,"signinStatus":1,"signinTime":"2017-09-16 00:09:00","signinRemark":null,"signinDevice":"pc","userName":null,"avatar":null}}]},{"projectName":"国培计划（２０１７）－专职培训团队研修","className":"19号三班","checkInNotes":[{"id":8,"title":"2017-09-15上午签到","startTime":"2017-09-15 08:00:00","endTime":"2017-09-15 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":4,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":null},{"id":10,"title":"2017-09-16上午签到","startTime":"2017-09-16 00:00:00","endTime":"2017-09-16 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":6,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":{"id":1,"userId":10145096,"signinId":10,"signinStatus":1,"signinTime":"2017-09-16 00:09:00","signinRemark":null,"signinDevice":"pc","userName":null,"avatar":null}}]},{"projectName":"国培计划（２０１７）－专职培训团队研修","className":"19号四班","checkInNotes":[{"id":8,"title":"2017-09-15上午签到","startTime":"2017-09-15 08:00:00","endTime":"2017-09-15 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":4,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":null},{"id":10,"title":"2017-09-16上午签到","startTime":"2017-09-16 00:00:00","endTime":"2017-09-16 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":6,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":{"id":1,"userId":10145096,"signinId":10,"signinStatus":1,"signinTime":"2017-09-16 00:09:00","signinRemark":null,"signinDevice":"pc","userName":null,"avatar":null}}]},{"projectName":"国培计划（２０１７）－专职培训团队研修","className":"19号五班","checkInNotes":[{"id":8,"title":"2017-09-15上午签到","startTime":"2017-09-15 08:00:00","endTime":"2017-09-15 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":4,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":null},{"id":10,"title":"2017-09-16上午签到","startTime":"2017-09-16 00:00:00","endTime":"2017-09-16 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":6,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":{"id":1,"userId":10145096,"signinId":10,"signinStatus":1,"signinTime":"2017-09-16 00:09:00","signinRemark":null,"signinDevice":"pc","userName":null,"avatar":null}}]}]
      */
 
-    private List<DataBean> data;
+    private DataBean data;
 
-    public List<DataBean> getData() {
+    public DataBean getData() {
         return data;
     }
 
-    public void setData(List<DataBean> data) {
+    public void setData(DataBean data) {
         this.data = data;
     }
 
-    public static class DataBean {
-        /**
-         * projectName : 国培计划（２０１７）－专职培训团队研修
-         * className : 19号一班
-         * checkInNotes : [{"id":8,"title":"2017-09-15上午签到","startTime":"2017-09-15 08:00:00","endTime":"2017-09-15 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":4,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":null},{"id":10,"title":"2017-09-16上午签到","startTime":"2017-09-16 00:00:00","endTime":"2017-09-16 10:00:00","antiCheat":1,"successPrompt":"签到成功，感谢您的参与！","openStatus":7,"bizId":6,"bizSource":"clazs","createTime":"2017-09-15 11:50:32","stepId":6,"totalUserNum":0,"signInUserNum":0,"opentStatusName":"已结束","percent":0,"userSignIn":{"id":1,"userId":10145096,"signinId":10,"signinStatus":1,"signinTime":"2017-09-16 00:09:00","signinRemark":null,"signinDevice":"pc","userName":null,"avatar":null}}]
-         */
+    public static class DataBean implements Serializable {
 
+        private List<Element> elements;
+        private int pageSize;
+        private int pageNum;
+        private int offset;
+        private int totalElements;
+        private int lastPageNumber;
+
+
+        public List<Element> getElements() {
+            return elements;
+        }
+
+        public void setElements(List<Element> elements) {
+            this.elements = elements;
+        }
+
+        public int getPageSize() {
+            return pageSize;
+        }
+
+        public void setPageSize(int pageSize) {
+            this.pageSize = pageSize;
+        }
+
+        public int getPageNum() {
+            return pageNum;
+        }
+
+        public void setPageNum(int pageNum) {
+            this.pageNum = pageNum;
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public void setOffset(int offset) {
+            this.offset = offset;
+        }
+
+        public int getTotalElements() {
+            return totalElements;
+        }
+
+        public void setTotalElements(int totalElements) {
+            this.totalElements = totalElements;
+        }
+
+        public int getLastPageNumber() {
+            return lastPageNumber;
+        }
+
+        public void setLastPageNumber(int lastPageNumber) {
+            this.lastPageNumber = lastPageNumber;
+        }
+    }
+
+    public class Element implements Serializable {
         private String projectName;
-        private String className;
-        private List<CheckInNotesBean> checkInNotes;
+        private Clazs clazs;
 
         public String getProjectName() {
             return projectName;
@@ -46,13 +99,16 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
             this.projectName = projectName;
         }
 
-        public String getClassName() {
-            return className;
+        public Clazs getClazs() {
+            return clazs;
         }
 
-        public void setClassName(String className) {
-            this.className = className;
+        public void setClazs(Clazs clazs) {
+            this.clazs = clazs;
         }
+
+        @SerializedName("signIns")
+        private List<CheckInNotesBean> checkInNotes;
 
         public List<CheckInNotesBean> getCheckInNotes() {
             return checkInNotes;
@@ -61,8 +117,6 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
         public void setCheckInNotes(List<CheckInNotesBean> checkInNotes) {
             this.checkInNotes = checkInNotes;
         }
-
-
     }
 
     public class UserSignIn implements Serializable {
@@ -161,6 +215,125 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
             this.avatar = avatar;
         }
     }
+
+
+    public static class Clazs {
+
+        /**
+         * id : 2
+         * platId : 1
+         * projectId : 1
+         * clazsName : 面授第二班
+         * clazsStatus : 1
+         * clazsType : 1
+         * startTime : 2017-09-13 00:00:00
+         * endTime : 2017-12-01 00:00:00
+         * description : 第二个班级
+         * isMaster : null
+         * clazsStatusName : null
+         */
+
+        private int id;
+        private int platId;
+        private int projectId;
+        private String clazsName;
+        private int clazsStatus;
+        private int clazsType;
+        private String startTime;
+        private String endTime;
+        private String description;
+        private Object isMaster;
+        private Object clazsStatusName;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getPlatId() {
+            return platId;
+        }
+
+        public void setPlatId(int platId) {
+            this.platId = platId;
+        }
+
+        public int getProjectId() {
+            return projectId;
+        }
+
+        public void setProjectId(int projectId) {
+            this.projectId = projectId;
+        }
+
+        public String getClazsName() {
+            return clazsName;
+        }
+
+        public void setClazsName(String clazsName) {
+            this.clazsName = clazsName;
+        }
+
+        public int getClazsStatus() {
+            return clazsStatus;
+        }
+
+        public void setClazsStatus(int clazsStatus) {
+            this.clazsStatus = clazsStatus;
+        }
+
+        public int getClazsType() {
+            return clazsType;
+        }
+
+        public void setClazsType(int clazsType) {
+            this.clazsType = clazsType;
+        }
+
+        public String getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(String startTime) {
+            this.startTime = startTime;
+        }
+
+        public String getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(String endTime) {
+            this.endTime = endTime;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public Object getIsMaster() {
+            return isMaster;
+        }
+
+        public void setIsMaster(Object isMaster) {
+            this.isMaster = isMaster;
+        }
+
+        public Object getClazsStatusName() {
+            return clazsStatusName;
+        }
+
+        public void setClazsStatusName(Object clazsStatusName) {
+            this.clazsStatusName = clazsStatusName;
+        }
+    }
+
 
     public static class CheckInNotesBean implements Serializable {
         /**

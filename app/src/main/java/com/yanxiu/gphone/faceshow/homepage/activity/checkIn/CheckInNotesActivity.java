@@ -45,7 +45,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     private UUID mGetCheckInNotesRequestUUID;
     private CheckInNotesAdapter mCheckInNotesAdapter;
     private int mOffset = 0;
-    private List<GetCheckInNotesResponse.DataBean> mCheckInNotesList = new ArrayList<>();
+    private List<GetCheckInNotesResponse.Element> mCheckInNotesList = new ArrayList<>();
 
 
     LoadMoreRecyclerView.LoadMoreListener loadMoreListener = new LoadMoreRecyclerView.LoadMoreListener() {
@@ -114,10 +114,10 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 if (ret.getCode() == 0) {
-                    if (ret.getData() != null && ret.getData().size() > 0) {
+                    if (ret.getData() != null && ret.getData().getElements() != null && ret.getData().getElements().size() > 0) {
                         if (mOffset == 0)
                             mCheckInNotesList.clear();
-                        mCheckInNotesList.addAll(ret.getData());
+                        mCheckInNotesList.addAll(ret.getData().getElements());
 
                     }
 
