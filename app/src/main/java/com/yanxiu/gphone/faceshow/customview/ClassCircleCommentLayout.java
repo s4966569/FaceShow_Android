@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -22,7 +23,12 @@ import java.util.ArrayList;
  */
 public class ClassCircleCommentLayout extends RelativeLayout {
 
+    public interface onItemClickListener{
+        void onItemClick(ClassCircleResponse.Data.Moments.Comments comments,int position);
+    }
+
     private CommentAdapter adapter;
+    private onItemClickListener mItemClickListener;
 
     public ClassCircleCommentLayout(Context context) {
         this(context,null);
@@ -42,6 +48,19 @@ public class ClassCircleCommentLayout extends RelativeLayout {
         ListView listView= (ListView) findViewById(R.id.un_listview);
         adapter=new CommentAdapter(context);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ClassCircleResponse.Data.Moments.Comments comments =adapter.getDataFromPosition(position);
+                if (mItemClickListener!=null){
+                    mItemClickListener.onItemClick(comments,position);
+                }
+            }
+        });
+    }
+
+    public void setItemClickListener(onItemClickListener itemClickListener){
+        mItemClickListener=itemClickListener;
     }
 
     public void setData(ArrayList<ClassCircleResponse.Data.Moments.Comments> list){
@@ -68,19 +87,8 @@ public class ClassCircleCommentLayout extends RelativeLayout {
             notifyDataSetChanged();
         }
 
-        @Override
-        public boolean isEmpty() {
-            return super.isEmpty();
-        }
-
-        @Override
-        public boolean isEnabled(int position) {
-            return super.isEnabled(position);
-        }
-
-        @Override
-        public boolean areAllItemsEnabled() {
-            return false;
+        public ClassCircleResponse.Data.Moments.Comments getDataFromPosition(int position){
+            return mData.get(position);
         }
 
         @Override

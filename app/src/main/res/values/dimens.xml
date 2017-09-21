@@ -79,4 +79,6 @@
     <dimen name="vote_result_width">260dp</dimen>
     <!--chooselayout end-->
     <dimen name="dialog_class_circle">167dp</dimen>
+
+    <dimen name="answer_card_submitbutton_textsize">20dp</dimen>
 </resources>

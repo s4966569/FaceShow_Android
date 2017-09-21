@@ -1,0 +1,67 @@
+{
+  "code": 0,
+  "currentUser": {},
+  "data": {
+    "album": [
+      {
+        "attachment": {
+          "downloadUrl": "http://www.baiud.com",
+          "previewUrl": "http://www.baiud.com",
+          "resId": 11,
+          "resName": "ha",
+          "resType": "txt"
+        },
+        "id": 1,
+        "momentId": 22
+      }
+    ],
+    "claszId": 1,
+    "commentedNum": 0,
+    "comments": [
+      {
+        "claszId": 33,
+        "content": "222",
+        "createTime": "2017-09-15 10:54:12",
+        "id": 22,
+        "level": 1,
+        "momentId": 22,
+        "parentId": 22,
+        "publisher": {
+          "avatar": "",
+          "realName": "张磊",
+          "userId": 22
+        },
+        "toUser": {
+          "avatar": "",
+          "realName": "张磊",
+          "userId": 22
+        }
+      }
+    ],
+    "content": "这是一条测试消息",
+    "id": 1,
+    "likedNum": 0,
+    "likes": [
+      {
+        "claszId": 33,
+        "createTime": "2017-09-15 10:54:12",
+        "id": 22,
+        "momentId": 22,
+        "publisher": {
+          "avatar": "",
+          "realName": "张磊",
+          "userId": 22
+        }
+      }
+    ],
+    "publishTime": "2017-09-15 10:54:12",
+    "publishTimeDesc": "5分钟前",
+    "publisher": {
+      "avatar": "",
+      "realName": "张磊",
+      "userId": 22
+    },
+    "readedNum": 0
+  },
+  "message": ""
+}

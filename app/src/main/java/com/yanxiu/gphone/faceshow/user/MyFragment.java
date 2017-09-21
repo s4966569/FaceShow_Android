@@ -2,7 +2,10 @@ package com.yanxiu.gphone.faceshow.user;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
@@ -36,6 +40,8 @@ public class MyFragment extends FaceShowBaseFragment {
     private PublicLoadLayout rootView;
     @BindView(R.id.person_img)
     ImageView mHeadImgView;
+    @BindView(R.id.tv_name)
+    TextView mNameView;
     @BindView(R.id.title_layout_title)
     TextView mTitleView;
 
@@ -43,9 +49,21 @@ public class MyFragment extends FaceShowBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         unbinder = ButterKnife.bind(this, view);
-        mTitleView.setText(R.string.my);
-        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().centerCrop().into(mHeadImgView);
+        initData();
         return view;
+    }
+
+    private void initData(){
+        mTitleView.setText(R.string.my);
+        mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
+        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(new BitmapImageViewTarget(mHeadImgView){
+            @Override
+            protected void setResource(Bitmap resource) {
+                RoundedBitmapDrawable drawable= RoundedBitmapDrawableFactory.create(view.getResources(),resource);
+                drawable.setCornerRadius(12);
+                view.setBackground(drawable);
+            }
+        });
     }
 
     @OnClick({R.id.person_info, R.id.registration, R.id.ll_logout})

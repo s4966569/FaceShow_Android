@@ -16,6 +16,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 
+import static com.yanxiu.gphone.faceshow.constant.Constants.CHARACTER_SLASH;
+import static com.yanxiu.gphone.faceshow.constant.Constants.DIR_APK;
+
 /**
  * Created by sunpeng on 2017/5/25.
  */
@@ -35,6 +38,27 @@ public class FileUtil {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public static String getExternalStorageAbsolutePath(String urlStr) {
+        int position = urlStr.lastIndexOf(CHARACTER_SLASH);
+        if (position > 0) {
+            urlStr = urlStr.substring(position + 1);
+        }
+        String dir = getLoadExternalDir();
+        File file = new File(dir);
+        if (!file.exists())
+            file.mkdirs();
+        return dir + urlStr;
+    }
+
+    private static String getLoadExternalDir() {
+        String path = Environment.getExternalStorageDirectory()
+                .getAbsolutePath();
+        StringBuffer mBuffer = new StringBuffer();
+        mBuffer.append(path);
+        mBuffer.append(DIR_APK);
+        return mBuffer.toString();
     }
 
     public static String getImageCatchPath(String name) {

@@ -38,8 +38,4 @@ public class UnMoveListView extends ListView {
 
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        return false;
-    }
 }

@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.constant;
 
 
+import com.yanxiu.gphone.faceshow.util.DeviceUtil;
 import com.yanxiu.gphone.faceshow.util.SystemUtil;
 
 /**
@@ -19,10 +20,22 @@ public class Constants {
     public static final String OS = "android";
     public static final String osType = "0";
     public static final String pcode = "010110000";
+    public static final String BRAND = DeviceUtil.getBrandName();
+    public static final String OPERTYPE = "app.upload.log";
+    public static String deviceId = "-";
     public static String version = String.valueOf(SystemUtil.getVersionCode());
+    public static String versionName = SystemUtil.getVersionName();
 
+    public static final String PRODUCTLINE = "4";
+    /**
+     * default it is 0,when the loginactivity checks for updata,it is 1,at this time the mainactivity does't to check for updata
+     */
+    public static int UPDATA_TYPE = 0;
+
+    public static final char CHARACTER_SLASH = '/';
     public static final String DIR_ROOT = "/FaceShow";
     public static final String DIR_APP = "/app";
     public static final String DIR_IMAGE = "/image";
     public static final String DIR_PDF = DIR_ROOT + DIR_APP + "/pdf/";
+    public static final String DIR_APK=DIR_ROOT+DIR_APP+"/apk/";
 }
