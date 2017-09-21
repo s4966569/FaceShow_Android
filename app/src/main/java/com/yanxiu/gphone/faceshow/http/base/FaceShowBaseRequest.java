@@ -14,7 +14,7 @@ public abstract class FaceShowBaseRequest extends RequestBase {
     // TODO 这里的参数，需要根据server的协议来定，目前都是易学易练的公用参数
     public String osType = Constants.osType;
     public String pcode = Constants.pcode;
-    public String token = "ce0d56d0d8a214fb157be3850476ecb5";
+    public String token = SpManager.getToken();
     public String trace_uid;
     public String version = Constants.version;
 

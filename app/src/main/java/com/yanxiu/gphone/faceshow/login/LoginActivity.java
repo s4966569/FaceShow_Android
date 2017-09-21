@@ -21,6 +21,7 @@ import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
+import com.yanxiu.gphone.faceshow.util.Utils;
 
 import java.util.UUID;
 
@@ -107,18 +108,16 @@ public class LoginActivity extends FaceShowBaseActivity {
         rootView.showLoadingView();
         SignInRequest signInRequest = new SignInRequest();
         signInRequest.loginName = edt_account_number.getText().toString();
-        signInRequest.password = edt_account_password.getText().toString();
+        signInRequest.password = Utils.MD5Helper(edt_account_password.getText().toString());
         mSignInRequestUUID = signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignInResponse ret) {
                 rootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
-                    UserInfo.getInstance().setInfo(ret.getData());
-                    SpManager.saveToken(UserInfo.getInstance().getInfo().getToken());
+                    SpManager.saveToken(ret.getToken());
                     toMainActivity();
-                    // TODO: 17-9-14
                 } else {
-                    Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, ret.getData(), Toast.LENGTH_SHORT).show();
                 }
 
             }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
@@ -113,17 +114,29 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
+                mRootView.hiddenOtherErrorView();
+                mRootView.hiddenNetErrorView();
                 if (ret.getCode() == 0) {
-                    if (ret.getData() != null && ret.getData().getElements() != null && ret.getData().getElements().size() > 0) {
-                        if (mOffset == 0)
-                            mCheckInNotesList.clear();
-                        mCheckInNotesList.addAll(ret.getData().getElements());
+                    if (ret.getData() != null && ret.getData().getElements() != null ) {
+                        if (ret.getData().getElements().size() > 0) {
+                            if (mOffset == 0)
+                                mCheckInNotesList.clear();
+                            mCheckInNotesList.addAll(ret.getData().getElements());
+                        }else {
+                            if (mOffset == 0){
+                                if (mCheckInNotesList.size()>0){
+                                    ToastUtil.showToast(FaceShowApplication.getContext(),"刷新失败");
+                                }else{
+                                    mRootView.showOtherErrorView();
+                                }
+                            }
+
+                        }
 
                     }
 
                     mCheckInNotesAdapter.update(mCheckInNotesList);
-                    mRootView.hiddenOtherErrorView();
-                    mRootView.hiddenNetErrorView();
+
 
                 } else {
                     if (mCheckInNotesList.size() <= 0)
