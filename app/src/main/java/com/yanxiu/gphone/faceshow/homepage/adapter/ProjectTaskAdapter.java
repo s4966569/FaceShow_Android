@@ -13,10 +13,10 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.homepage.bean.ProjectTaskBean;
-import com.yanxiu.gphone.faceshow.homepage.bean.ResourceBean;
+import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private ArrayList<ProjectTaskBean> mList;
+    private List<ProjectTaskListResponse.ProjectTaskBean> mList = new ArrayList<>();
 
     private OnRecyclerViewItemClickListener mListener;
 
@@ -37,8 +37,9 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         mListener = listener;
     }
 
-    public void setData(ArrayList<ProjectTaskBean> list) {
+    public void setData(List<ProjectTaskListResponse.ProjectTaskBean> list) {
         mList = list;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -63,14 +64,14 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final ProjectTaskBean data = mList.get(position);
+        final ProjectTaskListResponse.ProjectTaskBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 0:
                 ProjectTaskViewHolder holder2 = (ProjectTaskViewHolder) holder;
-                holder2.project_task_name.setText(data.getName());
-                holder2.project_task_time.setText(data.getTime());
+                holder2.project_task_name.setText(data.getInteractName());
+                holder2.project_task_time.setText(data.getCreateTime());
 //                holder2.project_task_img
-                if(TextUtils.equals(data.getStatus(), "1")) {
+                if(TextUtils.equals(data.getStepFinished(), "1")) {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_completed));
                     holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_333333));
                 }else {

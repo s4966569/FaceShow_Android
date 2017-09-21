@@ -12,8 +12,10 @@ import android.widget.TextView;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.ResourceBean;
+import com.yanxiu.gphone.faceshow.http.resource.ResourceListResponse;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +27,8 @@ import butterknife.ButterKnife;
 public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private ArrayList<ResourceBean> mList;
+    private List<ResourceListResponse.DataBean.ElementsBean> mList = new ArrayList<>();
+//    private ArrayList<ResourceBean> mList;
 
     private OnRecyclerViewItemClickListener mListener;
 
@@ -34,8 +37,18 @@ public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.View
         mListener = listener;
     }
 
-    public void setData(ArrayList<ResourceBean> list) {
+//    public void setData(ArrayList<ResourceBean> list) {
+//        mList = list;
+//    }
+
+    public void updateData(List<ResourceListResponse.DataBean.ElementsBean> list) {
         mList = list;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
     }
 
     @Override
@@ -60,13 +73,13 @@ public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final ResourceBean data = mList.get(position);
+        final ResourceListResponse.DataBean.ElementsBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 0:
                 ResourceViewHolder holder2 = (ResourceViewHolder) holder;
-                holder2.resource_name.setText(data.getResourceName());
-                holder2.resource_time.setText(data.getResourceTime());
-//                holder2.resource_img
+                holder2.resource_name.setText(data.getResName());
+                holder2.resource_time.setText(data.getCreateTime());
+//                holder2.resource_img.set
                 holder2.resource_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
