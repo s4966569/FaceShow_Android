@@ -20,7 +20,7 @@ public class UserInfo {
     private Info info;
 
     public Info getInfo() {
-        return new Info();
+        return this.info;
     }
 
     public void setInfo(Info info) {
@@ -29,20 +29,20 @@ public class UserInfo {
 
     public class Info {
         private boolean isLogined;
-        private String userId="123";
-        private String userName="asd";
-        private String headImg="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505979814335&di=61b7087885542aeb9a56e4c02c178085&imgtype=0&src=http%3A%2F%2Flady.southcn.com%2F6%2Fimages%2Fattachement%2Fjpg%2Fsite4%2F20130105%2F90fba609e4271251cfce4a.jpg";
-        private String phone="123456789";
-        private String sex="0";
-        private String stageId="12";
-        private String stageName="ss";
-        private String classId="22";
-        private String className="ss";
-        private String subjectId="22";
-        private String subjectName="ss";
-        private String token="sss";
-        private String accountNumber="124341";
-        private String accountPassword="121441";
+        private String userId;
+        private String userName;
+        private String headImg;
+        private String phone;
+        private String sex;
+        private String stageId;
+        private String stageName;
+        private String classId;
+        private String className;
+        private String subjectId;
+        private String subjectName;
+        private String token;
+        private String accountNumber;
+        private String accountPassword;
 
         public boolean isLogined() {
             return isLogined;
