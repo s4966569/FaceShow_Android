@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapter.ViewHolder> {
-    private List<GetCheckInNotesResponse.DataBean> checkInNotesList = new ArrayList<>();
+    private List<GetCheckInNotesResponse.Element> checkInNotesList = new ArrayList<>();
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -38,7 +38,7 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
         return checkInNotesList.size();
     }
 
-    public void update(List<GetCheckInNotesResponse.DataBean> list) {
+    public void update(List<GetCheckInNotesResponse.Element> list) {
         this.checkInNotesList = list;
         notifyDataSetChanged();
     }
@@ -62,9 +62,9 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
 
         }
 
-        public void setData(GetCheckInNotesResponse.DataBean data) {
+        public void setData(GetCheckInNotesResponse.Element data) {
             tv_project_name.setText(data.getProjectName());
-            tv_class_name.setText(data.getClassName());
+            tv_class_name.setText(data.getClazs().getClazsName());
             mCheckInNotesSecondAdapter.update(data.getCheckInNotes());
 
         }

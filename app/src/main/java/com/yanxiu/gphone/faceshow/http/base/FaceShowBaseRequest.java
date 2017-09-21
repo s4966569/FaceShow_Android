@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.http.base;
 
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.constant.Constants;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 
 
@@ -13,7 +14,7 @@ public abstract class FaceShowBaseRequest extends RequestBase {
     // TODO 这里的参数，需要根据server的协议来定，目前都是易学易练的公用参数
     public String osType = Constants.osType;
     public String pcode = Constants.pcode;
-    public String token;
+    public String token = SpManager.getToken();
     public String trace_uid;
     public String version = Constants.version;
 

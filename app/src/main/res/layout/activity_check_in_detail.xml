@@ -27,17 +27,16 @@
             android:id="@+id/tv_check_in_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_gravity="center_horizontal"
+            android:gravity="center"
             android:textColor="@color/color_333333"
-            android:textSize="18dp"
-         />
+            android:textSize="18dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="29dp"
+            android:layout_marginTop="25dp"
             android:text="@string/check_in_time_plan"
             android:textColor="@color/color_999999"
             android:textSize="13dp" />
@@ -49,14 +48,13 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
             android:textColor="@color/color_333333"
-            android:textSize="14dp"
-            tools:text="2017.8.27 8:00 -2017.8.27 8:30" />
+            android:textSize="14dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="29dp"
+            android:layout_marginTop="25dp"
             android:text="@string/check_in_now"
             android:textColor="@color/color_999999"
             android:textSize="13dp" />
@@ -66,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="8dp"
             android:textColor="@color/color_1da1f2"
             android:textSize="18dp"
             tools:text="您还未签到" />
