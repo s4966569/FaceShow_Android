@@ -7,7 +7,8 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
  */
 
 public class CourseDetailRequest extends FaceShowMockRequest {
-    public String id;
+    public String method = "app.course.getCourse";
+    public String courseId;
 
     @Override
     protected String urlPath() {
@@ -16,6 +17,6 @@ public class CourseDetailRequest extends FaceShowMockRequest {
 
     @Override
     protected String getMockDataPath() {
-        return null;
+        return "CourseDetail.json";
     }
 }

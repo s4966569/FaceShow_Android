@@ -9,13 +9,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.activity.CourseIntroductionActivity;
-import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
+import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
+import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
+import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 
 import java.util.ArrayList;
+
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.lecturer;
 
 
 /**
@@ -30,7 +36,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final int HEADER = 1;//头部
     private final int ITEM = 2;//列表item
 
-    private ArrayList<CourseDetailBean.CourseDetailBeanItem> mList;
+    private ArrayList<CourseDetailItemBean> mList;
 
     private OnRecyclerViewItemClickListener mListener;
 
@@ -39,14 +45,14 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         mListener = listener;
     }
 
-    public void setData(ArrayList<CourseDetailBean.CourseDetailBeanItem> list) {
+    public void setData(ArrayList<CourseDetailItemBean> list) {
         mList = list;
     }
 
     @Override
     public int getItemViewType(int position) {
-        CourseDetailBean.CourseDetailBeanItem bean = mList.get(position);
-        if (bean.isHeader()) {
+        CourseDetailItemBean bean = mList.get(position);
+        if (bean.getMyDataType() == CourseDetailItemBean.header) {
             return HEADER;
         } else {
             //课程日期
@@ -75,27 +81,40 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final CourseDetailBean.CourseDetailBeanItem data = mList.get(position);
+        final CourseDetailItemBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 1:
                 CourseHeaderViewHolder holder1 = (CourseHeaderViewHolder) holder;
-                holder1.course_detail_time.setText(data.getTime());
+                holder1.course_detail_time.setText(data.getStartTime());
                 holder1.course_name.setText(data.getCourseName());
-                holder1.course_detail_location.setText(data.getLocation());
-                holder1.course_detail_teacher.setText(data.getTeacher());
-                holder1.course_detail_txt.setText(data.getCourse_detail());
+                holder1.course_detail_location.setText(data.getSite());
+                holder1.course_detail_teacher.setText(data.getLecturer());
+                holder1.course_detail_txt.setText(data.getBriefing());
                 holder1.course_detail_all.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(mContext,CourseIntroductionActivity.class );
-                        mContext.startActivity(i);
+                        CourseIntroductionActivity.invoke(mContext, data.getBriefing());
                     }
                 });
                 break;
             case 2:
                 CourseItemViewHolder holder2 = (CourseItemViewHolder) holder;
-                holder2.course_detail_item_txt.setText(data.getCourse_detail_item_txt());
-                Glide.with(mContext).load(data.getImgUrl()).asBitmap().into(holder2.course_detail_item_icon);
+                String text;
+                switch (data.getMyDataType()) {
+                    case lecturer:
+                        text = ((LecturerInfosBean) data).getLecturerName();
+                        break;
+                    case attachment:
+                        text = ((AttachmentInfosBean) data).getResName();
+                        break;
+                    case interact:
+                        text = ((InteractStepsBean) data).getInteractName();
+                        break;
+                    default:
+                        text = "";
+                }
+                holder2.course_detail_item_txt.setText(text);
+//                Glide.with(mContext).load(data.getImgUrl()).asBitmap().into(holder2.course_detail_item_icon);
                 holder2.course_detail_item_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

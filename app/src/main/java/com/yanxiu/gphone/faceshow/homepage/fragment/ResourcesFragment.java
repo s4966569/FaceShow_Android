@@ -136,7 +136,7 @@ public class ResourcesFragment extends FaceShowBaseFragment implements OnRecycle
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
         ToastUtil.showToast(getActivity(), position + "");
-        ResourceListResponse.DataBean.ElementsBean bean = ( ResourceListResponse.DataBean.ElementsBean)baseBean;
+        ResourceListResponse.DataBean.ElementsBean bean = (ResourceListResponse.DataBean.ElementsBean) baseBean;
         getResourceDetail(bean.getResId());
     }
 

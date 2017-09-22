@@ -14,13 +14,14 @@ import butterknife.OnClick;
 
 /**
  * 签到异常页面
- *  created bu frc
+ * created bu frc
  */
 public class CheckInErrorActivity extends FaceShowBaseActivity {
 
     public static final String QR_STATUE = "error_statue";
-    public static final String QR_EXPIRED = "check_in_qr_expired";
-    public static final String QR_INVALID = "check_in_qr_invalid";
+    public static final String QR_EXPIRED = "check_in_qr_expired";//签到已过期
+    public static final String HAS_NOT_START = "check_in_has_not_start";//签到未开始
+    public static final String QR_INVALID = "check_in_qr_invalid";//无效的二维码
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -43,12 +44,15 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
         mQrStatue = getIntent().getStringExtra(QR_STATUE);
-        if (mQrStatue == QR_EXPIRED) {
+        if (mQrStatue.equals(QR_EXPIRED)) {
             tvErrorStatue.setText(R.string.check_in_qr_already_expired);
             tvErrorPrompt.setText(R.string.please_scan_new_check_in_qr);
-        } else if (mQrStatue == QR_INVALID) {
+        } else if (mQrStatue.equals(QR_INVALID)) {
             tvErrorStatue.setText(R.string.check_in_qr_already_invalid);
             tvErrorPrompt.setText("");
+        } else if (mQrStatue.equals(HAS_NOT_START)) {
+            tvErrorStatue.setText(R.string.check_in_qr_has_not_start);
+            tvErrorPrompt.setText(R.string.please_scan_correct_check_in_qr);
         }
 
     }

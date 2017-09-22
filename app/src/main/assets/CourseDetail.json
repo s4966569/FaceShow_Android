@@ -1,0 +1,78 @@
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "course": {
+      "id": 2,
+      "subscriberId": 2,
+      "subscriberType": "clazs",
+      "courseName": "课程2",
+      "lecturer": null,
+      "site": "北京",
+      "startTime": "2017-09-13 12:00:00",
+      "endTime": "2017-09-13 17:00:00",
+      "briefing": "test3",
+      "attachments": "30026623,27252331",
+      "courseStatus": 1,
+      "lecturerInfos": [
+        {
+          "lecturerName": "jack",
+          "lecturerBriefing": "XXXXXX",
+          "lecturerAvatar": "http://s1.jsyxw.cn/yanxiu/u/68/74/Img917468_80.jpg"
+        }
+      ],
+      "attachmentInfos": [
+        {
+          "resId": 30026623,
+          "resName": "HR005_工作绩效考评表-赵因月.doc",
+          "resType": "word",
+          "ext": "doc",
+          "downloadUrl": "http://upload.ugc.yanxiu.com/doc/9dbed4913b9733d02b480e1754a7bd04.doc?from=101&rid=30026623&filename=HR005_%25E5%25B7%25A5%25E4%25BD%259C%25E7%25BB%25A9%25E6%2595%2588%25E8%2580%2583%25E8%25AF%2584%25E8%25A1%25A8-%25E8%25B5%25B5%25E5%259B%25A0%25E6%259C%2588.doc&attachment=true",
+          "previewUrl": "http://upload.ugc.yanxiu.com/doc/9dbed4913b9733d02b480e1754a7bd04.pdf?from=101&rid=30026623",
+          "transcodeStatus": 2,
+          "resThumb": "http://upload.ugc.yanxiu.com/doc/thumbnail_9dbed4913b9733d02b480e1754a7bd04.jpg?from=101&rid=30026623"
+        },
+        {
+          "resId": 27252331,
+          "resName": "personal_bg_green.png",
+          "resType": "image",
+          "ext": "png",
+          "downloadUrl": "http://upload.ugc.yanxiu.com/img/0be649be15c1e3ddc7e822b7c21d0804.png?from=101&rid=27252331&filename=personal_bg_green.png&attachment=true",
+          "previewUrl": "http://upload.ugc.yanxiu.com/img/0be649be15c1e3ddc7e822b7c21d0804.png?from=101&rid=27252331",
+          "transcodeStatus": 0,
+          "resThumb": "http://upload.ugc.yanxiu.com/img/0be649be15c1e3ddc7e822b7c21d0804.png?from=101&rid=27252331"
+        }
+      ]
+    },
+    "interactSteps": [
+      {
+        "stepId": 2,
+        "projectId": 1,
+        "clazsId": 2,
+        "courseId": 2,
+        "interactName": "投票",
+        "interactType": 3,
+        "interactId": 481,
+        "stepStatus": 1,
+        "createTime": "2017-09-15 17:01:04",
+        "stepFinished": 2,
+        "interactTypeName": "投票"
+      },
+      {
+        "stepId": 2,
+        "projectId": 1,
+        "clazsId": 2,
+        "courseId": 2,
+        "interactName": "评价",
+        "interactType": 5,
+        "interactId": 481,
+        "stepStatus": 1,
+        "createTime": "2017-09-15 17:01:04",
+        "stepFinished": 2,
+        "interactTypeName": "问卷"
+      }
+    ]
+  },
+  "currentUser": "",
+  "error": null
+}

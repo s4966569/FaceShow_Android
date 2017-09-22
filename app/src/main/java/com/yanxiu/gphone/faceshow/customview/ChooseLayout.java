@@ -11,9 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.course.bean.VoteInfoBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteItemBean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
 
 /**
  * 选择控件
@@ -21,14 +26,12 @@ import java.util.List;
  */
 public class ChooseLayout extends LinearLayout implements View.OnClickListener {
 
-    public static final int TYPE_SINGLE = 0x000;
-    public static final int TYPE_MULTI = 0x001;
-
     private Context mContext;
     private onItemClickListener mOnItemClickListener;
     private int mChooseType = TYPE_SINGLE;
     private boolean mIsClick = true;
 
+    private VoteInfoBean mData;
     private ArrayList<String> mAnswerList;//保存选项结果
 
 
@@ -59,8 +62,9 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
         this.setOrientation(LinearLayout.VERTICAL);
     }
 
-    public void setData(List<String> list) {
-        addChildView(list);
+    public void setData(VoteInfoBean data) {
+        mData = data;
+        addChildView(data);
     }
 
     /**
@@ -78,16 +82,16 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
     }
 
 
-    private void addChildView(final List<String> list) {
+    private void addChildView(final VoteInfoBean data) {
         this.removeAllViews();
+        ArrayList<VoteItemBean> list = data.getVoteItems();
         for (int i = 0; i < list.size(); i++) {
+            VoteItemBean bean = list.get(i);
             View view = LayoutInflater.from(mContext).inflate(R.layout.layout_choose_item, this, false);
             final ViewHolder holder = new ViewHolder();
             holder.position = i;
             holder.mQuestionContentView = (TextView) view.findViewById(R.id.tv_question_content);
-
-            final String text = list.get(i);
-            holder.mQuestionContentView.setText(text);
+            holder.mQuestionContentView.setText(bean.getItemName());
             holder.mQuestionSelectView = view.findViewById(R.id.v_question_select);
             if (this.mIsClick) { //选项界面
                 if (mChooseType == TYPE_MULTI) {

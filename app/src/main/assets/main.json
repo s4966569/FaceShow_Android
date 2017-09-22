@@ -1,0 +1,36 @@
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "projectInfo": {
+      "id": 1,
+      "platId": 1,
+      "projectName": "面授项目001",
+      "projectStatus": 1,
+      "startTime": "2017-09-12 10:00:00",
+      "endTime": "2017-12-12 10:00:00",
+      "description": "第一个面授项目",
+      "projectManagerInfos": [
+        {
+          "id": 1,
+          "projectId": 1,
+          "userId": 1,
+          "userName": null
+        }
+      ]
+    },
+    "clazsInfo": {
+      "id": 1,
+      "platId": 1,
+      "projectId": 1,
+      "clazsName": "面授第一班",
+      "clazsStatus": 1,
+      "clazsType": 1,
+      "startTime": "2017-09-16 11:08:01",
+      "endTime": "2017-09-30 11:08:07",
+      "description": "第一个班级"
+    }
+  },
+  "currentUser": "",
+  "error": null
+}

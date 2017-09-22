@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,13 +15,17 @@ import android.widget.Toast;
 import com.facebook.stetho.common.StringUtil;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -44,7 +49,9 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
     private Context mContext;
     private ImageView mImgLogo;
-
+    private static boolean isAnimationEnd = false;
+    private static boolean isGetUserInfoSuccess = false;
+    private static boolean isGetUserInfoFailure = false;
     private Animator.AnimatorListener logoAnimatorListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animator) {
@@ -53,7 +60,16 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
         @Override
         public void onAnimationEnd(Animator animator) {
-            checkUserStatus();
+            isAnimationEnd = true;
+            if (isGetUserInfoSuccess) {
+                MainActivity.invoke(WelcomeActivity.this);
+                WelcomeActivity.this.finish();
+            }
+            if (isGetUserInfoFailure) {
+                LoginActivity.toThisAct(WelcomeActivity.this);
+                WelcomeActivity.this.finish();
+            }
+
         }
 
         @Override
@@ -75,6 +91,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         initView();
         /*欢迎页logo的动画效果*/
         mImgLogo.animate().translationY(-800).setDuration(1000).setListener(logoAnimatorListener);
+        checkUserStatus();
     }
 
     private void initView() {
@@ -117,13 +134,46 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     break;
                 case GO_MAIN:
                     //进入首页
-                    MainActivity.invoke(activity);
+                    getUserInfo(activity);
                     break;
             }
         }
     }
 
-    ;
+    private static void getUserInfo(final Activity activity) {
+        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                if (ret.getCode() == 0) {
+                    UserInfo.getInstance().setInfo(ret.getData());
+                    isGetUserInfoSuccess = true;
+                    if (isAnimationEnd) {
+                        MainActivity.invoke(activity);
+                        activity.finish();
+                    }
+                } else {
+                    isGetUserInfoFailure = true;
+                    if (isAnimationEnd) {
+                        LoginActivity.toThisAct(activity);
+                        activity.finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
+                isGetUserInfoFailure = true;
+                if (isAnimationEnd) {
+                    LoginActivity.toThisAct(activity);
+                    activity.finish();
+                }
+
+            }
+        });
+    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

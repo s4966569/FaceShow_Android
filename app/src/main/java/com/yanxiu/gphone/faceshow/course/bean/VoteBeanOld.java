@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.common.bean;
+package com.yanxiu.gphone.faceshow.course.bean;
 
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * 投票封装类
  */
-public class VoteBean extends BaseBean {
+public class VoteBeanOld extends BaseBean {
     public static final int TYPE_SINGLE = 0x000;
     public static final int TYPE_MULTI = 0x001;
     public static final int TYPE_TEXT = 0x002;
@@ -118,11 +118,11 @@ public class VoteBean extends BaseBean {
         }
     }
 
-    public static ArrayList<VoteBean> getMockData() {
+    public static ArrayList<VoteBeanOld> getMockData() {
         ArrayList list = new ArrayList();
 
         for (int i = 0; i < 10; i++) {
-            VoteBean bean = new VoteBean();
+            VoteBeanOld bean = new VoteBeanOld();
             if (i % 2 == 0) {
                 bean.setType(TYPE_SINGLE);
                 bean.getChooseList().add("满意");

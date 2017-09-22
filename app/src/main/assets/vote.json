@@ -1,0 +1,206 @@
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "interactType": 3,
+    "questionGroup": {
+      "id": 481,
+      "title": "BeJson",
+      "description": "http://www.bejson.com",
+      "questionNum": 1,
+      "groupType": 3,
+      "groupStatus": 1,
+      "bizId": 2,
+      "bizSource": "clazs",
+      "createTime": "2017-09-13 17:45:25",
+      "stepId": 481,
+      "answerNum": null,
+      "answerUserNum": null,
+      "questions": [
+        {
+          "id": 478,
+          "title": "Google",
+          "description": "http://www.google.com",
+          "questionType": 1,
+          "questionData": null,
+          "answerNum": 0,
+          "answerUserNum": 0,
+          "groupId": 481,
+          "questionStatus": 1,
+          "bizId": 1,
+          "bizSource": "clazs",
+          "createTime": "2017-09-13 17:45:25",
+          "questionTypeName": "单选题",
+          "voteInfo": {
+            "voteItems": [
+              {
+                "itemId": "1",
+                "itemName": "test1",
+                "selectedNum": 0,
+                "percent": 0
+              },
+              {
+                "itemId": "2",
+                "itemName": "test2",
+                "selectedNum": 0,
+                "percent": 0.1
+              },
+              {
+                "itemId": "3",
+                "itemName": "test3",
+                "selectedNum": 0,
+                "percent": 0.7
+              }
+            ],
+            "maxSelectNum": 1
+          },
+          "userAnswer": {
+            "userId": 10145096,
+            "questionId": 478,
+            "questionAnswers": [
+              "1"
+            ]
+          }
+        },
+        {
+          "id": 478,
+          "title": "Google",
+          "description": "http://www.google.com",
+          "questionType": 2,
+          "questionData": null,
+          "answerNum": 0,
+          "answerUserNum": 0,
+          "groupId": 481,
+          "questionStatus": 1,
+          "bizId": 1,
+          "bizSource": "clazs",
+          "createTime": "2017-09-13 17:45:25",
+          "questionTypeName": "单选题",
+          "voteInfo": {
+            "voteItems": [
+              {
+                "itemId": "1",
+                "itemName": "test1",
+                "selectedNum": 20,
+                "percent": 0.8
+              },
+              {
+                "itemId": "2",
+                "itemName": "test2",
+                "selectedNum": 0,
+                "percent": 0.2
+              },
+              {
+                "itemId": "3",
+                "itemName": "test3",
+                "selectedNum": 0,
+                "percent": 0
+              }
+            ],
+            "maxSelectNum": 1
+          },
+          "userAnswer": {
+            "userId": 10145096,
+            "questionId": 478,
+            "questionAnswers": [
+              "1"
+            ]
+          }
+        },
+        {
+          "id": 478,
+          "title": "Google",
+          "description": "http://www.google.com",
+          "questionType": 1,
+          "questionData": null,
+          "answerNum": 0,
+          "answerUserNum": 0,
+          "groupId": 481,
+          "questionStatus": 1,
+          "bizId": 1,
+          "bizSource": "clazs",
+          "createTime": "2017-09-13 17:45:25",
+          "questionTypeName": "单选题",
+          "voteInfo": {
+            "voteItems": [
+              {
+                "itemId": "1",
+                "itemName": "test1",
+                "selectedNum": 0,
+                "percent": 0
+              },
+              {
+                "itemId": "2",
+                "itemName": "test2",
+                "selectedNum": 0,
+                "percent": 0
+              },
+              {
+                "itemId": "3",
+                "itemName": "test3",
+                "selectedNum": 0,
+                "percent": 0
+              }
+            ],
+            "maxSelectNum": 1
+          },
+          "userAnswer": {
+            "userId": 10145096,
+            "questionId": 478,
+            "questionAnswers": [
+              "1"
+            ]
+          }
+        },
+        {
+          "id": 478,
+          "title": "Google",
+          "description": "http://www.google.com",
+          "questionType": 1,
+          "questionData": null,
+          "answerNum": 0,
+          "answerUserNum": 0,
+          "groupId": 481,
+          "questionStatus": 1,
+          "bizId": 1,
+          "bizSource": "clazs",
+          "createTime": "2017-09-13 17:45:25",
+          "questionTypeName": "单选题",
+          "voteInfo": {
+            "voteItems": [
+              {
+                "itemId": "1",
+                "itemName": "test1",
+                "selectedNum": 0,
+                "percent": 0.5
+              },
+              {
+                "itemId": "2",
+                "itemName": "test2",
+                "selectedNum": 0,
+                "percent": 1.2
+              },
+              {
+                "itemId": "3",
+                "itemName": "test3",
+                "selectedNum": 0,
+                "percent": 0
+              }
+            ],
+            "maxSelectNum": 1
+          },
+          "userAnswer": {
+            "userId": 10145096,
+            "questionId": 478,
+            "questionAnswers": [
+              "1"
+            ]
+          }
+        }
+      ]
+    },
+    "isAnswer": false
+  },
+  "currentUser": "",
+  "error": null
+}

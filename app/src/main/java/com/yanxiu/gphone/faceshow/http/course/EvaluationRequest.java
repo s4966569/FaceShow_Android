@@ -7,15 +7,16 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
  */
 
 public class EvaluationRequest extends FaceShowMockRequest {
-    public String id;
+    public String method = "app.interact.getQuestionnaire";
+    public String stepId;
 
     @Override
     protected String urlPath() {
-        return "/courseDetail";
+        return null;
     }
 
     @Override
     protected String getMockDataPath() {
-        return null;
+        return "vote.json";
     }
 }

@@ -1,0 +1,58 @@
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "courses": [
+      {
+        "date": "2017-09-13",
+        "coursesList": [
+          {
+            "id": 1,
+            "subscriberId": 2,
+            "subscriberType": "clazs",
+            "courseName": "课程1",
+            "lecturer": null,
+            "site": "北京",
+            "startTime": "2017-09-13 12:00:00",
+            "endTime": "2017-09-13 17:00:00",
+            "briefing": "test3",
+            "attachments": "30026623,27252331",
+            "courseStatus": 1,
+            "lecturerInfos": [
+              {
+                "lecturerName": "jack",
+                "lecturerBriefing": "XXXXXX",
+                "lecturerAvatar": "http://s1.jsyxw.cn/yanxiu/u/68/74/Img917468_80.jpg"
+              }
+            ],
+            "attachmentInfos": null
+          },
+          {
+            "id": 2,
+            "subscriberId": 2,
+            "subscriberType": "clazs",
+            "courseName": "课程2",
+            "lecturer": null,
+            "site": "北京",
+            "startTime": "2017-09-13 12:00:00",
+            "endTime": "2017-09-13 17:00:00",
+            "briefing": "test3",
+            "attachments": "30026623,27252331",
+            "courseStatus": 1,
+            "lecturerInfos": [
+              {
+                "lecturerName": "jack",
+                "lecturerBriefing": "XXXXXX",
+                "lecturerAvatar": "http://s1.jsyxw.cn/yanxiu/u/68/74/Img917468_80.jpg"
+              }
+            ],
+            "attachmentInfos": null
+          }
+        ],
+        "isToday": false
+      }
+    ]
+  },
+  "currentUser": "",
+  "error": null
+}

@@ -17,7 +17,7 @@ import com.yanxiu.gphone.faceshow.R;
  * Created by 戴延枫 on 2017/8/8.
  */
 
-public class LoadingView extends FrameLayout {
+public class  LoadingView extends FrameLayout {
 
     private Context mContext;
     private ImageView mLoadingView;// loadingView

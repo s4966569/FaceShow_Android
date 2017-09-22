@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Switch;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -17,14 +18,23 @@ import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
-import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
+import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
+import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
+import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
+import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.lecturer;
 
 /**
- * 课程
+ * 课程详情
  */
 public class CourseActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener {
 
@@ -76,12 +86,13 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     private void requestData() {
         mRootView.showLoadingView();
         CourseDetailRequest courseDetailRequest = new CourseDetailRequest();
+        courseDetailRequest.courseId = "";
         courseDetailRequest.startRequest(CourseDetailResponse.class, new HttpCallback<CourseDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(CourseDetailBean.getMockData().getCourseItem());
+                    mAdapter.setData(ret.getCourseDetailData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -111,39 +122,63 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-//        CourseDetailBean.CourseDetailBeanItem itemBean = (CourseDetailBean.CourseDetailBeanItem) baseBean;
-//        ToastUtil.showToast(this, "" + position);
-        if (position == 2) {
-            EvaluationActivity.invoke(this, false);
-        }
-        if (position == 3) {
-            VoteActivity.invoke(this);
-        }
-        if (position == 4) {
-            VoteResultActivity.invoke(this);
-        }
-        if (position == 0) {
-            WebViewActivity.loadThisAct(CourseActivity.this, "http://www.sina.com");
-        }
-        if (position == 6) {
-            CourseDiscussActivity.invoke(CourseActivity.this);
+        CourseDetailItemBean itemBean = (CourseDetailItemBean) baseBean;
+        switch (itemBean.getMyDataType()) {
+            case lecturer:
+                LecturerInfosBean lecturerInfosBean = (LecturerInfosBean) itemBean;
+                SpecialistIntroductionActivity.invoke(CourseActivity.this, lecturerInfosBean);
+                break;
+            case attachment:
+                AttachmentInfosBean attachmentInfosBean = (AttachmentInfosBean) itemBean;
+                if (attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
+                    Intent intent;
+                    PdfBean pdfbean = new PdfBean();
+//                    pdfbean.setName("pdfTest");
+//                    pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
+                    pdfbean.setName(attachmentInfosBean.getResName());
+                    pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
+                    pdfbean.setRecord(0);
+
+                    intent = new Intent(this, PDFViewActivity.class);
+                    Bundle mBundle = new Bundle();
+                    mBundle.putSerializable("pdfbean", pdfbean);
+                    intent.putExtras(mBundle);
+                    startActivity(intent);
+
+                } else {
+                    WebViewActivity.loadThisAct(CourseActivity.this, attachmentInfosBean.getPreviewUrl());
+                }
+
+                break;
+            case interact:
+                InteractStepsBean interactStepsBean = (InteractStepsBean) itemBean;
+                switch (interactStepsBean.getInteractType()) {
+                    case InteractStepsBean.VOTE:
+                        if (InteractStepsBean.NO_FINISH.equals(interactStepsBean.getStepFinished())) {
+                            VoteActivity.invoke(this);
+                        } else if (InteractStepsBean.FINISH.equals(interactStepsBean.getStepFinished())) {
+                            VoteResultActivity.invoke(this);
+                        } else {
+                            ToastUtil.showToast(this, interactStepsBean.getStepFinished());
+                        }
+                        break;
+                    case InteractStepsBean.DISCUSS:
+                        CourseDiscussActivity.invoke(CourseActivity.this);
+                        break;
+                    case InteractStepsBean.QUESTIONNAIRES:
+                        EvaluationActivity.invoke(this);
+                        break;
+                    case InteractStepsBean.CHECK_IN:
+                        QRCodeCheckInActivity.toThisAct(this);
+                        break;
+                }
+
+                break;
+            default:
+                break;
         }
 
-        Intent intent;
-        if (position == 5) {
-            intent = new Intent(this, SpecialistIntroductionActivity.class);
-            startActivity(intent);
-        } else if (position == 1) {
-            PdfBean pdfbean = new PdfBean();
-            pdfbean.setName("pdfTest");
-            pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
-            pdfbean.setRecord(0);
-
-            intent = new Intent(this, PDFViewActivity.class);
-            Bundle mBundle = new Bundle();
-            mBundle.putSerializable("pdfbean", pdfbean);
-            intent.putExtras(mBundle);
-            startActivity(intent);
-        }
     }
 }

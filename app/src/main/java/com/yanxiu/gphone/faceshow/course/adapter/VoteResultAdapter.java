@@ -2,25 +2,21 @@ package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
-import com.yanxiu.gphone.faceshow.customview.ChooseLayout;
+import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout;
 
 import java.util.ArrayList;
 
-import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_MULTI;
-import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_SINGLE;
-import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_TEXT;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
 
 
 /**
@@ -32,20 +28,22 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private Context mContext;
 
-    private ArrayList<VoteBean> mList;
+    private VoteBean mVoteBean;
+    private ArrayList<QusetionBean> mList;
 
     public VoteResultAdapter(Context context) {
         mContext = context;
     }
 
-    public void setData(ArrayList<VoteBean> list) {
-        mList = list;
+    public void setData(VoteBean voteBean) {
+        mVoteBean = voteBean;
+        mList = mVoteBean.getQuestionGroup().getQuestions();
     }
 
     @Override
     public int getItemViewType(int position) {
-        VoteBean bean = mList.get(position);
-        return bean.getType();
+        QusetionBean bean = mList.get(position);
+        return bean.getQuestionType();
     }
 
     @Override
@@ -70,21 +68,27 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final VoteBean data = mList.get(position);
+        final QusetionBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.voteResult_title.setText(data.getTitle());
-                holder1.voteResult_Layout.setData(data.getResultList());
+                holder1.voteResult_title.setText(position + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
+                holder1.voteResult_Layout.setData(data.getVoteInfo());
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
                 holder2.voteResult_title.setText(data.getTitle());
-                holder2.voteResult_personnumber.setText("参与人数:" + data.getPersonCount());
+                holder2.voteResult_personnumber.setText("参与人数:" + data.getAnswerUserNum());
 //                String text = "我的回复:"+"/n"+data.getFeedBackTime()+"/n"+;
-                holder2.voteResult_time.setText(data.getFeedBackTime());
-                holder2.voteResult_editText.setText(data.getFeedBackText());
+                holder2.voteResult_time.setText(data.getCreateTime());
+                String text = "";
+                try {
+                    text = data.getUserAnswer().getQuestionAnswers().get(0);
+                } catch (Exception e) {
+
+                }
+                holder2.voteResult_editText.setText(text);
                 break;
         }
 

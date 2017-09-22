@@ -14,10 +14,11 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.VoteAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
+import com.yanxiu.gphone.faceshow.course.adapter.VoteResultAdapter;
+import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
-import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
+import com.yanxiu.gphone.faceshow.http.course.VoteRequest;
+import com.yanxiu.gphone.faceshow.http.course.VoteResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
@@ -31,7 +32,9 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     private TextView mSubmit;
 
     private RecyclerView mRecyclerView;
-    private VoteAdapter mAdapter;
+    private VoteAdapter mVoteAdapter;
+    private VoteResultAdapter mVoteResultAdapter;
+    private boolean mIsAnswer;//true:已投票-投票结果 ；fasle:未投票
 
 
     @Override
@@ -52,10 +55,10 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
         mSubmit.setEnabled(false);
+        mSubmit.setVisibility(View.GONE);
         mTitle.setText("课程投票");
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new VoteAdapter(this, this);
 
     }
 
@@ -84,14 +87,15 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void requestData() {
         mRootView.showLoadingView();
-        EvaluationRequest courseEvalutionlRequest = new EvaluationRequest();
-        courseEvalutionlRequest.startRequest(EvalutionResponse.class, new HttpCallback<EvalutionResponse>() {
+        VoteRequest voteRequest = new VoteRequest();
+        voteRequest.startRequest(VoteResponse.class, new HttpCallback<VoteResponse>() {
             @Override
-            public void onSuccess(RequestBase request, EvalutionResponse ret) {
+            public void onSuccess(RequestBase request, VoteResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(VoteBean.getMockData());
-                    mRecyclerView.setAdapter(mAdapter);
+                    mIsAnswer = ret.getData().isAnswer();
+                    mTitle.setText(ret.getData().getQuestionGroup().getTitle());
+                    initAdapter(ret.getData());
                 } else {
                     mRootView.showOtherErrorView();
                 }
@@ -104,6 +108,23 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             }
         });
 
+    }
+
+    //根据是否已答，确定显示哪个adapter
+    private void initAdapter(VoteBean data) {
+        if (mIsAnswer) {
+            mSubmit.setVisibility(View.GONE);
+            mVoteResultAdapter = new VoteResultAdapter(this);
+            mVoteResultAdapter.setData(data);
+            mRecyclerView.setAdapter(mVoteResultAdapter);
+            mSubmit.setVisibility(View.GONE);
+        } else {
+            mSubmit.setVisibility(View.VISIBLE);
+            mVoteAdapter = new VoteAdapter(this, this);
+            mVoteAdapter.setData(data);
+            mRecyclerView.setAdapter(mVoteAdapter);
+            mSubmit.setVisibility(View.VISIBLE);
+        }
     }
 
     public static void invoke(Context context) {
