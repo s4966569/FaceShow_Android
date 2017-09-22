@@ -18,7 +18,7 @@ public class InitializeRequest extends RequestBase {
     public String osType=Constants.osType;
     public String os=Constants.OS;
     public String debugtoken="";
-    public String trace_uid= UserInfo.getInstance().getInfo().getUserId();
+    public String trace_uid= "123";
     public String appVersion=Constants.version;
     public String osVer=Constants.version;
     public String mode= UrlRepository.getInstance().getMode()!=null?UrlRepository.getInstance().getMode():"test";
@@ -36,7 +36,7 @@ public class InitializeRequest extends RequestBase {
 
     @Override
     protected String urlServer() {
-        return UrlRepository.getInstance().getUploadServer();
+        return UrlRepository.getInstance().getInitializeServer();
     }
 
     @Override

@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -35,13 +34,13 @@ import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleLikeRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.CommentResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
 import com.yanxiu.gphone.faceshow.classcircle.response.LikeResponse;
-import com.yanxiu.gphone.faceshow.classcircle.response.Publisher;
+import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
-import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.ClassCircleTimeUtils;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
@@ -54,6 +53,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * 首页 “班级圈”Fragment
@@ -90,6 +91,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = new PublicLoadLayout(getContext());
         rootView.setContentView(R.layout.fragment_classcircle);
+        EventBus.getDefault().register(ClassCircleFragment.this);
         initView(rootView);
         listener();
         initData();
@@ -100,6 +102,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        EventBus.getDefault().unregister(ClassCircleFragment.this);
         if (mClassCircleRequest!=null){
             RequestBase.cancelRequestWithUUID(mClassCircleRequest);
             mClassCircleRequest=null;
@@ -163,12 +166,16 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         });
     }
 
+    public void onEventMainThread(RefreshClassCircle refreshClassCircle){
+        onRefresh();
+    }
+
     /**
      * 班级圈
      * */
     private void startRequest(final String offset){
         ClassCircleRequest circleRequest=new ClassCircleRequest();
-        circleRequest.claszId="";
+        circleRequest.clazsId="7";
         circleRequest.offset=offset;
         mClassCircleRequest=circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
@@ -176,11 +183,17 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mClassCircleRequest=null;
                 if (ret!=null&&ret.data!=null&&ret.data.moments!=null) {
                     if (offset.equals("0")) {
-                        mRefreshView.setRefreshing(false);
+                        mRefreshView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mRefreshView.setRefreshing(false);
+                            }
+                        });
                         mClassCircleAdapter.setData(ret.data.moments);
                     }else {
                         mClassCircleAdapter.addData(ret.data.moments);
                     }
+                    mClassCircleRecycleView.setLoadMoreEnable(ret.hasNextPage);
                 }else {
                     if (offset.equals("0")) {
                         rootView.showNetErrorView();
@@ -206,19 +219,23 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void startLikeRequest(final int position, final ClassCircleResponse.Data.Moments moments){
         rootView.showLoadingView();
         ClassCircleLikeRequest classCircleLikeRequest=new ClassCircleLikeRequest();
+        classCircleLikeRequest.clazsId="7";
         classCircleLikeRequest.momentId=moments.id;
         mClassCircleLikeRequest=classCircleLikeRequest.startRequest(LikeResponse.class, new HttpCallback<LikeResponse>() {
             @Override
             public void onSuccess(RequestBase request, LikeResponse ret) {
                 rootView.hiddenLoadingView();
-                mClassCircleLikeRequest=null;
-                ClassCircleResponse.Data.Moments.Likes likes=moments.new Likes();
-                Publisher publisher=new Publisher();
-                publisher.realName= UserInfo.getInstance().getInfo().getUserName();
-                publisher.userId=UserInfo.getInstance().getInfo().getUserId();
-                likes.publisher=publisher;
-                moments.likes.add(likes);
-                mClassCircleAdapter.notifyItemChanged(position);
+                mClassCircleLikeRequest = null;
+                if (ret != null && ret.data != null) {
+                    ClassCircleResponse.Data.Moments.Likes likes = moments.new Likes();
+                    likes.clazsId=ret.data.clazsId;
+                    likes.createTime=ret.data.createTime;
+                    likes.id=ret.data.id;
+                    likes.momentId=ret.data.momentId;
+                    likes.publisher = ret.data.publisher;
+                    moments.likes.add(likes);
+                    mClassCircleAdapter.notifyItemChanged(position);
+                }
             }
 
             @Override
@@ -236,7 +253,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void startCommentToMasterRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments){
         rootView.showLoadingView();
         ClassCircleCommentToMasterRequest masterRequest=new ClassCircleCommentToMasterRequest();
-        masterRequest.clazsId=moments.claszId;
+        masterRequest.clazsId=moments.clazsId;
         masterRequest.content=content;
         masterRequest.momentId=moments.id;
         mCommentToMasterRequest=masterRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
@@ -244,19 +261,12 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             public void onSuccess(RequestBase request, CommentResponse ret) {
                 rootView.hiddenLoadingView();
                 mCommentToMasterRequest=null;
-                ClassCircleResponse.Data.Moments.Comments comments = moments.new Comments();
-                Publisher publisher = new Publisher();
-                publisher.userId = UserInfo.getInstance().getInfo().getUserId();
-                publisher.realName = UserInfo.getInstance().getInfo().getUserName();
-
-                comments.level="1";
-                comments.publisher = publisher;
-                comments.content = content;
-                moments.comments.add(comments);
-
-                mClassCircleAdapter.notifyItemChanged(position);
-                commentFinish();
-                mCommentView.setText("");
+                if (ret!=null&&ret.data!=null) {
+                    moments.comments.add(ret.data);
+                    mClassCircleAdapter.notifyItemChanged(position);
+                    commentFinish();
+                    mCommentView.setText("");
+                }
             }
 
             @Override
@@ -271,10 +281,10 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     /**
      * 回复
      * */
-    private void startCommentToUserRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments,final ClassCircleResponse.Data.Moments.Comments comments){
+    private void startCommentToUserRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments,final Comments comments){
         rootView.showLoadingView();
         ClassCircleCommentToUserRequest userRequest=new ClassCircleCommentToUserRequest();
-        userRequest.clazsId=moments.claszId;
+        userRequest.clazsId=moments.clazsId;
         userRequest.momentId=moments.id;
         userRequest.content=content;
         userRequest.toUserId=comments.publisher.userId;
@@ -284,26 +294,12 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             public void onSuccess(RequestBase request, CommentResponse ret) {
                 rootView.hiddenLoadingView();
                 mCommentToUserRequest=null;
-
-                ClassCircleResponse.Data.Moments.Comments comments1=moments.new Comments();
-
-                Publisher publisher = new Publisher();
-                publisher.userId = UserInfo.getInstance().getInfo().getUserId();
-                publisher.realName = UserInfo.getInstance().getInfo().getUserName();
-
-                Publisher toUser = new Publisher();
-                toUser.userId=comments.publisher.userId;
-                toUser.realName=comments.publisher.realName;
-
-                comments1.level="2";
-                comments1.publisher = publisher;
-                comments1.toUser=toUser;
-                comments1.content = content;
-                moments.comments.add(comments1);
-
-                mClassCircleAdapter.notifyItemChanged(position);
-                commentFinish();
-                mCommentView.setText("");
+                if (ret!=null&&ret.data!=null) {
+                    moments.comments.add(ret.data);
+                    mClassCircleAdapter.notifyItemChanged(position);
+                    commentFinish();
+                    mCommentView.setText("");
+                }
             }
 
             @Override
@@ -322,7 +318,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
-        ToastUtil.showToast(getContext(),"加载更多");
         startRequest(mClassCircleAdapter.getIdFromLastPosition());
     }
 
@@ -401,7 +396,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments,int commentPosition, ClassCircleResponse.Data.Moments.Comments comment, boolean isCommentMaster) {
+    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments,int commentPosition, Comments comment, boolean isCommentMaster) {
         this.isCommentMaster=isCommentMaster;
         this.mCommentPosition=commentPosition;
         this.mMomentPosition=position;

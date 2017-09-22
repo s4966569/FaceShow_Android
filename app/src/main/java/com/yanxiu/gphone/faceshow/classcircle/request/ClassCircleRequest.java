@@ -1,26 +1,33 @@
 package com.yanxiu.gphone.faceshow.classcircle.request;
 
-import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
-import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
+import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 
 /**
  * Created by Canghaixiao.
  * Time : 2017/9/20 15:36.
  * Function :
  */
-public class ClassCircleRequest extends FaceShowMockRequest {
+public class ClassCircleRequest extends RequestBase {
 
-    public String claszId;
+    public String method="app.moment.getMoments";
+    public String clazsId;
     public String limit="10";
     public String offset;
+    public String token="ce0d56d0d8a214fb157be3850476ecb5";
 
     @Override
-    protected String urlPath() {
-        return "http://orz.yanxiu.com/pxt/platform/data.api?method=app.moment.getMoments";
+    protected boolean shouldLog() {
+        return false;
     }
 
     @Override
-    protected String getMockDataPath() {
-        return "classcircle.json";
+    protected String urlServer() {
+        return UrlRepository.getInstance().getServer();
+    }
+
+    @Override
+    protected String urlPath() {
+        return null;
     }
 }

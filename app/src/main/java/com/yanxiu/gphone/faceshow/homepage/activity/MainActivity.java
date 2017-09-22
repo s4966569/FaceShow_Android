@@ -26,6 +26,7 @@ import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.UpdateUtil;
 
 import java.util.UUID;
 
@@ -57,6 +58,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         initView();
         initListener();
         getUserInfo();
+        UpdateUtil.Initialize(this,false);
     }
 
     private void getUserInfo() {
