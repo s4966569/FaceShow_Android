@@ -116,6 +116,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mTitleView.setText(R.string.classcircle);
         mBackView.setText(R.string.cancle);
         mFunctionView.setText(R.string.send);
+        mFunctionView.setEnabled(false);
+        mFunctionView.setTextColor(ContextCompat.getColor(mContext,R.color.color_999999));
 
         if (mType.equals(TYPE_TEXT)){
             mPictureView.setVisibility(View.GONE);

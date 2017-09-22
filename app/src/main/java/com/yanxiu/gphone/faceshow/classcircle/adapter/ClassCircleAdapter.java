@@ -30,6 +30,7 @@ import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +142,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
-            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(titleViewHolder.mHeadImgView));
+            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
@@ -150,7 +151,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (moments.publisher != null) {
                 headimg=moments.publisher.avatar;
             }
-            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(classCircleViewHolder.mHeadImgView));
+            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(mContext,classCircleViewHolder.mHeadImgView,10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
                 if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(moments.album.get(0).attachment.previewUrl)) {
@@ -339,39 +340,6 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
         }).start();
-    }
-
-    private class CornersImageTarget extends BitmapImageViewTarget {
-
-        CornersImageTarget(ImageView view) {
-            super(view);
-        }
-
-        @Override
-        public void onLoadFailed(Exception e, Drawable errorDrawable) {
-            RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(view.getContext().getResources(), drawableToBitmap(errorDrawable));
-            circularBitmapDrawable.setCornerRadius(10);
-            view.setImageDrawable(circularBitmapDrawable);
-        }
-
-        @Override
-        protected void setResource(Bitmap resource) {
-            RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(view.getContext().getResources(), resource);
-            circularBitmapDrawable.setCornerRadius(10);
-            view.setImageDrawable(circularBitmapDrawable);
-        }
-
-        private Bitmap drawableToBitmap(Drawable drawable) {
-            int width = drawable.getIntrinsicWidth();
-            int height = drawable.getIntrinsicHeight();
-            Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
-            Bitmap bitmap = Bitmap.createBitmap(width, height, config);
-            Canvas canvas = new Canvas(bitmap);
-            canvas.drawColor(ContextCompat.getColor(mContext, R.color.color_dadde0));
-            drawable.setBounds(width * 3 / 16, height * 3 / 16, width * 13 / 16, height * 13 / 16);
-            drawable.draw(canvas);
-            return bitmap;
-        }
     }
 
     @Override

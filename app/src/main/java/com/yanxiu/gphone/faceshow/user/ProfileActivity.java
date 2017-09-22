@@ -35,6 +35,7 @@ import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.zxing.camera.CameraManager;
 
@@ -103,14 +104,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     }
 
     private void setHeadimg(){
-        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(new BitmapImageViewTarget(mHeadImgView){
-            @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable drawable= RoundedBitmapDrawableFactory.create(view.getResources(),resource);
-                drawable.setCornerRadius(12);
-                view.setBackground(drawable);
-            }
-        });
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).into(new CornersImageTarget(mContext,mHeadImgView,12));
     }
 
     private String getSex(){
