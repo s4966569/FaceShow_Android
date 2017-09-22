@@ -12,7 +12,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/course_img_bg_height"
-            android:background="@drawable/homepage_bg" />
+            android:background="@drawable/coursedetail_header" />
 
         <TextView
             android:id="@+id/course_detaile_title"
@@ -51,7 +51,7 @@
         <ImageView
             android:layout_width="@dimen/course_img_Height"
             android:layout_height="@dimen/course_img_Height"
-            android:background="@color/color_00cccc" />
+            android:background="@drawable/coursedetail_time" />
 
         <TextView
             android:id="@+id/course_detail_time"
@@ -76,7 +76,7 @@
         <ImageView
             android:layout_width="@dimen/course_img_Height"
             android:layout_height="@dimen/course_img_Height"
-            android:background="@color/color_00cccc" />
+            android:background="@drawable/coursedetail_teacher" />
 
         <TextView
             android:id="@+id/course_detail_teacher"
@@ -102,7 +102,7 @@
         <ImageView
             android:layout_width="@dimen/course_img_Height"
             android:layout_height="@dimen/course_img_Height"
-            android:background="@color/color_00cccc" />
+            android:background="@drawable/coursedetail_location" />
 
         <TextView
             android:id="@+id/course_detail_location"

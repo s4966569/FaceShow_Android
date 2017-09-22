@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
@@ -49,6 +50,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private TextView mCheckInEnterTV;//签到入口文字描述
     private TextView mProject_tv;//项目名称
     private TextView mClass_tv;//班级
+    private ImageView mCheckInEnterIMG;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,8 +70,11 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private void initView() {
         mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
         mTitle.setText(R.string.homepage);
-        mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_right_txt);
+        mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
         mCheckInEnterTV.setVisibility(View.VISIBLE);
+        mCheckInEnterIMG = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
+        mCheckInEnterIMG.setImageResource(R.drawable.scan_selector);
+        mCheckInEnterIMG.setVisibility(View.VISIBLE);
         mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
         mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
@@ -100,6 +105,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mProjectTask_tab.setOnClickListener(this);
         mSchedule_tab.setOnClickListener(this);
         mCheckInEnterTV.setOnClickListener(this);
+        mCheckInEnterIMG.setOnClickListener(this);
         for (int i = 0; i < mNavBarViews.length; i++) {
             mNavBarViews[i].setOnClickListener(this);
 
@@ -158,7 +164,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[2].setSelected(false);
                 mNavBarViews[3].setSelected(true);
                 break;
-            case R.id.title_layout_right_txt:
+            case R.id.title_layout_signIn:
+            case R.id.title_layout_right_img:
                 QRCodeCheckInActivity.toThisAct(getActivity());
                 break;
             default:

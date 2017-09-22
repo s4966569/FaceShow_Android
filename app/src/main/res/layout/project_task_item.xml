@@ -23,8 +23,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/course_adapter_marginleft"
         android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/project_task_status"
-        android:background="@drawable/selector_go" />
+        android:layout_toLeftOf="@id/project_task_status" />
 
     <TextView
         android:id="@+id/project_task_name"

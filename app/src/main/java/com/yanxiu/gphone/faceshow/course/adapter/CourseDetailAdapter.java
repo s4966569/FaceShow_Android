@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -103,18 +102,41 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 switch (data.getMyDataType()) {
                     case lecturer:
                         text = ((LecturerInfosBean) data).getLecturerName();
+                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_lecturer);
                         break;
                     case attachment:
                         text = ((AttachmentInfosBean) data).getResName();
+                        AttachmentInfosBean attachmentInfosBean = (AttachmentInfosBean) data;
+                        if (attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
+                                || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
+                                || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
+                            holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_pdf);
+                        } else {
+                            holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_link);
+                        }
                         break;
                     case interact:
                         text = ((InteractStepsBean) data).getInteractName();
+                        InteractStepsBean interactStepsBean = (InteractStepsBean) data;
+                        switch (interactStepsBean.getInteractType()) {
+                            case InteractStepsBean.VOTE:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_vote);
+                                break;
+                            case InteractStepsBean.DISCUSS:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_discuss);
+                                break;
+                            case InteractStepsBean.QUESTIONNAIRES:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_questionnaires);
+                                break;
+                            case InteractStepsBean.CHECK_IN:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_vote);
+                                break;
+                        }
                         break;
                     default:
                         text = "";
                 }
                 holder2.course_detail_item_txt.setText(text);
-//                Glide.with(mContext).load(data.getImgUrl()).asBitmap().into(holder2.course_detail_item_icon);
                 holder2.course_detail_item_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
