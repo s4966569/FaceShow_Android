@@ -162,12 +162,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     }
                 } else {
                 }
-                handler.sendEmptyMessageDelayed(1, 10000);
+                handler.sendEmptyMessageDelayed(1, 30000);
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                handler.sendEmptyMessageDelayed(1, 10000);
+                handler.sendEmptyMessageDelayed(1, 30000);
             }
         });
     }

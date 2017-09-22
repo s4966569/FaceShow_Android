@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,8 +39,9 @@ public class CourseIntroductionActivity extends FaceShowBaseActivity implements 
         unbinder = ButterKnife.bind(this);
         title_layout_title.setText(R.string.course_jianjie);
         title_layout_left_img.setVisibility(View.VISIBLE);
+        String courseIntroduction = getIntent().getStringExtra("COURSE_INTRODUCTION");
+        introduction_content.setText(courseIntroduction);
         initListener();
-        requestData();
     }
 
     private void initListener() {
@@ -51,15 +54,20 @@ public class CourseIntroductionActivity extends FaceShowBaseActivity implements 
             case R.id.title_layout_left_img:
                 finish();
                 break;
-            case R.id.retry_button:
-                requestData();
-                break;
+//            case R.id.retry_button:
+//                requestData();
+//                break;
             default:
                 break;
         }
     }
 
-    private void requestData() {
+    /**
+     */
+    public static void invoke(Context context, String courseIntroduction) {
+        Intent intent = new Intent(context, CourseIntroductionActivity.class);
+        intent.putExtra("COURSE_INTRODUCTION", courseIntroduction);
+        context.startActivity(intent);
     }
 }
 

@@ -7,7 +7,6 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
  */
 
 public class CheckInRequest extends FaceShowBaseRequest {
-    public String scanString;
     public String method="interact.replenishSignIn";
     public String stepId;
 

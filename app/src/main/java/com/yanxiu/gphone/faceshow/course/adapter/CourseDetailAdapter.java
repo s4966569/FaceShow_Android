@@ -93,8 +93,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 holder1.course_detail_all.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(mContext, CourseIntroductionActivity.class);
-                        mContext.startActivity(i);
+                        CourseIntroductionActivity.invoke(mContext, data.getBriefing());
                     }
                 });
                 break;
