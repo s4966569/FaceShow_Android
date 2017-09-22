@@ -53,7 +53,7 @@ public class GetNotificationDetailResponse extends FaceShowBaseResponse {
         private String createTime;
         private String updateTime;
         private int state;
-        private Object attachUrl;
+        private String attachUrl;
         private int readNum;
         private Object authorName;
         private Object createTimeStr;
@@ -126,11 +126,11 @@ public class GetNotificationDetailResponse extends FaceShowBaseResponse {
             this.state = state;
         }
 
-        public Object getAttachUrl() {
+        public String getAttachUrl() {
             return attachUrl;
         }
 
-        public void setAttachUrl(Object attachUrl) {
+        public void setAttachUrl(String attachUrl) {
             this.attachUrl = attachUrl;
         }
 
