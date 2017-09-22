@@ -31,6 +31,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.customview.LoadingView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.homepage.activity.WelcomeActivity;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.UserSignInResponse;
@@ -208,8 +209,8 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
             startActivity(intent);
             QRCodeCheckInActivity.this.finish();
         } else {
-            Log.e("frc", resultString + "&token=" + SpManager.getToken());
-            goCheckIn(resultString + "&token=" + SpManager.getToken());
+            Log.e("frc", "http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + resultString + "&token=" + SpManager.getToken()+ "&device=android");
+            goCheckIn("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + resultString + "&token=" + SpManager.getToken() + "&device=android");
         }
 
 
@@ -245,13 +246,19 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
                     return;
                 }
                 try {
-                    UserSignInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, UserSignInResponse.class);
+                    CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
                         startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
                         QRCodeCheckInActivity.this.finish();
                     } else {
                         Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
-                        intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
+                        if (userSignInResponse.getError().getCode() == 210412) {
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.HAS_NOT_START);
+                        } else if (userSignInResponse.getError().getCode() == 210413) {
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
+                        } else {
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_INVALID);
+                        }
                         startActivity(intent);
                         QRCodeCheckInActivity.this.finish();
                     }

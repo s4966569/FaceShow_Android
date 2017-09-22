@@ -49,7 +49,9 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
     private Context mContext;
     private ImageView mImgLogo;
-
+    private static boolean isAnimationEnd = false;
+    private static boolean isGetUserInfoSuccess = false;
+    private static boolean isGetUserInfoFailure = false;
     private Animator.AnimatorListener logoAnimatorListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animator) {
@@ -58,7 +60,16 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
         @Override
         public void onAnimationEnd(Animator animator) {
-            checkUserStatus();
+            isAnimationEnd = true;
+            if (isGetUserInfoSuccess) {
+                MainActivity.invoke(WelcomeActivity.this);
+                WelcomeActivity.this.finish();
+            }
+            if (isGetUserInfoFailure) {
+                LoginActivity.toThisAct(WelcomeActivity.this);
+                WelcomeActivity.this.finish();
+            }
+
         }
 
         @Override
@@ -80,6 +91,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         initView();
         /*欢迎页logo的动画效果*/
         mImgLogo.animate().translationY(-800).setDuration(1000).setListener(logoAnimatorListener);
+        checkUserStatus();
     }
 
     private void initView() {
@@ -135,18 +147,28 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
                 if (ret.getCode() == 0) {
                     UserInfo.getInstance().setInfo(ret.getData());
-                    MainActivity.invoke(activity);
+                    isGetUserInfoSuccess = true;
+                    if (isAnimationEnd) {
+                        MainActivity.invoke(activity);
+                        activity.finish();
+                    }
                 } else {
-                    LoginActivity.toThisAct(activity);
-                    activity.finish();
+                    isGetUserInfoFailure = true;
+                    if (isAnimationEnd) {
+                        LoginActivity.toThisAct(activity);
+                        activity.finish();
+                    }
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
-                LoginActivity.toThisAct(activity);
-                activity.finish();
+                isGetUserInfoFailure = true;
+                if (isAnimationEnd) {
+                    LoginActivity.toThisAct(activity);
+                    activity.finish();
+                }
 
             }
         });
