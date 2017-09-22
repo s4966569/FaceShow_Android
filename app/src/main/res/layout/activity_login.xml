@@ -34,13 +34,13 @@
                 android:layout_marginTop="140dp"
                 android:background="@drawable/shape_password_bg"
                 android:hint="@string/please_input_account_number"
-                android:text="18610583576"
                 android:inputType="text"
                 android:maxLines="1"
                 android:paddingEnd="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingStart="10dp"
+                android:text="18610583576"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 android:textSize="13dp" />
@@ -60,11 +60,11 @@
                     android:hint="@string/please_input_password"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:text="123456"
                     android:paddingEnd="10dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingStart="10dp"
+                    android:text="123456"
                     android:textColor="@android:color/white"
                     android:textColorHint="@android:color/white"
                     android:textSize="13dp" />
@@ -77,7 +77,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/icon_delete" />
+                    android:src="@drawable/selector_hide_password" />
             </RelativeLayout>
 
 
