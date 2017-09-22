@@ -320,6 +320,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
         }
         // TODO: 17-9-21 移除轮讯
+        handler.removeCallbacksAndMessages(null);
     }
 
 }

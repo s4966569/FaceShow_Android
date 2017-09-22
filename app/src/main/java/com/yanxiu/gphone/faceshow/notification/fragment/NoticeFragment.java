@@ -88,11 +88,11 @@ public class NoticeFragment extends FaceShowBaseFragment {
                 mRootView.hiddenLoadingView();
                 swipeRefreshLayout.setRefreshing(false);
                 if (ret.getCode() == 0) {
-                    if (ret.getNotificationList() != null && ret.getNotificationList().size() > 0) {
+                    if (ret.getData() != null && ret.getData().getElements() != null && ret.getData().getElements().size() > 0) {
                         if (mOffset == 0) {
                             mNotificationList.clear();
                         }
-                        mNotificationList.addAll(ret.getNotificationList());
+                        mNotificationList.addAll(ret.getData().getElements());
                     }
                     mNotificationAdapter.update(mNotificationList);
                     mRootView.hiddenOtherErrorView();

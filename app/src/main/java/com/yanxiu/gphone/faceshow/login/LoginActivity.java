@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -89,9 +90,11 @@ public class LoginActivity extends FaceShowBaseActivity {
             case R.id.img_show_password:
                 if (isPasswordShow) {
                     edt_account_password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    img_show_password.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.selector_show_password));
                     isPasswordShow = false;
                 } else {
                     edt_account_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    img_show_password.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.selector_hide_password));
                     isPasswordShow = true;
                 }
                 break;

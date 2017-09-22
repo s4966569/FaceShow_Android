@@ -2,17 +2,14 @@ package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.animation.Animator;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import com.facebook.stetho.common.StringUtil;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -21,15 +18,16 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
-import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
-import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 /**
+ * 欢迎页面
  * Created by 戴延枫 on 2017/9/14.
  */
 
@@ -40,16 +38,13 @@ public class WelcomeActivity extends FaceShowBaseActivity {
      * cwq
      */
     private static final int LOAD_TIME = 400;
-
-    private RelativeLayout mRootView;
-
-    private Handler mHander;
+    private Handler mHandler;
     private final static int GO_LOGIN = 0x0001;
     private final static int GO_MAIN = 0x0002;
 
-    private Context mContext;
     private ImageView mImgLogo;
     private static boolean isAnimationEnd = false;
+    private static boolean isCanLogin = false;
     private static boolean isGetUserInfoSuccess = false;
     private static boolean isGetUserInfoFailure = false;
     private Animator.AnimatorListener logoAnimatorListener = new Animator.AnimatorListener() {
@@ -66,6 +61,10 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                 WelcomeActivity.this.finish();
             }
             if (isGetUserInfoFailure) {
+                LoginActivity.toThisAct(WelcomeActivity.this);
+                WelcomeActivity.this.finish();
+            }
+            if (isCanLogin) {
                 LoginActivity.toThisAct(WelcomeActivity.this);
                 WelcomeActivity.this.finish();
             }
@@ -87,17 +86,28 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        mContext = this;
         initView();
-        /*欢迎页logo的动画效果*/
-        mImgLogo.animate().translationY(-800).setDuration(1000).setListener(logoAnimatorListener);
-        checkUserStatus();
+        String[] perms = {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA};
+        requestPermissions(perms, new OnPermissionCallback() {
+            @Override
+            public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+                /*欢迎页logo的动画效果*/
+                int ANIMATION_DURATION = 1000;//动画时长
+                mImgLogo.animate().translationY(-800).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
+                checkUserStatus();
+            }
+
+            @Override
+            public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
+
+            }
+        });
+
     }
 
     private void initView() {
-        mRootView = (RelativeLayout) findViewById(R.id.root_view);
         mImgLogo = (ImageView) findViewById(R.id.img_logo);
-        mHander = new WelcomeHandler(this);
+        mHandler = new WelcomeHandler(this);
 
     }
 
@@ -105,13 +115,12 @@ public class WelcomeActivity extends FaceShowBaseActivity {
      * 检查用户
      */
     private void checkUserStatus() {
-        //TODO @荣成 判断用户信息是否登录
         if (TextUtils.isEmpty(SpManager.getToken())) {
             //用户信息不完整,跳转登录页
-            mHander.sendEmptyMessageDelayed(GO_LOGIN, LOAD_TIME);
+            mHandler.sendEmptyMessageDelayed(GO_LOGIN, LOAD_TIME);
         } else {
             //用户信息完整，跳转首页
-            mHander.sendEmptyMessageDelayed(GO_MAIN, LOAD_TIME);
+            mHandler.sendEmptyMessageDelayed(GO_MAIN, LOAD_TIME);
         }
     }
 
@@ -119,7 +128,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
         private WeakReference<WelcomeActivity> mActivity;
 
-        public WelcomeHandler(WelcomeActivity activity) {
+        WelcomeHandler(WelcomeActivity activity) {
             mActivity = new WeakReference<>(activity);
         }
 
@@ -129,11 +138,14 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
             switch (msg.what) {
                 case GO_LOGIN:
-                    LoginActivity.toThisAct(activity);
-                    activity.finish();
+                    isCanLogin = true;
+                    if (isAnimationEnd) {
+                        LoginActivity.toThisAct(activity);
+                        activity.finish();
+                    }
                     break;
                 case GO_MAIN:
-                    //进入首页
+                    //获取用户基本信息
                     getUserInfo(activity);
                     break;
             }
@@ -187,7 +199,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
     @Override
     protected void onDestroy() {
-        mHander.removeCallbacksAndMessages(null);
+        mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
 }
