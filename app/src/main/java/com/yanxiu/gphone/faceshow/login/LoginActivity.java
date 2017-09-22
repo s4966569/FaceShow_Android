@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -72,8 +74,57 @@ public class LoginActivity extends FaceShowBaseActivity {
         unbinder = ButterKnife.bind(this);
         if (SpManager.isFristStartUp())
             SpManager.setFristStartUp(false);
+
+        edt_account_number.addTextChangedListener(accountNumberChangedListener);
+        edt_account_password.addTextChangedListener(accountPasswordChangedListener);
+        if (edt_account_number.getText().length()>0&&edt_account_password.getText().length()>0){
+            tv_sign_in.setBackgroundResource(R.drawable.selector_sign_in_bg);
+        }else {
+            tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
+        }
     }
 
+    private TextWatcher accountNumberChangedListener = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            if (charSequence.length() > 0 && edt_account_password.getText().length() > 0) {
+                tv_sign_in.setBackgroundResource(R.drawable.selector_sign_in_bg);
+            } else {
+                tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
+            }
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+    private TextWatcher accountPasswordChangedListener = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            if (charSequence.length() > 0 && edt_account_number.getText().length() > 0) {
+                tv_sign_in.setBackgroundResource(R.drawable.selector_sign_in_bg);
+            } else {
+                tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
 
     @Override
     protected void onDestroy() {
@@ -90,11 +141,11 @@ public class LoginActivity extends FaceShowBaseActivity {
             case R.id.img_show_password:
                 if (isPasswordShow) {
                     edt_account_password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    img_show_password.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.selector_show_password));
+                    img_show_password.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.selector_show_password));
                     isPasswordShow = false;
                 } else {
                     edt_account_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    img_show_password.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.selector_hide_password));
+                    img_show_password.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.selector_hide_password));
                     isPasswordShow = true;
                 }
                 break;
