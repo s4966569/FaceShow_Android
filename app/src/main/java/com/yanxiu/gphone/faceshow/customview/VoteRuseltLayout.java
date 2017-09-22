@@ -2,8 +2,6 @@ package com.yanxiu.gphone.faceshow.customview;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteInfoBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteItemBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
 //    public static final int TYPE_MULTI = 0x001;
 
     private Context mContext;
+    private VoteInfoBean mData;
     //    private onItemClickListener mOnItemClickListener;
 //    private int mChooseType = TYPE_SINGLE;
 //    private boolean mIsClick = true;
@@ -60,8 +61,9 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
         this.setOrientation(LinearLayout.VERTICAL);
     }
 
-    public void setData(List<VoteBean.VoteResultBean> list) {
-        addChildView(list);
+    public void setData(VoteInfoBean data) {
+        mData = data;
+        addChildView(data);
     }
 
 //    /**
@@ -79,21 +81,23 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
 //    }
 
 
-    private void addChildView(final List<VoteBean.VoteResultBean> list) {
+    private void addChildView(final VoteInfoBean data) {
         this.removeAllViews();
+        ArrayList<VoteItemBean> list = data.getVoteItems();
         for (int i = 0; i < list.size(); i++) {
-            VoteBean.VoteResultBean bean = list.get(i);
+            VoteItemBean bean = list.get(i);
             View view = LayoutInflater.from(mContext).inflate(R.layout.layout_vote_result_item, this, false);
             final ViewHolder holder = new ViewHolder();
             holder.position = i;
             holder.mVote_title = (TextView) view.findViewById(R.id.vote_title);
             holder.mVoteResult_count = (TextView) view.findViewById(R.id.voteResult_count);
             holder.mVoteResult_progress = (VoteProgressView) view.findViewById(R.id.voteResult_progress);
-            holder.mVoteResult_progress.setMaxCount(bean.getTotalCount());
-            holder.mVoteResult_progress.updateProgress(bean.getCount());
+//            holder.mVoteResult_progress.setMaxCount(100);
+//            holder.mVoteResult_progress.updateProgress((int)(100*Float.valueOf(bean.getPercent())));
+            holder.mVoteResult_progress.setPercent(Float.valueOf(bean.getPercent()));
 
-            holder.mVote_title.setText(bean.getChooseContent()+"");
-            holder.mVoteResult_count.setText(bean.getCount()+"");
+            holder.mVote_title.setText(bean.getItemName());
+            holder.mVoteResult_count.setText(bean.getSelectedNum());
             this.addView(view);
         }
     }

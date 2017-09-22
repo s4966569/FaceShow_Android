@@ -84,4 +84,18 @@ public class VoteProgressView extends View {
         }
     }
 
+    /***
+     * 设置当前的百分比进度
+     * @ percent
+     */
+    public void setPercent(float percent) {
+        if (mCurrentProgress <= mScreenWidth && percent >= 0 && percent <= 1) {
+            mCurrentProgress = mScreenWidth * percent;
+            if (mCurrentProgress >= 0 && mCurrentProgress <= mScreenWidth) {
+                getLayoutParams().width = (int) mCurrentProgress;
+                requestLayout();
+            }
+        }
+    }
+
 }

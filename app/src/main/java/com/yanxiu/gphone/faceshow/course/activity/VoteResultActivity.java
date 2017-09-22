@@ -14,7 +14,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.VoteResultAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
 import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
@@ -87,7 +87,7 @@ public class VoteResultActivity extends FaceShowBaseActivity implements View.OnC
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(VoteBean.getMockData());
+//                    mAdapter.setData(VoteBean.getMockData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();

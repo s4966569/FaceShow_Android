@@ -5,29 +5,22 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.common.bean.EvaluationBean;
-import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.bean.EvaluationBean;
+import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.customview.ChooseLayout;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
-import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_MULTI;
-import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_SINGLE;
-import static com.yanxiu.gphone.faceshow.common.bean.EvaluationBean.TYPE_TEXT;
+import static com.yanxiu.gphone.faceshow.course.bean.EvaluationBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.course.bean.EvaluationBean.TYPE_SINGLE;
+import static com.yanxiu.gphone.faceshow.course.bean.EvaluationBean.TYPE_TEXT;
 
 
 /**
@@ -39,25 +32,27 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private Context mContext;
 
-    private ArrayList<EvaluationBean> mList;
+    private ArrayList<QusetionBean> mList;
+    private EvaluationBean mVoteBean;
 
     private CanSubmitListener mListener;
-    private boolean mOnlyLook;
+    private boolean mIsAnswer;
 
-    public EvaluationAdapter(Context context, CanSubmitListener listener, boolean onlyLook) {
+    public EvaluationAdapter(Context context, CanSubmitListener listener) {
         mContext = context;
         mListener = listener;
-        mOnlyLook = onlyLook;
     }
 
-    public void setData(ArrayList<EvaluationBean> list) {
-        mList = list;
+    public void setData(EvaluationBean evaluationBean) {
+        mVoteBean = evaluationBean;
+        mIsAnswer = mVoteBean.isAnswer();
+        mList = mVoteBean.getQuestionGroup().getQuestions();
     }
 
     @Override
     public int getItemViewType(int position) {
-        EvaluationBean bean = mList.get(position);
-        return bean.getType();
+        QusetionBean bean = mList.get(position);
+        return bean.getQuestionType();
     }
 
     @Override
@@ -82,16 +77,21 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final EvaluationBean data = mList.get(position);
+        final QusetionBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.evaluation_title.setText(data.getTitle());
+                holder1.evaluation_title.setText(position + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
                 holder1.chooseLayout.setChooseType(getItemViewType(position));
-                holder1.chooseLayout.setIsClick(!mOnlyLook);
-                holder1.chooseLayout.setData(data.getChooseList());
-                holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());
+                holder1.chooseLayout.setIsClick(!mIsAnswer);
+                holder1.chooseLayout.setData(data.getVoteInfo());
+                if (mIsAnswer) {
+                    holder1.chooseLayout.setSaveChooceResultList(data.getUserAnswer().getQuestionAnswers());
+                } else {
+                    holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());
+                }
+
                 holder1.chooseLayout.setSelectItemListener(this);
                 break;
             case TYPE_TEXT:
@@ -103,7 +103,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //                        return false;
 //                    }
 //                });
-                if (mOnlyLook && !TextUtils.isEmpty(data.getFeedBackText())) {
+                if (mIsAnswer && !TextUtils.isEmpty(data.getFeedBackText())) {
                     holder2.evalution_editText.setText(data.getFeedBackText());
                     holder2.evalution_editText.setEnabled(false);
                 }
@@ -121,7 +121,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     @Override
                     public void afterTextChanged(Editable s) {
                         com.yanxiu.gphone.faceshow.util.Logger.e("dyf", s.toString());
-                        EvaluationBean bean = mList.get(position);
+                        QusetionBean bean = mList.get(position);
                         bean.setFeedBackText(s.toString());
                     }
                 });
@@ -139,12 +139,12 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onChooseItemClick(int position, boolean isSelected) {
         boolean allChoose = true;
         for (int i = 0; i < getItemCount(); i++) {
-            EvaluationBean bean = mList.get(i);
-            if (bean.getType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
+            QusetionBean bean = mList.get(i);
+            if (bean.getQuestionType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
                 allChoose = false;
                 break;
             }
-            if ((bean.getType() == TYPE_SINGLE || bean.getType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
+            if ((bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
                 allChoose = false;
                 break;
             }

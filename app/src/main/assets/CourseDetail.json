@@ -55,8 +55,21 @@
         "interactId": 481,
         "stepStatus": 1,
         "createTime": "2017-09-15 17:01:04",
-        "stepFinished": null,
+        "stepFinished": 2,
         "interactTypeName": "投票"
+      },
+      {
+        "stepId": 2,
+        "projectId": 1,
+        "clazsId": 2,
+        "courseId": 2,
+        "interactName": "评价",
+        "interactType": 5,
+        "interactId": 481,
+        "stepStatus": 1,
+        "createTime": "2017-09-15 17:01:04",
+        "stepFinished": 2,
+        "interactTypeName": "问卷"
       }
     ]
   },

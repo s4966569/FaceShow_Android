@@ -14,7 +14,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.EvaluationAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.EvaluationBean;
+import com.yanxiu.gphone.faceshow.course.bean.EvaluationBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.course.EvaluationRequest;
 import com.yanxiu.gphone.faceshow.http.course.EvalutionResponse;
@@ -33,7 +33,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private RecyclerView mRecyclerView;
     private EvaluationAdapter mAdapter;
 
-    private boolean onlyLook;
+//    private boolean onlyLook;
 
 
     @Override
@@ -43,7 +43,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mRootView.setContentView(R.layout.activity_evaluation);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
-        onlyLook = getIntent().getBooleanExtra("onlyLook", false);
+//        onlyLook = getIntent().getBooleanExtra("onlyLook", false);
         initView();
         initListener();
         requestData();
@@ -55,15 +55,10 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
         mSubmit.setEnabled(false);
-        if (onlyLook) {
-            mSubmit.setVisibility(View.GONE);
-            mTitle.setText("我的课程评价");
-        } else {
-            mTitle.setText("课程评价");
-        }
+        mSubmit.setVisibility(View.GONE);
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new EvaluationAdapter(this, this, onlyLook);
+        mAdapter = new EvaluationAdapter(this, this);
 
     }
 
@@ -98,7 +93,15 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(EvaluationBean.getMockData());
+                    if (ret.getData().isAnswer()) {
+                        mSubmit.setVisibility(View.GONE);
+//                        mTitle.setText("我的课程评价");
+                    } else {
+                        mSubmit.setVisibility(View.VISIBLE);
+//                        mTitle.setText("课程评价");
+                    }
+                    mTitle.setText(ret.getData().getQuestionGroup().getTitle());
+                    mAdapter.setData(ret.getData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -117,11 +120,10 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
 
     /**
      * @param context
-     * @param onlyLook true 我的评价(选项不可点击)
      */
-    public static void invoke(Context context, boolean onlyLook) {
+    public static void invoke(Context context) {
         Intent intent = new Intent(context, EvaluationActivity.class);
-        intent.putExtra("onlyLook", onlyLook);
+//        intent.putExtra("onlyLook", onlyLook);
         context.startActivity(intent);
     }
 

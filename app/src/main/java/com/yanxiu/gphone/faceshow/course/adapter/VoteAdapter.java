@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.common.bean.VoteBean;
+import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
+import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.ChooseLayout;
 
 import java.util.ArrayList;
 
-import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_MULTI;
-import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_SINGLE;
-import static com.yanxiu.gphone.faceshow.common.bean.VoteBean.TYPE_TEXT;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
 
 
 /**
@@ -31,7 +33,8 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     private Context mContext;
 
-    private ArrayList<VoteBean> mList;
+    private VoteBean mVoteBean;
+    private ArrayList<QusetionBean> mList;
 
     private CanSubmitListener mListener;
     private boolean mOnlyLook;
@@ -41,14 +44,18 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         mListener = listener;
     }
 
-    public void setData(ArrayList<VoteBean> list) {
-        mList = list;
+    public void setData(VoteBean voteBean) {
+        mVoteBean = voteBean;
+        mList = mVoteBean.getQuestionGroup().getQuestions();
     }
+//    public void setList(VoteBean voteBean) {
+//        mVoteBean = voteBean;
+//    }
 
     @Override
     public int getItemViewType(int position) {
-        VoteBean bean = mList.get(position);
-        return bean.getType();
+        QusetionBean bean = mList.get(position);
+        return bean.getQuestionType();
     }
 
     @Override
@@ -73,14 +80,14 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final VoteBean data = mList.get(position);
+        final QusetionBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.evaluation_title.setText(data.getTitle());
+                holder1.evaluation_title.setText(position+"、"+data.getTitle()+"("+data.getQuestionTypeName()+")");
                 holder1.chooseLayout.setChooseType(getItemViewType(position));
-                holder1.chooseLayout.setData(data.getChooseList());
+                holder1.chooseLayout.setData(data.getVoteInfo());
                 holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());
                 holder1.chooseLayout.setSelectItemListener(this);
                 break;
@@ -101,7 +108,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                     @Override
                     public void afterTextChanged(Editable s) {
                         com.yanxiu.gphone.faceshow.util.Logger.e("dyf", s.toString());
-                        VoteBean bean = mList.get(position);
+                        QusetionBean bean = mList.get(position);
                         bean.setFeedBackText(s.toString());
                     }
                 });
@@ -119,12 +126,12 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public void onChooseItemClick(int position, boolean isSelected) {
         boolean allChoose = true;
         for (int i = 0; i < getItemCount(); i++) {
-            VoteBean bean = mList.get(i);
-            if (bean.getType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
+            QusetionBean bean = mList.get(i);
+            if (bean.getQuestionType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
                 allChoose = false;
                 break;
             }
-            if ((bean.getType() == TYPE_SINGLE || bean.getType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
+            if ((bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
                 allChoose = false;
                 break;
             }

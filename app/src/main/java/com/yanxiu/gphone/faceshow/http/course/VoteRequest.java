@@ -6,8 +6,8 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
  * 课程评价请求
  */
 
-public class EvaluationRequest extends FaceShowMockRequest {
-    public String method = "app.interact.getQuestionnaire";
+public class VoteRequest extends FaceShowMockRequest {
+    public String method = "app.interact.getVote";
     public String stepId;
 
     @Override
