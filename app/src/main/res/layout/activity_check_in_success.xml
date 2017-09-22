@@ -11,9 +11,9 @@
         layout="@layout/check_in_title_layout" />
 
     <View
-        android:layout_below="@id/title"
         android:layout_width="match_parent"
         android:layout_height="5dp"
+        android:layout_below="@id/title"
         android:background="@color/color_EBEFF2" />
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
-            android:background="@android:color/holo_red_dark" />
+            android:src="@drawable/ic_check_in_success" />
 
         <TextView
             android:layout_width="wrap_content"

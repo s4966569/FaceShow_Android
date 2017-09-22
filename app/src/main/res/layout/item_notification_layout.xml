@@ -22,7 +22,7 @@
                 android:id="@+id/img_notification_head"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@android:color/holo_blue_bright"
+                android:scaleType="centerCrop"
                 android:contentDescription="@null" />
 
             <ImageView

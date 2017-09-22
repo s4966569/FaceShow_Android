@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.notification.adapter;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,13 +56,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView tv_notification_name, tv_notification_created_time;
-        ImageView img_red_circle;
+        ImageView img_red_circle,img_notification_head;
 
         ViewHolder(View itemView) {
             super(itemView);
             tv_notification_name = (TextView) itemView.findViewById(R.id.tv_notification_name);
             tv_notification_created_time = (TextView) itemView.findViewById(R.id.tv_notification_created_time);
             img_red_circle = (ImageView) itemView.findViewById(R.id.img_red_circle);
+            img_notification_head = (ImageView) itemView.findViewById(R.id.img_notification_head);
         }
 
         public void setData(NotificationResponse.Notification notification) {
@@ -69,8 +71,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             tv_notification_created_time.setText(notification.getUpdateTime());
             if (!notification.isViewed()) {//消息未读
                 img_red_circle.setVisibility(View.VISIBLE);
+                img_notification_head.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_notification_un_viewed));
             } else {
                 img_red_circle.setVisibility(View.INVISIBLE);
+                img_notification_head.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_notification_viewed));
             }
 
         }

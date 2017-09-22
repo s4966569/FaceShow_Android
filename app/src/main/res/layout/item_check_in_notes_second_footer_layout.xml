@@ -24,7 +24,6 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@+id/tv_training_statue"
-        android:background="@android:color/holo_red_dark"
         android:contentDescription="@null" />
     <LinearLayout
         android:layout_width="wrap_content"
