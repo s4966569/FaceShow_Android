@@ -125,7 +125,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
         switch (itemBean.getMyDataType()) {
             case lecturer:
                 LecturerInfosBean lecturerInfosBean = (LecturerInfosBean) itemBean;
-                SpecialistIntroductionActivity.invoke(CourseActivity.this);
+                SpecialistIntroductionActivity.invoke(CourseActivity.this, lecturerInfosBean);
                 break;
             case attachment:
                 AttachmentInfosBean attachmentInfosBean = (AttachmentInfosBean) itemBean;
@@ -134,8 +134,10 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                         || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
                     Intent intent;
                     PdfBean pdfbean = new PdfBean();
-                    pdfbean.setName("pdfTest");
-                    pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
+//                    pdfbean.setName("pdfTest");
+//                    pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
+                    pdfbean.setName(attachmentInfosBean.getResName());
+                    pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
                     pdfbean.setRecord(0);
 
                     intent = new Intent(this, PDFViewActivity.class);
