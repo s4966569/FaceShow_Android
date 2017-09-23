@@ -14,6 +14,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.common.listener.KeyboardChangeListener;
 import com.yanxiu.gphone.faceshow.course.adapter.EvaluationAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.EvaluationBean;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
@@ -27,6 +28,7 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
 
+import static android.view.View.GONE;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
@@ -34,7 +36,7 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
 /**
  * 评价页面
  */
-public class EvaluationActivity extends FaceShowBaseActivity implements View.OnClickListener, EvaluationAdapter.CanSubmitListener {
+public class EvaluationActivity extends FaceShowBaseActivity implements View.OnClickListener, EvaluationAdapter.CanSubmitListener, KeyboardChangeListener.KeyBoardListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -84,13 +86,15 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private void initListener() {
         mBackView.setOnClickListener(this);
         mSubmit.setOnClickListener(this);
+        mKeyboardChangeListener = new KeyboardChangeListener(this);
+        mKeyboardChangeListener.setKeyBoardListener(this);
     }
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.course_backView:
+            case R.id.title_layout_left_img:
                 finish();
                 break;
             case R.id.retry_button:
@@ -216,5 +220,36 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     @Override
     public void canSubmit(boolean is) {
         mSubmit.setEnabled(is);
+    }
+
+    private KeyboardChangeListener mKeyboardChangeListener;
+
+    /**
+     * call back
+     *
+     * @param isShow         true is show else hidden
+     * @param keyboardHeight keyboard height
+     */
+    @Override
+    public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+        if (isShow) {
+            mSubmit.setVisibility(GONE);
+        } else {
+            mSubmit.setVisibility(View.VISIBLE);
+            boolean allChoose = true;
+            for (int i = 0; i < mData.getQuestionGroup().getQuestions().size(); i++) {
+                QusetionBean bean = mData.getQuestionGroup().getQuestions().get(i);
+                if (bean.getQuestionType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
+                    allChoose = false;
+                    break;
+                }
+                if ((bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
+                    allChoose = false;
+                    break;
+                }
+
+            }
+            mSubmit.setEnabled(allChoose);
+        }
     }
 }

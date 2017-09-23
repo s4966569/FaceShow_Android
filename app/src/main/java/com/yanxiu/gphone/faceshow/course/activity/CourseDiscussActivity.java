@@ -33,13 +33,14 @@ import com.yanxiu.gphone.faceshow.http.course.DiscussCommentRequest;
 import com.yanxiu.gphone.faceshow.http.course.DiscussCommentResponse;
 import com.yanxiu.gphone.faceshow.http.course.DiscussRequest;
 import com.yanxiu.gphone.faceshow.http.course.DiscussResponse;
+import com.yanxiu.gphone.faceshow.http.course.DiscussResponseBean;
 import com.yanxiu.gphone.faceshow.http.course.DiscussSaveRequest;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * 课程讨论
  */
-public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener,TextView.OnEditorActionListener {
+public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener, TextView.OnEditorActionListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -56,13 +57,15 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     private InteractStepsBean stepsBean;
 
+    private DiscussResponseBean mData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRootView = new PublicLoadLayout(this);
         mRootView.setContentView(R.layout.activity_course_discuss);
         mRootView.setRetryButtonOnclickListener(this);
-        stepsBean= (InteractStepsBean) getIntent().getSerializableExtra("InteractStepsBean");
+        stepsBean = (InteractStepsBean) getIntent().getSerializableExtra("InteractStepsBean");
         setContentView(mRootView);
         initView();
         initListener();
@@ -96,13 +99,17 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
             @Override
             public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
-                ToastUtil.showToast(getApplicationContext(), "加载跟多");
-                requestLoarMore();
+                if (mNowTotalCount < mTotalCount) {
+                    requestLoarMore();
+                } else {
+                    mRecyclerView.finishLoadMore();
+                    ToastUtil.showToast(CourseDiscussActivity.this, "没有更多数据了");
+                }
+
             }
 
             @Override
             public void onLoadmoreComplte() {
-                ToastUtil.showToast(getApplicationContext(), "加载更多结束");
             }
         });
     }
@@ -133,7 +140,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private void requestTitleData() {
         mRootView.showLoadingView();
         DiscussCommentRequest discussRequest = new DiscussCommentRequest();
-        discussRequest.stepId=stepsBean.getStepId();
+        discussRequest.stepId = stepsBean.getStepId();
         discussRequest.startRequest(DiscussCommentResponse.class, new HttpCallback<DiscussCommentResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussCommentResponse ret) {
@@ -159,7 +166,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         if (!isRefreshIng)
             mRootView.showLoadingView();
         DiscussRequest discussRequest = new DiscussRequest();
-        discussRequest.stepId=stepsBean.getStepId();
+        discussRequest.stepId = stepsBean.getStepId();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
@@ -167,6 +174,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 if (isRefreshIng)
                     mSwipeRefreshLayout.setRefreshing(false);
                 if (ret != null && ret.getCode() == 0) {
+                    mData = ret.getData();
                     mTotalCount = ret.getData().getTotalElements();
                     mNowTotalCount = ret.getData().getElements().size();
                     if (mNowTotalCount >= mTotalCount) {
@@ -194,17 +202,23 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     }
 
     private void requestLoarMore() {
+        mRootView.showLoadingView();
         DiscussRequest discussRequest = new DiscussRequest();
-        discussRequest.stepId=stepsBean.getStepId();
+        discussRequest.stepId = stepsBean.getStepId();
+        discussRequest.id = mData.getCallbackValue();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
                 mRootView.finish();
                 mRecyclerView.finishLoadMore();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(ret.getData().getElements());
-
-                    mRecyclerView.setAdapter(mAdapter);
+                    if (mNowTotalCount < mTotalCount) {
+                        mAdapter.addData(ret.getData().getElements());
+                        mNowTotalCount += ret.getData().getElements().size();
+                    } else {
+                        ToastUtil.showToast(CourseDiscussActivity.this, "没有更多数据了");
+                    }
+//                    mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
                 }
@@ -222,13 +236,14 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     }
 
     /**
-     * 提交讨论标题数据
+     * 提交讨论数据
      */
     private void submitData(String content) {
         mRootView.showLoadingView();
         DiscussSaveRequest discussSaveRequest = new DiscussSaveRequest();
         discussSaveRequest.content = content;
-        discussSaveRequest.stepId =stepsBean.getStepId();;
+        discussSaveRequest.stepId = stepsBean.getStepId();
+        ;
         discussSaveRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
             @Override
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
@@ -268,7 +283,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
      */
     public static void invoke(Activity activity, InteractStepsBean interactStepsBean) {
         Intent intent = new Intent(activity, CourseDiscussActivity.class);
-        intent.putExtra("InteractStepsBean",interactStepsBean);
+        intent.putExtra("InteractStepsBean", interactStepsBean);
         activity.startActivity(intent);
     }
 
@@ -279,7 +294,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId== EditorInfo.IME_ACTION_SEND){
+        if (actionId == EditorInfo.IME_ACTION_SEND) {
             String comment = mEd_comment.getText().toString();
             if (!TextUtils.isEmpty(comment)) {
                 submitData(comment);

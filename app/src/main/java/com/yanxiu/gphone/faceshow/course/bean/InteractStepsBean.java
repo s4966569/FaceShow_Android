@@ -29,6 +29,7 @@ public class InteractStepsBean extends CourseDetailItemBean {
     private String stepFinished;//1,完成  2,未完成
     private String interactTypeName;
 
+
     public String getStepId() {
         return stepId;
     }

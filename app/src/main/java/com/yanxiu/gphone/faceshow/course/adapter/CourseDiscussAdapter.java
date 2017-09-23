@@ -20,6 +20,7 @@ import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.course.CourseDiscussLikeRequest;
+import com.yanxiu.gphone.faceshow.http.course.CourseDiscussLikeResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.YXPictureManager;
 
@@ -49,6 +50,11 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setData(ArrayList<DiscussBean> list) {
         mList = list;
+    }
+
+    public void addData(ArrayList<DiscussBean> list) {
+        mList.addAll(list);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -95,10 +101,12 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
                 holder2.discuss_content.setText(data.getContent());
                 holder2.discuss_time.setText(data.getCreateTime());
                 holder2.discuss_laud.setText(data.getLikeNum() == 0 ? "赞" : (data.getLikeNum() + ""));
-                if (data.isHasLaud()) {
+                if (data.getUserLiked() == 1) {
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
+                    holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_laud_clicked);
                 } else {
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_333333));
+                    holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_unlaud);
                 }
                 YXPictureManager.getInstance().showRoundPic(mContext, data.getAvatar(), holder2.discuss_img, 5, R.mipmap.ic_launcher);
 
@@ -108,7 +116,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
 //                        if (mListener != null) {
 //                            mListener.onItemClick(position, data);
 //                        }
-                        setLike(data.getId(),holder2,data);
+                        setLike(data.getId(), holder2, data);
                     }
                 });
                 break;
@@ -116,22 +124,23 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     }
 
-    private void setLike(String commentRecordId,final DiscussItemViewHolder holder2,final DiscussBean data){
-        CourseDiscussLikeRequest likeRequest=new CourseDiscussLikeRequest();
-        likeRequest.commentRecordId=commentRecordId;
-        likeRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
+    private void setLike(String commentRecordId, final DiscussItemViewHolder holder2, final DiscussBean data) {
+        CourseDiscussLikeRequest likeRequest = new CourseDiscussLikeRequest();
+        likeRequest.commentRecordId = commentRecordId;
+        likeRequest.startRequest(CourseDiscussLikeResponse.class, new HttpCallback<CourseDiscussLikeResponse>() {
             @Override
-            public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
-                if (ret.getCode()==0){
+            public void onSuccess(RequestBase request, CourseDiscussLikeResponse ret) {
+                if (ret.getCode() == 0) {
+                    holder2.discuss_laud.setText(ret.getData().getUserNum());
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
                     holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_laud_clicked);
-                    data.setHasLaud(true);
+                    data.setUserLiked(1);
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                ToastUtil.showToast(mContext,error.getMessage());
+                ToastUtil.showToast(mContext, error.getMessage());
             }
         });
     }

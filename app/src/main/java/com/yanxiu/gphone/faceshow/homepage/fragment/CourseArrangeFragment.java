@@ -58,9 +58,8 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-        CourseBean bean = (CourseBean)baseBean;
-        ToastUtil.showToast(getActivity(), position + "");
-        CourseActivity.invoke(getActivity(),bean.getId());
+        CourseBean bean = (CourseBean) baseBean;
+        CourseActivity.invoke(getActivity(), bean.getId());
     }
 
     @Override

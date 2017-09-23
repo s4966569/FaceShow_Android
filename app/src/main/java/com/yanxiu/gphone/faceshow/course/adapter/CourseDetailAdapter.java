@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,12 @@ import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListene
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
+import com.yanxiu.gphone.faceshow.customview.MaxLineTextView;
 
 import java.util.ArrayList;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.lecturer;
@@ -86,9 +90,9 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 CourseHeaderViewHolder holder1 = (CourseHeaderViewHolder) holder;
                 holder1.course_detail_time.setText(data.getStartTime());
                 holder1.course_name.setText(data.getCourseName());
-                holder1.course_detail_location.setText(data.getSite());
+                holder1.course_detail_location.setText(TextUtils.isEmpty(data.getSite()) ? "待定" : data.getSite());
                 holder1.course_detail_teacher.setText(data.getLecturer());
-                holder1.course_detail_txt.setText(data.getBriefing());
+                holder1.course_detail_txt.setText(TextUtils.isEmpty(data.getBriefing()) ? "暂无" : data.getBriefing());
                 holder1.course_detail_all.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -165,7 +169,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private TextView course_detail_time;
         private TextView course_detail_teacher;
         private TextView course_detail_location;
-        private TextView course_detail_txt;
+        private MaxLineTextView course_detail_txt;
 
         public CourseHeaderViewHolder(View itemView) {
             super(itemView);
@@ -173,8 +177,18 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             course_detail_time = (TextView) itemView.findViewById(R.id.course_detaile_name);
             course_detail_teacher = (TextView) itemView.findViewById(R.id.course_detail_teacher);
             course_detail_location = (TextView) itemView.findViewById(R.id.course_detail_location);
-            course_detail_txt = (TextView) itemView.findViewById(R.id.course_detail_txt);
+            course_detail_txt = (MaxLineTextView) itemView.findViewById(R.id.course_detail_txt);
             course_detail_all = (TextView) itemView.findViewById(R.id.course_detail_all);
+            course_detail_txt.setOnLinesChangedListener(new MaxLineTextView.onLinesChangedListener() {
+                @Override
+                public void onLinesChanged(int lines) {
+                    if (lines > 5) {
+                        course_detail_all.setVisibility(VISIBLE);
+                    } else {
+                        course_detail_all.setVisibility(GONE);
+                    }
+                }
+            });
         }
     }
 

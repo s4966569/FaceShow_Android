@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.http.course;
 
+import android.text.TextUtils;
+
 import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
@@ -41,7 +43,12 @@ public class CourseDetailResponse extends FaceShowBaseResponse {
         header.setSubscriberId(data.getCourse().getSubscriberId());
         header.setSubscriberType(data.getCourse().getSubscriberType());
         header.setCourseName(data.getCourse().getCourseName());
-        header.setLecturer(data.getCourse().getLecturer());
+        if (TextUtils.isEmpty(data.getCourse().getLecturer())) {
+            header.setLecturer(getTeacher());
+        } else {
+            header.setLecturer(data.getCourse().getLecturer());
+        }
+
         header.setSite(data.getCourse().getSite());
         header.setStartTime(data.getCourse().getStartTime());
         header.setEndTime(data.getCourse().getEndTime());
@@ -73,5 +80,19 @@ public class CourseDetailResponse extends FaceShowBaseResponse {
         }
 
         return list;
+    }
+
+    private String getTeacher() {
+        StringBuffer result = new StringBuffer();
+        if (data.getCourse().getLecturerInfos() != null) {
+            for (int i = 0; i < data.getCourse().getLecturerInfos().size(); i++) {
+                LecturerInfosBean lBean = data.getCourse().getLecturerInfos().get(i);
+                result.append(lBean.getLecturerName());
+                if (i < data.getCourse().getLecturerInfos().size() - 1) {
+                    result.append(",");
+                }
+            }
+        }
+        return result.toString();
     }
 }
