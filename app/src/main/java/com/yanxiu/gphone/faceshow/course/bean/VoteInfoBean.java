@@ -5,7 +5,7 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
 import java.util.ArrayList;
 
 /**
- * 投票的一个题目
+ * 投票的一个题目的信息
  */
 public class VoteInfoBean extends BaseBean {
 

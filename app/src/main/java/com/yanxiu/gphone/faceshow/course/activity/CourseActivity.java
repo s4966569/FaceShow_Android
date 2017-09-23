@@ -165,7 +165,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                         }
                         break;
                     case InteractStepsBean.DISCUSS:
-                        CourseDiscussActivity.invoke(CourseActivity.this);
+                        CourseDiscussActivity.invoke(CourseActivity.this, interactStepsBean.getInteractName());
                         break;
                     case InteractStepsBean.QUESTIONNAIRES:
                         EvaluationActivity.invoke(this);

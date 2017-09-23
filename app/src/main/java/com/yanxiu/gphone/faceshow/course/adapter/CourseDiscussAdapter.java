@@ -82,20 +82,20 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
             case 1:
                 DiscussHeaderViewHolder holder1 = (DiscussHeaderViewHolder) holder;
                 holder1.discuss_title.setText(data.getTitle());
-                holder1.discuss_feedback_count.setText("回复(" + data.getCount() + ")");
+                holder1.discuss_feedback_count.setText("回复(" + data.getTotalElements() + ")");
                 break;
             case 2:
                 final DiscussItemViewHolder holder2 = (DiscussItemViewHolder) holder;
-                holder2.discuss_name.setText(data.getName());
+                holder2.discuss_name.setText(data.getUserName());
                 holder2.discuss_content.setText(data.getContent());
-                holder2.discuss_time.setText(data.getTime());
-                holder2.discuss_laud.setText(data.getLaudCount() == 0 ? "赞" : (data.getLaudCount() + ""));
-                if(data.isHasLaud()){
+                holder2.discuss_time.setText(data.getCreateTime());
+                holder2.discuss_laud.setText(data.getLikeNum() == 0 ? "赞" : (data.getLikeNum() + ""));
+                if (data.isHasLaud()) {
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
-                }else{
+                } else {
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_333333));
                 }
-                YXPictureManager.getInstance().showRoundPic(mContext, "http://scc.jsyxw.cn/answer/images/2017/0831/file_59a7d19f6cc53.jpg", holder2.discuss_img, 5, R.mipmap.ic_launcher);
+                YXPictureManager.getInstance().showRoundPic(mContext, data.getAvatar(), holder2.discuss_img, 5, R.mipmap.ic_launcher);
 
                 holder2.laud_layout.setOnClickListener(new View.OnClickListener() {
                     @Override

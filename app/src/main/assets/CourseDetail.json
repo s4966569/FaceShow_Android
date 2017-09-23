@@ -70,6 +70,19 @@
         "createTime": "2017-09-15 17:01:04",
         "stepFinished": 2,
         "interactTypeName": "问卷"
+      },
+      {
+        "stepId": 13,
+        "projectId": 1,
+        "clazsId": 2,
+        "courseId": 2,
+        "interactName": "针对此课程您有什么想说的快来讨论吧！",
+        "interactType": 4,
+        "interactId": 481,
+        "stepStatus": 1,
+        "createTime": "2017-09-15 17:01:04",
+        "stepFinished": 2,
+        "interactTypeName": "讨论"
       }
     ]
   },
