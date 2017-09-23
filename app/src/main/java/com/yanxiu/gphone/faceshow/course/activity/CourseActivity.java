@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -44,6 +45,9 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     private RecyclerView mRecyclerView;
     private CourseDetailAdapter mAdapter;
 
+    private final static String COURSE_ID = "course_id";
+    private String mCourseid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +55,11 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
         mRootView.setContentView(R.layout.activity_course);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
+        mCourseid = getIntent().getStringExtra(COURSE_ID);
+        if (TextUtils.isEmpty(mCourseid)) {
+            mRootView.showOtherErrorView();
+            return;
+        }
         initView();
         initListener();
         requestData();
@@ -86,12 +95,12 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     private void requestData() {
         mRootView.showLoadingView();
         CourseDetailRequest courseDetailRequest = new CourseDetailRequest();
-        courseDetailRequest.courseId = "";
+        courseDetailRequest.courseId = mCourseid;
         courseDetailRequest.startRequest(CourseDetailResponse.class, new HttpCallback<CourseDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getCode() == 0) {
+                if (ret != null && ret.getCode() == 0) {
                     mAdapter.setData(ret.getCourseDetailData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
@@ -103,7 +112,6 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
-
             }
         });
 
@@ -115,8 +123,9 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
      *
      * @param activity
      */
-    public static void invoke(Activity activity) {
+    public static void invoke(Activity activity, String courseId) {
         Intent intent = new Intent(activity, CourseActivity.class);
+        intent.putExtra(COURSE_ID, courseId);
         activity.startActivity(intent);
     }
 
@@ -157,7 +166,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                 switch (interactStepsBean.getInteractType()) {
                     case InteractStepsBean.VOTE:
                         if (InteractStepsBean.NO_FINISH.equals(interactStepsBean.getStepFinished())) {
-                            VoteActivity.invoke(this);
+                            VoteActivity.invoke(this,interactStepsBean.getStepId());
                         } else if (InteractStepsBean.FINISH.equals(interactStepsBean.getStepFinished())) {
                             VoteResultActivity.invoke(this);
                         } else {
@@ -168,7 +177,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                         CourseDiscussActivity.invoke(CourseActivity.this, interactStepsBean.getInteractName());
                         break;
                     case InteractStepsBean.QUESTIONNAIRES:
-                        EvaluationActivity.invoke(this);
+                        EvaluationActivity.invoke(this,interactStepsBean.getStepId());
                         break;
                     case InteractStepsBean.CHECK_IN:
                         QRCodeCheckInActivity.toThisAct(this);

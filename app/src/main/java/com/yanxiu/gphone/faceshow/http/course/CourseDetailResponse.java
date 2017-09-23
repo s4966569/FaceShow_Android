@@ -50,21 +50,28 @@ public class CourseDetailResponse extends FaceShowBaseResponse {
         header.setCourseStatus(data.getCourse().getCourseStatus());
         list.add(header);
 
-        for (int i = 0; i < data.getCourse().getLecturerInfos().size(); i++) {
-            LecturerInfosBean lBean = data.getCourse().getLecturerInfos().get(i);
-            lBean.setMyDataType(CourseDetailItemBean.lecturer);
-            list.add(lBean);
+        if (data.getCourse().getLecturerInfos() != null) {
+            for (int i = 0; i < data.getCourse().getLecturerInfos().size(); i++) {
+                LecturerInfosBean lBean = data.getCourse().getLecturerInfos().get(i);
+                lBean.setMyDataType(CourseDetailItemBean.lecturer);
+                list.add(lBean);
+            }
         }
-        for (int i = 0; i < data.getCourse().getAttachmentInfos().size(); i++) {
-            AttachmentInfosBean aBean = data.getCourse().getAttachmentInfos().get(i);
-            aBean.setMyDataType(CourseDetailItemBean.attachment);
-            list.add(aBean);
+        if (data.getCourse().getAttachmentInfos() != null) {
+            for (int i = 0; i < data.getCourse().getAttachmentInfos().size(); i++) {
+                AttachmentInfosBean aBean = data.getCourse().getAttachmentInfos().get(i);
+                aBean.setMyDataType(CourseDetailItemBean.attachment);
+                list.add(aBean);
+            }
         }
-        for (int i = 0; i < data.getInteractSteps().size(); i++) {
-            InteractStepsBean iBean = data.getInteractSteps().get(i);
-            iBean.setMyDataType(CourseDetailItemBean.interact);
-            list.add(iBean);
+        if (data.getInteractSteps() != null) {
+            for (int i = 0; i < data.getInteractSteps().size(); i++) {
+                InteractStepsBean iBean = data.getInteractSteps().get(i);
+                iBean.setMyDataType(CourseDetailItemBean.interact);
+                list.add(iBean);
+            }
         }
+
         return list;
     }
 }

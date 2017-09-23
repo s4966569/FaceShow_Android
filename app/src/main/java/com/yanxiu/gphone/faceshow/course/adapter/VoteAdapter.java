@@ -85,7 +85,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.evaluation_title.setText(position+"、"+data.getTitle()+"("+data.getQuestionTypeName()+")");
+                holder1.evaluation_title.setText(position+1+"、"+data.getTitle()+"("+data.getQuestionTypeName()+")");
                 holder1.chooseLayout.setChooseType(getItemViewType(position));
                 holder1.chooseLayout.setData(data.getVoteInfo());
                 holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());
@@ -93,7 +93,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
-                holder2.evaluation_title.setText(data.getTitle());
+                holder2.evaluation_title.setText(position+1 + "、"+data.getTitle());
                 holder2.evalution_editText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {

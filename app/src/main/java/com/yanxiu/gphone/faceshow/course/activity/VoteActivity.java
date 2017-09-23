@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +45,8 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     private VoteAdapter mVoteAdapter;
     private VoteResultAdapter mVoteResultAdapter;
     private VoteBean mData;
+    private final static String STEP_ID = "stepid";
+    private String mStepId;
     private boolean mIsAnswer;//true:已投票-投票结果 ；fasle:未投票
 
 
@@ -54,6 +57,11 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         mRootView.setContentView(R.layout.activity_vote);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
+        mStepId = getIntent().getStringExtra(STEP_ID);
+        if (TextUtils.isEmpty(mStepId)) {
+            mRootView.showOtherErrorView();
+            return;
+        }
         initView();
         initListener();
         requestData();
@@ -98,6 +106,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void requestData() {
         mRootView.showLoadingView();
         VoteRequest voteRequest = new VoteRequest();
+        voteRequest.stepId = mStepId;
         voteRequest.startRequest(VoteResponse.class, new HttpCallback<VoteResponse>() {
             @Override
             public void onSuccess(RequestBase request, VoteResponse ret) {
@@ -142,7 +151,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         mRootView.showLoadingView();
         SubmitVoteRequest voteRequest = new SubmitVoteRequest();
         voteRequest.method = SubmitVoteRequest.VOTE;
-        voteRequest.stepId = "";
+        voteRequest.stepId = mStepId;
         voteRequest.answers = makeAnswerString();
         voteRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
             @Override
@@ -201,8 +210,9 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         return sb.toString();
     }
 
-    public static void invoke(Context context) {
+    public static void invoke(Context context, String setpId) {
         Intent intent = new Intent(context, VoteActivity.class);
+        intent.putExtra(STEP_ID, setpId);
         context.startActivity(intent);
     }
 

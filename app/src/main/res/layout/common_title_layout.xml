@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/top_layout_height"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white">
 
     <ImageView
@@ -19,9 +19,9 @@
         android:layout_height="@dimen/top_layout_height"
         android:layout_centerVertical="true"
         android:layout_marginLeft="15dp"
+        android:gravity="center"
         android:textColor="@color/color_333333"
         android:textSize="@dimen/commontitle_singin_textsize"
-        android:gravity="center"
         android:visibility="gone" />
 
     <TextView
@@ -30,7 +30,9 @@
         android:layout_height="@dimen/top_layout_height"
         android:layout_centerInParent="true"
         android:layout_weight="1"
+        android:ellipsize="end"
         android:gravity="center"
+        android:lines="1"
         android:textColor="#333333"
         android:textSize="@dimen/commontitle_title_textsize" />
 
@@ -50,9 +52,9 @@
         android:layout_marginRight="7dp"
         android:layout_toLeftOf="@id/title_layout_right_img"
         android:gravity="center"
+        android:text="@string/signIn"
         android:textColor="#1da1f2"
         android:textSize="@dimen/commontitle_singin_textsize"
-        android:text="@string/signIn"
         android:visibility="gone" />
 
     <TextView

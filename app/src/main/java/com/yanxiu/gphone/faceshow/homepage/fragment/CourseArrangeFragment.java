@@ -13,6 +13,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
@@ -57,8 +58,9 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
+        CourseBean bean = (CourseBean)baseBean;
         ToastUtil.showToast(getActivity(), position + "");
-        CourseActivity.invoke(getActivity());
+        CourseActivity.invoke(getActivity(),bean.getId());
     }
 
     @Override

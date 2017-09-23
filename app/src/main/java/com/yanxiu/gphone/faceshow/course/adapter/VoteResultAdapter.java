@@ -73,12 +73,12 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.voteResult_title.setText(position + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
+                holder1.voteResult_title.setText(position +1+ "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
                 holder1.voteResult_Layout.setData(data.getVoteInfo());
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
-                holder2.voteResult_title.setText(data.getTitle());
+                holder2.voteResult_title.setText(position +1+ "、" + data.getTitle() );
                 holder2.voteResult_personnumber.setText("参与人数:" + data.getAnswerUserNum());
 //                String text = "我的回复:"+"/n"+data.getFeedBackTime()+"/n"+;
                 holder2.voteResult_time.setText(data.getCreateTime());

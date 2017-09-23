@@ -82,7 +82,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.evaluation_title.setText(position + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
+                holder1.evaluation_title.setText(position + 1 + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
                 holder1.chooseLayout.setChooseType(getItemViewType(position));
                 holder1.chooseLayout.setIsClick(!mIsAnswer);
                 holder1.chooseLayout.setData(data.getVoteInfo());
@@ -96,15 +96,16 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
-                holder2.evaluation_title.setText(data.getTitle());
+                holder2.evaluation_title.setText(position + 1 + "、" + data.getTitle());
 //                holder2.evalution_editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //                    @Override
 //                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 //                        return false;
 //                    }
 //                });
-                if (mIsAnswer && !TextUtils.isEmpty(data.getFeedBackText())) {
-                    holder2.evalution_editText.setText(data.getFeedBackText());
+                if (mIsAnswer && data.getUserAnswer() != null && data.getUserAnswer().getQuestionAnswers() != null
+                        && !TextUtils.isEmpty(data.getUserAnswer().getQuestionAnswers().get(0))) {
+                    holder2.evalution_editText.setText(data.getUserAnswer().getQuestionAnswers().get(0));
                     holder2.evalution_editText.setEnabled(false);
                 }
                 holder2.evalution_editText.addTextChangedListener(new TextWatcher() {

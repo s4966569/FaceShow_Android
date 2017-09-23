@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +45,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private EvaluationAdapter mAdapter;
 
     private VoteBean mData;
+    private final static String STEP_ID = "stepid";
+    private String mStepId;
 
 //    private boolean onlyLook;
 
@@ -55,7 +58,11 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mRootView.setContentView(R.layout.activity_evaluation);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
-//        onlyLook = getIntent().getBooleanExtra("onlyLook", false);
+        mStepId = getIntent().getStringExtra(STEP_ID);
+        if (TextUtils.isEmpty(mStepId)) {
+            mRootView.showOtherErrorView();
+            return;
+        }
         initView();
         initListener();
         requestData();
@@ -101,6 +108,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private void requestData() {
         mRootView.showLoadingView();
         EvaluationRequest courseEvalutionlRequest = new EvaluationRequest();
+        courseEvalutionlRequest.stepId = mStepId;
         courseEvalutionlRequest.startRequest(EvalutionResponse.class, new HttpCallback<EvalutionResponse>() {
             @Override
             public void onSuccess(RequestBase request, EvalutionResponse ret) {
@@ -134,15 +142,15 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
 
     private void submitVote() {
         mRootView.showLoadingView();
-        SubmitVoteRequest voteRequest = new SubmitVoteRequest();
-        voteRequest.method = SubmitVoteRequest.EVALUATION;
-        voteRequest.stepId = "";
-        voteRequest.answers = makeAnswerString();
-        voteRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
+        SubmitVoteRequest submitVoteRequest = new SubmitVoteRequest();
+        submitVoteRequest.method = SubmitVoteRequest.EVALUATION;
+        submitVoteRequest.stepId = mStepId;
+        submitVoteRequest.answers = makeAnswerString();
+        submitVoteRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
             @Override
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
                 mRootView.finish();
-                if (ret != null || ret.getCode() == 0) {
+                if (ret != null && ret.getCode() == 0) {
                     finish();
                 } else {
 //                    ToastUtil.showToast(getApplication(), ret.getError().getMessage());
@@ -172,9 +180,10 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             sb.append(answers);
             sb.append("\"");
             if (bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) {
-                ArrayList answerList = bean.getAnswerList();
+                ArrayList<String> answerList = bean.getAnswerList();
                 for (int j = 0; j < answerList.size(); j++) {
-                    sb.append(answerList.get(j));
+                    int index = Integer.parseInt(answerList.get(j));
+                    sb.append(bean.getVoteInfo().getVoteItems().get(index).getItemId());
                     if (j < answerList.size() - 1) { //不是最后一个
                         sb.append(",");
                     }
@@ -198,9 +207,9 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     /**
      * @param context
      */
-    public static void invoke(Context context) {
+    public static void invoke(Context context, String setpId) {
         Intent intent = new Intent(context, EvaluationActivity.class);
-//        intent.putExtra("onlyLook", onlyLook);
+        intent.putExtra(STEP_ID, setpId);
         context.startActivity(intent);
     }
 
