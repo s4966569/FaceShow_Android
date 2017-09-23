@@ -11,11 +11,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.activity.CourseIntroductionActivity;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
+import com.yanxiu.gphone.faceshow.http.course.CourseDiscussLikeRequest;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.YXPictureManager;
 
 import java.util.ArrayList;
@@ -103,15 +108,34 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
 //                        if (mListener != null) {
 //                            mListener.onItemClick(position, data);
 //                        }
-                        holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
-                        holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_laud_clicked);
-                        data.setHasLaud(true);
+                        setLike(data.getId(),holder2,data);
                     }
                 });
                 break;
         }
 
     }
+
+    private void setLike(String commentRecordId,final DiscussItemViewHolder holder2,final DiscussBean data){
+        CourseDiscussLikeRequest likeRequest=new CourseDiscussLikeRequest();
+        likeRequest.commentRecordId=commentRecordId;
+        likeRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
+                if (ret.getCode()==0){
+                    holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
+                    holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_laud_clicked);
+                    data.setHasLaud(true);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                ToastUtil.showToast(mContext,error.getMessage());
+            }
+        });
+    }
+
 
     @Override
     public int getItemCount() {

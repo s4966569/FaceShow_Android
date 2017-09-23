@@ -502,11 +502,13 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode== event.getKeyCode()&&event.getAction()==KeyEvent.ACTION_UP){
             String comment=mCommentView.getText().toString();
-            ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
-            if (isCommentMaster) {
-                startCommentToMasterRequest(mMomentPosition,comment,moments);
-            }else {
-                startCommentToUserRequest(mMomentPosition,comment,moments,moments.comments.get(mCommentPosition));
+            if (!TextUtils.isEmpty(comment)) {
+                ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
+                if (isCommentMaster) {
+                    startCommentToMasterRequest(mMomentPosition, comment, moments);
+                } else {
+                    startCommentToUserRequest(mMomentPosition, comment, moments, moments.comments.get(mCommentPosition));
+                }
             }
 //            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 //            imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);

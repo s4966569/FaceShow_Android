@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDiscussAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
+import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
@@ -37,7 +39,7 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 /**
  * 课程讨论
  */
-public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener, View.OnKeyListener {
+public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener,TextView.OnEditorActionListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -52,12 +54,15 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private int mTotalCount = 0;//数据的总量
     private int mNowTotalCount = 0;//当前以获取的数量
 
+    private InteractStepsBean stepsBean;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRootView = new PublicLoadLayout(this);
         mRootView.setContentView(R.layout.activity_course_discuss);
         mRootView.setRetryButtonOnclickListener(this);
+        stepsBean= (InteractStepsBean) getIntent().getSerializableExtra("InteractStepsBean");
         setContentView(mRootView);
         initView();
         initListener();
@@ -67,7 +72,6 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private void initView() {
         mBackView = (ImageView) findViewById(R.id.title_layout_left_img);
         mEd_comment = (EditText) findViewById(R.id.ed_comment);
-        mEd_comment.setOnKeyListener(this);
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mTitle.setText("课程讨论");
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
@@ -79,6 +83,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     private void initListener() {
         mBackView.setOnClickListener(this);
+        mEd_comment.setOnEditorActionListener(this);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override
@@ -128,6 +133,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private void requestTitleData() {
         mRootView.showLoadingView();
         DiscussCommentRequest discussRequest = new DiscussCommentRequest();
+        discussRequest.stepId=stepsBean.getStepId();
         discussRequest.startRequest(DiscussCommentResponse.class, new HttpCallback<DiscussCommentResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussCommentResponse ret) {
@@ -153,6 +159,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         if (!isRefreshIng)
             mRootView.showLoadingView();
         DiscussRequest discussRequest = new DiscussRequest();
+        discussRequest.stepId=stepsBean.getStepId();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
@@ -188,6 +195,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     private void requestLoarMore() {
         DiscussRequest discussRequest = new DiscussRequest();
+        discussRequest.stepId=stepsBean.getStepId();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
@@ -220,7 +228,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mRootView.showLoadingView();
         DiscussSaveRequest discussSaveRequest = new DiscussSaveRequest();
         discussSaveRequest.content = content;
-        discussSaveRequest.stepId = "13";
+        discussSaveRequest.stepId =stepsBean.getStepId();;
         discussSaveRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
             @Override
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
@@ -231,6 +239,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 } else {
                     ToastUtil.showToast(CourseDiscussActivity.this, ret.getError().getMessage());
                 }
+                requestData(false);
             }
 
             @Override
@@ -257,9 +266,9 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
      *
      * @param activity
      */
-    public static void invoke(Activity activity, String discussTitle) {
+    public static void invoke(Activity activity, InteractStepsBean interactStepsBean) {
         Intent intent = new Intent(activity, CourseDiscussActivity.class);
-        intent.putExtra("discussTitle", discussTitle);
+        intent.putExtra("InteractStepsBean",interactStepsBean);
         activity.startActivity(intent);
     }
 
@@ -269,12 +278,15 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     }
 
     @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (keyCode == event.getKeyCode() && event.getAction() == KeyEvent.ACTION_UP) {
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId== EditorInfo.IME_ACTION_SEND){
             String comment = mEd_comment.getText().toString();
-            submitData(comment);
+            if (!TextUtils.isEmpty(comment)) {
+                submitData(comment);
+            }
             return true;
         }
+
         return false;
     }
 }
