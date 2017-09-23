@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,7 +138,6 @@ public class ResourcesFragment extends FaceShowBaseFragment implements OnRecycle
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-        ToastUtil.showToast(getActivity(), position + "");
         ResourceListResponse.DataBean.ElementsBean bean = (ResourceListResponse.DataBean.ElementsBean) baseBean;
         getResourceDetail(bean.getResId());
     }
@@ -148,7 +148,7 @@ public class ResourcesFragment extends FaceShowBaseFragment implements OnRecycle
         mRequestUUID = resourceDetailRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
-                if (ret.getCode() == 0 && ret.getData().getUrl() != null && ret.getData().getSuffix() != null) {
+                if (ret.getCode() == 0 && !TextUtils.isEmpty(ret.getData().getUrl()) && ret.getData().getSuffix() != null) {
                     setIntent(ret.getData());
                 } else {
                     ToastUtil.showToast(getActivity(), "数据异常");

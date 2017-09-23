@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import butterknife.ButterKnife;
 public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
-    private List<ProjectTaskListResponse.ProjectTaskBean> mList = new ArrayList<>();
+    private List<InteractStepsBean> mList = new ArrayList<>();
 
     private OnRecyclerViewItemClickListener mListener;
 
@@ -37,7 +38,7 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         mListener = listener;
     }
 
-    public void setData(List<ProjectTaskListResponse.ProjectTaskBean> list) {
+    public void setData(List<InteractStepsBean> list) {
         mList = list;
         notifyDataSetChanged();
     }
@@ -64,7 +65,7 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-        final ProjectTaskListResponse.ProjectTaskBean data = mList.get(position);
+        final InteractStepsBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 0:
                 ProjectTaskViewHolder holder2 = (ProjectTaskViewHolder) holder;

@@ -15,7 +15,14 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
+import com.yanxiu.gphone.faceshow.course.activity.CourseDiscussActivity;
+import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
+import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
+import com.yanxiu.gphone.faceshow.course.activity.VoteResultActivity;
+import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListRequest;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
@@ -36,7 +43,7 @@ public class ProjectTaskFragment extends FaceShowBaseFragment implements OnRecyc
     private RecyclerView mRecyclerView;
     private ProjectTaskAdapter mAdapter;
 
-    List<ProjectTaskListResponse.ProjectTaskBean> mProjectTaskList = new ArrayList<>();
+    List<InteractStepsBean> mProjectTaskList = new ArrayList<>();
     private UUID mRequestUUID;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,11 +110,25 @@ public class ProjectTaskFragment extends FaceShowBaseFragment implements OnRecyc
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-        ToastUtil.showToast(getActivity(), position + "");
-        setIntent();
+        setIntent(baseBean);
     }
 
-    private void setIntent() {
+    private void setIntent(BaseBean baseBean) {
+        InteractStepsBean taskBean = (InteractStepsBean)baseBean;
+        switch (taskBean.getInteractType()) {
+            case InteractStepsBean.VOTE:
+                    VoteActivity.invoke(getActivity(),taskBean.getStepId());
+                break;
+            case InteractStepsBean.DISCUSS:
+                CourseDiscussActivity.invoke(getActivity(), taskBean);
+                break;
+            case InteractStepsBean.QUESTIONNAIRES:
+                EvaluationActivity.invoke(getActivity(),taskBean.getStepId());
+                break;
+            case InteractStepsBean.CHECK_IN:
+                QRCodeCheckInActivity.toThisAct(getActivity());
+                break;
+        }
     }
 
     @Override
