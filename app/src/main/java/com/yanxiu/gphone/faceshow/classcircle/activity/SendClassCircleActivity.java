@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -20,18 +21,27 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.classcircle.request.GetResIdRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.SendClassCircleRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.GetResIdResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.MultiUploadBean;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
+import com.yanxiu.gphone.faceshow.classcircle.response.UploadResResponse;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.http.base.UploadFileByHttp;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.FileUtil;
+import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -151,62 +161,141 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     }
 
     private void uploadImg(final String content){
-        UpLoadRequest.getInstense().setConstantParams(new UpLoadRequest.findConstantParams() {
-            @NonNull
-            @Override
-            public String findUpdataUrl() {
-                String url="/multiUpload";
-                String token= SpManager.getToken();
-                return UrlRepository.getInstance().getUploadServer()+url+"?token="+token;
-            }
 
-            @Override
-            public int findFileNumber() {
-                return mImagePaths.size();
-            }
+        File file=new File(mImagePaths.get(0));
+        final Map<String, String> map = new HashMap<>();
+        map.put("userId", UserInfo.getInstance().getInfo().getUserId()+"");
+        map.put("name", file.getName());
+        map.put("lastModifiedDate", String.valueOf(System.currentTimeMillis()));
+        map.put("size", String.valueOf(FileUtils.getFileSize(file.getPath())));
+        map.put("md5", FileUtil.MD5Helper(UserInfo.getInstance().getInfo().getUserId() +
+                file.getName() + "jpg" + String.valueOf(System.currentTimeMillis())
+                + String.valueOf(FileUtils.getFileSize(file.getPath()))));
+        map.put("type", "image/jpg");
+        map.put("chunkSize", String.valueOf(FileUtils.getFileSize(file.getPath())));
 
-            @Nullable
-            @Override
-            public Map<String, String> findParams() {
-                return null;
-            }
-        }).setImgPath(new UpLoadRequest.findImgPath() {
-            @NonNull
-            @Override
-            public String getImgPath(int position) {
-                return mImagePaths.get(0);
-            }
-        }).setListener(new UpLoadRequest.onUpLoadlistener() {
-            @Override
-            public void onUpLoadStart(int position, Object tag) {
-            }
-
-            @Override
-            public void onUpLoadSuccess(int position, Object tag, String jsonString) {
-                Gson gson=new Gson();
-                MultiUploadBean uploadBean=gson.fromJson(jsonString,MultiUploadBean.class);
-                if (uploadBean!=null){
-                    mResourceIds=uploadBean.tplData.data.get(0).uniqueKey;
-                    mType=TYPE_TEXT;
-                    uploadData(content,uploadBean.tplData.data.get(0).uniqueKey);
-                }else {
-                    ToastUtil.showToast(mContext,"网络异常请稍后再试");
+        UploadFileByHttp uploadFileByHttp = new UploadFileByHttp();
+        try {
+            uploadFileByHttp.uploadForm(map, "file", file, file.getName(), "http://newupload.yanxiu.com/fileUpload", new UploadFileByHttp.UpLoadFileByHttpCallBack() {
+                @Override
+                public void onSuccess(String responseStr) {
+                    rootView.hiddenLoadingView();
+                    Log.d("cwq",responseStr);
+                    UploadResResponse resResponse = RequestBase.getGson().fromJson(responseStr, UploadResResponse.class);
+                    GetResId(resResponse.name, resResponse.md5,content);
                 }
+
+                @Override
+                public void onFail(String errorMessage) {
+                    rootView.hiddenLoadingView();
+                    Log.d("cwq",errorMessage);
+//                    loadingView.dismiss();
+//                    ToastMaster.showToast(errorMessage);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+//        UpLoadRequest.getInstense().setConstantParams(new UpLoadRequest.findConstantParams() {
+//            @NonNull
+//            @Override
+//            public String findUpdataUrl() {
+//                String url="http://newupload.yanxiu.com/fileUpload";
+//                String token= SpManager.getToken();
+//                File file=new File(mImagePaths.get(0));
+//                String parmas="";
+//                parmas=parmas+"token="+token;
+//                parmas=parmas+"&+"+"userId="+UserInfo.getInstance().getInfo().getUserId();
+//                parmas=parmas+"&+"+"name="+file.getName();
+//                parmas=parmas+"&+"+"lastModifiedDate="+String.valueOf(System.currentTimeMillis());
+//                parmas=parmas+"&+"+"size="+String.valueOf(file.length());
+//                parmas=parmas+"&+"+"md5="+ FileUtil.MD5Helper(UserInfo.getInstance().getInfo().getUserId() +
+//                        file.getName() + "jpg" + String.valueOf(System.currentTimeMillis())
+//                        + String.valueOf(file.length()));
+//                parmas=parmas+"&+"+"type="+"image/jpg";
+//                parmas=parmas+"&+"+"chunkSize="+String.valueOf(file.length());
+//                return url+"?"+parmas;
+//            }
+//
+//            @Override
+//            public int findFileNumber() {
+//                return mImagePaths.size();
+//            }
+//
+//            @Nullable
+//            @Override
+//            public Map<String, String> findParams() {
+//                return null;
+//            }
+//        }).setImgPath(new UpLoadRequest.findImgPath() {
+//            @NonNull
+//            @Override
+//            public String getImgPath(int position) {
+//                return mImagePaths.get(0);
+//            }
+//        }).setListener(new UpLoadRequest.onUpLoadlistener() {
+//            @Override
+//            public void onUpLoadStart(int position, Object tag) {
+//            }
+//
+//            @Override
+//            public void onUpLoadSuccess(int position, Object tag, String jsonString) {
+//                Gson gson=new Gson();
+//                MultiUploadBean uploadBean=gson.fromJson(jsonString,MultiUploadBean.class);
+//                if (uploadBean!=null){
+//                    mResourceIds=uploadBean.tplData.data.get(0).uniqueKey;
+//                    mType=TYPE_TEXT;
+//                    uploadData(content,uploadBean.tplData.data.get(0).uniqueKey);
+//                }else {
+//                    ToastUtil.showToast(mContext,"网络异常请稍后再试");
+//                }
+//            }
+//
+//            @Override
+//            public void onUpLoadFailed(int position, Object tag, String failMsg) {
+//                rootView.hiddenLoadingView();
+//                ToastUtil.showToast(mContext,failMsg);
+//            }
+//
+//            @Override
+//            public void onError(String errorMsg) {
+//                rootView.hiddenLoadingView();
+//                ToastUtil.showToast(mContext,errorMsg);
+//            }
+//        });
+    }
+
+    private void GetResId(String fileName, String md5, final String content) {
+        HashMap<String, String> cookies = new HashMap<>();
+        cookies.put("client_type", "app");
+//        cookies.put("passport", UserStore.sharedInstance().getUserModel().phoneNumber);
+        GetResIdRequest getResIdRequest = new GetResIdRequest();
+        getResIdRequest.filename = fileName;
+        getResIdRequest.md5 = md5;
+        getResIdRequest.cookies = cookies;
+        GetResIdRequest.Reserve reserve = new GetResIdRequest.Reserve();
+        getResIdRequest.reserve = RequestBase.getGson().toJson(reserve);
+        getResIdRequest.startRequest(GetResIdResponse.class, new HttpCallback<GetResIdResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetResIdResponse ret) {
+                Log.d("cwq",ret.result.resid);
+                uploadData(content,ret.result.resid);
             }
 
             @Override
-            public void onUpLoadFailed(int position, Object tag, String failMsg) {
+            public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext,failMsg);
-            }
-
-            @Override
-            public void onError(String errorMsg) {
-                rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext,errorMsg);
+                ToastUtil.showToast(mContext,error.getMessage());
             }
         });
+
     }
+
+
 
     private void uploadData(String content,String resourceIds){
         SendClassCircleRequest sendClassCircleRequest=new SendClassCircleRequest();
