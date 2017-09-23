@@ -68,7 +68,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         initView();
         initListener();
         getUserInfo();
-        UpdateUtil.Initialize(this,false);
+        UpdateUtil.Initialize(this, false);
     }
 
     private void getUserInfo() {
@@ -76,7 +76,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
-                if (ret.getCode()==0) {
+                if (ret.getCode() == 0) {
                     UserInfo.getInstance().setInfo(ret.getData());
                 }
 
@@ -135,13 +135,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             @Override
             public void onSuccess(RequestBase request, MainResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getCode() == 0) {
-                    if (ret.getData() == null) {
-                        mRootView.showOtherErrorView();
-                    } else {
-                        mMainData = ret.getData();
-                        initFragment();
-                    }
+                if (ret != null && ret.getCode() == 0 && ret.getData() != null && ret.getData().getClazsInfo() != null
+                        && ret.getData().getProjectInfo() != null) {
+                    mMainData = ret.getData();
+                    UserInfo.getInstance().getInfo().setClassId(mMainData.getClazsInfo().getId());
+                    initFragment();
                 } else {
                     mRootView.showOtherErrorView();
                 }

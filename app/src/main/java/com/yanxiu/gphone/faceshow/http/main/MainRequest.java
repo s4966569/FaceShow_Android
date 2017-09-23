@@ -7,7 +7,7 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
  * 首页请求
  */
 
-public class MainRequest extends FaceShowMockRequest {
+public class MainRequest extends FaceShowBaseRequest {
     public String method = "app.clazs.getCurrentClazs";
 
     public String clazsId;
@@ -17,8 +17,8 @@ public class MainRequest extends FaceShowMockRequest {
         return null;
     }
 
-    @Override
-    protected String getMockDataPath() {
-        return "main.json";
-    }
+//    @Override
+//    protected String getMockDataPath() {
+//        return "main.json";
+//    }
 }

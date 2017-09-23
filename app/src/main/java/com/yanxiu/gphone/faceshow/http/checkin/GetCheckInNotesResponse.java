@@ -121,17 +121,7 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
 
     public class UserSignIn implements Serializable {
 
-        /**
-         * id : 1
-         * userId : 10145096
-         * signinId : 10
-         * signinStatus : 1
-         * signinTime : 2017-09-16 00:09:00
-         * signinRemark : null
-         * signinDevice : pc
-         * userName : null
-         * avatar : null
-         */
+
 
         private int id;
         private int userId;
@@ -219,19 +209,7 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
 
     public static class Clazs {
 
-        /**
-         * id : 2
-         * platId : 1
-         * projectId : 1
-         * clazsName : 面授第二班
-         * clazsStatus : 1
-         * clazsType : 1
-         * startTime : 2017-09-13 00:00:00
-         * endTime : 2017-12-01 00:00:00
-         * description : 第二个班级
-         * isMaster : null
-         * clazsStatusName : null
-         */
+
 
         private int id;
         private int platId;

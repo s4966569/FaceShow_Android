@@ -1,0 +1,15 @@
+{
+  "code": 0,
+  "message": "",
+  "data": {
+    "id": 3,
+    "title": "讨论",
+    "description": "针对此课程您有什么想说的快来讨论吧！",
+    "commentStatus": 1,
+    "bizId": 2,
+    "bizSource": "clazs",
+    "createTime": "2017-09-18 12:26:33"
+  },
+  "currentUser": "",
+  "error": null
+}
