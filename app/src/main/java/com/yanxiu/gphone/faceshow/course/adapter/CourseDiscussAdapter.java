@@ -104,6 +104,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
 //                            mListener.onItemClick(position, data);
 //                        }
                         holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
+                        holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_laud_clicked);
                         data.setHasLaud(true);
                     }
                 });
@@ -141,6 +142,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView discuss_time;
         private TextView discuss_laud;
         private ImageView discuss_img;
+        private ImageView discuss_laud_img;
 
         public DiscussItemViewHolder(View itemView) {
             super(itemView);
@@ -150,6 +152,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
             discuss_time = (TextView) itemView.findViewById(R.id.discuss_time);
             discuss_laud = (TextView) itemView.findViewById(R.id.discuss_laud);
             discuss_img = (ImageView) itemView.findViewById(R.id.discuss_img);
+            discuss_laud_img = (ImageView) itemView.findViewById(R.id.discuss_laud_img);
         }
     }
 }

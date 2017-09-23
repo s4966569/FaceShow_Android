@@ -15,7 +15,7 @@
             android:id="@+id/discuss_img"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@color/color_00cccc" />
+            android:src="@drawable/course_discuss_question" />
 
         <TextView
             android:id="@+id/discuss_title"
