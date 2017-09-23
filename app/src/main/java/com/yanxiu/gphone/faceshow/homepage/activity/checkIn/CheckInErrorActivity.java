@@ -45,19 +45,21 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
         mQrStatue = getIntent().getStringExtra(QR_STATUE);
-        if (mQrStatue.equals(QR_EXPIRED)) {
-            tvErrorStatue.setText(R.string.check_in_qr_already_expired);
-            tvErrorPrompt.setText(R.string.please_scan_new_check_in_qr);
-        } else if (mQrStatue.equals(QR_INVALID)) {
-            tvErrorStatue.setText(R.string.check_in_qr_already_invalid);
-            tvErrorPrompt.setText("");
-        } else if (mQrStatue.equals(HAS_NOT_START)) {
-            tvErrorStatue.setText(R.string.check_in_qr_has_not_start);
-            tvErrorPrompt.setText(R.string.please_scan_correct_check_in_qr);
-        } else if (mQrStatue.equals(QR_NOT_IN_CLASS)) {
-            tvErrorStatue.setText(R.string.check_in_not_in_class);
-            tvErrorPrompt.setText("");
-        }
+        tvErrorStatue.setText(mQrStatue);
+        tvErrorPrompt.setText(R.string.please_scan_correct_check_in_qr);
+//        if (mQrStatue.equals(QR_EXPIRED)) {
+//            tvErrorStatue.setText(R.string.check_in_qr_already_expired);
+//            tvErrorPrompt.setText(R.string.please_scan_new_check_in_qr);
+//        } else if (mQrStatue.equals(QR_INVALID)) {
+//            tvErrorStatue.setText(R.string.check_in_qr_already_invalid);
+//            tvErrorPrompt.setText("");
+//        } else if (mQrStatue.equals(HAS_NOT_START)) {
+//            tvErrorStatue.setText(R.string.check_in_qr_has_not_start);
+//            tvErrorPrompt.setText(R.string.please_scan_correct_check_in_qr);
+//        } else if (mQrStatue.equals(QR_NOT_IN_CLASS)) {
+//            tvErrorStatue.setText(R.string.check_in_not_in_class);
+//            tvErrorPrompt.setText("");
+//        }
 
     }
 

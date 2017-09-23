@@ -67,10 +67,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             tv_notification_created_time.setText(notification.getUpdateTime());
             tv_notification_name.setText(notification.getTitle());
             if (!notification.isViewed()) {//消息未读
-                tv_notification_name.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_999999));
+                tv_notification_name.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
                 img_notification_head.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_notification_un_viewed));
             } else {
-                tv_notification_name.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
+                tv_notification_name.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_999999));
                 img_notification_head.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_notification_viewed));
             }
 

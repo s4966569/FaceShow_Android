@@ -252,13 +252,15 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
                         QRCodeCheckInActivity.this.finish();
                     } else {
                         Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
-                        if (userSignInResponse.getError().getCode() == 210412) {
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.HAS_NOT_START);
-                        } else if (userSignInResponse.getError().getCode() == 210413) {
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
-                        } else if (userSignInResponse.getError().getCode() == 210305){
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_NOT_IN_CLASS);
-                        }
+//                        if (userSignInResponse.getError().getCode() == 210412) {
+//                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.HAS_NOT_START);
+//                        } else if (userSignInResponse.getError().getCode() == 210413) {
+//                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
+//                        } else if (userSignInResponse.getError().getCode() == 210305){
+//                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_NOT_IN_CLASS);
+//                        }else {
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE,userSignInResponse.getError().getMessage());
+//                        }
                         startActivity(intent);
                         QRCodeCheckInActivity.this.finish();
                     }
