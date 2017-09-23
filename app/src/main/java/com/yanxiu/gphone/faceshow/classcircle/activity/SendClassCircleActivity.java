@@ -25,6 +25,7 @@ import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.MultiUploadBean;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -155,7 +156,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             @Override
             public String findUpdataUrl() {
                 String url="/multiUpload";
-                String token= UserInfo.getInstance().getInfo().getToken();
+                String token= SpManager.getToken();
                 return UrlRepository.getInstance().getUploadServer()+url+"?token="+token;
             }
 

@@ -31,6 +31,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.response.HeadimgUploadBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -335,7 +336,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public String findUpdataUrl() {
                 String url="/headImgUpload";
-                String token=UserInfo.getInstance().getInfo().getToken();
+                String token= SpManager.getToken();
                 return UrlRepository.getInstance().getUploadServer()+url+"?token="+token;
             }
 

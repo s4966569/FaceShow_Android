@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.classcircle.request;
 
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -13,7 +14,7 @@ import com.yanxiu.gphone.faceshow.login.UserInfo;
 public class ClassCircleCommentToMasterRequest extends RequestBase {
 
     public String method="moment.comment";
-    public String token= UserInfo.getInstance().getInfo().getToken();
+    public String token= SpManager.getToken();
     public String clazsId;
     public String momentId;
     public String content;
