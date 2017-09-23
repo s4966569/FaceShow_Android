@@ -4,6 +4,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 /**
  * Created by Canghaixiao.
@@ -13,8 +14,9 @@ import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 public class SendClassCircleRequest extends RequestBase{
 
     public String method="moment.publishMoment";
-    public String token="ce0d56d0d8a214fb157be3850476ecb5";
-    public String clazsId;
+    public String token= UserInfo.getInstance().getInfo().getToken();
+//    public String clazsId="7";
+    public String clazsId=UserInfo.getInstance().getInfo().getClassId();
     public String content;
     public String resourceIds="";
 

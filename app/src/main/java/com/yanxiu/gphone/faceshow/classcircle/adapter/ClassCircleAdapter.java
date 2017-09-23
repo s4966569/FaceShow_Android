@@ -133,8 +133,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
-            titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
-            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
+            titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
+            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
@@ -187,7 +187,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mCircleCommentLayout.setItemClickListener(new ClassCircleCommentLayout.onItemClickListener() {
                 @Override
                 public void onItemClick(Comments comments, int position) {
-                    if (!comments.publisher.userId.equals(UserInfo.getInstance().getInfo().getUserId())) {
+                    if (!comments.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
                         if (mCommentClickListener != null) {
                             mCommentClickListener.commentClick(classCircleViewHolder.getAdapterPosition(), moments, position, comments, false);
                         }
@@ -279,7 +279,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private boolean checkIsThumb(ArrayList<ClassCircleResponse.Data.Moments.Likes> likes) {
         for (ClassCircleResponse.Data.Moments.Likes like : likes) {
-            if (like.publisher.userId.equals(UserInfo.getInstance().getInfo().getUserId())) {
+            if (like.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
                 return true;
             }
         }
