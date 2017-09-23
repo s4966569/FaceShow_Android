@@ -6,6 +6,7 @@ import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.http.envconfig.EnvConfigBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.yanxiu.gphone.faceshow.util.CrashHandler;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 
 import org.litepal.LitePalApplication;
@@ -24,6 +25,7 @@ public class FaceShowApplication extends LitePalApplication {
         instance = this;
         initUrlServer();
         Stetho.initializeWithDefaults(this);
+        CrashHandler.getInstance().init(this);
     }
 
     private void initUrlServer() {
