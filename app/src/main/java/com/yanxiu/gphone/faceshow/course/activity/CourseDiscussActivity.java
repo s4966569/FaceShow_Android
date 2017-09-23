@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,10 +31,14 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
     private TextView mTitle;
+    private String mDiscussTitle;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private LoadMoreRecyclerView mRecyclerView;
     private CourseDiscussAdapter mAdapter;
+
+    private int mTotalCount = 0;//数据的总量
+    private int mNowTotalCount= 0;//当前以获取的数量
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +47,10 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mRootView.setContentView(R.layout.activity_course_discuss);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
+        mDiscussTitle = getIntent().getStringExtra("discussTitle");
         initView();
         initListener();
-        requestData(true);
+        requestData(false);
     }
 
     private void initView() {
@@ -67,7 +71,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
             @Override
             public void onRefresh() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                requestData(false);
+                requestData(true);
             }
         });
         mRecyclerView.setLoadMoreEnable(true);
@@ -93,26 +97,32 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 finish();
                 break;
             case R.id.retry_button:
-                requestData(true);
+                requestData(false);
                 break;
             default:
                 break;
         }
     }
 
-    private void requestData(final boolean showLoadingView) {
-        if (showLoadingView)
+    private void requestData(final boolean isRefreshIng) {
+        if (!isRefreshIng)
             mRootView.showLoadingView();
         DiscussRequest discussRequest = new DiscussRequest();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
                 mRootView.finish();
-                if (!showLoadingView)
+                if (isRefreshIng)
                     mSwipeRefreshLayout.setRefreshing(false);
-                if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(DiscussBean.getMockData());
-
+                if (ret != null && ret.getCode() == 0) {
+                    mTotalCount = ret.getData().getTotalElements();
+                    mNowTotalCount = ret.getData().getElements().size();
+                    if(mNowTotalCount >= mTotalCount){
+                        mRecyclerView.setLoadMoreEnable(false);
+                    }else{
+                        mRecyclerView.setLoadMoreEnable(true);
+                    }
+                    mAdapter.setData(ret.getData().getDataWithHeader(mDiscussTitle));
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -123,7 +133,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
-                if (!showLoadingView)
+                if (isRefreshIng)
                     mSwipeRefreshLayout.setRefreshing(false);
 
             }
@@ -139,7 +149,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 mRootView.finish();
                 mRecyclerView.finishLoadMore();
                 if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(DiscussBean.getMockData());
+                    mAdapter.setData(ret.getData().getElements());
 
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
@@ -164,8 +174,9 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
      *
      * @param activity
      */
-    public static void invoke(Activity activity) {
+    public static void invoke(Activity activity, String discussTitle) {
         Intent intent = new Intent(activity, CourseDiscussActivity.class);
+        intent.putExtra("discussTitle", discussTitle);
         activity.startActivity(intent);
     }
 

@@ -79,7 +79,7 @@ public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.View
                 ResourceViewHolder holder2 = (ResourceViewHolder) holder;
                 holder2.resource_name.setText(data.getResName());
                 holder2.resource_time.setText(data.getCreateTime());
-//                holder2.resource_img.set
+                holder2.resource_img.setImageResource(R.drawable.coursedetail_pdf);
                 holder2.resource_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

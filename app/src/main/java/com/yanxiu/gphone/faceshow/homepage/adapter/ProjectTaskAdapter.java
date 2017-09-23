@@ -70,13 +70,15 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ProjectTaskViewHolder holder2 = (ProjectTaskViewHolder) holder;
                 holder2.project_task_name.setText(data.getInteractName());
                 holder2.project_task_time.setText(data.getCreateTime());
-//                holder2.project_task_img
+
                 if(TextUtils.equals(data.getStepFinished(), "1")) {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_completed));
                     holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_333333));
+                    holder2.project_task_img.setImageResource(R.drawable.task_completed);
                 }else {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_uncompleted));
                     holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_999999));
+                    holder2.project_task_img.setImageResource(R.drawable.task_uncompleted);
                 }
 
                 holder2.project_task_layout.setOnClickListener(new View.OnClickListener() {

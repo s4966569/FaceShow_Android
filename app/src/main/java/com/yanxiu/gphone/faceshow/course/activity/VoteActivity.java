@@ -15,11 +15,20 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.VoteAdapter;
 import com.yanxiu.gphone.faceshow.course.adapter.VoteResultAdapter;
+import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
+import com.yanxiu.gphone.faceshow.http.course.SubmitVoteRequest;
 import com.yanxiu.gphone.faceshow.http.course.VoteRequest;
 import com.yanxiu.gphone.faceshow.http.course.VoteResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import java.util.ArrayList;
+
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
 
 /**
  * 投票页面
@@ -34,6 +43,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     private RecyclerView mRecyclerView;
     private VoteAdapter mVoteAdapter;
     private VoteResultAdapter mVoteResultAdapter;
+    private VoteBean mData;
     private boolean mIsAnswer;//true:已投票-投票结果 ；fasle:未投票
 
 
@@ -78,7 +88,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
                 requestData();
                 break;
             case R.id.submit:
-                ToastUtil.showToast(getApplication(), "asdasd");
+                submitVote();
                 break;
             default:
                 break;
@@ -93,6 +103,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             public void onSuccess(RequestBase request, VoteResponse ret) {
                 mRootView.finish();
                 if (ret == null || ret.getCode() == 0) {
+                    mData = ret.getData();
                     mIsAnswer = ret.getData().isAnswer();
                     mTitle.setText(ret.getData().getQuestionGroup().getTitle());
                     initAdapter(ret.getData());
@@ -125,6 +136,69 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             mRecyclerView.setAdapter(mVoteAdapter);
             mSubmit.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void submitVote() {
+        mRootView.showLoadingView();
+        SubmitVoteRequest voteRequest = new SubmitVoteRequest();
+        voteRequest.method = SubmitVoteRequest.VOTE;
+        voteRequest.stepId = "";
+        voteRequest.answers = makeAnswerString();
+        voteRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
+                mRootView.finish();
+                if (ret != null || ret.getCode() == 0) {
+                    finish();
+                } else {
+//                    ToastUtil.showToast(getApplication(), ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+//                ToastUtil.showToast(getApplication(), error.getMessage());
+            }
+        });
+
+    }
+
+    private String makeAnswerString() {
+        final String questionId = "\"questionId\":";
+        final String answers = "\"answers\":";
+        StringBuffer sb = new StringBuffer("[");
+        ArrayList<QusetionBean> questionBeanList = mData.getQuestionGroup().getQuestions();
+        for (int i = 0; i < questionBeanList.size(); i++) {
+            QusetionBean bean = questionBeanList.get(i);
+            sb.append("{");
+            sb.append(questionId);
+            sb.append(bean.getId());
+            sb.append(",");
+            sb.append(answers);
+            sb.append("\"");
+            if (bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) {
+                ArrayList answerList = bean.getAnswerList();
+                for (int j = 0; j < answerList.size(); j++) {
+                    sb.append(answerList.get(j));
+                    if (j < answerList.size() - 1) { //不是最后一个
+                        sb.append(",");
+                    }
+                }
+
+            } else if (bean.getQuestionType() == TYPE_TEXT) {
+                sb.append(bean.getFeedBackText());
+            } else {
+                //错误
+            }
+            sb.append("\"");
+            sb.append("}");
+            if (i < questionBeanList.size() - 1) { //不是最后一个
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     public static void invoke(Context context) {

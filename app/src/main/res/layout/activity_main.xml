@@ -50,7 +50,7 @@
                     android:layout_height="@dimen/nav_icon_width"
                     android:contentDescription="@null"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/selector_my" />
+                    android:src="@drawable/selector_notice" />
             </RelativeLayout>
 
             <TextView

@@ -8,4 +8,13 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
 public class DiscussResponse extends FaceShowBaseResponse {
 
+    private DiscussResponseBean data = new DiscussResponseBean();
+
+    public DiscussResponseBean getData() {
+        return data;
+    }
+
+    public void setData(DiscussResponseBean data) {
+        this.data = data;
+    }
 }

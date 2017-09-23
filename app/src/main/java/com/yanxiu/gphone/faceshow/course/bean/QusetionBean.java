@@ -5,7 +5,7 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
 import java.util.ArrayList;
 
 /**
- * 投票封装类
+ * 投票封装类--每一个题目
  */
 public class QusetionBean extends BaseBean {
     private String id;

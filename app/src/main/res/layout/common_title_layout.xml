@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/commontitle_margin_left"
-        android:background="@drawable/loading_img"
+        android:background="@drawable/selector_back"
         android:visibility="gone" />
 
     <TextView
@@ -41,7 +41,6 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="@dimen/commontitle_margin_left"
-        android:background="@drawable/loading_img"
         android:visibility="gone" />
 
     <TextView
@@ -53,6 +52,7 @@
         android:gravity="center"
         android:textColor="#1da1f2"
         android:textSize="@dimen/commontitle_singin_textsize"
+        android:text="@string/signIn"
         android:visibility="gone" />
 
     <TextView
@@ -64,7 +64,6 @@
         android:layout_marginRight="15dp"
         android:gravity="center"
         android:textColor="#1da1f2"
-        android:text="@string/signIn"
         android:textSize="@dimen/commontitle_singin_textsize"
         android:visibility="gone" />
 
