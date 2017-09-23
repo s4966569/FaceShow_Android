@@ -38,6 +38,7 @@ public class SpManager {
     private static final String IS_LOGINED = "is_login";
     /*用户唯一标示token*/
     private static final String TOKEN = "token";
+    private static final String PASSPORT = "pass_port";
 
 
     public static void setFristStartUp(boolean isFristStartUp) {
@@ -121,5 +122,21 @@ public class SpManager {
      */
     public static String getToken() {
         return mySharedPreferences.getString(TOKEN, "");
+    }
+
+
+    public static void savePassPort(String passPort) {
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString(PASSPORT, passPort);
+        editor.commit();
+    }
+
+    /**
+     * 获取passPort  用于上传资源
+     *
+     * @return passPort
+     */
+    public static String getPassport() {
+        return mySharedPreferences.getString(PASSPORT, "");
     }
 }

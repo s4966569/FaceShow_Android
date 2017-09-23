@@ -77,9 +77,9 @@ public class LoginActivity extends FaceShowBaseActivity {
 
         edt_account_number.addTextChangedListener(accountNumberChangedListener);
         edt_account_password.addTextChangedListener(accountPasswordChangedListener);
-        if (edt_account_number.getText().length()>0&&edt_account_password.getText().length()>0){
+        if (edt_account_number.getText().length() > 0 && edt_account_password.getText().length() > 0) {
             tv_sign_in.setBackgroundResource(R.drawable.selector_sign_in_bg);
-        }else {
+        } else {
             tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
         }
     }
@@ -173,6 +173,7 @@ public class LoginActivity extends FaceShowBaseActivity {
 
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(ret.getToken());
+                    SpManager.savePassPort(ret.getPassport());
                     getUserInfo(LoginActivity.this);
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
