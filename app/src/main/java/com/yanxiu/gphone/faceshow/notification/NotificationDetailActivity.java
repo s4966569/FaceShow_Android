@@ -125,6 +125,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
 
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

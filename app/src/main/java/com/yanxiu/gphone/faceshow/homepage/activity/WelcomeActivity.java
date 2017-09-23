@@ -99,7 +99,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
             @Override
             public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-
+                WelcomeActivity.this.finish();
             }
         });
 
