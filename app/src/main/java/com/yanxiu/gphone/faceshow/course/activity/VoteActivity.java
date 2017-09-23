@@ -14,6 +14,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.common.listener.KeyboardChangeListener;
 import com.yanxiu.gphone.faceshow.course.adapter.VoteAdapter;
 import com.yanxiu.gphone.faceshow.course.adapter.VoteResultAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
@@ -27,6 +28,7 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
 
+import static android.view.View.GONE;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
@@ -34,7 +36,7 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
 /**
  * 投票页面
  */
-public class VoteActivity extends FaceShowBaseActivity implements View.OnClickListener, VoteAdapter.CanSubmitListener {
+public class VoteActivity extends FaceShowBaseActivity implements View.OnClickListener, VoteAdapter.CanSubmitListener, KeyboardChangeListener.KeyBoardListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -73,7 +75,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
         mSubmit.setEnabled(false);
-        mSubmit.setVisibility(View.GONE);
+        mSubmit.setVisibility(GONE);
         mTitle.setText("课程投票");
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -83,6 +85,8 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void initListener() {
         mBackView.setOnClickListener(this);
         mSubmit.setOnClickListener(this);
+        mKeyboardChangeListener = new KeyboardChangeListener(this);
+        mKeyboardChangeListener.setKeyBoardListener(this);
     }
 
 
@@ -133,11 +137,11 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     //根据是否已答，确定显示哪个adapter
     private void initAdapter(VoteBean data) {
         if (mIsAnswer) {
-            mSubmit.setVisibility(View.GONE);
+            mSubmit.setVisibility(GONE);
             mVoteResultAdapter = new VoteResultAdapter(this);
             mVoteResultAdapter.setData(data);
             mRecyclerView.setAdapter(mVoteResultAdapter);
-            mSubmit.setVisibility(View.GONE);
+            mSubmit.setVisibility(GONE);
         } else {
             mSubmit.setVisibility(View.VISIBLE);
             mVoteAdapter = new VoteAdapter(this, this);
@@ -220,5 +224,35 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     public void canSubmit(boolean is) {
         mSubmit.setEnabled(is);
+    }
+
+    private KeyboardChangeListener mKeyboardChangeListener;
+
+    /**
+     * call back
+     *
+     * @param isShow         true is show else hidden
+     * @param keyboardHeight keyboard height
+     */
+    @Override
+    public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+        if (isShow) {
+            mSubmit.setVisibility(GONE);
+        } else {
+            mSubmit.setVisibility(View.VISIBLE);
+            boolean allChoose = true;
+            for (int i = 0; i < mData.getQuestionGroup().getQuestions().size(); i++) {
+                QusetionBean bean = mData.getQuestionGroup().getQuestions().get(i);
+                if (bean.getQuestionType() == TYPE_TEXT && TextUtils.isEmpty(bean.getFeedBackText())) {
+                    allChoose = false;
+                    break;
+                }
+                if ((bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) && bean.getAnswerList().isEmpty()) {
+                    allChoose = false;
+                    break;
+                }
+            }
+            mSubmit.setEnabled(allChoose);
+        }
     }
 }

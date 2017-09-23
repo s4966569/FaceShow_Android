@@ -25,11 +25,11 @@ public class DiscussBean extends BaseBean {
     private String userName;//
     private String avatar;//
     private String replays;//
+    private int userLiked;////已经点赞 -- 用来记录已经点攒 1.已点攒 0。为点攒
 
     //自己的数据 start
     private String title;//header标题
     private boolean isHeader = false;
-    private boolean hasLaud = false;//已经点赞 -- 用来记录已经点攒
     private int totalElements;
     //自己的数据 end
 
@@ -145,20 +145,20 @@ public class DiscussBean extends BaseBean {
         isHeader = header;
     }
 
-    public boolean isHasLaud() {
-        return hasLaud;
-    }
-
-    public void setHasLaud(boolean hasLaud) {
-        this.hasLaud = hasLaud;
-    }
-
     public int getTotalElements() {
         return totalElements;
     }
 
     public void setTotalElements(int totalElements) {
         this.totalElements = totalElements;
+    }
+
+    public int getUserLiked() {
+        return userLiked;
+    }
+
+    public void setUserLiked(int userLiked) {
+        this.userLiked = userLiked;
     }
 
 }

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.course.bean.EvaluationBean;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.customview.ChooseLayout;
