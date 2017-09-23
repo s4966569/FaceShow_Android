@@ -29,7 +29,6 @@ public class UserInfo {
 
     public class Info {
 
-
         private int id;
         private int userId;
         private String realName;
@@ -44,18 +43,9 @@ public class UserInfo {
         private String sex;
         private String stageName;
         private String subjectName;
-
-
-        private String userName;
-        private String headImg;
-        private String phone;
-        private String stageId;
         private String classId;
         private String className;
-        private String subjectId;
         private String token;
-        private String accountNumber;
-        private String accountPassword;
 
 
         public int getId() {
@@ -146,44 +136,12 @@ public class UserInfo {
             this.avatar = avatar;
         }
 
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getHeadImg() {
-            return headImg;
-        }
-
-        public void setHeadImg(String headImg) {
-            this.headImg = headImg;
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-
-        public void setPhone(String phone) {
-            this.phone = phone;
-        }
-
         public String getSex() {
             return sex;
         }
 
         public void setSex(String sex) {
             this.sex = sex;
-        }
-
-        public String getStageId() {
-            return stageId;
-        }
-
-        public void setStageId(String stageId) {
-            this.stageId = stageId;
         }
 
         public String getStageName() {
@@ -210,14 +168,6 @@ public class UserInfo {
             this.className = className;
         }
 
-        public String getSubjectId() {
-            return subjectId;
-        }
-
-        public void setSubjectId(String subjectId) {
-            this.subjectId = subjectId;
-        }
-
         public String getSubjectName() {
             return subjectName;
         }
@@ -234,23 +184,5 @@ public class UserInfo {
             this.token = token;
         }
 
-        public String getAccountNumber() {
-            return accountNumber;
-        }
-
-        public void setAccountNumber(String accountNumber) {
-            this.accountNumber = accountNumber;
-        }
-
-        public String getAccountPassword() {
-            return accountPassword;
-        }
-
-        public void setAccountPassword(String accountPassword) {
-            this.accountPassword = accountPassword;
-        }
-
     }
-
-
 }

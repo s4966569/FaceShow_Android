@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -279,8 +280,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private boolean checkIsThumb(ArrayList<ClassCircleResponse.Data.Moments.Likes> likes) {
         for (ClassCircleResponse.Data.Moments.Likes like : likes) {
-            if (like.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
-                return true;
+            if (like.publisher!=null&& !TextUtils.isEmpty(like.publisher.userId)) {
+                if (like.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
+                    return true;
+                }
             }
         }
         return false;

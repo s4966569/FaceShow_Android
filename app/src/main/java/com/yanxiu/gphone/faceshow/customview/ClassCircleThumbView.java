@@ -6,6 +6,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.DynamicDrawableSpan;
@@ -55,11 +56,13 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
         builder.append(setImageSpan());
         for (int i = 0; i < list.size(); i++) {
             ClassCircleResponse.Data.Moments.Likes item = list.get(i);
-            builder.append(setClickableSpan(item.publisher.realName, item));
-            if (i != list.size() - 1) {
-                builder.append(" , ");
-            } else {
-                builder.append(" ");
+            if (item.publisher != null&& !TextUtils.isEmpty(item.publisher.realName)) {
+                builder.append(setClickableSpan(item.publisher.realName, item));
+                if (i != list.size() - 1) {
+                    builder.append(" , ");
+                } else {
+                    builder.append(" ");
+                }
             }
         }
         setText(builder,BufferType.SPANNABLE);
