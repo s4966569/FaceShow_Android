@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -25,16 +26,23 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.google.gson.Gson;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.classcircle.response.HeadimgUploadBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.zxing.camera.CameraManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +74,6 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     @BindView(R.id.title_layout_left_img)
     ImageView mBackView;
 
-
     private PopupWindow picPopupWindow;
     private static final int SELECT_FROM_GALLER = 1;
     private static final int TAKE_PHOTO = 2;
@@ -88,19 +95,16 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private void initData() {
         mBackView.setVisibility(View.VISIBLE);
 
-        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(new BitmapImageViewTarget(mHeadImgView){
-            @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable drawable= RoundedBitmapDrawableFactory.create(view.getResources(),resource);
-                drawable.setCornerRadius(12);
-                view.setBackground(drawable);
-            }
-        });
+        setHeadimg();
         mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
         mMobileView.setText(UserInfo.getInstance().getInfo().getPhone());
         mSexView.setText(getSex());
         mStageView.setText(UserInfo.getInstance().getInfo().getStageName());
         mSubjectView.setText(UserInfo.getInstance().getInfo().getSubjectName());
+    }
+
+    private void setHeadimg(){
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).into(new CornersImageTarget(mContext,mHeadImgView,12));
     }
 
     private String getSex(){
@@ -270,7 +274,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 // 取得裁剪后的图片
                 case CROP_PICTURE:
                     if (portraitFile != null) {
-                        uploadPortrait();
+                        uploadPortrait(portraitFile.getAbsolutePath());
                     }
                     break;
                 default:
@@ -326,8 +330,67 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     /**
      * 上传头像
      */
-    private void uploadPortrait() {
+    private void uploadPortrait(final String path) {
     //提交上传头像请求
+        UpLoadRequest.getInstense().setConstantParams(new UpLoadRequest.findConstantParams() {
+            @NonNull
+            @Override
+            public String findUpdataUrl() {
+                String url="/headImgUpload";
+                String token="ce0d56d0d8a214fb157be3850476ecb5";
+                return UrlRepository.getInstance().getUploadServer()+url+"?token="+token;
+            }
+
+            @Override
+            public int findFileNumber() {
+                return 1;
+            }
+
+            @Nullable
+            @Override
+            public Map<String, String> findParams() {
+                return null;
+            }
+        }).setImgPath(new UpLoadRequest.findImgPath() {
+            @NonNull
+            @Override
+            public String getImgPath(int position) {
+                return path;
+            }
+        }).setListener(new UpLoadRequest.onUpLoadlistener() {
+            @Override
+            public void onUpLoadStart(int position, Object tag) {
+                rootView.showLoadingView();
+            }
+
+            @Override
+            public void onUpLoadSuccess(int position, Object tag, String jsonString) {
+                rootView.hiddenLoadingView();
+                jsonString=jsonString.replace("default","defaults");
+                Gson gson=new Gson();
+                HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
+                if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
+                    UserInfo.getInstance().getInfo().setHeadImg(uploadBean.tplData.data.get(0).shortUrl);
+                    setHeadimg();
+                }else {
+                    ToastUtil.showToast(mContext,"头像上传失败");
+                }
+            }
+
+            @Override
+            public void onUpLoadFailed(int position, Object tag, String failMsg) {
+                rootView.hiddenLoadingView();
+                ToastUtil.showToast(mContext,failMsg);
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+                rootView.hiddenLoadingView();
+                ToastUtil.showToast(mContext,errorMsg);
+            }
+        });
+
+
     }
     @Override
     public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
@@ -354,6 +417,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     @Override
     public void onDestroy() {
         super.onDestroy();
+        UpLoadRequest.getInstense().cancle();
         unbinder.unbind();
     }
 }

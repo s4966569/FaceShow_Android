@@ -11,6 +11,7 @@ import java.util.ArrayList;
  */
 public class ClassCircleResponse extends FaceShowBaseResponse{
 
+    public boolean hasNextPage;
     public Data data;
 
     public class Data{
@@ -23,7 +24,7 @@ public class ClassCircleResponse extends FaceShowBaseResponse{
              * 相册图片列表
              * */
             public ArrayList<Album> album;
-            public String claszId;
+            public String clazsId;
             /**
              * 评论数量，包括一级评论和回复
              * */
@@ -47,36 +48,12 @@ public class ClassCircleResponse extends FaceShowBaseResponse{
             public String readedNum;
 
             public class Likes{
-                public String claszId;
+                public String clazsId;
                 public String createTime;
                 public String id;
                 public String momentId;
                 public Publisher publisher;
 
-            }
-
-            public class Comments{
-                public String claszId;
-                /**
-                 * 内容
-                 * */
-                public String content;
-                public String createTime;
-                public String id;
-                /**
-                 * 1为评论，2为回复
-                 * */
-                public String level;
-                public String momentId;
-                public String parentId;
-                /**
-                 * 评论人
-                 * */
-                public Publisher publisher;
-                /**
-                 * 被评论人
-                 * */
-                public Publisher toUser;
             }
 
             public class Album{

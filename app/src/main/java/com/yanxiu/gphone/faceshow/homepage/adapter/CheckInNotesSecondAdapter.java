@@ -90,10 +90,12 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
                 tv_training_check_in_time.setVisibility(View.VISIBLE);
                 tv_training_check_in_time.setText(checkInNotesBean.getUserSignIn().getSigninTime());
                 tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
+                img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_check_in_small_success));
             } else {
                 tv_training_check_in_time.setVisibility(View.GONE);
                 tv_training_statue.setText("未签到");
                 tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_999999));
+                img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_check_in_small_error));
             }
         }
     }

@@ -16,8 +16,7 @@
             android:id="@+id/course_detail_item_icon"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginLeft="@dimen/course_adapter_marginleft"
-            android:background="@color/color_1da1f2" />
+            android:layout_marginLeft="@dimen/course_adapter_marginleft" />
 
         <TextView
             android:id="@+id/course_detail_item_txt"

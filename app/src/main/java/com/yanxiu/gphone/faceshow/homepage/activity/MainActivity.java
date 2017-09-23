@@ -19,13 +19,17 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
+import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.UpdateUtil;
 
 import java.util.UUID;
 
@@ -63,6 +67,26 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setContentView(mRootView);
         initView();
         initListener();
+        getUserInfo();
+        UpdateUtil.Initialize(this,false);
+    }
+
+    private void getUserInfo() {
+        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                if (ret.getCode()==0) {
+                    UserInfo.getInstance().setInfo(ret.getData());
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
         requestData();
     }
 
@@ -296,6 +320,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
         }
         // TODO: 17-9-21 移除轮讯
+        handler.removeCallbacksAndMessages(null);
     }
 
 }

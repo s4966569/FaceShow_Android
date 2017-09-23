@@ -15,5 +15,12 @@ public class Publisher implements Serializable {
     public String avatar;
     public String realName;
     public String userId;
+    public String email;
+    public String id;
+    public String mobilePhone;
+    public String sex;
+    public String stage;
+    public String subject;
+    public String userStatus;
 
 }

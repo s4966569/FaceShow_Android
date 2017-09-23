@@ -12,21 +12,21 @@ import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
  * Function :
  */
 public class InitializeRequest extends RequestBase {
-    public String did = Constants.deviceId;
-    public String brand = Constants.BRAND;
-    public String nettype = NetWorkUtils.getNetWorkType();
-    public String osType = Constants.osType;
-    public String os = Constants.OS;
-    public String debugtoken = "";
-    public String trace_uid = String.valueOf(UserInfo.getInstance().getInfo().getUserId());
-    public String appVersion = Constants.version;
-    public String osVer = Constants.version;
-    public String mode = UrlRepository.getInstance().getMode() != null ? UrlRepository.getInstance().getMode() : "test";
-    public String operType = Constants.OPERTYPE;
-    public String phone = "-";
-    public String remoteIp = "";
-    public String productLine = Constants.PRODUCTLINE;
-    public String content = "";
+    public String did= Constants.deviceId;
+    public String brand=Constants.BRAND;
+    public String nettype= NetWorkUtils.getNetWorkType();
+    public String osType=Constants.osType;
+    public String os=Constants.OS;
+    public String debugtoken="";
+    public String trace_uid= "123";
+    public String appVersion=Constants.version;
+    public String osVer=Constants.version;
+    public String mode= UrlRepository.getInstance().getMode()!=null?UrlRepository.getInstance().getMode():"test";
+    public String operType=Constants.OPERTYPE;
+    public String phone="-";
+    public String remoteIp="";
+    public String productLine=Constants.PRODUCTLINE;
+    public String content="";
     public String channel;
 
     @Override
@@ -36,7 +36,7 @@ public class InitializeRequest extends RequestBase {
 
     @Override
     protected String urlServer() {
-        return UrlRepository.getInstance().getUploadServer();
+        return UrlRepository.getInstance().getInitializeServer();
     }
 
     @Override

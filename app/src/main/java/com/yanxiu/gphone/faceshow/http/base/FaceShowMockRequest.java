@@ -22,6 +22,7 @@ import java.util.UUID;
 public abstract class FaceShowMockRequest extends FaceShowBaseRequest {
 
 
+
     @Override
     public <T> UUID startRequest(final Class<T> clazz, final HttpCallback<T> callback) {
         final RequestBase request = this;

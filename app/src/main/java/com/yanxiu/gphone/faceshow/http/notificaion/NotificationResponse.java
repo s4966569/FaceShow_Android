@@ -1,47 +1,85 @@
 package com.yanxiu.gphone.faceshow.http.notificaion;
 
-import com.google.gson.annotations.SerializedName;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
 import java.util.List;
 
 /**
- * 通知详情
+ * 通知数据
  * Created by frc on 17-9-15.
  */
 
 public class NotificationResponse extends FaceShowBaseResponse {
 
-    @SerializedName("data")
-    private List<Notification> notificationList;
+    private DataBean data;
 
-    public List<Notification> getNotificationList() {
-        return notificationList;
+    public DataBean getData() {
+        return data;
     }
 
-    public void setNotificationList(List<Notification> notificationList) {
-        this.notificationList = notificationList;
+    public void setData(DataBean data) {
+        this.data = data;
+    }
+
+    public class DataBean {
+        private List<Notification> elements;
+        private int pageSize;
+        private int pageNum;
+        private int offset;
+        private int totalElements;
+        private int lastPageNumber;
+
+        public List<Notification> getElements() {
+            return elements;
+        }
+
+        public void setElements(List<Notification> elements) {
+            this.elements = elements;
+        }
+
+        public int getPageSize() {
+            return pageSize;
+        }
+
+        public void setPageSize(int pageSize) {
+            this.pageSize = pageSize;
+        }
+
+        public int getPageNum() {
+            return pageNum;
+        }
+
+        public void setPageNum(int pageNum) {
+            this.pageNum = pageNum;
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public void setOffset(int offset) {
+            this.offset = offset;
+        }
+
+        public int getTotalElements() {
+            return totalElements;
+        }
+
+        public void setTotalElements(int totalElements) {
+            this.totalElements = totalElements;
+        }
+
+        public int getLastPageNumber() {
+            return lastPageNumber;
+        }
+
+        public void setLastPageNumber(int lastPageNumber) {
+            this.lastPageNumber = lastPageNumber;
+        }
     }
 
     public class Notification {
 
-
-        /**
-         * id : 2
-         * title : 12314
-         * content : testceshi
-         * authorId : 1
-         * clazzId : 1
-         * createTime : 2017-09-15 12:03:42
-         * updateTime : 2017-09-15 12:03:42
-         * state : 1
-         * attachUrl : null
-         * readNum : 3
-         * authorName : 111
-         * createTimeStr : 2017-09-15
-         * updateTimeStr : 2017-09-15
-         * viewed : false
-         */
 
         private int id;
         private String title;

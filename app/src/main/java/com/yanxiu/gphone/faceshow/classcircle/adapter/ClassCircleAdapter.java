@@ -2,6 +2,10 @@ package com.yanxiu.gphone.faceshow.classcircle.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewCompat;
@@ -20,11 +24,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
 import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +46,12 @@ import butterknife.ButterKnife;
 public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public interface onCommentClickListener {
-        void commentClick(int position, ClassCircleResponse.Data.Moments response,int commentPosition, ClassCircleResponse.Data.Moments.Comments comment, boolean isCommentMaster);
+        void commentClick(int position, ClassCircleResponse.Data.Moments response, int commentPosition, Comments comment, boolean isCommentMaster);
+
         void commentFinish();
     }
 
-    public interface onLikeClickListener{
+    public interface onLikeClickListener {
         void likeClick(int position, ClassCircleResponse.Data.Moments response);
     }
 
@@ -66,7 +73,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void setData(List<ClassCircleResponse.Data.Moments> list) {
-        if (list == null) {
+        if (list == null || list.size() == 0) {
             return;
         }
         this.mData.clear();
@@ -75,7 +82,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void addData(List<ClassCircleResponse.Data.Moments> list) {
-        if (list == null) {
+        if (list == null || list.size() == 0) {
             return;
         }
         this.mData.addAll(list);
@@ -87,17 +94,17 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.notifyDataSetChanged();
     }
 
-    public ClassCircleResponse.Data.Moments getDataFromPosition(int position){
-        if (position<1||position>mData.size()){
+    public ClassCircleResponse.Data.Moments getDataFromPosition(int position) {
+        if (position < 1 || position > mData.size()) {
             return null;
         }
-        return mData.get(position-1);
+        return mData.get(position - 1);
     }
 
-    public String getIdFromLastPosition(){
-        if (mData.size()>0) {
+    public String getIdFromLastPosition() {
+        if (mData.size() > 0) {
             return mData.get(mData.size() - 1).id;
-        }else {
+        } else {
             return "0";
         }
     }
@@ -106,8 +113,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mCommentClickListener = commentClickListener;
     }
 
-    public void setThumbClickListener(onLikeClickListener likeClickListener){
-        this.mLikeClickListener=likeClickListener;
+    public void setThumbClickListener(onLikeClickListener likeClickListener) {
+        this.mLikeClickListener = likeClickListener;
     }
 
     @Override
@@ -135,37 +142,36 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
-            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().centerCrop().into(new BitmapImageViewTarget(titleViewHolder.mHeadImgView){
-                @Override
-                protected void setResource(Bitmap resource) {
-                    RoundedBitmapDrawable drawable=RoundedBitmapDrawableFactory.create(view.getResources(),resource);
-                    drawable.setCornerRadius(10);
-                    view.setImageDrawable(drawable);
-                }
-            });
+            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
-            final ClassCircleResponse.Data.Moments moments= mData.get(position - 1);
+            final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
 
-            Glide.with(mContext).load(moments.publisher.avatar).asBitmap().centerCrop().into(new CornersImageTarget(classCircleViewHolder.mHeadImgView));
-            if (moments.album!=null&&moments.album.size()>0) {
+            String headimg="";
+            if (moments.publisher != null) {
+                headimg=moments.publisher.avatar;
+            }
+            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(mContext,classCircleViewHolder.mHeadImgView,10));
+            if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                if (classCircleViewHolder.mContentImageView.getTag()==null||!classCircleViewHolder.mContentImageView.getTag().equals(moments.album.get(0).attachment.previewUrl)) {
+                if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(moments.album.get(0).attachment.previewUrl)) {
                     Glide.with(mContext).load(moments.album.get(0).attachment.previewUrl).asBitmap().into(classCircleViewHolder.mContentImageView);
-                    classCircleViewHolder.mContentImageView.setTag(moments.album.get(0).attachment.previewUrl);
+                    classCircleViewHolder.mContentImgUrl = moments.album.get(0).attachment.previewUrl;
                 }
                 classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ArrayList<String> list=new ArrayList<>();
+                        ArrayList<String> list = new ArrayList<>();
                         list.add(moments.album.get(0).attachment.downloadUrl);
-                        PhotoActivity.LaunchActivity(mContext,list,0,mContext.hashCode(),PhotoActivity.DELETE_CANNOT);
+                        PhotoActivity.LaunchActivity(mContext, list, 0, mContext.hashCode(), PhotoActivity.DELETE_CANNOT);
                     }
                 });
-            }else {
+            } else {
                 classCircleViewHolder.mContentImageView.setVisibility(View.GONE);
             }
-            classCircleViewHolder.mNameView.setText(moments.publisher.realName);
+            if (moments.publisher != null) {
+                classCircleViewHolder.mNameView.setText(moments.publisher.realName);
+            }
             classCircleViewHolder.mContentView.setData(moments.content);
             classCircleViewHolder.mTimeView.setText(moments.publishTimeDesc);
             classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
@@ -175,7 +181,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             classCircleViewHolder.mCircleCommentLayout.setItemClickListener(new ClassCircleCommentLayout.onItemClickListener() {
                 @Override
-                public void onItemClick(ClassCircleResponse.Data.Moments.Comments comments, int position) {
+                public void onItemClick(Comments comments, int position) {
                     if (!comments.publisher.userId.equals(UserInfo.getInstance().getInfo().getUserId())) {
                         if (mCommentClickListener != null) {
                             mCommentClickListener.commentClick(classCircleViewHolder.getAdapterPosition(), moments, position, comments, false);
@@ -184,10 +190,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             });
 
-            if (checkIsThumb(moments.likes)){
+            if (checkIsThumb(moments.likes)) {
                 classCircleViewHolder.mThumbView.setVisibility(View.GONE);
                 classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal_80);
-            }else {
+            } else {
                 classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
                 classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
             }
@@ -215,26 +221,26 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onClick(View v) {
                     if (mCommentClickListener != null) {
-                        mCommentClickListener.commentClick(classCircleViewHolder.getAdapterPosition(), moments,-1, null, true);
+                        mCommentClickListener.commentClick(classCircleViewHolder.getAdapterPosition(), moments, -1, null, true);
                     }
                     classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
                     classCircleViewHolder.mAnimLayout.setEnabled(false);
-                    animPosition=ANIM_POSITION_DEFAULT;
+                    animPosition = ANIM_POSITION_DEFAULT;
                 }
             });
             classCircleViewHolder.mCommentView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction()==MotionEvent.ACTION_DOWN){
-                        if (checkIsThumb(moments.likes)){
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        if (checkIsThumb(moments.likes)) {
                             classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_press_80);
-                        }else {
+                        } else {
                             classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_press_right);
                         }
-                    }else if (event.getAction()==MotionEvent.ACTION_UP||event.getAction()==MotionEvent.ACTION_CANCEL){
-                        if (checkIsThumb(moments.likes)){
+                    } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                        if (checkIsThumb(moments.likes)) {
                             classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal_80);
-                        }else {
+                        } else {
                             classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
                         }
                     }
@@ -244,7 +250,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mThumbView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mLikeClickListener!=null){
+                    if (mLikeClickListener != null) {
                         mLikeClickListener.likeClick(classCircleViewHolder.getAdapterPosition(), moments);
                     }
                     classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
@@ -255,9 +261,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mThumbView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction()==MotionEvent.ACTION_DOWN){
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_press_left);
-                    }else if (event.getAction()==MotionEvent.ACTION_UP||event.getAction()==MotionEvent.ACTION_CANCEL){
+                    } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                         classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
                     }
                     return false;
@@ -266,9 +272,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private boolean checkIsThumb(ArrayList<ClassCircleResponse.Data.Moments.Likes> likes){
-        for (ClassCircleResponse.Data.Moments.Likes like:likes){
-            if (like.publisher.userId.equals(UserInfo.getInstance().getInfo().getUserId())){
+    private boolean checkIsThumb(ArrayList<ClassCircleResponse.Data.Moments.Likes> likes) {
+        for (ClassCircleResponse.Data.Moments.Likes like : likes) {
+            if (like.publisher.userId.equals(UserInfo.getInstance().getInfo().getUserId())) {
                 return true;
             }
         }
@@ -336,26 +342,14 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }).start();
     }
 
-    private class CornersImageTarget extends BitmapImageViewTarget {
-
-        CornersImageTarget(ImageView view) {
-            super(view);
-        }
-
-        @Override
-        protected void setResource(Bitmap resource) {
-            RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(view.getContext().getResources(), resource);
-            circularBitmapDrawable.setCornerRadius(10);
-            view.setBackground(circularBitmapDrawable);
-        }
-    }
-
     @Override
     public int getItemCount() {
         return mData != null ? mData.size() + 1 : 1;
     }
 
     class ClassCircleViewHolder extends RecyclerView.ViewHolder {
+
+        String mContentImgUrl;
 
         @BindView(R.id.iv_head_img)
         ImageView mHeadImgView;
@@ -394,7 +388,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         TitleViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

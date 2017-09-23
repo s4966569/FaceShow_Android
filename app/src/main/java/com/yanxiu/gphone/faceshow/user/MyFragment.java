@@ -3,7 +3,11 @@ package com.yanxiu.gphone.faceshow.user;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.LayoutInflater;
@@ -21,6 +25,7 @@ import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,14 +58,7 @@ public class MyFragment extends FaceShowBaseFragment {
     private void initData(){
         mTitleView.setText(R.string.my);
         mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
-        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(new BitmapImageViewTarget(mHeadImgView){
-            @Override
-            protected void setResource(Bitmap resource) {
-                RoundedBitmapDrawable drawable= RoundedBitmapDrawableFactory.create(view.getResources(),resource);
-                drawable.setCornerRadius(12);
-                view.setBackground(drawable);
-            }
-        });
+        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().into(new CornersImageTarget(getContext(),mHeadImgView,12));
     }
 
     @OnClick({R.id.person_info, R.id.registration, R.id.ll_logout})
