@@ -162,9 +162,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
-                if (ret.getCode() == 0 && ret.getData().isHasUnView()) {
-                    if (mRedCircle.getVisibility() == View.INVISIBLE) {
-                        mRedCircle.setVisibility(View.VISIBLE);
+                if (ret.getCode() == 0) {
+                    if (ret.getData().isHasUnView()) {
+                        if (mRedCircle.getVisibility() == View.INVISIBLE) {
+                            mRedCircle.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        if (mRedCircle.getVisibility() == View.VISIBLE) {
+                            mRedCircle.setVisibility(View.INVISIBLE);
+                        }
                     }
                 } else {
                 }

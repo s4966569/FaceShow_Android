@@ -16,6 +16,15 @@ public class SignInResponse extends FaceShowBaseResponse {
 
     private String data;
     private String token;
+    private String passport;
+
+    public String getPassport() {
+        return passport;
+    }
+
+    public void setPassport(String passport) {
+        this.passport = passport;
+    }
 
     public String getData() {
         return data;

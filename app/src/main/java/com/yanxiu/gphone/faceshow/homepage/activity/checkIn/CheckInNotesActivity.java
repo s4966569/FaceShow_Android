@@ -130,19 +130,13 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                                     mRootView.showOtherErrorView();
                                 }
                             }
-
                         }
-
                     }
-
                     mCheckInNotesAdapter.update(mCheckInNotesList);
-
-
                 } else {
                     if (mCheckInNotesList.size() <= 0)
                         mRootView.showOtherErrorView();
                 }
-
             }
 
             @Override
