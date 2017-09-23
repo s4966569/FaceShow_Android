@@ -16,6 +16,7 @@ import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.notification.NotificationDetailActivity;
 import com.yanxiu.gphone.faceshow.notification.adapter.NotificationAdapter;
 
@@ -63,6 +64,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
             public void onClick(View view) {
                 mRootView.showLoadingView();
                 mNotificationList.clear();
+                mOffset = 0;
                 getNotifications();
             }
         });
@@ -81,7 +83,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
         NotificationListRequest notificationRequest = new NotificationListRequest();
         notificationRequest.offset = String.valueOf(mOffset);
         notificationRequest.pageSize = mPageSize;
-        notificationRequest.clazsId = "1";
+        notificationRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mNotificationRequestUUID = notificationRequest.startRequest(NotificationResponse.class, new HttpCallback<NotificationResponse>() {
             @Override
             public void onSuccess(RequestBase request, NotificationResponse ret) {
@@ -123,8 +125,13 @@ public class NoticeFragment extends FaceShowBaseFragment {
         loadMoreRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
             @Override
             public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
-                mRootView.showLoadingView();
-                getNotifications();
+                if (mOffset > 0) {
+                    mOffset = mNotificationList.size();
+                    mRootView.showLoadingView();
+                    getNotifications();
+                } else {
+                    mOffset = mNotificationList.size();
+                }
             }
 
             @Override
@@ -135,7 +142,6 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mNotificationAdapter.setItemClickListener(new NotificationAdapter.ItemClickListener() {
             @Override
             public void itemClick(int position) {
-                // TODO: 17-9-19 消耗小红点的网络请求   小红点消耗请求失败怎么办？
 
                 NotificationDetailActivity.toThisAct(getActivity(), String.valueOf(mNotificationList.get(position).getId()));
             }

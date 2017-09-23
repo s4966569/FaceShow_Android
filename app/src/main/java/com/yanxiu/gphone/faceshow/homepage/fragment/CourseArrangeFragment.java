@@ -19,6 +19,7 @@ import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 
@@ -72,7 +73,7 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
     private void requestData() {
         mRootView.showLoadingView();
         CourseArrangeRequest courseArrangeRequest = new CourseArrangeRequest();
-        courseArrangeRequest.clazsId = mMainBean.getClazsInfo().getId();
+        courseArrangeRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         courseArrangeRequest.startRequest(CourseArrangeResponse.class, new HttpCallback<CourseArrangeResponse>() {
             @Override
             public void onSuccess(RequestBase request, CourseArrangeResponse ret) {

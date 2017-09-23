@@ -1,11 +1,16 @@
 package com.yanxiu.gphone.faceshow.course.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,22 +19,29 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDiscussAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
+import com.yanxiu.gphone.faceshow.http.course.DiscussCommentRequest;
+import com.yanxiu.gphone.faceshow.http.course.DiscussCommentResponse;
 import com.yanxiu.gphone.faceshow.http.course.DiscussRequest;
 import com.yanxiu.gphone.faceshow.http.course.DiscussResponse;
+import com.yanxiu.gphone.faceshow.http.course.DiscussSaveRequest;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * 课程讨论
  */
-public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener {
+public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener, View.OnKeyListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
+    private EditText mEd_comment;
     private TextView mTitle;
     private String mDiscussTitle;
 
@@ -38,7 +50,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private CourseDiscussAdapter mAdapter;
 
     private int mTotalCount = 0;//数据的总量
-    private int mNowTotalCount= 0;//当前以获取的数量
+    private int mNowTotalCount = 0;//当前以获取的数量
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +59,15 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mRootView.setContentView(R.layout.activity_course_discuss);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
-        mDiscussTitle = getIntent().getStringExtra("discussTitle");
         initView();
         initListener();
-        requestData(false);
+        requestTitleData();
     }
 
     private void initView() {
         mBackView = (ImageView) findViewById(R.id.title_layout_left_img);
+        mEd_comment = (EditText) findViewById(R.id.ed_comment);
+        mEd_comment.setOnKeyListener(this);
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mTitle.setText("课程讨论");
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
@@ -97,11 +110,43 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 finish();
                 break;
             case R.id.retry_button:
-                requestData(false);
+                if (TextUtils.isEmpty(mDiscussTitle)) {
+                    requestTitleData();
+                } else {
+                    requestData(false);
+                }
+
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 获取讨论标题数据
+     */
+    private void requestTitleData() {
+        mRootView.showLoadingView();
+        DiscussCommentRequest discussRequest = new DiscussCommentRequest();
+        discussRequest.startRequest(DiscussCommentResponse.class, new HttpCallback<DiscussCommentResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, DiscussCommentResponse ret) {
+                mRootView.finish();
+                if (ret != null && ret.getCode() == 0) {
+                    mDiscussTitle = ret.getData().getDescription();
+                    requestData(false);
+                } else {
+                    mRootView.showOtherErrorView();
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+                mRootView.showNetErrorView();
+            }
+        });
+
     }
 
     private void requestData(final boolean isRefreshIng) {
@@ -117,9 +162,9 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 if (ret != null && ret.getCode() == 0) {
                     mTotalCount = ret.getData().getTotalElements();
                     mNowTotalCount = ret.getData().getElements().size();
-                    if(mNowTotalCount >= mTotalCount){
+                    if (mNowTotalCount >= mTotalCount) {
                         mRecyclerView.setLoadMoreEnable(false);
-                    }else{
+                    } else {
                         mRecyclerView.setLoadMoreEnable(true);
                     }
                     mAdapter.setData(ret.getData().getDataWithHeader(mDiscussTitle));
@@ -168,6 +213,44 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     }
 
+    /**
+     * 提交讨论标题数据
+     */
+    private void submitData(String content) {
+        mRootView.showLoadingView();
+        DiscussSaveRequest discussSaveRequest = new DiscussSaveRequest();
+        discussSaveRequest.content = content;
+        discussSaveRequest.stepId = "13";
+        discussSaveRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
+                mRootView.finish();
+                hiddenInputMethod();
+                if (ret != null && ret.getCode() == 0) {
+                    ToastUtil.showToast(CourseDiscussActivity.this, "提交成功");
+                } else {
+                    ToastUtil.showToast(CourseDiscussActivity.this, ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+                ToastUtil.showToast(CourseDiscussActivity.this, error.getMessage());
+                hiddenInputMethod();
+            }
+        });
+
+    }
+
+    private void hiddenInputMethod() {
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+        mEd_comment.setText("");
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+    }
 
     /**
      * 跳转CourseActivity
@@ -183,5 +266,15 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
 
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (keyCode == event.getKeyCode() && event.getAction() == KeyEvent.ACTION_UP) {
+            String comment = mEd_comment.getText().toString();
+            submitData(comment);
+            return true;
+        }
+        return false;
     }
 }
