@@ -6,20 +6,26 @@
     android:layout_height="match_parent"
     android:background="@color/color_edf0ee">
 
-    <RelativeLayout
-        android:id="@+id/top"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/net_error_layout_height"
-        android:background="@drawable/net_error">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
 
-    </RelativeLayout>
+    <ImageView
+        android:id="@+id/top"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/net_error">
+
+    </ImageView>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/top"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/net_error_layout_margintop"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
         android:text="@string/net_data_error"
         android:textColor="@color/color_999999"
         android:textSize="@dimen/text_size_16" />
@@ -29,12 +35,10 @@
         android:id="@+id/wavesLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/top"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/net_error_layout_retrybutton_top"
+        android:layout_marginTop="25dp"
+        android:layout_gravity="center_horizontal"
         app:waves_radius="@dimen/wavesRadius"
-        app:waves_animend_alpha="102"
-        android:layout_gravity="center">
+        app:waves_animend_alpha="102">
 
         <TextView
             android:id="@+id/retry_button"
@@ -46,5 +50,5 @@
             android:textColor="@drawable/selector_refresh_text_color"
             android:background="@drawable/selector_refresh_button_net_error"/>
     </com.yanxiu.gphone.faceshow.customview.WavesLayout>
-
+    </LinearLayout>
 </RelativeLayout>
