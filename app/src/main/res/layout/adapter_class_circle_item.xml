@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:paddingEnd="15dp"
-    android:paddingStart="15dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -82,11 +82,11 @@
 
                     <ImageView
                         android:id="@+id/iv_function"
-                        android:layout_width="50dp"
+                        android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:background="#00ff00" />
+                        android:background="@drawable/selector_classcircle_function" />
                 </RelativeLayout>
 
                 <LinearLayout
@@ -94,7 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="55dp"
+                    android:layout_marginEnd="35dp"
                     android:background="@drawable/shape_class_circle_aime_normal"
                     android:orientation="horizontal">
 
@@ -114,7 +114,7 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_marginEnd="3dp"
-                                android:background="#ff0000" />
+                                android:background="@drawable/selector_classcircle_like" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -141,7 +141,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:background="#ff0000"
+                                android:background="@drawable/selector_classcircle_comment"
                                 android:layout_marginEnd="3dp"/>
 
                             <TextView
@@ -157,9 +157,11 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_like_comment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/rl_anim"
+                    android:background="@drawable/classcircle_like_comment"
                     android:orientation="vertical">
 
                     <com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView
@@ -167,12 +169,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="5dp"
                         android:layout_marginStart="10dp" />
+
+                    <View
+                        android:id="@+id/like_comment_line"
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:background="#d7dde0" />
 
                     <com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout
                         android:id="@+id/cc_comments"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"/>
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

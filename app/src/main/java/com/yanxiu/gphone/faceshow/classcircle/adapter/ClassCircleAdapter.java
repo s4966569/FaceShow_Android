@@ -1,13 +1,6 @@
 package com.yanxiu.gphone.faceshow.classcircle.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -142,7 +134,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
-            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
+            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
@@ -151,11 +143,11 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (moments.publisher != null) {
                 headimg=moments.publisher.avatar;
             }
-            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.mipmap.ic_launcher).centerCrop().into(new CornersImageTarget(mContext,classCircleViewHolder.mHeadImgView,10));
+            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext,classCircleViewHolder.mHeadImgView,10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
                 if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(moments.album.get(0).attachment.previewUrl)) {
-                    Glide.with(mContext).load(moments.album.get(0).attachment.previewUrl).asBitmap().into(classCircleViewHolder.mContentImageView);
+                    Glide.with(mContext).load(moments.album.get(0).attachment.previewUrl).asBitmap().centerCrop().into(classCircleViewHolder.mContentImageView);
                     classCircleViewHolder.mContentImgUrl = moments.album.get(0).attachment.previewUrl;
                 }
                 classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
@@ -178,6 +170,19 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mAnimLayout.setEnabled(false);
             classCircleViewHolder.mCircleThumbView.setData(moments.likes);
             classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
+
+            boolean isLikeHasData=moments.likes!=null&&moments.likes.size()>0;
+            boolean isCommentHasData=moments.comments!=null&&moments.comments.size()>0;
+            if (isCommentHasData&&isLikeHasData){
+                classCircleViewHolder.mLikeCommentLineView.setVisibility(View.VISIBLE);
+            }else {
+                classCircleViewHolder.mLikeCommentLineView.setVisibility(View.GONE);
+            }
+            if (isCommentHasData||isLikeHasData){
+                classCircleViewHolder.mLikeCommentLayout.setVisibility(View.VISIBLE);
+            }else {
+                classCircleViewHolder.mLikeCommentLayout.setVisibility(View.GONE);
+            }
 
             classCircleViewHolder.mCircleCommentLayout.setItemClickListener(new ClassCircleCommentLayout.onItemClickListener() {
                 @Override
@@ -373,6 +378,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         RelativeLayout mThumbView;
         @BindView(R.id.tv_comment)
         RelativeLayout mCommentView;
+        @BindView(R.id.like_comment_line)
+        View mLikeCommentLineView;
+        @BindView(R.id.ll_like_comment)
+        LinearLayout mLikeCommentLayout;
 
         ClassCircleViewHolder(View itemView) {
             super(itemView);

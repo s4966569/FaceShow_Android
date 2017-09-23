@@ -16,7 +16,7 @@
             android:id="@+id/iv_bg"
             android:layout_width="match_parent"
             android:layout_height="135dp"
-            android:background="#00ff00" />
+            android:background="@drawable/classcircle_title_bg" />
 
         <ImageView
             android:id="@+id/iv_head_img"

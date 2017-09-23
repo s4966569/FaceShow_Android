@@ -89,7 +89,7 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
     private SpannableString setImageSpan() {
         String text = "  ";
         SpannableString imgSpanText = new SpannableString(text);
-        imgSpanText.setSpan(new ImageSpan(getContext(), R.mipmap.ic_launcher, DynamicDrawableSpan.ALIGN_BASELINE),
+        imgSpanText.setSpan(new ImageSpan(getContext(), R.drawable.classcircle_like, DynamicDrawableSpan.ALIGN_BASELINE),
                 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return imgSpanText;
     }
