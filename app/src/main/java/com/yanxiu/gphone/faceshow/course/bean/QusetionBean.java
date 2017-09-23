@@ -4,6 +4,9 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
 
 import java.util.ArrayList;
 
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
+import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
+
 /**
  * 投票封装类--每一个题目
  */
@@ -140,7 +143,26 @@ public class QusetionBean extends BaseBean {
         this.voteInfo = voteInfo;
     }
 
+    /**
+     * 提交答案时，上传的是选项的id，但是我们的逻辑是index，所以，把server的id转为index
+     *
+     * @return
+     */
     public UserAnswerBean getUserAnswer() {
+        if (getQuestionType() == TYPE_SINGLE || getQuestionType() == TYPE_MULTI) {
+            ArrayList<String> answerList = userAnswer.getQuestionAnswers();//里面是id
+            ArrayList<VoteItemBean> voteItem = voteInfo.getVoteItems();
+            for (int i = 0; i < answerList.size(); i++) {
+                String id = answerList.get(i);
+                for (int j = 0; j < voteItem.size(); j++) {
+                    if (id.equals(voteItem.get(j).getItemId())) {
+//                    result.add(voteItem.get(j).getItemId());
+                        answerList.set(i, String.valueOf(j));
+                    }
+                }
+            }
+        }
+
         return userAnswer;
     }
 

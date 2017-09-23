@@ -187,9 +187,10 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             sb.append(answers);
             sb.append("\"");
             if (bean.getQuestionType() == TYPE_SINGLE || bean.getQuestionType() == TYPE_MULTI) {
-                ArrayList answerList = bean.getAnswerList();
+                ArrayList<String> answerList = bean.getAnswerList();
                 for (int j = 0; j < answerList.size(); j++) {
-                    sb.append(answerList.get(j));
+                    int index = Integer.parseInt(answerList.get(j));
+                    sb.append(bean.getVoteInfo().getVoteItems().get(index).getItemId());
                     if (j < answerList.size() - 1) { //不是最后一个
                         sb.append(",");
                     }
