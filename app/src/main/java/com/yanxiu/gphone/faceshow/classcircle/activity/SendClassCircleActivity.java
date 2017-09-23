@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,8 +25,10 @@ import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.MultiUploadBean;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -143,6 +146,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 }
                 break;
         }
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mTitleView.getWindowToken(), 0);
     }
 
     private void uploadImg(final String content){
@@ -151,7 +156,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             @Override
             public String findUpdataUrl() {
                 String url="/multiUpload";
-                String token="ce0d56d0d8a214fb157be3850476ecb5";
+                String token= SpManager.getToken();
                 return UrlRepository.getInstance().getUploadServer()+url+"?token="+token;
             }
 
@@ -205,7 +210,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     private void uploadData(String content,String resourceIds){
         SendClassCircleRequest sendClassCircleRequest=new SendClassCircleRequest();
-        sendClassCircleRequest.clazsId="7";
         sendClassCircleRequest.content=content;
         sendClassCircleRequest.resourceIds=resourceIds;
         mSendDataRequest=sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {

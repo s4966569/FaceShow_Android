@@ -30,6 +30,13 @@ public class CornersImageTarget extends BitmapImageViewTarget {
     }
 
     @Override
+    public void onLoadStarted(Drawable placeholder) {
+        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(view.getContext().getResources(), drawableToBitmap(placeholder));
+        circularBitmapDrawable.setCornerRadius(mRadius);
+        view.setImageDrawable(circularBitmapDrawable);
+    }
+
+    @Override
     public void onLoadFailed(Exception e, Drawable errorDrawable) {
         RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(view.getContext().getResources(), drawableToBitmap(errorDrawable));
         circularBitmapDrawable.setCornerRadius(mRadius);

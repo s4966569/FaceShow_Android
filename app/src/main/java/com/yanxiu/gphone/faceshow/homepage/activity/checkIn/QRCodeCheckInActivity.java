@@ -256,8 +256,8 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
                             intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.HAS_NOT_START);
                         } else if (userSignInResponse.getError().getCode() == 210413) {
                             intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
-                        } else {
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_INVALID);
+                        } else if (userSignInResponse.getError().getCode() == 210305){
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_NOT_IN_CLASS);
                         }
                         startActivity(intent);
                         QRCodeCheckInActivity.this.finish();

@@ -10,14 +10,17 @@ import android.view.ViewGroup;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.notification.NotificationDetailActivity;
 import com.yanxiu.gphone.faceshow.notification.adapter.NotificationAdapter;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +66,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
             public void onClick(View view) {
                 mRootView.showLoadingView();
                 mNotificationList.clear();
+                mOffset = 0;
                 getNotifications();
             }
         });
@@ -81,22 +85,33 @@ public class NoticeFragment extends FaceShowBaseFragment {
         NotificationListRequest notificationRequest = new NotificationListRequest();
         notificationRequest.offset = String.valueOf(mOffset);
         notificationRequest.pageSize = mPageSize;
-        notificationRequest.clazsId = "1";
+        notificationRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mNotificationRequestUUID = notificationRequest.startRequest(NotificationResponse.class, new HttpCallback<NotificationResponse>() {
             @Override
             public void onSuccess(RequestBase request, NotificationResponse ret) {
                 mRootView.hiddenLoadingView();
-                swipeRefreshLayout.setRefreshing(false);
+                mRootView.hiddenOtherErrorView();
+                mRootView.hiddenNetErrorView();
+                if (swipeRefreshLayout.isRefreshing())
+                    swipeRefreshLayout.setRefreshing(false);
                 if (ret.getCode() == 0) {
-                    if (ret.getData() != null && ret.getData().getElements() != null && ret.getData().getElements().size() > 0) {
-                        if (mOffset == 0) {
-                            mNotificationList.clear();
+                    if (ret.getData() != null && ret.getData().getElements() != null) {
+                        if (ret.getData().getElements().size() > 0) {
+                            if (mOffset == 0) {
+                                mNotificationList.clear();
+                                mNotificationList.addAll(ret.getData().getElements());
+                            }
+                        } else {
+                            if (mOffset == 0) {
+                                if (mNotificationList.size() > 0) {
+                                    ToastUtil.showToast(FaceShowApplication.getContext(), "刷新失败");
+                                } else {
+                                    mRootView.showOtherErrorView();
+                                }
+                            }
                         }
-                        mNotificationList.addAll(ret.getData().getElements());
                     }
                     mNotificationAdapter.update(mNotificationList);
-                    mRootView.hiddenOtherErrorView();
-                    mRootView.hiddenNetErrorView();
                 } else {
                     if (mNotificationList.size() <= 0) {
                         mRootView.showOtherErrorView();
@@ -107,8 +122,14 @@ public class NoticeFragment extends FaceShowBaseFragment {
             @Override
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
-                swipeRefreshLayout.setRefreshing(false);
-                mRootView.showNetErrorView();
+                if (swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                if (mNotificationList.size() <= 0) {
+                    mRootView.showNetErrorView();
+                } else {
+                    ToastUtil.showToast(getContext(), error.getMessage());
+                }
             }
         });
     }
@@ -123,8 +144,13 @@ public class NoticeFragment extends FaceShowBaseFragment {
         loadMoreRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
             @Override
             public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
-                mRootView.showLoadingView();
-                getNotifications();
+                if (mOffset > 0) {
+                    mOffset = mNotificationList.size();
+                    mRootView.showLoadingView();
+                    getNotifications();
+                } else {
+                    mOffset = mNotificationList.size();
+                }
             }
 
             @Override
@@ -135,7 +161,6 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mNotificationAdapter.setItemClickListener(new NotificationAdapter.ItemClickListener() {
             @Override
             public void itemClick(int position) {
-                // TODO: 17-9-19 消耗小红点的网络请求   小红点消耗请求失败怎么办？
 
                 NotificationDetailActivity.toThisAct(getActivity(), String.valueOf(mNotificationList.get(position).getId()));
             }

@@ -6,6 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+import com.yanxiu.gphone.faceshow.login.UserInfo;
+
 /**
  * 支持上拉加载更多的recyclerView
  *

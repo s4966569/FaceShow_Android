@@ -51,6 +51,7 @@
     <string name="check_in_qr_already_expired">签到二维码已过期</string>
     <string name="check_in_qr_has_not_start">该签到尚未开始</string>
     <string name="check_in_qr_already_invalid">无效签到二维码</string>
+    <string name="check_in_not_in_class">您不是班级成员</string>
     <string name="please_scan_new_check_in_qr">请扫描最新签到二维码</string>
     <string name="please_scan_correct_check_in_qr">请扫描正确签到二维码</string>
     <string name="check_in_agin">重新签到</string>

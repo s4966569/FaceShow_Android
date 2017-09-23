@@ -31,6 +31,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.response.HeadimgUploadBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -96,30 +97,28 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         mBackView.setVisibility(View.VISIBLE);
 
         setHeadimg();
-        mNameView.setText(UserInfo.getInstance().getInfo().getUserName());
-        mMobileView.setText(UserInfo.getInstance().getInfo().getPhone());
+        mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
+        mMobileView.setText(UserInfo.getInstance().getInfo().getMobilePhone());
         mSexView.setText(getSex());
         mStageView.setText(UserInfo.getInstance().getInfo().getStageName());
         mSubjectView.setText(UserInfo.getInstance().getInfo().getSubjectName());
     }
 
     private void setHeadimg(){
-        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getHeadImg()).asBitmap().placeholder(R.mipmap.ic_launcher).into(new CornersImageTarget(mContext,mHeadImgView,12));
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext,mHeadImgView,12));
     }
 
     private String getSex(){
-        String sex=UserInfo.getInstance().getInfo().getSex();
-        String sexTxt="";
-        if (!TextUtils.isEmpty(sex)) {
-            if (sex.equals("0")) {
-                sexTxt="女";
-            } else if (sex.equals("1")) {
-                sexTxt="男";
-            }
-        }else {
-            sexTxt="未知";
-        }
-        return sexTxt;
+        String sex=UserInfo.getInstance().getInfo().getSexName();
+//        String sexTxt="未知";
+//        if (!TextUtils.isEmpty(sex)) {
+//            if (sex.equals("0")) {
+//                sexTxt="女";
+//            } else if (sex.equals("1")) {
+//                sexTxt="男";
+//            }
+//        }
+        return sex;
     }
 
     @OnClick({R.id.person_info, R.id.title_layout_left_img})
@@ -337,7 +336,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public String findUpdataUrl() {
                 String url="/headImgUpload";
-                String token="ce0d56d0d8a214fb157be3850476ecb5";
+                String token= SpManager.getToken();
                 return UrlRepository.getInstance().getUploadServer()+url+"?token="+token;
             }
 
@@ -370,7 +369,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 Gson gson=new Gson();
                 HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
                 if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
-                    UserInfo.getInstance().getInfo().setHeadImg(uploadBean.tplData.data.get(0).shortUrl);
+                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).shortUrl);
                     setHeadimg();
                 }else {
                     ToastUtil.showToast(mContext,"头像上传失败");

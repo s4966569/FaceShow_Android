@@ -63,6 +63,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     private static final int REQUEST_CODE_ALBUM=0x000;
     private static final int REQUEST_CODE_CAMERA=0x001;
+    private static final int REQUEST_CODE_CROP=0x002;
 
     private LoadMoreRecyclerView mClassCircleRecycleView;
     private ClassCircleAdapter mClassCircleAdapter;
@@ -78,6 +79,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private int mHeight;
     private boolean isCommentMaster;
     private String mCameraPath;
+    private String mCropPath;
     private ClassCircleDialog mClassCircleDialog;
     private SwipeRefreshLayout mRefreshView;
     private PublicLoadLayout rootView;
@@ -154,7 +156,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void initData() {
         mTopView.setBackgroundColor(Color.parseColor("#e6ffffff"));
         mTitleView.setText(R.string.classcircle);
-        mFunctionView.setBackgroundResource(R.mipmap.ic_launcher);
+        mFunctionView.setBackgroundResource(R.drawable.selector_classcircle_photo);
         mClassCircleRecycleView.getItemAnimator().setChangeDuration(0);
         mClassCircleRecycleView.setLoadMoreEnable(true);
         mRefreshView.setProgressViewOffset(false, ScreenUtils.dpToPxInt(getContext(),44),ScreenUtils.dpToPxInt(getContext(),100));
@@ -175,7 +177,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
      * */
     private void startRequest(final String offset){
         ClassCircleRequest circleRequest=new ClassCircleRequest();
-        circleRequest.clazsId="7";
         circleRequest.offset=offset;
         mClassCircleRequest=circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
@@ -219,7 +220,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void startLikeRequest(final int position, final ClassCircleResponse.Data.Moments moments){
         rootView.showLoadingView();
         ClassCircleLikeRequest classCircleLikeRequest=new ClassCircleLikeRequest();
-        classCircleLikeRequest.clazsId="7";
         classCircleLikeRequest.momentId=moments.id;
         mClassCircleLikeRequest=classCircleLikeRequest.startRequest(LikeResponse.class, new HttpCallback<LikeResponse>() {
             @Override
@@ -508,6 +508,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             }else {
                 startCommentToUserRequest(mMomentPosition,comment,moments,moments.comments.get(mCommentPosition));
             }
+//            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//            imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
             return true;
         }
         return false;
@@ -525,18 +527,35 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             case REQUEST_CODE_ALBUM:
                 if (data!=null) {
                     Uri uri = data.getData();
-                    String path=FileUtil.getRealFilePath(getContext(),uri);
-                    if (!TextUtils.isEmpty(path)){
-                        startIntent(path);
-                    }
+                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+                    startCropImg(uri,mCropPath);
                 }
                 break;
             case REQUEST_CODE_CAMERA:
-                if (mCameraPath!=null){
-                    startIntent(mCameraPath);
+                if (!TextUtils.isEmpty(mCameraPath)){
+                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
+                }
+                break;
+            case REQUEST_CODE_CROP:
+                if (!TextUtils.isEmpty(mCropPath)) {
+                    if (new File(mCropPath).exists()) {
+                        startIntent(mCropPath);
+                    }
                 }
                 break;
         }
+    }
+
+    private void startCropImg(Uri uri,String savePath){
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("outputX", 150);
+        intent.putExtra("outputY", 150);
+        intent.putExtra("return-data", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(savePath)));
+        startActivityForResult(intent, REQUEST_CODE_CROP);
     }
 
     private void startIntent(String path){

@@ -95,7 +95,7 @@ public abstract class RequestBase {
 
         }
         fullUrl = urlBuilder.build().toString();
-
+        Log.e("requestUrl",fullUrl.toString());
         return fullUrl;
     }
 
@@ -105,7 +105,7 @@ public abstract class RequestBase {
         try {
             request = generateRequest(uuid);
             if (shouldLog()){
-                Log.e("requestUrl",request.toString());
+
             }
         } catch (Exception e) {
         }

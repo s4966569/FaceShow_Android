@@ -1,7 +1,9 @@
 package com.yanxiu.gphone.faceshow.classcircle.request;
 
 import com.test.yanxiu.network.RequestBase;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 /**
  * Created by Canghaixiao.
@@ -11,10 +13,11 @@ import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 public class ClassCircleRequest extends RequestBase {
 
     public String method="app.moment.getMoments";
-    public String clazsId;
+    public String clazsId=UserInfo.getInstance().getInfo().getClassId();
     public String limit="10";
     public String offset;
-    public String token="ce0d56d0d8a214fb157be3850476ecb5";
+    public String token= SpManager.getToken();
+//    public String token="ce0d56d0d8a214fb157be3850476ecb5";
 
     @Override
     protected boolean shouldLog() {
