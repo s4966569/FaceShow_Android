@@ -58,6 +58,11 @@ public class MyFragment extends FaceShowBaseFragment {
     private void initData(){
         mTitleView.setText(R.string.my);
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(getContext(),mHeadImgView,12));
     }
 

@@ -41,7 +41,6 @@ import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
-import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.ClassCircleTimeUtils;
 import com.yanxiu.gphone.faceshow.util.FileUtil;

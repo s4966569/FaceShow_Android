@@ -40,7 +40,7 @@ public class UserInfo {
         private Object ucnterId;
         private Object school;
         private String avatar;
-        private String sex;
+        private String sexName;
         private String stageName;
         private String subjectName;
         private String classId;
@@ -136,13 +136,21 @@ public class UserInfo {
             this.avatar = avatar;
         }
 
-        public String getSex() {
-            return sex;
+        public String getSexName() {
+            return sexName;
         }
 
-        public void setSex(String sex) {
-            this.sex = sex;
+        public void setSexName(String sexName) {
+            this.sexName = sexName;
         }
+
+        //        public String getSex() {
+//            return sex;
+//        }
+//
+//        public void setSex(String sex) {
+//            this.sex = sex;
+//        }
 
         public String getStageName() {
             return stageName;

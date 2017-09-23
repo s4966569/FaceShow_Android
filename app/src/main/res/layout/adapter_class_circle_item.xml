@@ -49,9 +49,9 @@
 
             <ImageView
                 android:id="@+id/gv_imgs"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="174dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"

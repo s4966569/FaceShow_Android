@@ -109,16 +109,16 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     }
 
     private String getSex(){
-        String sex=UserInfo.getInstance().getInfo().getSex();
-        String sexTxt="未知";
-        if (!TextUtils.isEmpty(sex)) {
-            if (sex.equals("0")) {
-                sexTxt="女";
-            } else if (sex.equals("1")) {
-                sexTxt="男";
-            }
-        }
-        return sexTxt;
+        String sex=UserInfo.getInstance().getInfo().getSexName();
+//        String sexTxt="未知";
+//        if (!TextUtils.isEmpty(sex)) {
+//            if (sex.equals("0")) {
+//                sexTxt="女";
+//            } else if (sex.equals("1")) {
+//                sexTxt="男";
+//            }
+//        }
+        return sex;
     }
 
     @OnClick({R.id.person_info, R.id.title_layout_left_img})

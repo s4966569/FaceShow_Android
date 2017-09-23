@@ -135,30 +135,34 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
-            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext,titleViewHolder.mHeadImgView,10));
+            Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext, titleViewHolder.mHeadImgView, 10));
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
 
-            String headimg="";
+            String headimg = "";
             if (moments.publisher != null) {
-                headimg=moments.publisher.avatar;
+                headimg = moments.publisher.avatar;
             }
-            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext,classCircleViewHolder.mHeadImgView,10));
+            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(moments.album.get(0).attachment.previewUrl)) {
-                    Glide.with(mContext).load(moments.album.get(0).attachment.previewUrl).asBitmap().centerCrop().into(classCircleViewHolder.mContentImageView);
-                    classCircleViewHolder.mContentImgUrl = moments.album.get(0).attachment.previewUrl;
-                }
-                classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ArrayList<String> list = new ArrayList<>();
-                        list.add(moments.album.get(0).attachment.downloadUrl);
-                        PhotoActivity.LaunchActivity(mContext, list, 0, mContext.hashCode(), PhotoActivity.DELETE_CANNOT);
+                if (moments.album.get(0).attachment != null) {
+                    String imgPath = moments.album.get(0).attachment.previewUrl;
+                    if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(imgPath)) {
+                        Glide.with(mContext).load(imgPath).asBitmap().centerCrop().into(classCircleViewHolder.mContentImageView);
+                        classCircleViewHolder.mContentImgUrl = imgPath;
+
+                        classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ArrayList<String> list = new ArrayList<>();
+                                list.add(moments.album.get(0).attachment.downloadUrl);
+                                PhotoActivity.LaunchActivity(mContext, list, 0, mContext.hashCode(), PhotoActivity.DELETE_CANNOT);
+                            }
+                        });
                     }
-                });
+                }
             } else {
                 classCircleViewHolder.mContentImageView.setVisibility(View.GONE);
             }
@@ -172,16 +176,16 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mCircleThumbView.setData(moments.likes);
             classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
 
-            boolean isLikeHasData=moments.likes!=null&&moments.likes.size()>0;
-            boolean isCommentHasData=moments.comments!=null&&moments.comments.size()>0;
-            if (isCommentHasData&&isLikeHasData){
+            boolean isLikeHasData = moments.likes != null && moments.likes.size() > 0;
+            boolean isCommentHasData = moments.comments != null && moments.comments.size() > 0;
+            if (isCommentHasData && isLikeHasData) {
                 classCircleViewHolder.mLikeCommentLineView.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 classCircleViewHolder.mLikeCommentLineView.setVisibility(View.GONE);
             }
-            if (isCommentHasData||isLikeHasData){
+            if (isCommentHasData || isLikeHasData) {
                 classCircleViewHolder.mLikeCommentLayout.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 classCircleViewHolder.mLikeCommentLayout.setVisibility(View.GONE);
             }
 
@@ -280,7 +284,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private boolean checkIsThumb(ArrayList<ClassCircleResponse.Data.Moments.Likes> likes) {
         for (ClassCircleResponse.Data.Moments.Likes like : likes) {
-            if (like.publisher!=null&& !TextUtils.isEmpty(like.publisher.userId)) {
+            if (like.publisher != null && !TextUtils.isEmpty(like.publisher.userId)) {
                 if (like.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
                     return true;
                 }
