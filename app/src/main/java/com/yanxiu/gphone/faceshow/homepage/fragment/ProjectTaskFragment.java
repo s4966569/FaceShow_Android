@@ -19,6 +19,7 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListRequest;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class ProjectTaskFragment extends FaceShowBaseFragment implements OnRecyc
 
     private void getProjectTaskList() {
         ProjectTaskListRequest projectTaskListRequest = new ProjectTaskListRequest();
-        projectTaskListRequest.clazsId = "1";
+        projectTaskListRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mRequestUUID = projectTaskListRequest.startRequest(ProjectTaskListResponse.class, new HttpCallback<ProjectTaskListResponse>() {
             @Override
             public void onSuccess(RequestBase request, ProjectTaskListResponse ret) {

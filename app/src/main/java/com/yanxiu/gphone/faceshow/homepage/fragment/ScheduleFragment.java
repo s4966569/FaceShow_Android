@@ -16,6 +16,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.resource.ScheduleRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ScheduleResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 import java.util.UUID;
 
@@ -56,7 +57,7 @@ public class ScheduleFragment extends FaceShowBaseFragment {
 
     private void getScheduleInfo() {
         ScheduleRequest scheduleRequest = new ScheduleRequest();
-        scheduleRequest.clazsId = "1";
+        scheduleRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mRequestUUID = scheduleRequest.startRequest(ScheduleResponse.class, new HttpCallback<ScheduleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ScheduleResponse ret) {

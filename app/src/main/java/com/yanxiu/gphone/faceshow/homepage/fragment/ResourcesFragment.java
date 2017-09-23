@@ -24,6 +24,7 @@ import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailResponse;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceListRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceListResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -103,7 +104,8 @@ public class ResourcesFragment extends FaceShowBaseFragment implements OnRecycle
         ResourceListRequest resourceListRequest = new ResourceListRequest();
         resourceListRequest.offset = String.valueOf(mOffset);
         resourceListRequest.pageSize = mPageSize;
-        resourceListRequest.clazsId = "1";
+        resourceListRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
+        ;
         mRequestUUID = resourceListRequest.startRequest(ResourceListResponse.class, new HttpCallback<ResourceListResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceListResponse ret) {
