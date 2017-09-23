@@ -93,7 +93,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.course_backView:
+            case R.id.title_layout_left_img:
                 finish();
                 break;
             case R.id.retry_button:

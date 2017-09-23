@@ -165,19 +165,19 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                 InteractStepsBean interactStepsBean = (InteractStepsBean) itemBean;
                 switch (interactStepsBean.getInteractType()) {
                     case InteractStepsBean.VOTE:
-                        if (InteractStepsBean.NO_FINISH.equals(interactStepsBean.getStepFinished())) {
-                            VoteActivity.invoke(this,interactStepsBean.getStepId());
-                        } else if (InteractStepsBean.FINISH.equals(interactStepsBean.getStepFinished())) {
-                            VoteResultActivity.invoke(this);
-                        } else {
-                            ToastUtil.showToast(this, interactStepsBean.getStepFinished());
-                        }
+//                        if (InteractStepsBean.NO_FINISH.equals(interactStepsBean.getStepFinished())) {
+                        VoteActivity.invoke(this, interactStepsBean.getStepId());
+//                        } else if (InteractStepsBean.FINISH.equals(interactStepsBean.getStepFinished())) {
+//                            VoteResultActivity.invoke(this);
+//                        } else {
+//                            ToastUtil.showToast(this, interactStepsBean.getStepFinished());
+//                        }
                         break;
                     case InteractStepsBean.DISCUSS:
                         CourseDiscussActivity.invoke(CourseActivity.this, interactStepsBean);
                         break;
                     case InteractStepsBean.QUESTIONNAIRES:
-                        EvaluationActivity.invoke(this,interactStepsBean.getStepId());
+                        EvaluationActivity.invoke(this, interactStepsBean.getStepId());
                         break;
                     case InteractStepsBean.CHECK_IN:
                         QRCodeCheckInActivity.toThisAct(this);
