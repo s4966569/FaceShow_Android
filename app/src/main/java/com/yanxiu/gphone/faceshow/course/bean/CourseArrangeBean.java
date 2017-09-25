@@ -33,6 +33,7 @@ public class CourseArrangeBean extends BaseBean {
             CoursesBean cb = courses.get(i);
             CourseBean headerbean = new CourseBean();
             headerbean.setDate(cb.getDate());
+            headerbean.setToday(cb.isToday());
             list.add(headerbean);
             list.addAll(cb.getCoursesList());
         }
