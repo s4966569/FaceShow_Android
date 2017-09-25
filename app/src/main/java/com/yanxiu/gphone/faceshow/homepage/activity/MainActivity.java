@@ -294,6 +294,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     public void setBottomVisibility(int visibility) {
         if (mBottomView != null) {
             mBottomView.setVisibility(visibility);
+            findViewById(R.id.line).setVisibility(visibility);
         }
     }
 
