@@ -37,7 +37,7 @@ import java.util.UUID;
 /**
  * 首页tab里 “项目任务”Fragment
  */
-public class ProjectTaskFragment extends FaceShowBaseFragment implements OnRecyclerViewItemClickListener {
+public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyclerViewItemClickListener {
     private final static String TAG = ProjectTaskFragment.class.getSimpleName();
     private PublicLoadLayout mRootView;
     private RecyclerView mRecyclerView;
@@ -61,6 +61,14 @@ public class ProjectTaskFragment extends FaceShowBaseFragment implements OnRecyc
             }
         });
         return mRootView;
+    }
+
+    /**
+     * 每次点击tab时，都要刷新数据
+     */
+    @Override
+    public void refreshData() {
+
     }
 
     private void getProjectTaskList() {

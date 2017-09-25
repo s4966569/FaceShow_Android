@@ -106,7 +106,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
                                 if (mNotificationList.size() > 0) {
                                     ToastUtil.showToast(FaceShowApplication.getContext(), "刷新失败");
                                 } else {
-                                    mRootView.showOtherErrorView();
+                                    mRootView.showOtherErrorView(getString(R.string.no_notify));
                                 }
                             }
                         }
@@ -114,7 +114,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
                     mNotificationAdapter.update(mNotificationList);
                 } else {
                     if (mNotificationList.size() <= 0) {
-                        mRootView.showOtherErrorView();
+                        mRootView.showOtherErrorView(getString(R.string.no_notify));
                     }
                 }
             }

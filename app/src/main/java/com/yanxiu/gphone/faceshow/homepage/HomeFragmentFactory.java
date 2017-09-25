@@ -81,6 +81,7 @@ public class HomeFragmentFactory {
                     transaction.add(R.id.homefragment_container, mCourseArrangeFragment);
                 } else {
                     transaction.show(mCourseArrangeFragment);
+                    mCourseArrangeFragment.refreshData();
                 }
                 break;
             case 1:
@@ -89,6 +90,7 @@ public class HomeFragmentFactory {
                     transaction.add(R.id.homefragment_container, mResourcesFragment);
                 } else {
                     transaction.show(mResourcesFragment);
+                    mResourcesFragment.refreshData();
                 }
                 break;
             case 2:
@@ -97,6 +99,7 @@ public class HomeFragmentFactory {
                     transaction.add(R.id.homefragment_container, mProjectTaskFragment);
                 } else {
                     transaction.show(mProjectTaskFragment);
+                    mProjectTaskFragment.refreshData();
                 }
                 break;
             case 3:
@@ -105,6 +108,7 @@ public class HomeFragmentFactory {
                     transaction.add(R.id.homefragment_container, mScheduleFragment);
                 } else {
                     transaction.show(mScheduleFragment);
+                    mScheduleFragment.refreshData();
                 }
                 break;
         }

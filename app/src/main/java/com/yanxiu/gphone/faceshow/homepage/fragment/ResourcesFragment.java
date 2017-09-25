@@ -36,7 +36,7 @@ import java.util.UUID;
 /**
  * 首页tab里 “资源”Fragment
  */
-public class ResourcesFragment extends FaceShowBaseFragment implements OnRecyclerViewItemClickListener {
+public class ResourcesFragment extends HomePageBaseFragment implements OnRecyclerViewItemClickListener {
     private final static String TAG = ResourcesFragment.class.getSimpleName();
     private PublicLoadLayout mRootView;
     private LoadMoreRecyclerView mRecyclerView;
@@ -66,6 +66,14 @@ public class ResourcesFragment extends FaceShowBaseFragment implements OnRecycle
             }
         });
         return mRootView;
+    }
+
+    /**
+     * 每次点击tab时，都要刷新数据
+     */
+    @Override
+    public void refreshData() {
+
     }
 
     private void initListener() {

@@ -28,7 +28,7 @@ import butterknife.OnClick;
 /**
  * 首页tab里 “日程计划”Fragment
  */
-public class ScheduleFragment extends FaceShowBaseFragment {
+public class ScheduleFragment extends HomePageBaseFragment {
     private final static String TAG = ScheduleFragment.class.getSimpleName();
     private PublicLoadLayout mRootView;
 
@@ -38,6 +38,7 @@ public class ScheduleFragment extends FaceShowBaseFragment {
     ImageView schedule_img;
 
     private UUID mRequestUUID;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getActivity());
@@ -55,6 +56,14 @@ public class ScheduleFragment extends FaceShowBaseFragment {
         return mRootView;
     }
 
+    /**
+     * 每次点击tab时，都要刷新数据
+     */
+    @Override
+    public void refreshData() {
+
+    }
+
     private void getScheduleInfo() {
         ScheduleRequest scheduleRequest = new ScheduleRequest();
         scheduleRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
@@ -70,7 +79,7 @@ public class ScheduleFragment extends FaceShowBaseFragment {
                     mRootView.hiddenOtherErrorView();
                     mRootView.hiddenNetErrorView();
                 } else {
-                        mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView();
                 }
             }
 
@@ -90,6 +99,7 @@ public class ScheduleFragment extends FaceShowBaseFragment {
             RequestBase.cancelRequestWithUUID(mRequestUUID);
         }
     }
+
     @OnClick({R.id.schedule_img})
     public void onViewClicked(View view) {
         switch (view.getId()) {
