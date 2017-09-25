@@ -369,7 +369,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 Gson gson=new Gson();
                 HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
                 if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
-                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).defaults.shortUrl);
+                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).defaults.url);
                     setHeadimg();
                 }else {
                     ToastUtil.showToast(mContext,"头像上传失败");
@@ -388,9 +388,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 ToastUtil.showToast(mContext,errorMsg);
             }
         });
-
-
     }
+
     @Override
     public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
         if (deniedPermissions != null && deniedPermissions.size() > 0) {
