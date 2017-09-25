@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,7 +60,7 @@ import de.greenrobot.event.EventBus;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, View.OnKeyListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener {
 
     private static final int REQUEST_CODE_ALBUM=0x000;
     private static final int REQUEST_CODE_CAMERA=0x001;
@@ -148,7 +149,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleAdapter.setThumbClickListener(ClassCircleFragment.this);
         mFunctionView.setOnClickListener(ClassCircleFragment.this);
         mFunctionView.setOnLongClickListener(ClassCircleFragment.this);
-        mCommentView.setOnKeyListener(ClassCircleFragment.this);
+        mCommentView.setOnEditorActionListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
         rootView.setRetryButtonOnclickListener(this);
     }
@@ -401,9 +402,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         this.mCommentPosition=commentPosition;
         this.mMomentPosition=position;
         if (!isCommentMaster){
-            mCommentView.setHint("回复"+comment.publisher.realName+":");
+            mCommentView.setHint("回复"+comment.publisher.realName+":(暂不支持表情)");
         }else {
-            mCommentView.setHint("评论");
+            mCommentView.setHint("评论(暂不支持表情)");
         }
 
         Logger.d("onSizeChanged","commentClick");
@@ -499,8 +500,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (keyCode== event.getKeyCode()&&event.getAction()==KeyEvent.ACTION_UP){
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId== EditorInfo.IME_ACTION_SEND){
             String comment=mCommentView.getText().toString();
             if (!TextUtils.isEmpty(comment)) {
                 ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);

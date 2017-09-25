@@ -15,6 +15,9 @@ import com.yanxiu.gphone.faceshow.constant.Constants;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import static com.yanxiu.gphone.faceshow.constant.Constants.CHARACTER_SLASH;
 import static com.yanxiu.gphone.faceshow.constant.Constants.DIR_APK;
@@ -171,4 +174,29 @@ public class FileUtil {
     private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
+
+    public static String MD5Helper(String str) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(str.getBytes("UTF-8"));
+            byte[] byteArray = messageDigest.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < byteArray.length; i++) {
+                if (Integer.toHexString(0xFF & byteArray[i]).length() == 1) {
+                    sb.append("0").append(Integer.toHexString(0xFF & byteArray[i]));
+                } else {
+                    sb.append(Integer.toHexString(0xFF & byteArray[i]));
+                }
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("no device Id");
+    }
+
 }

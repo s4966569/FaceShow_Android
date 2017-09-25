@@ -115,6 +115,7 @@ public abstract class RequestBase {
         }
         client = setClient();
         call = client.newCall(request);
+        Log.d("cwq",request.url().toString());
         final long start = System.currentTimeMillis();
         call.enqueue(new Callback() {
             @Override

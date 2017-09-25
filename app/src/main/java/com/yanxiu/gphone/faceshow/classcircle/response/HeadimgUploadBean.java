@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class HeadimgUploadBean {
 
-    public MultiUploadBean.TplData tplData;
+    public TplData tplData;
 
     public class TplData{
         public String code;
