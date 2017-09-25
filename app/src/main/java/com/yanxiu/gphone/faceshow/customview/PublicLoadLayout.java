@@ -19,13 +19,13 @@ import com.yanxiu.gphone.faceshow.R;
  * Created by 戴延枫 on 2017/5/17.
  */
 
-public class PublicLoadLayout extends FrameLayout{
+public class PublicLoadLayout extends FrameLayout {
 
     private Context mContext;
     private FrameLayout mContentViewContainer;//加载具体页面的contentView
     private RelativeLayout mNetErrorLayoutContainer;//错误页面容器，默认网络错误页面
-    private RelativeLayout mOtherErrorLayoutContainer;//其他错误页面容器，默认网络错误页面
-//    private View mNetErrorLayout;//错误页面容器，默认网络错误页面
+    private RelativeLayout mOtherErrorLayoutContainer;//其他错误页面容器，默认没有数据页面
+    //    private View mNetErrorLayout;//错误页面容器，默认网络错误页面
     private TextView mRetry_button;//重试按钮
     private View mLoadingLayout;//loadingLayout
     private ImageView mLoadingView;// loadingView
@@ -62,8 +62,8 @@ public class PublicLoadLayout extends FrameLayout{
 
     private void initDataEmptyView() {
         inflate(mContext, R.layout.data_empty_layout, mOtherErrorLayoutContainer);
-        mDataEmptyTopView= (ImageView) findViewById(R.id.empty_top);
-        mDataEmptyContentView= (TextView) findViewById(R.id.empty_content);
+        mDataEmptyTopView = (ImageView) findViewById(R.id.empty_top);
+        mDataEmptyContentView = (TextView) findViewById(R.id.empty_content);
     }
 
     /**
@@ -88,7 +88,6 @@ public class PublicLoadLayout extends FrameLayout{
     }
 
 
-
     /**
      * 给默认的网络错误界面的重试button添加点击事件。
      * 如果是网络错误界面，必须传入该监听，否则，点击无效。
@@ -101,9 +100,10 @@ public class PublicLoadLayout extends FrameLayout{
 
     /**
      * 获取重试按钮
+     *
      * @return
      */
-    public View getReturyButton(){
+    public View getReturyButton() {
         return mRetry_button;
     }
 
@@ -117,6 +117,7 @@ public class PublicLoadLayout extends FrameLayout{
         inflate(mContext, rootViewId, mContentViewContainer);//加载传进来的具体页面的contentView
 
     }
+
     /**
      * 设置rootview
      *
@@ -135,6 +136,7 @@ public class PublicLoadLayout extends FrameLayout{
             mOtherErrorLayoutContainer.removeAllViews();//先移除容器内的默认布局
         inflate(mContext, viewId, mOtherErrorLayoutContainer);//加载其他页面（如数据为空页面）
     }
+
     /**
      * 设置要展示的view（如数据为空的view）
      */
@@ -171,10 +173,10 @@ public class PublicLoadLayout extends FrameLayout{
      */
     public void showNetErrorView() {
         hiddenLoadingView();
-        if(mOtherErrorLayoutContainer != null){
+        if (mOtherErrorLayoutContainer != null) {
             mOtherErrorLayoutContainer.setVisibility(GONE);
         }
-        if(mNetErrorLayoutContainer != null){
+        if (mNetErrorLayoutContainer != null) {
             mNetErrorLayoutContainer.setVisibility(VISIBLE);
         }
     }
@@ -184,7 +186,7 @@ public class PublicLoadLayout extends FrameLayout{
      */
     public void hiddenNetErrorView() {
         hiddenLoadingView();
-        if(mNetErrorLayoutContainer != null){
+        if (mNetErrorLayoutContainer != null) {
             mNetErrorLayoutContainer.setVisibility(GONE);
         }
     }
@@ -192,12 +194,26 @@ public class PublicLoadLayout extends FrameLayout{
     /**
      * 显示Other界面
      */
-    public void showOtherErrorView() {
+    public void showOtherErrorView(String text) {
         hiddenLoadingView();
-        if(mNetErrorLayoutContainer != null){
+        if (mNetErrorLayoutContainer != null) {
             mNetErrorLayoutContainer.setVisibility(GONE);
         }
-        if(mOtherErrorLayoutContainer != null){
+        if (mOtherErrorLayoutContainer != null) {
+            mOtherErrorLayoutContainer.setVisibility(VISIBLE);
+        }
+        mDataEmptyContentView.setText(text);
+    }
+
+    /**
+     * 显示Other界面，并传入提示文字
+     */
+    public void showOtherErrorView() {
+        hiddenLoadingView();
+        if (mNetErrorLayoutContainer != null) {
+            mNetErrorLayoutContainer.setVisibility(GONE);
+        }
+        if (mOtherErrorLayoutContainer != null) {
             mOtherErrorLayoutContainer.setVisibility(VISIBLE);
         }
     }
@@ -207,15 +223,15 @@ public class PublicLoadLayout extends FrameLayout{
      */
     public void hiddenOtherErrorView() {
         hiddenLoadingView();
-        if(mOtherErrorLayoutContainer != null){
+        if (mOtherErrorLayoutContainer != null) {
             mOtherErrorLayoutContainer.setVisibility(GONE);
         }
     }
 
     /**
      * 設置空界面顯示
-     * */
-    public void setDataEmptyErrorView(@DrawableRes int resId, String content){
+     */
+    public void setDataEmptyErrorView(@DrawableRes int resId, String content) {
         mDataEmptyTopView.setBackgroundResource(resId);
         mDataEmptyContentView.setText(content);
     }
@@ -223,7 +239,6 @@ public class PublicLoadLayout extends FrameLayout{
     /**
      * Errorlayout默认topMargin = 55dp，使rootview中的titlebar能够露出来
      * 调用该方法topMargin = 0dp，errorlayout全屏
-     *
      */
     public void setErrorLayoutFullScreen() {
         LayoutParams lp = (LayoutParams) mNetErrorLayoutContainer.getLayoutParams();
@@ -239,7 +254,7 @@ public class PublicLoadLayout extends FrameLayout{
     /**
      * 隐藏异常界面和lodingView，展示正常界面
      */
-    public void finish(){
+    public void finish() {
         hiddenLoadingView();
         mNetErrorLayoutContainer.setVisibility(GONE);
         mOtherErrorLayoutContainer.setVisibility(GONE);

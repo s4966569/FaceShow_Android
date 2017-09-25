@@ -96,7 +96,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                 mRootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
                     tvNotificationTitle.setText(ret.getData().getTitle());
-                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName(), ret.getData().getCreateTime()));
+                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName()==null ? "专家:无 ":ret.getData().getAuthorName(), ret.getData().getCreateTime()));
                     tvNotificationContent.setText(ret.getData().getContent());
                     imgNotification.setOnClickListener(new View.OnClickListener() {
                         @Override

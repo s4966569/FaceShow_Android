@@ -94,7 +94,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
                 /*欢迎页logo的动画效果*/
                 int ANIMATION_DURATION = 1000;//动画时长
-                mImgLogo.animate().translationY(-Utils.dip2px(FaceShowApplication.getContext(), 350)).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
+                mImgLogo.animate().translationY(-Utils.dip2px(FaceShowApplication.getContext(), 375)).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
                 checkUserStatus();
             }
 

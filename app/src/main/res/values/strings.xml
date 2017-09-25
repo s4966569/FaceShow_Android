@@ -15,6 +15,7 @@
     <string name="no_wrong_data">暂无课程</string>
     <string name="net_data_error">无网络数据，请点击刷新</string>
     <string name="retry">点击重试</string>
+    <string name="no_notify">暂无通知</string>
 
     <!--publicloadlayout end-->
 
@@ -61,7 +62,7 @@
     <string name="sure">确定</string>
     <string name="notification">通知</string>
     <string name="notification_detail">通知详情</string>
-    <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
+    <string name="notificationCreatedPersonAndTime">%1$s \u0020\u0020 %2$s</string>
     <string name="check_in_notes">签到记录</string>
     <!--签到 end-->
 
