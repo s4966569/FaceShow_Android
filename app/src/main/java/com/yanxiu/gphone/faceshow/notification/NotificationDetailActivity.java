@@ -96,7 +96,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                 mRootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
                     tvNotificationTitle.setText(ret.getData().getTitle());
-                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName()==null ? "专家:无 ":ret.getData().getAuthorName(), ret.getData().getCreateTime()));
+                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName() == null ? "专家:无 " : ret.getData().getAuthorName(), ret.getData().getCreateTime()));
                     tvNotificationContent.setText(ret.getData().getContent());
                     imgNotification.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -108,8 +108,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                             }
                         }
                     });
-                    // TODO: 17-9-19 缺少占位图
-                    Glide.with(mContext).load(ret.getData().getAttachUrl()).error(R.mipmap.ic_launcher).placeholder(R.mipmap.ic_launcher).into(imgNotification);
+                    Glide.with(mContext).load(ret.getData().getAttachUrl()).error(R.drawable.net_error_picture).placeholder(R.drawable.net_error_picture).into(imgNotification);
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
                 } else {

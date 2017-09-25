@@ -101,4 +101,8 @@
 
     <string name="send_success">发布成功</string>
     <string name="check_in_plan">%1$s - %2$s</string>
+
+    <string name="no_resource_hint">暂无资源</string>
+    <string name="no_task_hint">暂无任务</string>
+    <string name="no_schedule_hint">暂无日程</string>
 </resources>

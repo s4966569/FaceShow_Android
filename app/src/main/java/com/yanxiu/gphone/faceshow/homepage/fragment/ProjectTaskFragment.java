@@ -55,11 +55,11 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRootView.showLoadingView();
                 mProjectTaskList.clear();
                 getProjectTaskList();
             }
         });
+        getProjectTaskList();
         return mRootView;
     }
 
@@ -68,26 +68,27 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
      */
     @Override
     public void refreshData() {
-
+        getProjectTaskList();
     }
 
     private void getProjectTaskList() {
+        mRootView.showLoadingView();
         ProjectTaskListRequest projectTaskListRequest = new ProjectTaskListRequest();
         projectTaskListRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mRequestUUID = projectTaskListRequest.startRequest(ProjectTaskListResponse.class, new HttpCallback<ProjectTaskListResponse>() {
             @Override
             public void onSuccess(RequestBase request, ProjectTaskListResponse ret) {
-                if (ret.getCode() == 0) {
+                if (ret != null && ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().size() > 0) {
                         mProjectTaskList = ret.getData();
+                        mAdapter.setData(mProjectTaskList);
+                        mRootView.hiddenOtherErrorView();
+                        mRootView.hiddenNetErrorView();
+                    } else {
+                        mRootView.showOtherErrorView(getString(R.string.no_task_hint));
                     }
-                    mAdapter.setData(mProjectTaskList);
-                    mRootView.hiddenOtherErrorView();
-                    mRootView.hiddenNetErrorView();
                 } else {
-                    if (mProjectTaskList.size() <= 0) {
-                        mRootView.showOtherErrorView();
-                    }
+                    mRootView.showOtherErrorView(getString(R.string.no_task_hint));
                 }
             }
 
@@ -97,12 +98,6 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                 mRootView.showNetErrorView();
             }
         });
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        getProjectTaskList();
     }
 
     private void initListener() {

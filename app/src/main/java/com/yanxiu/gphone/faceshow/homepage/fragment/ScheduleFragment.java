@@ -47,7 +47,6 @@ public class ScheduleFragment extends HomePageBaseFragment {
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRootView.showLoadingView();
                 getScheduleInfo();
             }
         });
@@ -61,25 +60,29 @@ public class ScheduleFragment extends HomePageBaseFragment {
      */
     @Override
     public void refreshData() {
-
+        getScheduleInfo();
     }
 
     private void getScheduleInfo() {
+        mRootView.showLoadingView();
         ScheduleRequest scheduleRequest = new ScheduleRequest();
         scheduleRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mRequestUUID = scheduleRequest.startRequest(ScheduleResponse.class, new HttpCallback<ScheduleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ScheduleResponse ret) {
                 mRootView.hiddenLoadingView();
-                if (ret.getCode() == 0) {
+                if (ret != null && ret.getCode() == 0) {
                     if (ret.getData().getSchedules().getElements() != null && ret.getData().getSchedules().getElements().size() > 0) {
                         schedule_name.setText(ret.getData().getSchedules().getElements().get(0).getSubject());
                         Glide.with(getActivity()).load(ret.getData().getSchedules().getElements().get(0).getImageUrl()).into(schedule_img);
+                        mRootView.hiddenOtherErrorView();
+                        mRootView.hiddenNetErrorView();
+                    } else {
+                        mRootView.showOtherErrorView(getString(R.string.no_schedule_hint));
                     }
-                    mRootView.hiddenOtherErrorView();
-                    mRootView.hiddenNetErrorView();
+
                 } else {
-                    mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView(getString(R.string.no_schedule_hint));
                 }
             }
 
