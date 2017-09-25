@@ -4,6 +4,7 @@ package com.yanxiu.gphone.faceshow.homepage.fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,14 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
         return mRootView;
     }
 
+    /**
+     * 每次点击tab时，都要刷新数据
+     */
+    @Override
+    public void refreshData() {
+        requestData();
+    }
+
     private void initView() {
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -79,9 +88,14 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
             @Override
             public void onSuccess(RequestBase request, CourseArrangeResponse ret) {
                 mRootView.finish();
-                if (ret == null || ret.getCode() == 0) {
-                    mAdapter.setData(ret.getData().getCourses());
-                    mRecyclerView.setAdapter(mAdapter);
+                if (ret != null && ret.getCode() == 0) {
+                    if (ret.getData() != null && !ret.getData().getCourses().isEmpty()) {
+                        mAdapter.setData(ret.getData().getCourses());
+                        mRecyclerView.setAdapter(mAdapter);
+                    } else {
+                        mRootView.showOtherErrorView();
+                    }
+
                 } else {
                     mRootView.showOtherErrorView();
                 }
@@ -95,5 +109,15 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
             }
         });
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {// 不在最前端界面显示
+            Log.d("dyf", "onHiddenChanged: " + TAG + hidden);
+        } else {// 重新显示到最前端中
+            Log.d("dyf", "onHiddenChanged: " + TAG + hidden);
+        }
     }
 }
