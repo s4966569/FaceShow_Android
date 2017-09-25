@@ -24,10 +24,10 @@
     <string name="notice">通知</string>
     <string name="classcircle">班级圈</string>
     <string name="my">我</string>
-    <string name="courseArrange">课程安排</string>
+    <string name="courseArrange">课程</string>
     <string name="resources">资源</string>
-    <string name="projectTask">项目任务</string>
-    <string name="schedule">日程计划</string>
+    <string name="projectTask">任务</string>
+    <string name="schedule">日程</string>
     <string name="signIn">签到</string>
     <string name="currentProject">当前项目</string>
 
