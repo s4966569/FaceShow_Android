@@ -30,6 +30,7 @@ public class ClassCircleResponse extends FaceShowBaseResponse{
              * */
             public String commentedNum;
             public ArrayList<Comments> comments;
+            public boolean isShowAll=false;
             public String content;
             /**
              * 点赞数量

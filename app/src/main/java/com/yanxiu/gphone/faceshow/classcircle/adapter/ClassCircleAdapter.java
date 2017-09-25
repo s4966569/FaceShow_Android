@@ -169,7 +169,12 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (moments.publisher != null) {
                 classCircleViewHolder.mNameView.setText(moments.publisher.realName);
             }
-            classCircleViewHolder.mContentView.setData(moments.content);
+            classCircleViewHolder.mContentView.setData(moments.content, moments.isShowAll, new MaxLineTextLayout.onLinesChangedListener() {
+                @Override
+                public void onLinesChanged(boolean isShowAll) {
+                    moments.isShowAll=isShowAll;
+                }
+            });
             classCircleViewHolder.mTimeView.setText(moments.publishTimeDesc);
             classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
             classCircleViewHolder.mAnimLayout.setEnabled(false);
