@@ -13,11 +13,13 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.resource.ScheduleRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ScheduleResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -38,6 +40,7 @@ public class ScheduleFragment extends HomePageBaseFragment {
     ImageView schedule_img;
 
     private UUID mRequestUUID;
+    private String mSchedualImageUrl;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,13 +77,13 @@ public class ScheduleFragment extends HomePageBaseFragment {
                 if (ret != null && ret.getCode() == 0) {
                     if (ret.getData().getSchedules().getElements() != null && ret.getData().getSchedules().getElements().size() > 0) {
                         schedule_name.setText(ret.getData().getSchedules().getElements().get(0).getSubject());
-                        Glide.with(getActivity()).load(ret.getData().getSchedules().getElements().get(0).getImageUrl()).into(schedule_img);
+                        mSchedualImageUrl = ret.getData().getSchedules().getElements().get(0).getImageUrl();
+                        Glide.with(getActivity()).load(mSchedualImageUrl).into(schedule_img);
                         mRootView.hiddenOtherErrorView();
                         mRootView.hiddenNetErrorView();
                     } else {
                         mRootView.showOtherErrorView(getString(R.string.no_schedule_hint));
                     }
-
                 } else {
                     mRootView.showOtherErrorView(getString(R.string.no_schedule_hint));
                 }
@@ -113,5 +116,10 @@ public class ScheduleFragment extends HomePageBaseFragment {
     }
 
     private void openPicture() {
+        if(mSchedualImageUrl != null) {
+            ArrayList<String> list = new ArrayList<>();
+            list.add(mSchedualImageUrl);
+            PhotoActivity.LaunchActivity(getActivity(), list, 0, getActivity().hashCode(), PhotoActivity.DELETE_CANNOT);
+        }
     }
 }
