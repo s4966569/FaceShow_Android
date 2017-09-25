@@ -402,9 +402,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         this.mCommentPosition=commentPosition;
         this.mMomentPosition=position;
         if (!isCommentMaster){
-            mCommentView.setHint("回复"+comment.publisher.realName+":");
+            mCommentView.setHint("回复"+comment.publisher.realName+":(暂不支持表情)");
         }else {
-            mCommentView.setHint("评论");
+            mCommentView.setHint("评论(暂不支持表情)");
         }
 
         Logger.d("onSizeChanged","commentClick");
