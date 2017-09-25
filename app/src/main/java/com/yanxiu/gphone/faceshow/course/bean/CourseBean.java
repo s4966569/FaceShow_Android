@@ -80,6 +80,9 @@ public class CourseBean extends BaseBean {
         if (TextUtils.isEmpty(lecturer)) {
             lecturer = getTeacher();
         }
+        if (TextUtils.isEmpty(lecturer)) {
+            lecturer = "暂无";
+        }
         return lecturer;
     }
 
