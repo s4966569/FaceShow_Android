@@ -98,6 +98,6 @@
     <string name="app_update_inoge">忽略</string>
     <string name="app_update_exit">退出</string>
 
-    <string name="send_success">发表成功</string>
+    <string name="send_success">发布成功</string>
     <string name="check_in_plan">%1$s - %2$s</string>
 </resources>

@@ -48,6 +48,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void likeClick(int position, ClassCircleResponse.Data.Moments response);
     }
 
+    public interface onContentLinesChangedlistener{
+        void onContentLinesChanged(int position,boolean isShowAll);
+    }
+
     private static final int TYPE_TITLE = 0x0000;
     private static final int TYPE_DEFAULT = 0x0001;
     private static final int ANIM_OPEN = 0x0002;
@@ -60,6 +64,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int animPosition = ANIM_POSITION_DEFAULT;
     private onCommentClickListener mCommentClickListener;
     private onLikeClickListener mLikeClickListener;
+    private onContentLinesChangedlistener mContentLinesChangedlistener;
 
     public ClassCircleAdapter(Context context) {
         this.mContext = context;
@@ -108,6 +113,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setThumbClickListener(onLikeClickListener likeClickListener) {
         this.mLikeClickListener = likeClickListener;
+    }
+
+    public void setContentLinesChangedlistener(onContentLinesChangedlistener contentLinesChangedlistener){
+        this.mContentLinesChangedlistener=contentLinesChangedlistener;
     }
 
     @Override
@@ -173,6 +182,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onLinesChanged(boolean isShowAll) {
                     moments.isShowAll=isShowAll;
+                    if (mContentLinesChangedlistener!=null){
+                        mContentLinesChangedlistener.onContentLinesChanged(classCircleViewHolder.getAdapterPosition(),isShowAll);
+                    }
                 }
             });
             classCircleViewHolder.mTimeView.setText(moments.publishTimeDesc);
