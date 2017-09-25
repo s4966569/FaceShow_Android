@@ -67,20 +67,23 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
         getNotificationDetailRequest();
     }
 
-    public static void toThisAct(Activity activity, String notificationId) {
-        Intent intent = new Intent(activity, NotificationDetailActivity.class);
-        intent.putExtra(NOTIFICATION_ID, notificationId);
-        activity.startActivity(intent);
-    }
 
     @OnClick(R.id.img_left)
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_left:
-                this.finish();
+                onBackPressed();
                 break;
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(0, intent);
+        this.finish();
+        super.onBackPressed();
     }
 
     private void getNotificationDetailRequest() {
@@ -98,7 +101,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                     imgNotification.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (!TextUtils.isEmpty(ret.getData().getAttachUrl())){
+                            if (!TextUtils.isEmpty(ret.getData().getAttachUrl())) {
                                 ArrayList<String> list = new ArrayList<>();
                                 list.add(ret.getData().getAttachUrl());
                                 PhotoActivity.LaunchActivity(mContext, list, 0, mContext.hashCode(), PhotoActivity.DELETE_CANNOT);
@@ -106,7 +109,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                         }
                     });
                     // TODO: 17-9-19 缺少占位图
-                    Glide.with(mContext).load(ret.getData().getAttachUrl()).asBitmap().into(imgNotification);
+                    Glide.with(mContext).load(ret.getData().getAttachUrl()).error(R.mipmap.ic_launcher).placeholder(R.mipmap.ic_launcher).into(imgNotification);
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
                 } else {

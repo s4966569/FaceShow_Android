@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.notification.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -58,7 +59,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mRootView.setContentView(view);
         unbinder = ButterKnife.bind(this, mRootView);
         setRecyclerView(loadMoreRecyclerView);
-
+        mRootView.showLoadingView();
+        getNotifications();
 
         swipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
@@ -73,12 +75,6 @@ public class NoticeFragment extends FaceShowBaseFragment {
         return mRootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mRootView.showLoadingView();
-        getNotifications();
-    }
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -168,8 +164,10 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mNotificationAdapter.setItemClickListener(new NotificationAdapter.ItemClickListener() {
             @Override
             public void itemClick(int position) {
+                Intent intent = new Intent(getActivity(), NotificationDetailActivity.class);
+                intent.putExtra(NotificationDetailActivity.NOTIFICATION_ID, String.valueOf(mNotificationList.get(position).getId()));
+                startActivityForResult(intent, 0);
 
-                NotificationDetailActivity.toThisAct(getActivity(), String.valueOf(mNotificationList.get(position).getId()));
             }
         });
     }
@@ -180,6 +178,15 @@ public class NoticeFragment extends FaceShowBaseFragment {
         unbinder.unbind();
         if (mNotificationRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mNotificationRequestUUID);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            mRootView.showLoadingView();
+            getNotifications();
         }
     }
 }
