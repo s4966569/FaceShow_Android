@@ -159,7 +159,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (moments.album.get(0).attachment != null) {
                     String imgPath = moments.album.get(0).attachment.previewUrl;
                     if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(imgPath)) {
-                        Glide.with(mContext).load(imgPath).asBitmap().centerCrop().into(classCircleViewHolder.mContentImageView);
+                        Glide.with(mContext).load(imgPath).asBitmap().centerCrop().error(R.drawable.net_error_picture).into(classCircleViewHolder.mContentImageView);
                         classCircleViewHolder.mContentImgUrl = imgPath;
 
                         classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {

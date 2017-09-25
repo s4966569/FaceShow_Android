@@ -7,12 +7,14 @@
         android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ll_edit" >
+        android:layout_above="@+id/ll_edit"
+        android:focusableInTouchMode="true">
 
         <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
             android:id="@+id/lm_class_circle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="false"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
