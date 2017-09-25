@@ -74,6 +74,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     private void initView() {
         mBackView = (ImageView) findViewById(R.id.title_layout_left_img);
+        mBackView.setVisibility(View.VISIBLE);
         mEd_comment = (EditText) findViewById(R.id.ed_comment);
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mTitle.setText("课程讨论");

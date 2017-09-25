@@ -75,6 +75,8 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
                 holder1.voteResult_title.setText(position + 1 + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
                 holder1.voteResult_Layout.setData(data.getVoteInfo());
+                if(position >= (mList.size() -1))
+                    holder1.line.setVisibility(View.GONE);
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
@@ -89,6 +91,8 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 }
                 holder2.voteResult_editText.setText(text);
+                if(position >= (mList.size() -1))
+                    holder2.line.setVisibility(View.GONE);
                 break;
         }
 
@@ -122,12 +126,14 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     class ChooseViewHolder extends RecyclerView.ViewHolder {
         private TextView voteResult_title;
         private VoteRuseltLayout voteResult_Layout;
+        private View line;
 
 
         public ChooseViewHolder(View itemView) {
             super(itemView);
             voteResult_title = (TextView) itemView.findViewById(R.id.voteResult_title);
             voteResult_Layout = (VoteRuseltLayout) itemView.findViewById(R.id.voteResult_Layout);
+            line = itemView.findViewById(R.id.vote_result_layout_line);
         }
     }
 
@@ -139,6 +145,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView voteResult_personnumber;
         private TextView voteResult_editText;
         private TextView voteResult_time;
+        private View line;
 
         public TextViewHolder(View itemView) {
             super(itemView);
@@ -146,6 +153,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             voteResult_time = (TextView) itemView.findViewById(R.id.voteResult_time);
             voteResult_personnumber = (TextView) itemView.findViewById(R.id.voteResult_personnumber);
             voteResult_editText = (TextView) itemView.findViewById(R.id.voteResult_editText);
+            line = itemView.findViewById(R.id.vote_text_layout_line);
         }
     }
 

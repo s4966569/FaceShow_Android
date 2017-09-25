@@ -25,5 +25,7 @@
 
     </com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout>
 
-    <include layout="@layout/line" />
+    <include
+        android:id="@+id/vote_result_layout_line"
+        layout="@layout/line" />
 </LinearLayout>

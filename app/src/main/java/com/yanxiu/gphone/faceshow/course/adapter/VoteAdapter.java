@@ -90,6 +90,8 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 holder1.chooseLayout.setData(data.getVoteInfo());
                 holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());
                 holder1.chooseLayout.setSelectItemListener(this);
+                if(position >= (mList.size() -1))
+                    holder1.line.setVisibility(View.GONE);
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
@@ -112,6 +114,8 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                         bean.setFeedBackText(s.toString());
                     }
                 });
+                if(position >= (mList.size() -1))
+                    holder2.line.setVisibility(View.GONE);
                 break;
         }
 
@@ -150,12 +154,14 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     class ChooseViewHolder extends RecyclerView.ViewHolder {
         private TextView evaluation_title;
         private ChooseLayout chooseLayout;
+        private View line;
 
 
         public ChooseViewHolder(View itemView) {
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             chooseLayout = (ChooseLayout) itemView.findViewById(R.id.chooseLayout);
+            line = (ChooseLayout) itemView.findViewById(R.id.evalution_choose__layout_line);
         }
     }
 
@@ -165,11 +171,13 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     class TextViewHolder extends RecyclerView.ViewHolder {
         private TextView evaluation_title;
         private EditText evalution_editText;
+        private View line;
 
         public TextViewHolder(View itemView) {
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             evalution_editText = (EditText) itemView.findViewById(R.id.evalution_editText);
+            line = (ChooseLayout) itemView.findViewById(R.id.evalution_text_layout_line);
         }
     }
 
