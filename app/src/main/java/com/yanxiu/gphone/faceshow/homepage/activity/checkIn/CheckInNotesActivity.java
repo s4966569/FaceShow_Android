@@ -49,14 +49,16 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     private CheckInNotesAdapter mCheckInNotesAdapter;
     private int mOffset = 0;
     private List<GetCheckInNotesResponse.Element> mCheckInNotesList = new ArrayList<>();
-
+    private int mTotalElements;
 
     RecyclerViewCanLoadMore.OnLoadMoreListener loadMoreListener = new RecyclerViewCanLoadMore.OnLoadMoreListener() {
         @Override
         public void onLoadMore(RecyclerView recyclerView, int newState, int lastVisibleItem) {
-            mRootView.showLoadingView();
-            mOffset = mCheckInNotesList.size();
-            getCheckInNotes();
+            if (mCheckInNotesList.size() < mTotalElements) {
+                mRootView.showLoadingView();
+                mOffset = mCheckInNotesList.size();
+                getCheckInNotes();
+            }
         }
     };
 
@@ -99,6 +101,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         loadMoreRecyclerView.setLayoutManager(linearLayoutManager);
         loadMoreRecyclerView.setAdapter(mCheckInNotesAdapter);
         loadMoreRecyclerView.addLoadMoreListener(loadMoreListener);
+        loadMoreRecyclerView.setFocusableInTouchMode(false);//这个牛逼了 不要删除
     }
 
     private void getCheckInNotes() {
@@ -108,6 +111,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {
+                mTotalElements = ret.getData().getTotalElements();
                 mRootView.hiddenLoadingView();
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
@@ -117,8 +121,9 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                 if (ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().getElements() != null) {
                         if (ret.getData().getElements().size() > 0) {
-                            if (mOffset == 0)
+                            if (mOffset == 0) {
                                 mCheckInNotesList.clear();
+                            }
                             mCheckInNotesList.addAll(ret.getData().getElements());
                         } else {
                             if (mOffset == 0) {
