@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">培训通</string>
+    <string name="app_name">研修宝</string>
 
     <string name="app_exit_tip">再按一次退出客户端</string>
 
@@ -43,7 +43,7 @@
     <string name="please_input_password">请输入密码</string>
     <string name="check_in">签到</string>
 
-
+    <!--签到 start-->
     <string name="please_put_qr_into_scan_area">将二维码放入扫描区域 </string>
     <string name="check_in_success">签到成功</string>
     <string name="check_in_fail">签到失败</string>
@@ -63,6 +63,7 @@
     <string name="notification_detail">通知详情</string>
     <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
     <string name="check_in_notes">签到记录</string>
+    <!--签到 end-->
 
     <!--课程 start-->
     <string name="course">课程</string>
@@ -72,11 +73,12 @@
 
     <string name="has_completed">已完成</string>
     <string name="has_uncompleted">未完成</string>
-
+    <!--登录 start-->
     <string name="net_error">网络异常</string>
     <string name="account_name_can_not_be_null">账户名不能为空</string>
     <string name="account_password_can_not_be_null">账户密码不能为空</string>
     <string name="you_have_check_in_success">你已成功签到</string>
+    <!--登录 end-->
 
     <string name="version_updata">新版本更新</string>
     <string name="updata_after">以后再说</string>
