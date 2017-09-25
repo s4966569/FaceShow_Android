@@ -1,9 +1,11 @@
 package com.yanxiu.gphone.faceshow.notification.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -38,7 +41,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private final static String TAG = NoticeFragment.class.getSimpleName();
     PublicLoadLayout mRootView;
     @BindView(R.id.loadMoreRecyclerView)
-    LoadMoreRecyclerView loadMoreRecyclerView;
+    RecyclerViewCanLoadMore loadMoreRecyclerView;
     Unbinder unbinder;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -60,6 +63,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
         setRecyclerView(loadMoreRecyclerView);
         mRootView.showLoadingView();
         getNotifications();
+
         swipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +76,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
         });
         return mRootView;
     }
+
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -99,8 +104,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
                         if (ret.getData().getElements().size() > 0) {
                             if (mOffset == 0) {
                                 mNotificationList.clear();
-                                mNotificationList.addAll(ret.getData().getElements());
                             }
+                            mNotificationList.addAll(ret.getData().getElements());
                         } else {
                             if (mOffset == 0) {
                                 if (mNotificationList.size() > 0) {
@@ -134,16 +139,15 @@ public class NoticeFragment extends FaceShowBaseFragment {
         });
     }
 
-    private void setRecyclerView(LoadMoreRecyclerView loadMoreRecyclerView) {
+    private void setRecyclerView(RecyclerViewCanLoadMore loadMoreRecyclerView) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         loadMoreRecyclerView.setLayoutManager(layoutManager);
         mNotificationAdapter = new NotificationAdapter();
         loadMoreRecyclerView.setAdapter(mNotificationAdapter);
-        loadMoreRecyclerView.setLoadMoreEnable(true);
-        loadMoreRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
+        loadMoreRecyclerView.addLoadMoreListener(new RecyclerViewCanLoadMore.OnLoadMoreListener() {
             @Override
-            public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
+            public void onLoadMore(RecyclerView recyclerView, int newState, int lastVisibleItem) {
                 if (mOffset > 0) {
                     mOffset = mNotificationList.size();
                     mRootView.showLoadingView();
@@ -152,17 +156,15 @@ public class NoticeFragment extends FaceShowBaseFragment {
                     mOffset = mNotificationList.size();
                 }
             }
-
-            @Override
-            public void onLoadmoreComplte() {
-                mRootView.hiddenLoadingView();
-            }
         });
+
         mNotificationAdapter.setItemClickListener(new NotificationAdapter.ItemClickListener() {
             @Override
             public void itemClick(int position) {
+                Intent intent = new Intent(getActivity(), NotificationDetailActivity.class);
+                intent.putExtra(NotificationDetailActivity.NOTIFICATION_ID, String.valueOf(mNotificationList.get(position).getId()));
+                startActivityForResult(intent, 0);
 
-                NotificationDetailActivity.toThisAct(getActivity(), String.valueOf(mNotificationList.get(position).getId()));
             }
         });
     }
@@ -173,6 +175,15 @@ public class NoticeFragment extends FaceShowBaseFragment {
         unbinder.unbind();
         if (mNotificationRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mNotificationRequestUUID);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            mRootView.showLoadingView();
+            getNotifications();
         }
     }
 }

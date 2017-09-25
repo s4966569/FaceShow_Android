@@ -3,7 +3,6 @@ package com.yanxiu.gphone.faceshow.user;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +10,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -25,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.google.gson.Gson;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
@@ -369,7 +364,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 Gson gson=new Gson();
                 HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
                 if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
-                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).defaults.shortUrl);
+                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).defaults.url);
                     setHeadimg();
                 }else {
                     ToastUtil.showToast(mContext,"头像上传失败");
@@ -388,9 +383,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 ToastUtil.showToast(mContext,errorMsg);
             }
         });
-
-
     }
+
     @Override
     public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
         if (deniedPermissions != null && deniedPermissions.size() > 0) {

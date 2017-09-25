@@ -64,6 +64,11 @@ public class ClassCircleCommentLayout extends RelativeLayout {
         mItemClickListener=itemClickListener;
     }
 
+    /**
+     * 屏蔽listview点击事件的位置在这个自定义listview内部，ontouch
+     *
+     * 打开后即可拥有回复功能
+     * */
     public void setData(ArrayList<Comments> list){
         if (list==null||list.size()==0){
             setVisibility(GONE);

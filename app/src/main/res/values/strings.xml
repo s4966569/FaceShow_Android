@@ -62,7 +62,7 @@
     <string name="sure">确定</string>
     <string name="notification">通知</string>
     <string name="notification_detail">通知详情</string>
-    <string name="notificationCreatedPersonAndTime">%1$s  %2$s</string>
+    <string name="notificationCreatedPersonAndTime">%1$s \u0020\u0020 %2$s</string>
     <string name="check_in_notes">签到记录</string>
     <!--签到 end-->
 
@@ -99,6 +99,6 @@
     <string name="app_update_inoge">忽略</string>
     <string name="app_update_exit">退出</string>
 
-    <string name="send_success">发表成功</string>
+    <string name="send_success">发布成功</string>
     <string name="check_in_plan">%1$s - %2$s</string>
 </resources>

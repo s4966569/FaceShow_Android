@@ -1,5 +1,8 @@
 package com.yanxiu.gphone.faceshow;
 
+import android.annotation.SuppressLint;
+import android.os.StrictMode;
+
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.yanxiu.gphone.faceshow.constant.Constants;
@@ -19,9 +22,13 @@ public class FaceShowApplication extends LitePalApplication {
     }
 
 
+    @SuppressLint("NewApi")
     @Override
     public void onCreate() {
         super.onCreate();
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
         instance = this;
         initUrlServer();
         Stetho.initializeWithDefaults(this);

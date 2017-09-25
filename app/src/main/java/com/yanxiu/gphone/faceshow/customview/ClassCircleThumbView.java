@@ -74,7 +74,7 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
         ClickableSpan span = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
-                Toast.makeText(mContext, bean.publisher.realName, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext, bean.publisher.realName, Toast.LENGTH_SHORT).show();
             }
 
             @Override

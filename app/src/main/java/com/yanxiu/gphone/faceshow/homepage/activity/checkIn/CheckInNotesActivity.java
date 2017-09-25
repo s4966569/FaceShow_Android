@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CheckInNotesAdapter;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
@@ -39,7 +41,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.loadMoreRecyclerView)
-    LoadMoreRecyclerView loadMoreRecyclerView;
+    RecyclerViewCanLoadMore loadMoreRecyclerView;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
     private PublicLoadLayout mRootView;
@@ -49,19 +51,15 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     private List<GetCheckInNotesResponse.Element> mCheckInNotesList = new ArrayList<>();
 
 
-    LoadMoreRecyclerView.LoadMoreListener loadMoreListener = new LoadMoreRecyclerView.LoadMoreListener() {
+    RecyclerViewCanLoadMore.OnLoadMoreListener loadMoreListener = new RecyclerViewCanLoadMore.OnLoadMoreListener() {
         @Override
-        public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
+        public void onLoadMore(RecyclerView recyclerView, int newState, int lastVisibleItem) {
             mRootView.showLoadingView();
             mOffset = mCheckInNotesList.size();
             getCheckInNotes();
         }
-
-        @Override
-        public void onLoadmoreComplte() {
-
-        }
     };
+
 
     SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -100,7 +98,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         loadMoreRecyclerView.setLayoutManager(linearLayoutManager);
         loadMoreRecyclerView.setAdapter(mCheckInNotesAdapter);
-        loadMoreRecyclerView.setLoadMoreListener(loadMoreListener);
+        loadMoreRecyclerView.addLoadMoreListener(loadMoreListener);
     }
 
     private void getCheckInNotes() {
@@ -117,16 +115,16 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                 mRootView.hiddenOtherErrorView();
                 mRootView.hiddenNetErrorView();
                 if (ret.getCode() == 0) {
-                    if (ret.getData() != null && ret.getData().getElements() != null ) {
+                    if (ret.getData() != null && ret.getData().getElements() != null) {
                         if (ret.getData().getElements().size() > 0) {
                             if (mOffset == 0)
                                 mCheckInNotesList.clear();
                             mCheckInNotesList.addAll(ret.getData().getElements());
-                        }else {
-                            if (mOffset == 0){
-                                if (mCheckInNotesList.size()>0){
-                                    ToastUtil.showToast(FaceShowApplication.getContext(),"刷新失败");
-                                }else{
+                        } else {
+                            if (mOffset == 0) {
+                                if (mCheckInNotesList.size() > 0) {
+                                    ToastUtil.showToast(FaceShowApplication.getContext(), "刷新失败");
+                                } else {
                                     mRootView.showOtherErrorView();
                                 }
                             }

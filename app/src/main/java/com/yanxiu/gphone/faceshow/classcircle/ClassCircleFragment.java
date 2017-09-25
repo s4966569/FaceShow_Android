@@ -60,7 +60,7 @@ import de.greenrobot.event.EventBus;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener {
 
     private static final int REQUEST_CODE_ALBUM=0x000;
     private static final int REQUEST_CODE_CAMERA=0x001;
@@ -147,6 +147,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleRecycleView.setLoadMoreListener(ClassCircleFragment.this);
         mClassCircleAdapter.setCommentClickListener(ClassCircleFragment.this);
         mClassCircleAdapter.setThumbClickListener(ClassCircleFragment.this);
+        mClassCircleAdapter.setContentLinesChangedlistener(ClassCircleFragment.this);
         mFunctionView.setOnClickListener(ClassCircleFragment.this);
         mFunctionView.setOnLongClickListener(ClassCircleFragment.this);
         mCommentView.setOnEditorActionListener(ClassCircleFragment.this);
@@ -433,6 +434,28 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         imm.showSoftInput(mCommentView,0);
     }
 
+    @Override
+    public void onContentLinesChanged(final int position, final boolean isShowAll) {
+        mClassCircleRecycleView.post(new Runnable() {
+            @Override
+            public void run() {
+                int visibleStart=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
+                int visibleEnd=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findLastVisibleItemPosition();
+                if ((position<visibleStart||position>visibleEnd)&&!isShowAll) {
+                    mClassCircleRecycleView.scrollToPosition(position);
+                    mClassCircleRecycleView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            float diment=getResources().getDimension(R.dimen.top_layout_height);
+//                            int length=ScreenUtils.dpToPxInt(getContext(),diment);
+                            mClassCircleRecycleView.scrollBy(0,-(int) diment);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     /**
      * 将选中item滚动到可见位置
      * */
@@ -530,14 +553,17 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             case REQUEST_CODE_ALBUM:
                 if (data!=null) {
                     Uri uri = data.getData();
-                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-                    startCropImg(uri,mCropPath);
+//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+//                    startCropImg(uri,mCropPath);
+                    String path=FileUtil.getRealFilePath(getContext(),uri);
+                    startIntent(path);
                 }
                 break;
             case REQUEST_CODE_CAMERA:
                 if (!TextUtils.isEmpty(mCameraPath)){
-                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
+//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+//                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
+                    startIntent(mCameraPath);
                 }
                 break;
             case REQUEST_CODE_CROP:
@@ -566,5 +592,4 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         strings.add(path);
         SendClassCircleActivity.LuanchActivity(getContext(),SendClassCircleActivity.TYPE_IMAGE,strings);
     }
-
 }

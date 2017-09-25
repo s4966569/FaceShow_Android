@@ -20,6 +20,10 @@ import com.yanxiu.gphone.faceshow.R;
  */
 public class MaxLineTextLayout extends LinearLayout {
 
+    public interface onLinesChangedListener{
+        void onLinesChanged(boolean isShowAll);
+    }
+
     private static final int LINES=4;
     private static final int CONTENT_SPACE_LINE_HEIGHT=9;
     private static final int CONTENT_TEXT_SIZE=42;
@@ -39,6 +43,7 @@ public class MaxLineTextLayout extends LinearLayout {
     private int mMoreTextSize=MORE_TEXT_SIZE;
     private int mContentTextSize=CONTENT_TEXT_SIZE;
 
+    private onLinesChangedListener mLinesChangedListener;
     private boolean isShowAll=false;
 
     public MaxLineTextLayout(Context context) {
@@ -74,7 +79,6 @@ public class MaxLineTextLayout extends LinearLayout {
         mContentView.setTextSize(TypedValue.COMPLEX_UNIT_PX,mContentTextSize);
         mContentView.setTextColor(mContentTextColor);
         mContentView.setLineSpacing(mContentSpaceLinesHeight,1f);
-        mContentView.setMaxLines(LINES);
         mMoreView.setTextColor(mMoreTextColor);
         mMoreView.setTextSize(TypedValue.COMPLEX_UNIT_PX,mMoreTextSize);
         mMoreView.setPadding(0,mMoreMarginTop,50,0);
@@ -96,18 +100,42 @@ public class MaxLineTextLayout extends LinearLayout {
             public void onClick(View v) {
                 if (isShowAll){
                     isShowAll=false;
-                    mContentView.setMaxLines(Integer.MAX_VALUE);
-                    mMoreView.setText("取消");
-                }else {
-                    isShowAll=true;
                     mContentView.setMaxLines(mMaxLines);
                     mMoreView.setText("全文");
+                }else {
+                    isShowAll=true;
+                    mContentView.setMaxLines(Integer.MAX_VALUE);
+                    mMoreView.setText("收起");
+                }
+                if (mLinesChangedListener!=null){
+                    mLinesChangedListener.onLinesChanged(isShowAll);
                 }
             }
         });
     }
 
     public void setData(String text){
+        setData(text,false);
+    }
+
+    public void setData(String text,boolean isShowAll){
+        setData(text,isShowAll,null);
+    }
+
+    public void setData(String text,boolean isShowAll,onLinesChangedListener linesChangedListener){
+        this.isShowAll=isShowAll;
+        this.mLinesChangedListener=linesChangedListener;
         mContentView.setText(text);
+        setting();
+    }
+
+    private void setting(){
+        if (isShowAll){
+            mContentView.setMaxLines(Integer.MAX_VALUE);
+            mMoreView.setText("收起");
+        }else {
+            mContentView.setMaxLines(LINES);
+            mMoreView.setText("全文");
+        }
     }
 }
