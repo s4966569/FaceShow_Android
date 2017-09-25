@@ -58,8 +58,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mRootView.setContentView(view);
         unbinder = ButterKnife.bind(this, mRootView);
         setRecyclerView(loadMoreRecyclerView);
-        mRootView.showLoadingView();
-        getNotifications();
+
+
         swipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +71,13 @@ public class NoticeFragment extends FaceShowBaseFragment {
             }
         });
         return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRootView.showLoadingView();
+        getNotifications();
     }
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
