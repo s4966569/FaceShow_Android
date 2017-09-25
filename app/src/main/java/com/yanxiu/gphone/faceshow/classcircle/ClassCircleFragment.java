@@ -530,14 +530,17 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             case REQUEST_CODE_ALBUM:
                 if (data!=null) {
                     Uri uri = data.getData();
-                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-                    startCropImg(uri,mCropPath);
+//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+//                    startCropImg(uri,mCropPath);
+                    String path=FileUtil.getRealFilePath(getContext(),uri);
+                    startIntent(path);
                 }
                 break;
             case REQUEST_CODE_CAMERA:
                 if (!TextUtils.isEmpty(mCameraPath)){
-                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
+//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+//                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
+                    startIntent(mCameraPath);
                 }
                 break;
             case REQUEST_CODE_CROP:

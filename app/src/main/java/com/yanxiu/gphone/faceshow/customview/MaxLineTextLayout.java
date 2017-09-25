@@ -97,7 +97,7 @@ public class MaxLineTextLayout extends LinearLayout {
                 if (isShowAll){
                     isShowAll=false;
                     mContentView.setMaxLines(Integer.MAX_VALUE);
-                    mMoreView.setText("取消");
+                    mMoreView.setText("收起");
                 }else {
                     isShowAll=true;
                     mContentView.setMaxLines(mMaxLines);

@@ -138,6 +138,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             mPictureView.setVisibility(View.VISIBLE);
             Glide.with(mContext).load(mImagePaths.get(0)).into(mPictureView);
         }
+        mContentView.setText("");
     }
 
     @Override
@@ -257,7 +258,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (s.length()==0){
+        if (s.length()==0&&(mImagePaths==null||mImagePaths.size()==0)){
             mFunctionView.setEnabled(false);
             mFunctionView.setTextColor(ContextCompat.getColor(mContext,R.color.color_999999));
         }else {
