@@ -75,5 +75,7 @@
 
     </LinearLayout>
 
-    <include layout="@layout/line" />
+    <include
+        android:id="@+id/vote_text_layout_line"
+        layout="@layout/line" />
 </LinearLayout>

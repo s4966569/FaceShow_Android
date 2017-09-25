@@ -94,6 +94,8 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
 
                 holder1.chooseLayout.setSelectItemListener(this);
+                if(position >= (mList.size() -1))
+                    holder1.line.setVisibility(View.GONE);
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
@@ -127,6 +129,8 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         bean.setFeedBackText(s.toString());
                     }
                 });
+                if(position >= (mList.size() -1))
+                    holder2.line.setVisibility(View.GONE);
                 break;
         }
 
@@ -165,12 +169,14 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     class ChooseViewHolder extends RecyclerView.ViewHolder {
         private TextView evaluation_title;
         private ChooseLayout chooseLayout;
+        private View line;
 
 
         public ChooseViewHolder(View itemView) {
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             chooseLayout = (ChooseLayout) itemView.findViewById(R.id.chooseLayout);
+            line = itemView.findViewById(R.id.evalution_choose__layout_line);
         }
     }
 
@@ -180,11 +186,13 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     class TextViewHolder extends RecyclerView.ViewHolder {
         private TextView evaluation_title;
         private EditText evalution_editText;
+        private View line;
 
         public TextViewHolder(View itemView) {
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             evalution_editText = (EditText) itemView.findViewById(R.id.evalution_editText);
+            line = itemView.findViewById(R.id.evalution_text_layout_line);
         }
     }
 

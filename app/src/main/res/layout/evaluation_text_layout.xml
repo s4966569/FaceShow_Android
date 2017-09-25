@@ -37,5 +37,7 @@
         android:textSize="16dp"
         tools:text="hahahahhaahhaa" />
 
-    <include layout="@layout/line" />
+    <include
+        android:id="@+id/evalution_text_layout_line"
+        layout="@layout/line" />
 </LinearLayout>
