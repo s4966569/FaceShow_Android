@@ -138,7 +138,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                     mCheckInNotesAdapter.update(mCheckInNotesList);
                 } else {
                     if (mCheckInNotesList.size() <= 0)
-                        mRootView.showOtherErrorView();
+                        mRootView.showOtherErrorView("无签到记录");
                 }
             }
 
