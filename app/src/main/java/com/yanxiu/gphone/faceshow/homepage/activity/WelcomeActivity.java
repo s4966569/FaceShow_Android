@@ -22,6 +22,7 @@ import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.Utils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -50,7 +51,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     private Animator.AnimatorListener logoAnimatorListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animator) {
-
+            isAnimationEnd = false;
         }
 
         @Override
@@ -93,7 +94,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
                 /*欢迎页logo的动画效果*/
                 int ANIMATION_DURATION = 1000;//动画时长
-                mImgLogo.animate().translationY(-800).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
+                mImgLogo.animate().translationY(-Utils.dip2px(FaceShowApplication.getContext(), 350)).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
                 checkUserStatus();
             }
 

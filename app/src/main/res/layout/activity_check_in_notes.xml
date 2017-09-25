@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView
+        <com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore
             android:id="@+id/loadMoreRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
