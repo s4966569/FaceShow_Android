@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.util;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -244,5 +245,41 @@ public class StringUtils {
      */
     public static boolean isBlank(String str) {
         return (str == null || str.trim().length() == 0);
+    }
+
+    /**
+     * 课程里，时间需要把时间转化一下。
+     * 如：2017年9月25日11:59:55，需要把最后的秒钟部分去掉转化后的结果为：2017年9月25日11:59
+     *
+     * @return
+     */
+    public static String getCourseTime(String date) {
+        try {
+            final String colon = ":";
+            if (!TextUtils.isEmpty(date) && date.contains(colon)) {
+                String result;
+                int totalLength = date.length();
+                int firstIndex = date.indexOf(colon);
+                int lasetIndex = date.lastIndexOf(colon);
+                if (firstIndex != lasetIndex) {
+                    //后面的截掉
+                    if (firstIndex + 2 < totalLength) {
+                        result = date.substring(0, firstIndex + 3);
+                    } else if (firstIndex + 1 < totalLength) {
+                        result = date.substring(0, firstIndex + 2);
+                    } else {
+                        return date;
+                    }
+                } else {
+                    return date;
+                }
+                return result;
+
+            } else {
+                return date;
+            }
+        } catch (Exception e) {
+            return date;
+        }
     }
 }

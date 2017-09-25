@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.bean;
 
+import android.text.TextUtils;
+
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 
 public class CourseBean extends BaseBean {
     private String date;//上一级（CoursesBean）转过来的。--为了转成符合我们自己规则的数据
+    private boolean isToday;//上一级（CoursesBean）转过来的。--为了转成符合我们自己规则的数据
 
     public String getDate() {
         return date;
@@ -19,6 +22,14 @@ public class CourseBean extends BaseBean {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public boolean isToday() {
+        return isToday;
+    }
+
+    public void setToday(boolean today) {
+        isToday = today;
     }
 
     private String id;
@@ -66,6 +77,9 @@ public class CourseBean extends BaseBean {
     }
 
     public String getLecturer() {
+        if (TextUtils.isEmpty(lecturer)) {
+            lecturer = getTeacher();
+        }
         return lecturer;
     }
 
@@ -146,4 +160,18 @@ public class CourseBean extends BaseBean {
     /*
       *  课程详情里的字段 END
      */
+
+    private String getTeacher() {
+        StringBuffer result = new StringBuffer();
+        if (getLecturerInfos() != null) {
+            for (int i = 0; i < getLecturerInfos().size(); i++) {
+                LecturerInfosBean lBean = getLecturerInfos().get(i);
+                result.append(lBean.getLecturerName());
+                if (i < getLecturerInfos().size() - 1) {
+                    result.append(",");
+                }
+            }
+        }
+        return result.toString();
+    }
 }

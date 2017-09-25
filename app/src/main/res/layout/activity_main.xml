@@ -73,10 +73,17 @@
             layout="@layout/home_nav_bar_4_layout" />
     </LinearLayout>
 
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        android:layout_above="@id/navi_switcher"
+        android:background="@color/color_EBEFF2" />
+
     <FrameLayout
         android:id="@+id/content_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/navi_switcher"></FrameLayout>
+        android:layout_above="@id/line"></FrameLayout>
 
 </RelativeLayout>

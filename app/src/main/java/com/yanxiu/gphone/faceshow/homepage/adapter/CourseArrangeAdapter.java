@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 
@@ -76,14 +77,18 @@ public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.View
         switch (getItemViewType(position)) {
             case 1:
                 CourseDateViewHolder holder1 = (CourseDateViewHolder) holder;
-                holder1.course_date.setText(data.getDate());
+                String date = data.getDate();
+                if (data.isToday()) {
+                    date += " 今日课程";
+                }
+                holder1.course_date.setText(date);
                 break;
             case 2:
                 CourseContentViewHolder holder2 = (CourseContentViewHolder) holder;
                 holder2.course_name.setText(data.getCourseName());
-                holder2.course_location.setText(data.getSite());
+                holder2.course_location.setText(TextUtils.isEmpty(data.getSite()) ? "待定" : data.getSite());
                 holder2.course_teacher.setText(data.getLecturer());
-                holder2.course_time.setText(data.getStartTime());
+                holder2.course_time.setText(StringUtils.getCourseTime(data.getStartTime()));
                 holder2.course_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
