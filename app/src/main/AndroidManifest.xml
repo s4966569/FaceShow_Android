@@ -42,7 +42,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -100,8 +100,7 @@
         <activity android:name=".course.activity.SpecialistIntroductionActivity" />
         <activity android:name=".course.activity.CourseIntroductionActivity" />
         <activity
-            android:name=".course.activity.CourseDiscussActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:name=".course.activity.CourseDiscussActivity" />
         <activity android:name=".course.activity.VoteActivity" />
         <activity android:name=".common.activity.PDFViewActivity" />
         <activity
