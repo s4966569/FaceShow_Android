@@ -39,6 +39,7 @@
     <string name="vote">投票</string>
     <string name="error_tip">你的输入内容中可能存在表情，请修改后再次提交!</string>
     <string name="submit_tip">提交后内容不可修改，是否继续提交?</string>
+    <string name="submit_success">提交成功</string>
     <string name="yes">是</string>
     <string name="no">否</string>
     <!--课程相关 end-->

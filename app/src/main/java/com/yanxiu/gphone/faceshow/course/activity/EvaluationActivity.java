@@ -177,6 +177,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
                 mRootView.finish();
                 if (ret != null && ret.getCode() == 0) {
+                    ToastUtil.showToast(getApplication(), getString(R.string.submit_success));
                     invoke(EvaluationActivity.this, mStepId);
                     finish();
                 } else {

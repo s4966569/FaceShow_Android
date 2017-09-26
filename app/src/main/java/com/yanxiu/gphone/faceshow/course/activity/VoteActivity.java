@@ -184,6 +184,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
                 mRootView.finish();
                 if (ret != null && ret.getCode() == 0) {
+                    ToastUtil.showToast(getApplication(), getString(R.string.submit_success));
                     invoke(VoteActivity.this, mStepId);
                     finish();
                 } else {
