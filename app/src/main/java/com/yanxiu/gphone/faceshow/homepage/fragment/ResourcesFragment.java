@@ -50,7 +50,7 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
     /*从第几条开始加载数据*/
     private int mOffset = 0;
     /*每页多少条*/
-    private String mPageSize = "10";
+    private String mPageSize = "10000";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
