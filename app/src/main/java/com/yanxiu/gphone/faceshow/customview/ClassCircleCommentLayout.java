@@ -117,11 +117,11 @@ public class ClassCircleCommentLayout extends RelativeLayout {
             String text="";
             if (comment.level.equals("1")){
                 if (comment.publisher!=null) {
-                    text = comment.publisher.realName + ": " + comment.content;
+                    text = String.format(mContext.getString(R.string.comment_to_master), comment.publisher.realName, comment.content);
                 }
             }else {
                 if (comment.publisher != null) {
-                    text = comment.publisher.realName + "对" + comment.toUser.realName + "说" + ": " + comment.content;
+                    text = String.format(mContext.getString(R.string.comment_to_user), comment.publisher.realName, comment.toUser.realName, comment.content);
                 }
             }
             textView.setText(text);

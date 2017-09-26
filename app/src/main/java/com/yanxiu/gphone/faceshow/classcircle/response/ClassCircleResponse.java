@@ -11,10 +11,10 @@ import java.util.ArrayList;
  */
 public class ClassCircleResponse extends FaceShowBaseResponse{
 
-    public boolean hasNextPage;
     public Data data;
 
     public class Data{
+        public boolean hasNextPage;
 
         public ArrayList<Moments> moments;
 

@@ -179,7 +179,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
                 @Override
                 public void onFail(String errorMessage) {
-                    ToastUtil.showToast(mContext,"发布失败，请重试！");
+                    ToastUtil.showToast(mContext,getString(R.string.send_class_circle_fail));
                     rootView.hiddenLoadingView();
                 }
             });
@@ -230,7 +230,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     EventBus.getDefault().post(new RefreshClassCircle());
                     SendClassCircleActivity.this.finish();
                 }else {
-                    ToastUtil.showToast(mContext,"发布失败，请重试！");
+                    ToastUtil.showToast(mContext,getString(R.string.send_class_circle_fail));
                 }
             }
 

@@ -24,7 +24,7 @@
             android:id="@+id/et_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="这一刻的想法..."
+            android:hint="@string/send_class_circle_hint"
             android:lines="4"
             android:gravity="top|start"
             android:textColor="@color/color_333333"
