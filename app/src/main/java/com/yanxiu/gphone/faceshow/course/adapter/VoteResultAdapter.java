@@ -12,6 +12,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 
@@ -95,7 +96,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder2.voteResult_title.setText(position + 1 + "、" + data.getTitle());
                 holder2.voteResult_personnumber.setText("参与人数:" + data.getAnswerUserNum());
 //                String text = "我的回复:"+"/n"+data.getFeedBackTime()+"/n"+;
-                holder2.voteResult_time.setText(data.getCreateTime());
+                holder2.voteResult_time.setText(StringUtils.getDiscussTime(data.getCreateTime()));
                 String text = "";
                 try {
                     text = data.getUserAnswer().getQuestionAnswers().get(0);
