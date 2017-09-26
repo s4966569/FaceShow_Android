@@ -85,7 +85,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in:
-                QRCodeCheckInActivity.toThisAct(this);
+                CheckInActivity.toThisAct(this);
                 break;
         }
     }

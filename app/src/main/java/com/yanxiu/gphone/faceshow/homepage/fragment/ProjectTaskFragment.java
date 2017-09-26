@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,20 +12,17 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.course.activity.CourseDiscussActivity;
 import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListRequest;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +124,7 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                 EvaluationActivity.invoke(getActivity(),taskBean.getStepId());
                 break;
             case InteractStepsBean.CHECK_IN:
-                QRCodeCheckInActivity.toThisAct(getActivity());
+                CheckInActivity.toThisAct(getActivity());
                 break;
         }
     }

@@ -69,6 +69,7 @@ public class CheckInActivity extends AppCompatActivity {
 
         } else {
 //            super.onActivityResult(requestCode, resultCode, data);
+            CheckInActivity.this.finish();
         }
     }
 
