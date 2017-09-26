@@ -78,7 +78,7 @@
             android:name=".common.activity.PhotoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".notification.NotificationDetailActivity"
+            android:name=".notification.activity.NotificationDetailActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <activity android:name=".homepage.activity.checkIn.CheckInNotesActivity" />
