@@ -85,6 +85,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private SwipeRefreshLayout mRefreshView;
     private PublicLoadLayout rootView;
 
+    private boolean isCommentLoading=false;
+
     private UUID mClassCircleRequest;
     private UUID mClassCircleLikeRequest;
     private UUID mCommentToMasterRequest;
@@ -262,6 +264,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void onSuccess(RequestBase request, CommentResponse ret) {
                 rootView.hiddenLoadingView();
+                isCommentLoading=false;
                 mCommentToMasterRequest=null;
                 if (ret!=null&&ret.data!=null) {
                     moments.comments.add(ret.data);
@@ -274,6 +277,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void onFail(RequestBase request, Error error) {
                 mCommentToMasterRequest=null;
+                isCommentLoading=false;
                 ToastUtil.showToast(getContext(),error.getMessage());
                 rootView.hiddenLoadingView();
             }
@@ -295,6 +299,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void onSuccess(RequestBase request, CommentResponse ret) {
                 rootView.hiddenLoadingView();
+                isCommentLoading=false;
                 mCommentToUserRequest=null;
                 if (ret!=null&&ret.data!=null) {
                     moments.comments.add(ret.data);
@@ -307,6 +312,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
+                isCommentLoading=false;
                 mCommentToUserRequest=null;
                 ToastUtil.showToast(getContext(),error.getMessage());
             }
@@ -526,7 +532,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId== EditorInfo.IME_ACTION_SEND){
             String comment=mCommentView.getText().toString();
-            if (!TextUtils.isEmpty(comment)) {
+            if (!TextUtils.isEmpty(comment)&&!isCommentLoading) {
+                isCommentLoading=true;
                 ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
                 if (isCommentMaster) {
                     startCommentToMasterRequest(mMomentPosition, comment, moments);

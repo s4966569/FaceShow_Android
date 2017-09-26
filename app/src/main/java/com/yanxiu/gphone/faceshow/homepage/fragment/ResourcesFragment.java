@@ -59,12 +59,12 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRootView.showLoadingView();
                 mResourceList.clear();
                 mOffset = 0;
                 getResourcesList();
             }
         });
+        getResourcesList();
         return mRootView;
     }
 
@@ -73,7 +73,8 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
      */
     @Override
     public void refreshData() {
-
+        mOffset = 0;
+        getResourcesList();
     }
 
     private void initListener() {
@@ -90,7 +91,6 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
 
             @Override
             public void onLoadMore(LoadMoreRecyclerView refreshLayout) {
-                mRootView.showLoadingView();
                 getResourcesList();
             }
 
@@ -99,17 +99,10 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
                 mRootView.hiddenLoadingView();
             }
         });
-        mRootView.showLoadingView();
-
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        getResourcesList();
     }
 
     private void getResourcesList() {
+        mRootView.showLoadingView();
         ResourceListRequest resourceListRequest = new ResourceListRequest();
         resourceListRequest.offset = String.valueOf(mOffset);
         resourceListRequest.pageSize = mPageSize;
@@ -119,20 +112,20 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
             @Override
             public void onSuccess(RequestBase request, ResourceListResponse ret) {
                 mRootView.hiddenLoadingView();
-                if (ret.getCode() == 0) {
+                if (ret != null && ret.getCode() == 0) {
                     if (ret.getData().getElements() != null && ret.getData().getElements().size() > 0) {
                         if (mOffset == 0) {
                             mResourceList.clear();
                         }
                         mResourceList.addAll(ret.getData().getElements());
+                        mAdapter.updateData(mResourceList);
+                        mRootView.hiddenOtherErrorView();
+                        mRootView.hiddenNetErrorView();
+                    } else {
+                        mRootView.showOtherErrorView(getString(R.string.no_resource_hint));
                     }
-                    mAdapter.updateData(mResourceList);
-                    mRootView.hiddenOtherErrorView();
-                    mRootView.hiddenNetErrorView();
                 } else {
-                    if (mResourceList.size() <= 0) {
-                        mRootView.showOtherErrorView();
-                    }
+                    mRootView.showOtherErrorView(getString(R.string.no_resource_hint));
                 }
             }
 
@@ -151,6 +144,7 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
     }
 
     private void getResourceDetail(String resId) {
+        mRootView.showLoadingView();
         ResourceDetailRequest resourceDetailRequest = new ResourceDetailRequest();
         resourceDetailRequest.resId = resId;
         mRequestUUID = resourceDetailRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {

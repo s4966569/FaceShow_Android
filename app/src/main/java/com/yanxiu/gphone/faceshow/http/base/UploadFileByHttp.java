@@ -105,6 +105,7 @@ public class UploadFileByHttp {
                         callBack.onFail(conn.getResponseMessage());
                     }
                 } catch (Exception e) {
+                    callBack.onFail(e.getMessage());
                     e.printStackTrace();
                 }
             }
