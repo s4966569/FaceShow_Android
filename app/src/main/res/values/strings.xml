@@ -35,6 +35,8 @@
 
     <!--课程相关 start-->
     <string name="time">时间</string>
+    <string name="evaluation">问卷</string>
+    <string name="vote">投票</string>
     <!--课程相关 end-->
 
     <!--loginActivity-->

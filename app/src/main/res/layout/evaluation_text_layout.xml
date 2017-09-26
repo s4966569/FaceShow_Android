@@ -5,6 +5,8 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
+    <include layout="@layout/vote_common_title_layout" />
+
     <TextView
         android:id="@+id/evaluation_title"
         android:layout_width="wrap_content"
@@ -27,8 +29,8 @@
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
         android:background="@drawable/shape_evaluation"
-        android:hint="最多输入250个评价文字"
         android:gravity="top"
+        android:hint="最多输入250个评价文字"
         android:maxLength="250"
         android:minHeight="180dp"
         android:padding="10dp"

@@ -79,8 +79,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mSubmit.setVisibility(View.GONE);
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setFocusableInTouchMode(false);
         mAdapter = new EvaluationAdapter(this, this);
-
     }
 
     private void initListener() {
@@ -126,7 +126,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                         mSubmit.setVisibility(View.VISIBLE);
 //                        mTitle.setText("课程评价");
                     }
-                    mTitle.setText(ret.getData().getQuestionGroup().getTitle());
+                    mTitle.setText(getString(R.string.evaluation));
+                    mAdapter.setTitle(ret.getData().getQuestionGroup().getTitle());
                     mAdapter.setData(ret.getData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {

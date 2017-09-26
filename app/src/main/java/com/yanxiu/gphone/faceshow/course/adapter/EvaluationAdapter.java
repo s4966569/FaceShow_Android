@@ -38,6 +38,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private CanSubmitListener mListener;
     private boolean mIsAnswer;
+    private String mTitle;
 
     public EvaluationAdapter(Context context, CanSubmitListener listener) {
         mContext = context;
@@ -48,6 +49,10 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         mVoteBean = evaluationBean;
         mIsAnswer = mVoteBean.isAnswer();
         mList = mVoteBean.getQuestionGroup().getQuestions();
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
     @Override
@@ -94,8 +99,15 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
 
                 holder1.chooseLayout.setSelectItemListener(this);
-                if(position >= (mList.size() -1))
+                if (position >= (mList.size() - 1))
                     holder1.line.setVisibility(View.GONE);
+
+                if (position == 0 && !TextUtils.isEmpty(mTitle)) {
+                    holder1.all_title_layout.setVisibility(View.VISIBLE);
+                    holder1.all_title.setText(mTitle);
+                } else {
+                    holder1.all_title_layout.setVisibility(View.GONE);
+                }
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
@@ -129,8 +141,15 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         bean.setFeedBackText(s.toString());
                     }
                 });
-                if(position >= (mList.size() -1))
+                if (position >= (mList.size() - 1))
                     holder2.line.setVisibility(View.GONE);
+
+                if (position == 0 && !TextUtils.isEmpty(mTitle)) {
+                    holder2.all_title_layout.setVisibility(View.VISIBLE);
+                    holder2.all_title.setText(mTitle);
+                } else {
+                    holder2.all_title_layout.setVisibility(View.GONE);
+                }
                 break;
         }
 
@@ -170,6 +189,8 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView evaluation_title;
         private ChooseLayout chooseLayout;
         private View line;
+        private View all_title_layout;
+        private TextView all_title;
 
 
         public ChooseViewHolder(View itemView) {
@@ -177,6 +198,8 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             chooseLayout = (ChooseLayout) itemView.findViewById(R.id.chooseLayout);
             line = itemView.findViewById(R.id.evalution_choose_layout_line);
+            all_title_layout = itemView.findViewById(R.id.all_title_layout);
+            all_title = (TextView) itemView.findViewById(R.id.all_title);
         }
     }
 
@@ -187,12 +210,16 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView evaluation_title;
         private EditText evalution_editText;
         private View line;
+        private View all_title_layout;
+        private TextView all_title;
 
         public TextViewHolder(View itemView) {
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             evalution_editText = (EditText) itemView.findViewById(R.id.evalution_editText);
             line = itemView.findViewById(R.id.evalution_text_layout_line);
+            all_title_layout = itemView.findViewById(R.id.all_title_layout);
+            all_title = (TextView) itemView.findViewById(R.id.all_title);
         }
     }
 

@@ -1,0 +1,24 @@
+<!--投票和评价里，公用的二级title-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/all_title_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/all_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="@dimen/course_marginleft"
+        android:layout_marginRight="@dimen/course_marginleft"
+        android:layout_marginTop="25dp"
+        android:textColor="@color/color_333333"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        tools:text="手动阀撒所大所大所多所大大大大叔大叔大叔大大三大四的阿斯顿撒打算撒打算啊是大大阿发" />
+
+    <include layout="@layout/big_line" />
+</LinearLayout>

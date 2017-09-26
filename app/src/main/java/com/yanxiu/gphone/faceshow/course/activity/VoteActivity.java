@@ -76,10 +76,9 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         mBackView.setVisibility(View.VISIBLE);
         mSubmit.setEnabled(false);
         mSubmit.setVisibility(GONE);
-        mTitle.setText("课程投票");
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        mRecyclerView.setFocusableInTouchMode(false);//防止recyclerview里面有获取焦点的子view时，会自动滚动到子view位置
     }
 
     private void initListener() {
@@ -118,7 +117,8 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
                 if (ret == null || ret.getCode() == 0) {
                     mData = ret.getData();
                     mIsAnswer = ret.getData().isAnswer();
-                    mTitle.setText(ret.getData().getQuestionGroup().getTitle());
+//                    mTitle.setText(ret.getData().getQuestionGroup().getTitle());
+                    mTitle.setText(getString(R.string.vote));
                     initAdapter(ret.getData());
                 } else {
                     mRootView.showOtherErrorView();
@@ -140,11 +140,13 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             mSubmit.setVisibility(GONE);
             mVoteResultAdapter = new VoteResultAdapter(this);
             mVoteResultAdapter.setData(data);
+            mVoteResultAdapter.setTitle(data.getQuestionGroup().getTitle());
             mRecyclerView.setAdapter(mVoteResultAdapter);
             mSubmit.setVisibility(GONE);
         } else {
             mSubmit.setVisibility(View.VISIBLE);
             mVoteAdapter = new VoteAdapter(this, this);
+            mVoteAdapter.setTitle(data.getQuestionGroup().getTitle());
             mVoteAdapter.setData(data);
             mRecyclerView.setAdapter(mVoteAdapter);
             mSubmit.setVisibility(View.VISIBLE);
