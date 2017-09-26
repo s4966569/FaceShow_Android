@@ -113,7 +113,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
-                                android:text="点赞"
+                                android:text="@string/class_circle_like"
                                 android:textColor="#ffffff"
                                 android:textSize="16dp" />
                         </LinearLayout>
@@ -141,7 +141,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="center"
-                                android:text="评论"
+                                android:text="@string/class_circle_comment"
                                 android:textColor="#ffffff"
                                 android:textSize="16dp" />
                         </LinearLayout>

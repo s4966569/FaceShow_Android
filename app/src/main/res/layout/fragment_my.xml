@@ -32,7 +32,6 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="14dp"
             android:layout_toRightOf="@id/person_img"
-            android:text="孙长龙"
             android:textColor="@color/color_333333"
             android:textSize="@dimen/text_size_16" />
 
@@ -73,7 +72,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@id/pregistration_img"
-            android:text="签到记录"
+            android:text="@string/pregistration"
             android:textColor="@color/color_333333"
             android:textSize="14dp" />
 
@@ -102,7 +101,7 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:background="@drawable/selector_logout_bg"
-            android:text="退出登录"
+            android:text="@string/logout"
             android:textColor="@drawable/selector_logout_text_color"
             android:textSize="14dp" />
 

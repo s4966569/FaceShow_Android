@@ -101,11 +101,11 @@ public class MaxLineTextLayout extends LinearLayout {
                 if (isShowAll){
                     isShowAll=false;
                     mContentView.setMaxLines(mMaxLines);
-                    mMoreView.setText("全文");
+                    mMoreView.setText(R.string.text_all);
                 }else {
                     isShowAll=true;
                     mContentView.setMaxLines(Integer.MAX_VALUE);
-                    mMoreView.setText("收起");
+                    mMoreView.setText(R.string.text_line);
                 }
                 if (mLinesChangedListener!=null){
                     mLinesChangedListener.onLinesChanged(isShowAll);
@@ -132,10 +132,10 @@ public class MaxLineTextLayout extends LinearLayout {
     private void setting(){
         if (isShowAll){
             mContentView.setMaxLines(Integer.MAX_VALUE);
-            mMoreView.setText("收起");
+            mMoreView.setText(R.string.text_line);
         }else {
             mContentView.setMaxLines(LINES);
-            mMoreView.setText("全文");
+            mMoreView.setText(R.string.text_all);
         }
     }
 }

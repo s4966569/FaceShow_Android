@@ -105,4 +105,23 @@
     <string name="no_resource_hint">暂无资源</string>
     <string name="no_task_hint">暂无任务</string>
     <string name="no_schedule_hint">暂无日程</string>
+    <string name="class_circle_comment_to_user">回复%1$s:(暂不支持表情)</string>
+    <string name="class_circle_comment_to_master">评论(暂不支持表情)</string>
+    <string name="send_class_circle_fail">发布失败，请重试！</string>
+    <string name="send_class_circle_hint">这一刻的想法...</string>
+    <string name="class_circle_comment_hint">评论(暂不支持表情)</string>
+    <string name="class_circle_like">点赞</string>
+    <string name="class_circle_comment">评论</string>
+    <string name="comment_to_user">%1$s对%2$s说: %3$s</string>
+    <string name="comment_to_master">%1$s: %2$s</string>
+    <string name="text_all">全文</string>
+    <string name="text_line">收起</string>
+    <string name="headimg">头像</string>
+    <string name="name">姓名</string>
+    <string name="mobil">联系电话</string>
+    <string name="sex">性别</string>
+    <string name="stagename">学段</string>
+    <string name="subjectname">学科</string>
+    <string name="logout">退出登录</string>
+    <string name="pregistration">签到记录</string>
 </resources>

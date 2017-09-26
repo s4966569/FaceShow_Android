@@ -186,19 +186,19 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
                 mClassCircleRequest=null;
+                mRefreshView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshView.setRefreshing(false);
+                    }
+                });
                 if (ret!=null&&ret.data!=null&&ret.data.moments!=null) {
                     if (offset.equals("0")) {
-                        mRefreshView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mRefreshView.setRefreshing(false);
-                            }
-                        });
                         mClassCircleAdapter.setData(ret.data.moments);
                     }else {
                         mClassCircleAdapter.addData(ret.data.moments);
                     }
-                    mClassCircleRecycleView.setLoadMoreEnable(ret.hasNextPage);
+                    mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
                 }else {
                     if (offset.equals("0")) {
                         rootView.showNetErrorView();
@@ -210,6 +210,12 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             @Override
             public void onFail(RequestBase request, Error error) {
                 mClassCircleRequest=null;
+                mRefreshView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshView.setRefreshing(false);
+                    }
+                });
                 if (offset.equals("0")) {
                     rootView.showNetErrorView();
                     mClassCircleAdapter.clear();
@@ -409,9 +415,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         this.mCommentPosition=commentPosition;
         this.mMomentPosition=position;
         if (!isCommentMaster){
-            mCommentView.setHint("回复"+comment.publisher.realName+":(暂不支持表情)");
+            mCommentView.setHint(String.format(getString(R.string.class_circle_comment_to_user), comment.publisher.realName));
         }else {
-            mCommentView.setHint("评论(暂不支持表情)");
+            mCommentView.setHint(R.string.class_circle_comment_to_master);
         }
 
         Logger.d("onSizeChanged","commentClick");
