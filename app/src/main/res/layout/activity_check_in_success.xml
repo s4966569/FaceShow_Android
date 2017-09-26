@@ -30,6 +30,7 @@
             android:src="@drawable/ic_check_in_success" />
 
         <TextView
+            android:id="@+id/tv_check_in_statue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -52,7 +53,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="7dp"
-            android:text="2017.08.27 - 2017.08.29"
             android:textColor="@color/color_333333"
             android:textSize="14dp" />
 

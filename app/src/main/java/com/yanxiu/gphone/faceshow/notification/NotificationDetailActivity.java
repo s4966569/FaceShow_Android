@@ -20,6 +20,7 @@ import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -108,7 +109,9 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                             }
                         }
                     });
-                    Glide.with(mContext).load(ret.getData().getAttachUrl()).error(R.drawable.net_error_picture).placeholder(R.drawable.net_error_picture).into(imgNotification);
+                    if (!StringUtils.isEmpty(ret.getData().getAttachUrl())) {
+                        Glide.with(mContext).load(ret.getData().getAttachUrl()).error(R.drawable.net_error_picture).placeholder(R.drawable.net_error_picture).into(imgNotification);
+                    }
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
                 } else {

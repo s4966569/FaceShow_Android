@@ -183,9 +183,9 @@ public class NoticeFragment extends FaceShowBaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
-            mRootView.showLoadingView();
-            getNotifications();
-        }
+//        if (requestCode == 0) {
+//            mRootView.showLoadingView();
+//            getNotifications();
+//        }
     }
 }
