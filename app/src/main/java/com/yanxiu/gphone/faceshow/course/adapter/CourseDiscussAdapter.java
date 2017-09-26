@@ -108,7 +108,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_333333));
                     holder2.discuss_laud_img.setImageResource(R.drawable.course_discuss_unlaud);
                 }
-                YXPictureManager.getInstance().showRoundPic(mContext, data.getAvatar(), holder2.discuss_img, 5, R.mipmap.ic_launcher);
+                YXPictureManager.getInstance().showRoundPic(mContext, data.getAvatar(), holder2.discuss_img, 5, R.drawable.discuss_user_default_icon);
 
                 holder2.laud_layout.setOnClickListener(new View.OnClickListener() {
                     @Override

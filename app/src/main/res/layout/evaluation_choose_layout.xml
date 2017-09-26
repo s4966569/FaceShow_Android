@@ -26,6 +26,6 @@
     </com.yanxiu.gphone.faceshow.customview.ChooseLayout>
 
     <include
-        android:id="@+id/evalution_choose__layout_line"
+        android:id="@+id/evalution_choose_layout_line"
         layout="@layout/line" />
 </LinearLayout>

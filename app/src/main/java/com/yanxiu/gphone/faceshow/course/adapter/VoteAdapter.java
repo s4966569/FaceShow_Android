@@ -161,7 +161,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             chooseLayout = (ChooseLayout) itemView.findViewById(R.id.chooseLayout);
-            line = (ChooseLayout) itemView.findViewById(R.id.evalution_choose__layout_line);
+            line =  itemView.findViewById(R.id.evalution_choose_layout_line);
         }
     }
 
@@ -177,7 +177,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             evalution_editText = (EditText) itemView.findViewById(R.id.evalution_editText);
-            line = (ChooseLayout) itemView.findViewById(R.id.evalution_text_layout_line);
+            line = itemView.findViewById(R.id.evalution_text_layout_line);
         }
     }
 

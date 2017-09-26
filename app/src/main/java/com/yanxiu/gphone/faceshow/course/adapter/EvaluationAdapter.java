@@ -176,7 +176,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             super(itemView);
             evaluation_title = (TextView) itemView.findViewById(R.id.evaluation_title);
             chooseLayout = (ChooseLayout) itemView.findViewById(R.id.chooseLayout);
-            line = itemView.findViewById(R.id.evalution_choose__layout_line);
+            line = itemView.findViewById(R.id.evalution_choose_layout_line);
         }
     }
 

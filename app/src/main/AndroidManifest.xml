@@ -103,7 +103,6 @@
             android:name=".course.activity.CourseDiscussActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity android:name=".course.activity.VoteActivity" />
-        <activity android:name=".course.activity.VoteResultActivity" />
         <activity android:name="com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity" />
     </application>
 
