@@ -21,6 +21,7 @@ import com.yanxiu.gphone.faceshow.course.bean.DiscussBean;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.course.CourseDiscussLikeRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDiscussLikeResponse;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.YXPictureManager;
 
@@ -99,7 +100,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
                 final DiscussItemViewHolder holder2 = (DiscussItemViewHolder) holder;
                 holder2.discuss_name.setText(data.getUserName());
                 holder2.discuss_content.setText(data.getContent());
-                holder2.discuss_time.setText(data.getCreateTime());
+                holder2.discuss_time.setText(StringUtils.getDiscussTime(data.getCreateTime()));
                 holder2.discuss_laud.setText(data.getLikeNum() == 0 ? "赞" : (data.getLikeNum() + ""));
                 if (data.getUserLiked() == 1) {
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
