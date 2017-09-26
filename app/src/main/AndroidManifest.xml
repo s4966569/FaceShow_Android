@@ -100,8 +100,7 @@
         <activity android:name=".course.activity.SpecialistIntroductionActivity" />
         <activity android:name=".course.activity.CourseIntroductionActivity" />
         <activity
-            android:name=".course.activity.CourseDiscussActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:name=".course.activity.CourseDiscussActivity" />
         <activity android:name=".course.activity.VoteActivity" />
         <activity android:name=".common.activity.PDFViewActivity" />
         <activity
