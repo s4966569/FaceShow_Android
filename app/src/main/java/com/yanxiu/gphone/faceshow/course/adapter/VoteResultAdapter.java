@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 
@@ -30,6 +32,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private VoteBean mVoteBean;
     private ArrayList<QusetionBean> mList;
+    private String mTitle;
 
     public VoteResultAdapter(Context context) {
         mContext = context;
@@ -38,6 +41,10 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void setData(VoteBean voteBean) {
         mVoteBean = voteBean;
         mList = mVoteBean.getQuestionGroup().getQuestions();
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
     @Override
@@ -77,13 +84,19 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder1.voteResult_Layout.setData(data.getVoteInfo());
                 if(position >= (mList.size() -1))
                     holder1.line.setVisibility(View.GONE);
+                if (position == 0 && !TextUtils.isEmpty(mTitle)) {
+                    holder1.all_title_layout.setVisibility(View.VISIBLE);
+                    holder1.all_title.setText(mTitle);
+                } else {
+                    holder1.all_title_layout.setVisibility(View.GONE);
+                }
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;
                 holder2.voteResult_title.setText(position + 1 + "、" + data.getTitle());
                 holder2.voteResult_personnumber.setText("参与人数:" + data.getAnswerUserNum());
 //                String text = "我的回复:"+"/n"+data.getFeedBackTime()+"/n"+;
-                holder2.voteResult_time.setText(data.getCreateTime());
+                holder2.voteResult_time.setText(StringUtils.getDiscussTime(data.getCreateTime()));
                 String text = "";
                 try {
                     text = data.getUserAnswer().getQuestionAnswers().get(0);
@@ -93,6 +106,12 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder2.voteResult_editText.setText(text);
                 if(position >= (mList.size() -1))
                     holder2.line.setVisibility(View.GONE);
+                if (position == 0 && !TextUtils.isEmpty(mTitle)) {
+                    holder2.all_title_layout.setVisibility(View.VISIBLE);
+                    holder2.all_title.setText(mTitle);
+                } else {
+                    holder2.all_title_layout.setVisibility(View.GONE);
+                }
                 break;
         }
 
@@ -127,6 +146,8 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView voteResult_title;
         private VoteRuseltLayout voteResult_Layout;
         private View line;
+        private View all_title_layout;
+        private TextView all_title;
 
 
         public ChooseViewHolder(View itemView) {
@@ -134,6 +155,8 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             voteResult_title = (TextView) itemView.findViewById(R.id.voteResult_title);
             voteResult_Layout = (VoteRuseltLayout) itemView.findViewById(R.id.voteResult_Layout);
             line = itemView.findViewById(R.id.vote_result_layout_line);
+            all_title_layout = itemView.findViewById(R.id.all_title_layout);
+            all_title = (TextView) itemView.findViewById(R.id.all_title);
         }
     }
 
@@ -146,6 +169,8 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView voteResult_editText;
         private TextView voteResult_time;
         private View line;
+        private View all_title_layout;
+        private TextView all_title;
 
         public TextViewHolder(View itemView) {
             super(itemView);
@@ -154,6 +179,8 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             voteResult_personnumber = (TextView) itemView.findViewById(R.id.voteResult_personnumber);
             voteResult_editText = (TextView) itemView.findViewById(R.id.voteResult_editText);
             line = itemView.findViewById(R.id.vote_text_layout_line);
+            all_title_layout = itemView.findViewById(R.id.all_title_layout);
+            all_title = (TextView) itemView.findViewById(R.id.all_title);
         }
     }
 

@@ -8,7 +8,7 @@ import com.yanxiu.gphone.faceshow.base.BaseBean;
  */
 
 public class AttachmentInfosBean extends CourseDetailItemBean {
-    public static final String WORD = "word", EXCEL = "excel", PPT = "ppt", PDF = "pdf", TEXT = "txt";
+    public static final String WORD = "word", EXCEL = "excel", PPT = "ppt", PDF = "pdf", TEXT = "text";
 
     private String resId;
     private String resName;

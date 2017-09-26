@@ -19,7 +19,6 @@ import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.course.activity.CourseDiscussActivity;
 import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
-import com.yanxiu.gphone.faceshow.course.activity.VoteResultActivity;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;

@@ -35,6 +35,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                holder.img_notification_head.setImageDrawable(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_notification_viewed));
                 if (itemClickListener != null)
                     itemClickListener.itemClick(position);
             }
@@ -50,6 +51,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void update(List<NotificationResponse.Notification> data) {
         this.mData = data;
         notifyDataSetChanged();
+    }
+    public void notifyItem(List<NotificationResponse.Notification> data,int position){
+        this.mData =data;
+        notifyItemChanged(position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

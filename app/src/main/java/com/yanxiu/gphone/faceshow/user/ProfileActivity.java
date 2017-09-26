@@ -33,7 +33,6 @@ import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.yanxiu.gphone.faceshow.util.zxing.camera.CameraManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -225,16 +224,16 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 
     public boolean CheckCamera(Context context) {
         boolean flag = true;
-        CameraManager.init(context);
-        CameraManager cameraManager = CameraManager.get();
+//        CameraManager.init(context);
+//        CameraManager cameraManager = CameraManager.get();
         SurfaceView scanPreview = new SurfaceView(context);
         SurfaceHolder surfaceHolder = scanPreview.getHolder();
         try {
-            cameraManager.openDriver(surfaceHolder);
+//            cameraManager.openDriver(surfaceHolder);
         } catch (Exception ioe) {
             flag = false;
         }
-        cameraManager.closeDriver();
+//        cameraManager.closeDriver();
         return flag;
     }
 

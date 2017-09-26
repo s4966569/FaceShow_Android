@@ -1,6 +1,9 @@
 package com.yanxiu.gphone.faceshow.course.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -79,8 +82,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mSubmit.setVisibility(View.GONE);
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setFocusableInTouchMode(false);
         mAdapter = new EvaluationAdapter(this, this);
-
     }
 
     private void initListener() {
@@ -102,7 +105,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                 break;
             case R.id.submit:
 //                ToastUtil.showToast(getApplication(), "asdasd");
-                submitVote();
+                submitDialog();
                 break;
             default:
                 break;
@@ -126,7 +129,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                         mSubmit.setVisibility(View.VISIBLE);
 //                        mTitle.setText("课程评价");
                     }
-                    mTitle.setText(ret.getData().getQuestionGroup().getTitle());
+                    mTitle.setText(getString(R.string.evaluation));
+                    mAdapter.setTitle(ret.getData().getQuestionGroup().getTitle());
                     mAdapter.setData(ret.getData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
@@ -144,6 +148,24 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
 
     }
 
+    private void submitDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setMessage(getString(R.string.submit_tip));
+        dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                submitVote();
+            }
+        });
+        dialog.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialog.show();
+    }
+
     private void submitVote() {
         mRootView.showLoadingView();
         SubmitVoteRequest submitVoteRequest = new SubmitVoteRequest();
@@ -155,9 +177,11 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
                 mRootView.finish();
                 if (ret != null && ret.getCode() == 0) {
+                    ToastUtil.showToast(getApplication(), getString(R.string.submit_success));
+                    invoke(EvaluationActivity.this, mStepId);
                     finish();
                 } else {
-//                    ToastUtil.showToast(getApplication(), ret.getError().getMessage());
+                    ToastUtil.showToast(getApplication(), getString(R.string.error_tip));
                 }
             }
 

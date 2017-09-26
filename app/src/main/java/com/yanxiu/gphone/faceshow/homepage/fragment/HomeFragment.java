@@ -14,6 +14,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 
@@ -166,7 +167,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 break;
             case R.id.title_layout_signIn:
             case R.id.title_layout_right_img:
-                QRCodeCheckInActivity.toThisAct(getActivity());
+                CheckInActivity.toThisAct(getActivity());
                 break;
             default:
                 break;

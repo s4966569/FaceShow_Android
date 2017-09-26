@@ -173,7 +173,7 @@ public class LoginActivity extends FaceShowBaseActivity {
 
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(ret.getToken());
-                    SpManager.savePassPort(ret.getPassport() );
+                    SpManager.savePassPort(ret.getPassport());
                     getUserInfo(LoginActivity.this);
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
@@ -199,6 +199,7 @@ public class LoginActivity extends FaceShowBaseActivity {
                 if (ret.getCode() == 0) {
                     UserInfo.getInstance().setInfo(ret.getData());
                     MainActivity.invoke(activity);
+                    LoginActivity.this.finish();
                 } else {
                     ToastUtil.showToast(activity, ret.getError().getMessage());
                 }
@@ -213,8 +214,4 @@ public class LoginActivity extends FaceShowBaseActivity {
         });
     }
 
-    private void toMainActivity() {
-        SpManager.haveSignIn();
-        MainActivity.invoke(LoginActivity.this);
-    }
 }

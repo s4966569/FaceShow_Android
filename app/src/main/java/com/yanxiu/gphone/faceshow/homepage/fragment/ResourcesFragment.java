@@ -16,8 +16,11 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
+import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
+import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.adapter.HomeResourcesAdapter;
@@ -47,7 +50,7 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
     /*从第几条开始加载数据*/
     private int mOffset = 0;
     /*每页多少条*/
-    private String mPageSize = "10";
+    private String mPageSize = "10000";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -150,7 +153,8 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
         mRequestUUID = resourceDetailRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
-                if (ret.getCode() == 0 && !TextUtils.isEmpty(ret.getData().getUrl()) && ret.getData().getSuffix() != null) {
+                mRootView.hiddenLoadingView();
+                if (ret != null && ret.getCode() == 0) {
                     setIntent(ret.getData());
                 } else {
                     ToastUtil.showToast(getActivity(), "数据异常");
@@ -159,23 +163,53 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
 
             @Override
             public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
                 ToastUtil.showToast(getActivity(), "网络异常");
             }
         });
     }
 
     public void setIntent(ResourceDetailResponse.ResourceDetailBean data) {
-        PdfBean pdfbean = new PdfBean();
-        pdfbean.setName(data.getResName());
-//        pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
-        pdfbean.setUrl(data.getUrl());
-        pdfbean.setRecord(0);
+//        PdfBean pdfbean = new PdfBean();
+//        pdfbean.setName(data.getResName());
+////        pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
+//        pdfbean.setUrl(data.getUrl());
+//        pdfbean.setRecord(0);
+//
+//        Intent intent = new Intent(getActivity(), PDFViewActivity.class);
+//        Bundle mBundle = new Bundle();
+//        mBundle.putSerializable("pdfbean", pdfbean);
+//        intent.putExtras(mBundle);
+//        startActivity(intent);
+        if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
+            WebViewActivity.loadThisAct(getActivity(), data.getUrl());
+        } else if(TextUtils.equals(data.getType(), "0")) {
+            AttachmentInfosBean attachmentInfosBean = data.getAi();
+            if (attachmentInfosBean != null && attachmentInfosBean.getResType() != null) {
+                if(attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
+                    || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
+                    || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
+                    Intent intent;
+                    PdfBean pdfbean = new PdfBean();
+//                    pdfbean.setName("pdfTest");
+//                    pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
+                    pdfbean.setName(attachmentInfosBean.getResName());
+                    pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
+                    pdfbean.setRecord(0);
 
-        Intent intent = new Intent(getActivity(), PDFViewActivity.class);
-        Bundle mBundle = new Bundle();
-        mBundle.putSerializable("pdfbean", pdfbean);
-        intent.putExtras(mBundle);
-        startActivity(intent);
+                    intent = new Intent(getActivity(), PDFViewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("pdfbean", pdfbean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    return;
+                }
+            } else {
+                ToastUtil.showToast(getActivity(), "数据异常");
+            }
+        } else {
+            ToastUtil.showToast(getActivity(), "数据异常");
+        }
     }
 
     @Override
