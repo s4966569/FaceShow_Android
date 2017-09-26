@@ -17,6 +17,7 @@ import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextView;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 
@@ -88,7 +89,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         switch (getItemViewType(position)) {
             case 1:
                 CourseHeaderViewHolder holder1 = (CourseHeaderViewHolder) holder;
-                holder1.course_detail_time.setText(data.getStartTime());
+                holder1.course_detail_time.setText(StringUtils.getCourseTime(data.getStartTime()));
                 holder1.course_name.setText(data.getCourseName());
                 holder1.course_detail_location.setText(TextUtils.isEmpty(data.getSite()) ? "待定" : data.getSite());
                 holder1.course_detail_teacher.setText(data.getLecturer());
@@ -174,7 +175,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public CourseHeaderViewHolder(View itemView) {
             super(itemView);
             course_name = (TextView) itemView.findViewById(R.id.course_detaile_name);
-            course_detail_time = (TextView) itemView.findViewById(R.id.course_detaile_name);
+            course_detail_time = (TextView) itemView.findViewById(R.id.course_detail_time);
             course_detail_teacher = (TextView) itemView.findViewById(R.id.course_detail_teacher);
             course_detail_location = (TextView) itemView.findViewById(R.id.course_detail_location);
             course_detail_txt = (MaxLineTextView) itemView.findViewById(R.id.course_detail_txt);
