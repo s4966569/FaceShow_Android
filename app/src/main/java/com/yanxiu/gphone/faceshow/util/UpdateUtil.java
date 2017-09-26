@@ -38,7 +38,8 @@ import java.util.List;
      private static final String TAG="updata";
 
      private static InitializeRequest mInitializeRequest;
-     private static UpdateDialog mUpdateDialog;
+//     private static UpdateDialog mUpdateDialog;
+     private static SystemUpdataDialog mUpdateDialog;
      private static NotificationManager mNotificationManager;
      private static Notification mNotification;
      public static final int NOTIFICATION_ID = 0x11;
@@ -71,6 +72,7 @@ import java.util.List;
                          if (!TextUtils.isEmpty(ret.data.get(0).fileURL)) {
                              String[] str = ret.data.get(0).fileURL.split("\\.");
                              if (str.length>1&&"apk".equals(str[str.length-1])) {
+//                                 if (true){
                                  showUpdateDialog(context, ret.data.get(0), new OnUpgradeCallBack() {
                                      @Override
                                      public void onExit() {
@@ -145,26 +147,47 @@ import java.util.List;
              mUpdateDialog.dismiss();
              mUpdateDialog = null;
          }
-         mUpdateDialog = new UpdateDialog(context, data.upgradetype, new UpdateDialog.UpdateDialogCallBack() {
-             @Override
-             public void update() {
+//         mUpdateDialog = new UpdateDialog(context, data.upgradetype, new UpdateDialog.UpdateDialogCallBack() {
+//             @Override
+//             public void update() {
+//                 FaceShowBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));
+//             }
+//
+//             @Override
+//             public void cancel() {
+//             }
+//
+//             @Override
+//             public void exit() {
+//                 if (callBack != null) {
+//                     callBack.onExit();
+//                 }
+//             }
+//         });
+//         mUpdateDialog.setTitles(data.title, data.version);
+//         mUpdateDialog.setContent(data.content);
+//         mUpdateDialog.setCanceledOnTouchOutside(false);
+//         mUpdateDialog.show();
+        mUpdateDialog=new SystemUpdataDialog(context,data.content, data.upgradetype, new SystemUpdataDialog.UpdateDialogCallBack() {
+            @Override
+            public void update() {
                  FaceShowBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));
-             }
+            }
 
-             @Override
-             public void cancel() {
-             }
+            @Override
+            public void cancel() {
 
-             @Override
-             public void exit() {
+            }
+
+            @Override
+            public void exit() {
                  if (callBack != null) {
                      callBack.onExit();
                  }
-             }
-         });
+            }
+        });
          mUpdateDialog.setTitles(data.title, data.version);
          mUpdateDialog.setContent(data.content);
-         mUpdateDialog.setCanceledOnTouchOutside(false);
          mUpdateDialog.show();
      }
 

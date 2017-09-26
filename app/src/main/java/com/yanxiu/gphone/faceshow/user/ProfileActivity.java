@@ -223,7 +223,6 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
                 Toast.makeText(ProfileActivity.this, "请检查权限", Toast.LENGTH_SHORT).show();
-
             }
         });
         picPopupWindow.dismiss();
