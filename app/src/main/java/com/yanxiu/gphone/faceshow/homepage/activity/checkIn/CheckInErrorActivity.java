@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
+import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +38,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
     @BindView(R.id.tv_check_in_again)
     TextView tvCheckInAgain;
 
-    private FaceShowBaseResponse.Error mQrStatue;
+    private CheckInResponse.Error mQrStatue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +46,8 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_check_in_error);
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
-        mQrStatue = (FaceShowBaseResponse.Error) getIntent().getSerializableExtra(QR_STATUE);
-        if (mQrStatue!=null) {
+        mQrStatue = (CheckInResponse.Error) getIntent().getSerializableExtra(QR_STATUE);
+        if (mQrStatue != null) {
             tvErrorStatue.setText(mQrStatue.getMessage());
             switch (mQrStatue.getCode()) {
                 case QR_INVALID:
@@ -70,7 +71,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                     tvErrorPrompt.setText("");
                     break;
             }
-        }else {
+        } else {
             tvErrorStatue.setText(R.string.check_in_fail);
             tvErrorPrompt.setText("");
         }
@@ -83,7 +84,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in_again:
-                QRCodeCheckInActivity.toThisAct(this);
+                CheckInActivity.toThisAct(this);
                 this.finish();
                 break;
         }

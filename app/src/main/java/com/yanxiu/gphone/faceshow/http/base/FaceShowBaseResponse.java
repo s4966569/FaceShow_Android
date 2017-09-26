@@ -83,7 +83,7 @@ public class FaceShowBaseResponse {
         }
     }
 
-    public class ErrorData {
+    public class ErrorData implements Serializable{
 
         /**
          * id : 62
