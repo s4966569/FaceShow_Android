@@ -79,7 +79,27 @@ public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.View
                 ResourceViewHolder holder2 = (ResourceViewHolder) holder;
                 holder2.resource_name.setText(data.getResName());
                 holder2.resource_time.setText(data.getCreateTime());
-                holder2.resource_img.setImageResource(R.drawable.coursedetail_pdf);
+                String type = data.getSuffix();
+                if (type.equals("docx") || type.equals("doc") || type.equals("word")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_word);
+                } else if (type.equals("excel")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_excel);
+                } else if (type.equals("pdf")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_pdf);
+                } else if (type.equals("ppt") || type.equals("pptx")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_ppt);
+                } else if (type.equals("mp3")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_mp3);
+                } else if (type.equals("jpg")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_jpg);
+                } else if (type.equals("mp4")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_mp4);
+                } else if (type.equals("txt")) {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_txt);
+                } else {
+                    holder2.resource_img.setImageResource(R.drawable.coursedetail_html);
+                }
+
                 holder2.resource_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Switch;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -24,11 +23,10 @@ import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
@@ -180,7 +178,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                         EvaluationActivity.invoke(this, interactStepsBean.getStepId());
                         break;
                     case InteractStepsBean.CHECK_IN:
-                        QRCodeCheckInActivity.toThisAct(this);
+                        CheckInActivity.toThisAct(this);
                         break;
                 }
 

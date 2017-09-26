@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_white"
     android:orientation="vertical"
-    tools:context="com.yanxiu.gphone.faceshow.notification.NotificationDetailActivity">
+    tools:context="com.yanxiu.gphone.faceshow.notification.activity.NotificationDetailActivity">
 
     <include layout="@layout/check_in_title_layout" />
 
