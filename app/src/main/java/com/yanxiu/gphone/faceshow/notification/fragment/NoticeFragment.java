@@ -120,6 +120,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
                 } else {
                     if (mNotificationList.size() <= 0) {
                         mRootView.showOtherErrorView(getString(R.string.no_notify));
+                    }else {
+                        ToastUtil.showToast(FaceShowApplication.getContext(),"没有更多的通知了");
                     }
                 }
             }
