@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.http.resource;
 
+import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
 /**
@@ -53,6 +54,15 @@ public class ResourceDetailResponse extends FaceShowBaseResponse {
         private String suffix;
         private String url;
         private String createTimeStr;
+        private AttachmentInfosBean ai;
+
+        public AttachmentInfosBean getAi() {
+            return ai;
+        }
+
+        public void setAi(AttachmentInfosBean ai) {
+            this.ai = ai;
+        }
 
         public int getId() {
             return id;
