@@ -1,17 +1,14 @@
 package com.yanxiu.gphone.faceshow.notification;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.facebook.stetho.common.StringUtil;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -48,6 +45,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
     private String mNotificationID;
     private UUID mGetNotificationDetailRequestUUID;
     private Context mContext;
+    private boolean isLoadSuccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +79,10 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
-        setResult(0, intent);
+        if (isLoadSuccess) {
+            Intent intent = new Intent();
+            setResult(0, intent);
+        }
         this.finish();
         super.onBackPressed();
     }
@@ -96,6 +96,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, final GetNotificationDetailResponse ret) {
                 mRootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
+                    isLoadSuccess = true;
                     tvNotificationTitle.setText(ret.getData().getTitle());
                     tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName() == null ? "专家:无 " : ret.getData().getAuthorName(), ret.getData().getCreateTime()));
                     tvNotificationContent.setText(ret.getData().getContent());

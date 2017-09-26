@@ -52,6 +52,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         this.mData = data;
         notifyDataSetChanged();
     }
+    public void notifyItem(List<NotificationResponse.Notification> data,int position){
+        this.mData =data;
+        notifyItemChanged(position);
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView tv_notification_name, tv_notification_created_time;
