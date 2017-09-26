@@ -193,48 +193,40 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     }
 
     private void doTakePhoto() {
-        if (CheckCamera(ProfileActivity.this)) {
-            File file = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait");
-            if (!file.exists()) {
-                try {
-                    //按照指定的路径创建文件夹
-                    file.mkdirs();
-                } catch (Exception e) {
-                    // TODO: handle exception
+        FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
+            @Override
+            public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+                File file = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait");
+                if (!file.exists()) {
+                    try {
+                        //按照指定的路径创建文件夹
+                        file.mkdirs();
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
                 }
-            }
-            photoFile = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
-            if (!photoFile.exists()) {
-                try {
-                    //在指定的文件夹中创建文件
-                    photoFile.createNewFile();
-                } catch (Exception e) {
+                photoFile = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
+                if (!photoFile.exists()) {
+                    try {
+                        //在指定的文件夹中创建文件
+                        photoFile.createNewFile();
+                    } catch (Exception e) {
+                    }
                 }
+
+                Intent infoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                infoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(infoIntent, TAKE_PHOTO);
+                // 指定调用相机拍照后的照片存储的路径
             }
 
-            Intent infoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            infoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-            startActivityForResult(infoIntent, TAKE_PHOTO);
-            // 指定调用相机拍照后的照片存储的路径
-        } else {
-            Toast.makeText(this, "请检查权限", Toast.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
+                Toast.makeText(ProfileActivity.this, "请检查权限", Toast.LENGTH_SHORT).show();
+
+            }
+        });
         picPopupWindow.dismiss();
-    }
-
-    public boolean CheckCamera(Context context) {
-        boolean flag = true;
-//        CameraManager.init(context);
-//        CameraManager cameraManager = CameraManager.get();
-        SurfaceView scanPreview = new SurfaceView(context);
-        SurfaceHolder surfaceHolder = scanPreview.getHolder();
-        try {
-//            cameraManager.openDriver(surfaceHolder);
-        } catch (Exception ioe) {
-            flag = false;
-        }
-//        cameraManager.closeDriver();
-        return flag;
     }
 
     private void doSelectFromPhotoLib() {
