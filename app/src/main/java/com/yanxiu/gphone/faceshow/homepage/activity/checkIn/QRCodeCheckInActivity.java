@@ -209,7 +209,7 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
             startActivity(intent);
             QRCodeCheckInActivity.this.finish();
         } else {
-            Log.e("frc", "http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + resultString + "&token=" + SpManager.getToken()+ "&device=android");
+            Log.e("frc", "http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + resultString + "&token=" + SpManager.getToken() + "&device=android");
             goCheckIn("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + resultString + "&token=" + SpManager.getToken() + "&device=android");
         }
 
@@ -248,25 +248,20 @@ public class QRCodeCheckInActivity extends ZXingBaseActivity implements
                 try {
                     CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
-                        startActivity(new Intent(QRCodeCheckInActivity.this, CheckInSuccessActivity.class));
+                        CheckInSuccessActivity.toThiAct(QRCodeCheckInActivity.this, 0, userSignInResponse.getData().getSigninTime());
                         QRCodeCheckInActivity.this.finish();
                     } else {
-                        Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
-//                        if (userSignInResponse.getError().getCode() == 210412) {
-//                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.HAS_NOT_START);
-//                        } else if (userSignInResponse.getError().getCode() == 210413) {
-//                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_EXPIRED);
-//                        } else if (userSignInResponse.getError().getCode() == 210305){
-//                            intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_NOT_IN_CLASS);
-//                        }else {
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE,userSignInResponse.getError().getMessage());
-//                        }
-                        startActivity(intent);
+                        if (userSignInResponse.getError().getCode() == 210414) {//用户已签到
+                            CheckInSuccessActivity.toThiAct(QRCodeCheckInActivity.this, 210414, userSignInResponse.getError().getData().getStartTime() + "-" + userSignInResponse.getError().getData().getEndTime());
+                        } else {
+                            Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
+                            startActivity(intent);
+                        }
                         QRCodeCheckInActivity.this.finish();
                     }
                 } catch (Exception e) {
                     Intent intent = new Intent(QRCodeCheckInActivity.this, CheckInErrorActivity.class);
-                    intent.putExtra(CheckInErrorActivity.QR_STATUE, CheckInErrorActivity.QR_INVALID);
                     startActivity(intent);
                     QRCodeCheckInActivity.this.finish();
                 }

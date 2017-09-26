@@ -15,7 +15,6 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
-import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
@@ -53,6 +52,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private int mOffset = 0;
     /*每页多少条*/
     private String mPageSize = "10";
+    private int mCurrentItemPosition;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -120,8 +120,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
                 } else {
                     if (mNotificationList.size() <= 0) {
                         mRootView.showOtherErrorView(getString(R.string.no_notify));
-                    }else {
-                        ToastUtil.showToast(FaceShowApplication.getContext(),"没有更多的通知了");
+                    } else {
+                        ToastUtil.showToast(FaceShowApplication.getContext(), "没有更多的通知了");
                     }
                 }
             }
@@ -163,6 +163,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mNotificationAdapter.setItemClickListener(new NotificationAdapter.ItemClickListener() {
             @Override
             public void itemClick(int position) {
+                mCurrentItemPosition = position;
                 Intent intent = new Intent(getActivity(), NotificationDetailActivity.class);
                 intent.putExtra(NotificationDetailActivity.NOTIFICATION_ID, String.valueOf(mNotificationList.get(position).getId()));
                 startActivityForResult(intent, 0);
@@ -184,8 +185,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
-            mRootView.showLoadingView();
-            getNotifications();
+            mNotificationList.get(mCurrentItemPosition).setViewed(false);
+            mNotificationAdapter.notifyItem(mNotificationList,mCurrentItemPosition);
         }
     }
 }

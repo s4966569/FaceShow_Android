@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.util.SystemUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
 import butterknife.BindView;
@@ -21,7 +20,8 @@ import butterknife.OnClick;
  * created by frc
  */
 public class CheckInSuccessActivity extends FaceShowBaseActivity {
-
+    private static final String CHECK_IN_STATUE = "check_in_statue";
+    private static final String SIGN_IN_TIME = "sign_in_time";
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -32,9 +32,14 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
     TextView tvCheckInSuccessTime;
     @BindView(R.id.sure)
     TextView sure;
+    @BindView(R.id.tv_check_in_statue)
+    TextView mTvCheckInStatue;
 
-    public static void toThiAct(Activity activity) {
-        activity.startActivity(new Intent(activity, CheckInDetailActivity.class));
+    public static void toThiAct(Activity activity, int checkInStatue, String signInTime) {
+        Intent intent = new Intent(activity, CheckInSuccessActivity.class);
+        intent.putExtra(CHECK_IN_STATUE, checkInStatue);
+        intent.putExtra(SIGN_IN_TIME, signInTime);
+        activity.startActivity(intent);
     }
 
     @Override
@@ -43,8 +48,15 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_check_in_success);
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
+        int checkInStatue = getIntent().getIntExtra(CHECK_IN_STATUE, 0);
+        if (checkInStatue == 210414) {
+            mTvCheckInStatue.setText("用户已签到");
+        } else {
+            mTvCheckInStatue.setText("签到成功");
+        }
+        tvCheckInSuccessTime.setText(getIntent().getStringExtra(SIGN_IN_TIME));
+
         // TODO: 17-9-18 签到成功时间怎么显示 ？
-        tvCheckInSuccessTime.setText( Utils.timeStamp2Date(String.valueOf(System.currentTimeMillis()),null));
     }
 
     @OnClick({R.id.img_left, R.id.sure})
@@ -54,7 +66,7 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.sure:
-                CheckInSuccessActivity.toThiAct(CheckInSuccessActivity.this);
+                this.finish();
                 break;
         }
     }
