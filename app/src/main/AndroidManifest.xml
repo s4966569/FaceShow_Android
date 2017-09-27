@@ -95,8 +95,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".course.activity.SpecialistIntroductionActivity" />
         <activity android:name=".course.activity.CourseIntroductionActivity" />
-        <activity
-            android:name=".course.activity.CourseDiscussActivity" />
+        <activity android:name=".course.activity.CourseDiscussActivity" />
         <activity android:name=".course.activity.VoteActivity" />
         <activity android:name=".common.activity.PDFViewActivity" />
         <activity
@@ -105,9 +104,8 @@
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <!-- 设置二维码扫描界面方向为竖屏 -->
         <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
+            android:name=".homepage.activity.checkIn.CheckInByQRActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
