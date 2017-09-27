@@ -40,4 +40,8 @@ public class Constants {
     public static final String DIR_IMAGE = "/image";
     public static final String DIR_PDF = DIR_ROOT + DIR_APP + "/pdf/";
     public static final String DIR_APK = DIR_ROOT + DIR_APP + "/apk/";
+
+    //eventbus 传递hashcode
+    public final static String HASHCODE = "hashCode";
+    public final static String POSITON = "position";
 }

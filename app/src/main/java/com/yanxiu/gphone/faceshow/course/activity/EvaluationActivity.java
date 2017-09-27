@@ -17,7 +17,9 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.common.eventbus.InteractMessage;
 import com.yanxiu.gphone.faceshow.common.listener.KeyboardChangeListener;
+import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.course.adapter.EvaluationAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.EvaluationBean;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
@@ -30,6 +32,8 @@ import com.yanxiu.gphone.faceshow.http.course.SubmitVoteRequest;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 import static android.view.View.GONE;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
@@ -53,8 +57,10 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private VoteBean mData;
     private final static String STEP_ID = "stepid";
     private String mStepId;
-
-//    private boolean onlyLook;
+    //eventbus 数据 start
+    private int mHashCode;
+    private int mPosition;
+    //eventbus 数据 end
 
 
     @Override
@@ -65,6 +71,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
         mStepId = getIntent().getStringExtra(STEP_ID);
+        mHashCode = getIntent().getIntExtra(Constants.HASHCODE, -1);
+        mPosition = getIntent().getIntExtra(Constants.POSITON, -1);
         if (TextUtils.isEmpty(mStepId)) {
             mRootView.showOtherErrorView();
             return;
@@ -194,6 +202,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                 mRootView.finish();
                 if (ret != null && ret.getCode() == 0) {
                     ToastUtil.showToast(getApplication(), getString(R.string.submit_success));
+                    postEnventBus();
                     invoke(EvaluationActivity.this, mStepId);
                     finish();
                 } else {
@@ -257,6 +266,19 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         context.startActivity(intent);
     }
 
+    /**
+     * 首页的ProjectTaskFragment跳转，需要传ProjectTaskFragment的hashCode
+     *
+     * @param context
+     */
+    public static void invoke(Context context, String setpId, int position, int hashCode) {
+        Intent intent = new Intent(context, EvaluationActivity.class);
+        intent.putExtra(STEP_ID, setpId);
+        intent.putExtra(Constants.HASHCODE, hashCode);
+        intent.putExtra(Constants.POSITON, position);
+        context.startActivity(intent);
+    }
+
     @Override
     public void canSubmit(boolean is) {
 //        mSubmit.setEnabled(is);
@@ -295,5 +317,13 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             mCanSubmit = allChoose;
             initSubmitView();
         }
+    }
+
+    private void postEnventBus() {
+        InteractMessage interactMessage = new InteractMessage();
+        interactMessage.hascode = mHashCode;
+        interactMessage.setpId = mStepId;
+        interactMessage.position = mPosition;
+        EventBus.getDefault().post(interactMessage);
     }
 }
