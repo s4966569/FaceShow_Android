@@ -8,7 +8,8 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
  */
 
 public class GetHasNotificationsNeedReadRequest extends FaceShowBaseRequest {
-    private String method = "notice.hasUnView";
+    public String method = "notice.hasUnView";
+    public String clazsId;
 
     @Override
     protected String urlPath() {

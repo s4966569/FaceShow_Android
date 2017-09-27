@@ -82,7 +82,9 @@ public class MaxLineTextLayout extends LinearLayout {
         mContentView.setMaxLines(mMaxLines);
         mMoreView.setTextColor(mMoreTextColor);
         mMoreView.setTextSize(TypedValue.COMPLEX_UNIT_PX,mMoreTextSize);
-        mMoreView.setPadding(0,mMoreMarginTop,50,0);
+        int left=mMoreView.getPaddingLeft();
+        int bottom=mMoreView.getPaddingBottom();
+        mMoreView.setPadding(left,mMoreMarginTop,0,bottom);
         mMoreView.setVisibility(GONE);
 
         mContentView.setOnLinesChangedListener(new MaxLineTextView.onLinesChangedListener() {

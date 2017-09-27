@@ -6,7 +6,7 @@ import java.io.Serializable;
  * rersponse基类
  */
 
-public class FaceShowBaseResponse {
+public class FaceShowBaseResponse implements Serializable {
     private int code;
     private String message;
     private Object currentUser;

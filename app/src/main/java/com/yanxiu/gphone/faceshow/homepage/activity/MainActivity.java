@@ -17,6 +17,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
@@ -159,6 +160,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void getRedPointersRequest() {
         GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
+        getHasNotificationsNeedReadRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
         mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {

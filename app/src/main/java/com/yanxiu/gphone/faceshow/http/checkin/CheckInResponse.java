@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Created by frc on 17-9-19.
  */
 
-public class CheckInResponse extends FaceShowBaseResponse implements Serializable {
+public class CheckInResponse extends FaceShowBaseResponse  {
 
 
     /**
