@@ -116,7 +116,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 mLoadingDialogView.dismiss();
-
             }
 
             @Override
