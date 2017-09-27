@@ -59,10 +59,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name=".homepage.activity.checkIn.QRCodeCheckInActivity"
-            android:screenOrientation="portrait"
-            android:taskAffinity="com.yanxiu.gphone.faceshow" />
-        <activity
             android:name=".homepage.activity.checkIn.CheckInSuccessActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
@@ -78,7 +74,7 @@
             android:name=".common.activity.PhotoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".notification.NotificationDetailActivity"
+            android:name=".notification.activity.NotificationDetailActivity"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <activity android:name=".homepage.activity.checkIn.CheckInNotesActivity" />

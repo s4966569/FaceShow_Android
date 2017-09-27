@@ -20,7 +20,7 @@ import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.notification.NotificationDetailActivity;
+import com.yanxiu.gphone.faceshow.notification.activity.NotificationDetailActivity;
 import com.yanxiu.gphone.faceshow.notification.adapter.NotificationAdapter;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
@@ -185,7 +185,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
-            mNotificationList.get(mCurrentItemPosition).setViewed(false);
+            mNotificationList.get(mCurrentItemPosition).setViewed(true);
             mNotificationAdapter.notifyItem(mNotificationList,mCurrentItemPosition);
         }
     }

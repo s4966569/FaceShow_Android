@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:gravity="center"
-            android:text="报道用餐时间及地点如图所示"
+            android:text=""
             android:textColor="@color/color_333333"
             android:textSize="@dimen/text_size_16"
             android:textStyle="bold" />
@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/course_adapter_marginleft"
             android:layout_marginRight="@dimen/course_adapter_marginleft"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/bg_login" />
+            android:layout_marginTop="20dp" />
     </LinearLayout>
 </ScrollView>

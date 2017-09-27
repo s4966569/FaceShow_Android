@@ -15,7 +15,6 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.QRCodeCheckInActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 
 

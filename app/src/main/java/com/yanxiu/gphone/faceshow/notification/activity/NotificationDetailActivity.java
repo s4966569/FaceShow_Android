@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.notification;
+package com.yanxiu.gphone.faceshow.notification.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +26,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * 通知详情页
+ *
+ */
 public class NotificationDetailActivity extends FaceShowBaseActivity {
 
     public final static String NOTIFICATION_ID = "notification_id";
@@ -116,7 +120,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
                 } else {
-                    mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView("没有详情");
                 }
 
             }
