@@ -44,6 +44,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
     private ImageView mBackView;
     private TextView mTitle;
     private TextView mSubmit;
+    private boolean mCanSubmit = false;
 
     private RecyclerView mRecyclerView;
     private VoteAdapter mVoteAdapter;
@@ -76,11 +77,22 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
-        mSubmit.setEnabled(false);
+//        mSubmit.setEnabled(false);
         mSubmit.setVisibility(GONE);
+        initSubmitView();
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setFocusableInTouchMode(false);//防止recyclerview里面有获取焦点的子view时，会自动滚动到子view位置
+    }
+
+    private void initSubmitView() {
+        if (mCanSubmit) {
+            mSubmit.setBackgroundColor(getResources().getColor(R.color.color_1da1f2));
+            mSubmit.setTextColor(getResources().getColor(R.color.color_ffffff));
+        } else {
+            mSubmit.setBackgroundColor(getResources().getColor(R.color.color_a6abad));
+            mSubmit.setTextColor(getResources().getColor(R.color.color_e2e2e2));
+        }
     }
 
     private void initListener() {
@@ -101,7 +113,11 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
                 requestData();
                 break;
             case R.id.submit:
-                submitDialog();
+                if (mCanSubmit) {
+                    submitDialog();
+                } else {
+                    ToastUtil.showToast(this, getString(R.string.submit_no_complete_tip));
+                }
                 break;
             default:
                 break;
@@ -247,7 +263,9 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     @Override
     public void canSubmit(boolean is) {
-        mSubmit.setEnabled(is);
+//        mSubmit.setEnabled(is);
+        mCanSubmit = is;
+        initSubmitView();
     }
 
     private KeyboardChangeListener mKeyboardChangeListener;
@@ -276,7 +294,9 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
                     break;
                 }
             }
-            mSubmit.setEnabled(allChoose);
+//            mSubmit.setEnabled(allChoose);
+            mCanSubmit = allChoose;
+            initSubmitView();
         }
     }
 }

@@ -95,7 +95,8 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                 /*欢迎页logo的动画效果*/
                 int ANIMATION_DURATION = 1000;//动画时长
                 mImgLogo.animate().translationY(-Utils.dip2px(FaceShowApplication.getContext(), 375)).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
-                checkUserStatus();
+//                checkUserStatus();
+                checkUpDate();
             }
 
             @Override
@@ -110,6 +111,24 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         mImgLogo = (ImageView) findViewById(R.id.img_logo);
         mHandler = new WelcomeHandler(this);
 
+    }
+
+    /**
+     * 检查升级
+     */
+    private void checkUpDate() {
+
+        //Todo 升级代码
+
+
+        //升级回调结果
+        if (true) {
+            //需要升级
+            //升级逻辑
+        } else {
+            //不需要升级
+            checkUserStatus();
+        }
     }
 
     /**
