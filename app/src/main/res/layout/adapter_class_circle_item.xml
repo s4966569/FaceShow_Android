@@ -51,7 +51,8 @@
                 android:id="@+id/gv_imgs"
                 android:layout_width="match_parent"
                 android:layout_height="174dp"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:visibility="gone"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -155,6 +156,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/rl_anim"
                     android:background="@drawable/classcircle_like_comment"
+                    android:visibility="gone"
                     android:orientation="vertical">
 
                     <com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView

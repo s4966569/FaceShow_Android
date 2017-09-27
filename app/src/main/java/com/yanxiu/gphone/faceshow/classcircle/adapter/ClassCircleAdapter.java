@@ -58,6 +58,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int ANIM_CLOSE = 0x0003;
     private static final int ANIM_DURATION = 200;
     private static final int ANIM_POSITION_DEFAULT = -1;
+    private static final int REFRESH_ANIM_VIEW=0x0004;
+    public static final int REFRESH_LIKE_DATA=0x0005;
+    public static final int REFRESH_COMMENT_DATA=0x0006;
 
     private Context mContext;
     private List<ClassCircleResponse.Data.Moments> mData = new ArrayList<>();
@@ -140,6 +143,53 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()){
+            onBindViewHolder(holder, position);
+        }else {
+            final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
+            final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
+            int refresh= (int) payloads.get(0);
+            switch (refresh){
+                case REFRESH_ANIM_VIEW:
+                    classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
+                    classCircleViewHolder.mAnimLayout.setEnabled(false);
+                    break;
+                case REFRESH_COMMENT_DATA:
+                    setViewVisibly(classCircleViewHolder,moments);
+                    classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
+                    break;
+                case REFRESH_LIKE_DATA:
+                    setViewVisibly(classCircleViewHolder,moments);
+                    classCircleViewHolder.mCircleThumbView.setData(moments.likes);
+                    break;
+            }
+        }
+    }
+
+    private void setViewVisibly(ClassCircleViewHolder classCircleViewHolder,ClassCircleResponse.Data.Moments moments){
+        boolean isLikeHasData = moments.likes != null && moments.likes.size() > 0;
+        boolean isCommentHasData = moments.comments != null && moments.comments.size() > 0;
+        if (isCommentHasData && isLikeHasData) {
+            classCircleViewHolder.mLikeCommentLineView.setVisibility(View.VISIBLE);
+        } else {
+            classCircleViewHolder.mLikeCommentLineView.setVisibility(View.GONE);
+        }
+        if (isCommentHasData || isLikeHasData) {
+            classCircleViewHolder.mLikeCommentLayout.setVisibility(View.VISIBLE);
+        } else {
+            classCircleViewHolder.mLikeCommentLayout.setVisibility(View.GONE);
+        }
+        if (checkIsThumb(moments.likes)) {
+            classCircleViewHolder.mThumbView.setVisibility(View.GONE);
+            classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal_80);
+        } else {
+            classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
+            classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
+        }
+    }
+
+    @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof TitleViewHolder) {
             TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
@@ -193,18 +243,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mCircleThumbView.setData(moments.likes);
             classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
 
-            boolean isLikeHasData = moments.likes != null && moments.likes.size() > 0;
-            boolean isCommentHasData = moments.comments != null && moments.comments.size() > 0;
-            if (isCommentHasData && isLikeHasData) {
-                classCircleViewHolder.mLikeCommentLineView.setVisibility(View.VISIBLE);
-            } else {
-                classCircleViewHolder.mLikeCommentLineView.setVisibility(View.GONE);
-            }
-            if (isCommentHasData || isLikeHasData) {
-                classCircleViewHolder.mLikeCommentLayout.setVisibility(View.VISIBLE);
-            } else {
-                classCircleViewHolder.mLikeCommentLayout.setVisibility(View.GONE);
-            }
+            setViewVisibly(classCircleViewHolder,moments);
 
             classCircleViewHolder.mCircleCommentLayout.setItemClickListener(new ClassCircleCommentLayout.onItemClickListener() {
                 @Override
@@ -217,14 +256,6 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             });
 
-            if (checkIsThumb(moments.likes)) {
-                classCircleViewHolder.mThumbView.setVisibility(View.GONE);
-                classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal_80);
-            } else {
-                classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
-                classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
-            }
-
             classCircleViewHolder.mFunctionView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -235,7 +266,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (animPosition != ANIM_POSITION_DEFAULT) {
-                        notifyItemChanged(animPosition);
+                        notifyItemChanged(animPosition,REFRESH_ANIM_VIEW);
                         animPosition = ANIM_POSITION_DEFAULT;
                     }
                     if (mCommentClickListener != null) {
@@ -332,7 +363,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             animType = ANIM_CLOSE;
             animPosition = ANIM_POSITION_DEFAULT;
         } else {
-            notifyItemChanged(animPosition);
+            notifyItemChanged(animPosition,REFRESH_ANIM_VIEW);
             scaleStart = 0f;
             scaleEnd = 1f;
             translationStart = width / 2;
