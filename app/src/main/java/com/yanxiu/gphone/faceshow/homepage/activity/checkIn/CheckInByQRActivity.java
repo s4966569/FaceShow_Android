@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -89,6 +90,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     if (TextUtils.isEmpty(result)) {
                         CheckInByQRActivity.this.finish();
                     } else {
+                        Log.e("frc","http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                         goCheckIn("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                     }
 
@@ -143,7 +145,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                             CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         } else {
                             Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse);
                             startActivity(intent);
                         }
                         CheckInByQRActivity.this.finish();

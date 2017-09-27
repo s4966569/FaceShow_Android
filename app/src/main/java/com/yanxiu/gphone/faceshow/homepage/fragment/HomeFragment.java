@@ -170,7 +170,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             case R.id.title_layout_signIn:
             case R.id.title_layout_right_img:
                 CheckInByQRActivity.toThisAct(getActivity());
-                break;
+                return;
             default:
                 break;
         }
