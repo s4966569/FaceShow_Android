@@ -22,6 +22,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.IOException;
@@ -90,7 +91,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     if (TextUtils.isEmpty(result)) {
                         CheckInByQRActivity.this.finish();
                     } else {
-                        Log.e("frc", "http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                         goCheckIn("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                     }
 
@@ -105,6 +105,12 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         if (mLoadingDialogView == null)
             mLoadingDialogView = new LoadingDialogView(this);
         mLoadingDialogView.show();
+
+        if (NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
+            ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
+            mLoadingDialogView.dismiss();
+            return;
+        }
         Request request = new Request.Builder().url(resultString).build();
         OkHttpClient client = OkHttpClientManager.getInstance();
         Call call = client.newCall(request);
