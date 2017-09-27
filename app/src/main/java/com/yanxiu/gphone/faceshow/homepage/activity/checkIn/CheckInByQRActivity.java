@@ -145,7 +145,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                             CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         } else {
                             Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse);
+                            intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
                             startActivity(intent);
                         }
                         CheckInByQRActivity.this.finish();
