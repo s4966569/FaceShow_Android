@@ -2,15 +2,13 @@ package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -22,6 +20,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.IOException;
@@ -90,7 +89,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     if (TextUtils.isEmpty(result)) {
                         CheckInByQRActivity.this.finish();
                     } else {
-                        Log.e("frc", "http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                         goCheckIn("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                     }
 
@@ -105,6 +103,12 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         if (mLoadingDialogView == null)
             mLoadingDialogView = new LoadingDialogView(this);
         mLoadingDialogView.show();
+
+        if (!NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
+            Toast.makeText(FaceShowApplication.getContext(), R.string.net_error, Toast.LENGTH_LONG).show();
+            mLoadingDialogView.dismiss();
+            return;
+        }
         Request request = new Request.Builder().url(resultString).build();
         OkHttpClient client = OkHttpClientManager.getInstance();
         Call call = client.newCall(request);
@@ -112,7 +116,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 mLoadingDialogView.dismiss();
-                ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
             }
 
             @Override
@@ -133,11 +136,11 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 try {
                     CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
-                        CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, 0, userSignInResponse.getData().getSigninTime());
+                        CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         CheckInByQRActivity.this.finish();
                     } else {
                         if (userSignInResponse.getError().getCode() == 210414) {//用户已签到
-                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, 210414, userSignInResponse.getError().getData().getStartTime() + "-" + userSignInResponse.getError().getData().getEndTime());
+                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         } else {
                             Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
                             intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
@@ -180,6 +183,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         super.onResume();
         mCaptureManager.onResume();
     }
+
 
     @Override
     protected void onPause() {

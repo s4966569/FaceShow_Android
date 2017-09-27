@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -24,10 +25,12 @@ public class WebViewActivity extends FaceShowBaseActivity {
     private WebView mWebView;
     private LinearLayout mRootView;
     private ImageView mBackView;
+    private String title;
 
-    public static void loadThisAct(Context context, String url) {
+    public static void loadThisAct(Context context, String url,String title) {
         Intent intent = new Intent(context, WebViewActivity.class);
         intent.putExtra("url", url);
+        intent.putExtra("title",title);
         context.startActivity(intent);
     }
 
@@ -37,6 +40,7 @@ public class WebViewActivity extends FaceShowBaseActivity {
         super.onCreate(savedInstanceState);
         mRootView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.activity_web_view, null);
         setContentView(mRootView);
+        title=getIntent().getStringExtra("title");
         setBackClick();
         mWebView = (WebView) findViewById(R.id.webView);
         mWebView.loadUrl(getIntent().getStringExtra("url"));
@@ -73,7 +77,11 @@ public class WebViewActivity extends FaceShowBaseActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                setTitle(view.getTitle());
+                if (view.getTitle().equals("about:blank")||view.getTitle().equals("- no title specified")|| TextUtils.isEmpty(view.getTitle())||view.getTitle().equals("网页无法打开")){
+                    setTitle(title);
+                }else {
+                    setTitle(view.getTitle());
+                }
             }
         });
     }

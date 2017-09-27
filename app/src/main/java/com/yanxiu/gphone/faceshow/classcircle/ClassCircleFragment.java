@@ -244,7 +244,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     likes.momentId=ret.data.momentId;
                     likes.publisher = ret.data.publisher;
                     moments.likes.add(likes);
-                    mClassCircleAdapter.notifyItemChanged(position);
+                    mClassCircleAdapter.notifyItemChanged(position,ClassCircleAdapter.REFRESH_LIKE_DATA);
                 }
             }
 
@@ -274,7 +274,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mCommentToMasterRequest=null;
                 if (ret!=null&&ret.data!=null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position);
+                    mClassCircleAdapter.notifyItemChanged(position,ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     commentFinish();
                     mCommentView.setText("");
                 }else {
@@ -311,7 +311,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mCommentToUserRequest=null;
                 if (ret!=null&&ret.data!=null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position);
+                    mClassCircleAdapter.notifyItemChanged(position,ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     commentFinish();
                     mCommentView.setText("");
                 }else {

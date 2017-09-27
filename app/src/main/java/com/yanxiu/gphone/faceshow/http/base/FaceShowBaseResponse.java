@@ -120,6 +120,15 @@ public class FaceShowBaseResponse {
         private String opentStatusName;
         private int percent;
         private Object userSignIn;
+        private String signinTime;
+
+        public String getSigninTime() {
+            return signinTime;
+        }
+
+        public void setSigninTime(String signinTime) {
+            this.signinTime = signinTime;
+        }
 
         public int getId() {
             return id;

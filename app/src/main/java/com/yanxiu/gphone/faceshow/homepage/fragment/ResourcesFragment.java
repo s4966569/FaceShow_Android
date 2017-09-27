@@ -182,7 +182,7 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
 //        intent.putExtras(mBundle);
 //        startActivity(intent);
         if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
-            WebViewActivity.loadThisAct(getActivity(), data.getUrl());
+            WebViewActivity.loadThisAct(getActivity(), data.getUrl(),data.getResName());
         } else if(TextUtils.equals(data.getType(), "0")) {
             AttachmentInfosBean attachmentInfosBean = data.getAi();
             if (attachmentInfosBean != null && attachmentInfosBean.getResType() != null) {

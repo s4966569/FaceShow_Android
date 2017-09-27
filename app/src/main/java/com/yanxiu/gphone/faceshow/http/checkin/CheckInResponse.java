@@ -3,12 +3,14 @@ package com.yanxiu.gphone.faceshow.http.checkin;
 import com.google.gson.annotations.SerializedName;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
+import java.io.Serializable;
+
 /**
  * 签到
  * Created by frc on 17-9-19.
  */
 
-public class CheckInResponse extends FaceShowBaseResponse {
+public class CheckInResponse extends FaceShowBaseResponse implements Serializable {
 
 
     /**
@@ -28,7 +30,7 @@ public class CheckInResponse extends FaceShowBaseResponse {
     }
 
 
-    public static class DataBean  {
+    public static class DataBean implements Serializable {
         /**
          * id : 1
          * userId : 10145096

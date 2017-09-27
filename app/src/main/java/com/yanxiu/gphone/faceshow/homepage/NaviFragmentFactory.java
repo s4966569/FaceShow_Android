@@ -59,6 +59,14 @@ public class NaviFragmentFactory {
         }
     }
 
+
+    public NoticeFragment getNoticeFragment() {
+        if (mClassCircleFragment != null)
+            return mNoticeFragment;
+        else
+            return null;
+    }
+
     public void hideAndShowFragment(FragmentManager fragmentManager, int index) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (mCurrItem == 0 && mHomeFragment != null) {

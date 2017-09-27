@@ -111,15 +111,16 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {
-                mTotalElements = ret.getData().getTotalElements();
+
                 mRootView.hiddenLoadingView();
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 mRootView.hiddenOtherErrorView();
                 mRootView.hiddenNetErrorView();
-                if (ret.getCode() == 0) {
+                if (ret!=null&&ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().getElements() != null) {
+                        mTotalElements = ret.getData().getTotalElements();
                         if (ret.getData().getElements().size() > 0) {
                             if (mOffset == 0) {
                                 mCheckInNotesList.clear();
@@ -130,7 +131,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                                 if (mCheckInNotesList.size() > 0) {
                                     ToastUtil.showToast(FaceShowApplication.getContext(), "刷新失败");
                                 } else {
-                                    mRootView.showOtherErrorView();
+                                    mRootView.showOtherErrorView("无签到记录");
                                 }
                             }
                         }
@@ -138,7 +139,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                     mCheckInNotesAdapter.update(mCheckInNotesList);
                 } else {
                     if (mCheckInNotesList.size() <= 0)
-                        mRootView.showOtherErrorView("无签到记录");
+                        mRootView.showOtherErrorView("数据异常");
                 }
             }
 
