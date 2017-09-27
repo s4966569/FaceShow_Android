@@ -81,6 +81,9 @@ public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.View
                 holder2.resource_name.setText(data.getResName());
                 holder2.resource_time.setText(StringUtils.getCourseTime(data.getCreateTime()));
                 String type = data.getSuffix();
+                if (type==null){
+                    type="";
+                }
                 if (type.equals("docx") || type.equals("doc") || type.equals("word")) {
                     holder2.resource_img.setImageResource(R.drawable.coursedetail_word);
                 } else if (type.equals("excel")) {
