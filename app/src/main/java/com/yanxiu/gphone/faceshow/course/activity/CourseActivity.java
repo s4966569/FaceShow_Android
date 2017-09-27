@@ -156,7 +156,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                     startActivity(intent);
 
                 } else {
-                    WebViewActivity.loadThisAct(CourseActivity.this, attachmentInfosBean.getPreviewUrl());
+                    WebViewActivity.loadThisAct(CourseActivity.this, attachmentInfosBean.getPreviewUrl(),attachmentInfosBean.getResName());
                 }
 
                 break;
