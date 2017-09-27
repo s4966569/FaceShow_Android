@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
+import com.yanxiu.gphone.faceshow.homepage.CheckInSuccessEvent;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CheckInNotesAdapter;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
@@ -30,6 +32,7 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 
 /**
  * 签到记录页面
@@ -90,6 +93,8 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mRootView.setContentView(R.layout.activity_check_in_notes);
         setContentView(mRootView);
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);//用来接受签到成功发来的通知CheckInSuccessActivity
+
         mRootView.setRetryButtonOnclickListener(retryClick);
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
         tvTitle.setText(R.string.check_in_notes);
@@ -118,7 +123,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                 }
                 mRootView.hiddenOtherErrorView();
                 mRootView.hiddenNetErrorView();
-                if (ret!=null&&ret.getCode() == 0) {
+                if (ret != null && ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().getElements() != null) {
                         mTotalElements = ret.getData().getTotalElements();
                         if (ret.getData().getElements().size() > 0) {
@@ -159,12 +164,17 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         });
     }
 
+    public void onEventMainThread(CheckInSuccessEvent event) {
+        mCheckInNotesAdapter.reFreshItem(event.getmMsg());
+    }
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (mGetCheckInNotesRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mGetCheckInNotesRequestUUID);
         }
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     @OnClick(R.id.img_left)

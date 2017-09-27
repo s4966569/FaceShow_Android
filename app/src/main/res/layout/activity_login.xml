@@ -40,7 +40,6 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:paddingStart="10dp"
-                android:text="13302020203"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 android:textSize="13dp" />
@@ -65,7 +64,6 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:paddingStart="10dp"
-                    android:text="123456"
                     android:textColor="@android:color/white"
                     android:textColorHint="@android:color/white"
                     android:textSize="13dp" />

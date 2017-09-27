@@ -7,14 +7,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.homepage.CheckInSuccessEvent;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
 
 /**
  * 签到成功页面
@@ -50,9 +53,12 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
         mUserSignInResponse = (CheckInResponse) getIntent().getSerializableExtra(DATA);
+
         if (mUserSignInResponse.getCode() == 0) {
             mTvCheckInStatue.setText(mUserSignInResponse.getData().getSuccessPrompt());
             tvCheckInSuccessTime.setText(mUserSignInResponse.getData().getSigninTime() != null ? mUserSignInResponse.getData().getSigninTime() : "");
+            String string =RequestBase.getGson().toJson(mUserSignInResponse.getData());
+            EventBus.getDefault().post(new CheckInSuccessEvent(string));//通知签到记录页面该记录签到成功 CheckInSuccessActivity
         } else {
             mTvCheckInStatue.setText(mUserSignInResponse.getError().getData().getSuccessPrompt());
             tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : "此处需要server返回个signinTime字段");
