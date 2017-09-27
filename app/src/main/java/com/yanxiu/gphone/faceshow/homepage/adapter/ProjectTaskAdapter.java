@@ -15,6 +15,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case 0:
                 ProjectTaskViewHolder holder2 = (ProjectTaskViewHolder) holder;
                 holder2.project_task_name.setText(data.getInteractName());
-                holder2.project_task_time.setText(data.getCreateTime());
+                holder2.project_task_time.setText(StringUtils.getCourseTime(data.getCreateTime()));
 
                 if(TextUtils.equals(data.getStepFinished(), "1")) {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_completed));

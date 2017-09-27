@@ -13,6 +13,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.homepage.bean.ResourceBean;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceListResponse;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class HomeResourcesAdapter extends RecyclerView.Adapter<RecyclerView.View
             case 0:
                 ResourceViewHolder holder2 = (ResourceViewHolder) holder;
                 holder2.resource_name.setText(data.getResName());
-                holder2.resource_time.setText(data.getCreateTime());
+                holder2.resource_time.setText(StringUtils.getCourseTime(data.getCreateTime()));
                 String type = data.getSuffix();
                 if (type.equals("docx") || type.equals("doc") || type.equals("word")) {
                     holder2.resource_img.setImageResource(R.drawable.coursedetail_word);
