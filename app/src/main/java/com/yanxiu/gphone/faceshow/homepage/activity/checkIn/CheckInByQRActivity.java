@@ -2,13 +2,10 @@ package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -186,6 +183,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         super.onResume();
         mCaptureManager.onResume();
     }
+
 
     @Override
     protected void onPause() {
