@@ -120,6 +120,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.title_layout_left_img:
+                hiddenInputMethod();
                 finish();
                 break;
             case R.id.retry_button:
@@ -253,7 +254,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 if (ret != null && ret.getCode() == 0) {
                     ToastUtil.showToast(CourseDiscussActivity.this, "提交成功");
                 } else {
-                    ToastUtil.showToast(CourseDiscussActivity.this, ret.getError().getMessage());
+                    ToastUtil.showToast(CourseDiscussActivity.this, getString(R.string.error_tip));
                 }
                 requestData(false);
             }
