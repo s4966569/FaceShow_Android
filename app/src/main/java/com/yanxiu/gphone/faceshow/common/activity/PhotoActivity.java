@@ -95,8 +95,7 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
         }else {
             mDeleteView.setVisibility(View.GONE);
         }
-        mTopView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.color_db89e00d));
-        mTitleView.setTextColor(Color.WHITE);
+        mTopView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.color_ffffff));
         if (list==null){
             return;
         }
@@ -122,7 +121,7 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
         mAdapter.setData(list,zoomImageViews);
         mImagePhotoView.setCurrentItem(mSelectPosition);
         mTitleView.setText((mSelectPosition+1)+"/"+mTotalNum);
-        mBackView.setBackgroundResource(R.drawable.selector_white_back);
+        mBackView.setBackgroundResource(R.drawable.selector_back);
         mDeleteView.setBackgroundResource(R.drawable.selector_large_delete);
     }
 
