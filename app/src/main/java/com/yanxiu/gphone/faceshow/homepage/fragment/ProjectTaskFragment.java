@@ -4,6 +4,7 @@ package com.yanxiu.gphone.faceshow.homepage.fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
+import com.yanxiu.gphone.faceshow.common.eventbus.InteractMessage;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.activity.CourseDiscussActivity;
 import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
@@ -28,12 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import de.greenrobot.event.EventBus;
+
 
 /**
  * 首页tab里 “项目任务”Fragment
  */
 public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyclerViewItemClickListener {
     private final static String TAG = ProjectTaskFragment.class.getSimpleName();
+    private final int mHashCode = ProjectTaskFragment.this.hashCode();
+
     private PublicLoadLayout mRootView;
     private RecyclerView mRecyclerView;
     private ProjectTaskAdapter mAdapter;
@@ -46,6 +52,7 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
         mRootView = new PublicLoadLayout(getActivity());
         mRootView.setContentView(R.layout.fragment_project_task);
         mRootView.setErrorLayoutFullScreen();
+        EventBus.getDefault().register(ProjectTaskFragment.this);
         initView();
         initListener();
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
@@ -109,24 +116,35 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-        setIntent(baseBean);
+        setIntent(position, baseBean);
     }
 
-    private void setIntent(BaseBean baseBean) {
+    private void setIntent(int position, BaseBean baseBean) {
         InteractStepsBean taskBean = (InteractStepsBean) baseBean;
         switch (taskBean.getInteractType()) {
             case InteractStepsBean.VOTE:
-                VoteActivity.invoke(getActivity(), taskBean.getStepId());
+                VoteActivity.invoke(getActivity(), taskBean.getStepId(), position, mHashCode);
                 break;
             case InteractStepsBean.DISCUSS:
                 CourseDiscussActivity.invoke(getActivity(), taskBean);
                 break;
             case InteractStepsBean.QUESTIONNAIRES:
-                EvaluationActivity.invoke(getActivity(), taskBean.getStepId());
+                EvaluationActivity.invoke(getActivity(), taskBean.getStepId(), position, mHashCode);
                 break;
             case InteractStepsBean.CHECK_IN:
                 CheckInByQRActivity.toThisAct(getActivity());
                 break;
+        }
+    }
+
+    public void onEventMainThread(InteractMessage message) {
+        if (message != null && mHashCode == message.hascode) {
+            if (message.position != -1) {
+                InteractStepsBean bean = mProjectTaskList.get(message.position);
+                bean.setStepFinished("1");
+                mAdapter.notifyItemChanged(message.position);
+            }
+
         }
     }
 
@@ -136,5 +154,11 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
         if (mRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mRequestUUID);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

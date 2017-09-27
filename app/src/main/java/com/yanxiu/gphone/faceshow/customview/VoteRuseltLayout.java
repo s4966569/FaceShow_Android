@@ -22,21 +22,10 @@ import java.util.List;
  */
 public class VoteRuseltLayout extends LinearLayout implements View.OnClickListener {
 
-//    public static final int TYPE_SINGLE = 0x000;
-//    public static final int TYPE_MULTI = 0x001;
-
     private Context mContext;
     private VoteInfoBean mData;
-    //    private onItemClickListener mOnItemClickListener;
-//    private int mChooseType = TYPE_SINGLE;
-//    private boolean mIsClick = true;
-//
-//    private ArrayList<VoteBean> mAnswerList;//保存选项结果
 
-
-//    public interface onItemClickListener {
-//        void onChooseItemClick(int position, boolean isSelected);
-//    }
+    private final String[] mEms = new String[]{" A.", " B.", " C.", " D.", " E.", " F.", " G.", " H.", " I.", " J.", " K.", " L.", " M.", " N."};
 
     public VoteRuseltLayout(Context context) {
         super(context);
@@ -66,21 +55,6 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
         addChildView(data);
     }
 
-//    /**
-//     * 选择结果，保存到这个list里（该list，就是bean里的list）
-//     *
-//     * @param list
-//     */
-//    public void setSaveChooceResultList(ArrayList<String> list) {
-//        mAnswerList = list;
-//        for (int i = 0; i < mAnswerList.size(); i++) {
-//            //adapter复用时，恢复数据
-//            int position = Integer.parseInt(mAnswerList.get(i));
-//            setSelect(position);
-//        }
-//    }
-
-
     private void addChildView(final VoteInfoBean data) {
         this.removeAllViews();
         ArrayList<VoteItemBean> list = data.getVoteItems();
@@ -96,7 +70,7 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
 //            holder.mVoteResult_progress.updateProgress((int)(100*Float.valueOf(bean.getPercent())));
             holder.mVoteResult_progress.setPercent(Float.valueOf(bean.getPercent()));
 
-            holder.mVote_title.setText(bean.getItemName());
+            holder.mVote_title.setText(mEms[i]+bean.getItemName());
             holder.mVoteResult_count.setText(bean.getSelectedNum());
             this.addView(view);
         }

@@ -34,6 +34,8 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
     private VoteInfoBean mData;
     private ArrayList<String> mAnswerList;//保存选项结果
 
+    private final String[] mEms = new String[]{" A.", " B.", " C.", " D.", " E.", " F.", " G.", " H.", " I.", " J.", " K.", " L.", " M.", " N."};
+
 
     public interface onItemClickListener {
         void onChooseItemClick(int position, boolean isSelected);
@@ -91,7 +93,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
             final ViewHolder holder = new ViewHolder();
             holder.position = i;
             holder.mQuestionContentView = (TextView) view.findViewById(R.id.tv_question_content);
-            holder.mQuestionContentView.setText(bean.getItemName());
+            holder.mQuestionContentView.setText(mEms[i]+bean.getItemName());
             holder.mQuestionSelectView = view.findViewById(R.id.v_question_select);
             if (this.mIsClick) { //选项界面
                 if (mChooseType == TYPE_MULTI) {
