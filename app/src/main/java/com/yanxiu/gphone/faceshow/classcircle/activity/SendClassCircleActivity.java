@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -255,7 +256,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (s.length()==0&&(mImagePaths==null||mImagePaths.size()==0)){
+        if (TextUtils.isEmpty(s)&&(mImagePaths==null||mImagePaths.size()==0)){
             mFunctionView.setEnabled(false);
             mFunctionView.setTextColor(ContextCompat.getColor(mContext,R.color.color_999999));
         }else {
