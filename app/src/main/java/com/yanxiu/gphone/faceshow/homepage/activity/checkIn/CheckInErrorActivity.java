@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 
 import butterknife.BindView;
@@ -84,7 +83,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in_again:
-                CheckInActivity.toThisAct(this);
+                CheckInByQRActivity.toThisAct(this);
                 this.finish();
                 break;
         }

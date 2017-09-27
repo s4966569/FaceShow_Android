@@ -18,7 +18,7 @@ import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListRequest;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
@@ -40,6 +40,7 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
 
     List<InteractStepsBean> mProjectTaskList = new ArrayList<>();
     private UUID mRequestUUID;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getActivity());
@@ -112,19 +113,19 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
     }
 
     private void setIntent(BaseBean baseBean) {
-        InteractStepsBean taskBean = (InteractStepsBean)baseBean;
+        InteractStepsBean taskBean = (InteractStepsBean) baseBean;
         switch (taskBean.getInteractType()) {
             case InteractStepsBean.VOTE:
-                    VoteActivity.invoke(getActivity(),taskBean.getStepId());
+                VoteActivity.invoke(getActivity(), taskBean.getStepId());
                 break;
             case InteractStepsBean.DISCUSS:
                 CourseDiscussActivity.invoke(getActivity(), taskBean);
                 break;
             case InteractStepsBean.QUESTIONNAIRES:
-                EvaluationActivity.invoke(getActivity(),taskBean.getStepId());
+                EvaluationActivity.invoke(getActivity(), taskBean.getStepId());
                 break;
             case InteractStepsBean.CHECK_IN:
-                CheckInActivity.toThisAct(getActivity());
+                CheckInByQRActivity.toThisAct(getActivity());
                 break;
         }
     }

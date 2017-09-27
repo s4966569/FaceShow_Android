@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -44,7 +43,7 @@ public class CheckInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_check_in);
         IntentIntegrator intentIntegrator = new IntentIntegrator(CheckInActivity.this);
         // 设置自定义扫描Activity
-//        intentIntegrator.setCaptureActivity(CustomCaptureActivity.class);
+        intentIntegrator.setCaptureActivity(CheckInByQRActivity.class);
         intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
         intentIntegrator.setOrientationLocked(true);
         intentIntegrator.setBeepEnabled(true);
