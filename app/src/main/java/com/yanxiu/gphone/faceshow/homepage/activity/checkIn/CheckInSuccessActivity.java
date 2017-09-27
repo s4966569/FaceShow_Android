@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
 import butterknife.BindView;
@@ -20,8 +21,7 @@ import butterknife.OnClick;
  * created by frc
  */
 public class CheckInSuccessActivity extends FaceShowBaseActivity {
-    private static final String CHECK_IN_STATUE = "check_in_statue";
-    private static final String SIGN_IN_TIME = "sign_in_time";
+    private static final String DATA = "data";
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -35,10 +35,11 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
     @BindView(R.id.tv_check_in_statue)
     TextView mTvCheckInStatue;
 
-    public static void toThiAct(Activity activity, int checkInStatue, String signInTime) {
+    private CheckInResponse mUserSignInResponse;
+
+    public static void toThiAct(Activity activity, CheckInResponse userSignInResponse) {
         Intent intent = new Intent(activity, CheckInSuccessActivity.class);
-        intent.putExtra(CHECK_IN_STATUE, checkInStatue);
-        intent.putExtra(SIGN_IN_TIME, signInTime);
+        intent.putExtra(DATA, userSignInResponse);
         activity.startActivity(intent);
     }
 
@@ -48,15 +49,15 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_check_in_success);
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
-        int checkInStatue = getIntent().getIntExtra(CHECK_IN_STATUE, 0);
-        if (checkInStatue == 210414) {
-            mTvCheckInStatue.setText("用户已签到");
+        mUserSignInResponse = (CheckInResponse) getIntent().getSerializableExtra(DATA);
+        if (mUserSignInResponse.getCode() == 0) {
+            mTvCheckInStatue.setText(mUserSignInResponse.getMessage());
+            tvCheckInSuccessTime.setText(mUserSignInResponse.getData().getSigninTime());
         } else {
-            mTvCheckInStatue.setText("签到成功");
+            mTvCheckInStatue.setText(mUserSignInResponse.getError().getMessage());
+            tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : "此处需要server返回个signinTime字段");
         }
-        tvCheckInSuccessTime.setText(getIntent().getStringExtra(SIGN_IN_TIME));
 
-        // TODO: 17-9-18 签到成功时间怎么显示 ？
     }
 
     @OnClick({R.id.img_left, R.id.sure})

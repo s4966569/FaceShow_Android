@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -103,8 +104,8 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             mLoadingDialogView = new LoadingDialogView(this);
         mLoadingDialogView.show();
 
-        if (NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
-            ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
+        if (!NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
+            Toast.makeText(FaceShowApplication.getContext(), R.string.net_error, Toast.LENGTH_LONG).show();
             mLoadingDialogView.dismiss();
             return;
         }
@@ -115,7 +116,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 mLoadingDialogView.dismiss();
-                ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
             }
 
             @Override
@@ -136,11 +136,11 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 try {
                     CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
-                        CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, 0, userSignInResponse.getData().getSigninTime());
+                        CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         CheckInByQRActivity.this.finish();
                     } else {
                         if (userSignInResponse.getError().getCode() == 210414) {//用户已签到
-                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, 210414, userSignInResponse.getError().getData().getStartTime() + "-" + userSignInResponse.getError().getData().getEndTime());
+                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         } else {
                             Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
                             intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
