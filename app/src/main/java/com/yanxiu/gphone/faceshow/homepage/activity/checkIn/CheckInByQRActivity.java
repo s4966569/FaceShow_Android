@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -17,6 +18,7 @@ import com.test.yanxiu.network.OkHttpClientManager;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
@@ -24,6 +26,9 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -37,8 +42,12 @@ import okhttp3.Response;
  * @Date: 2017/5/19
  */
 
-public class CheckInByQRActivity extends AppCompatActivity {
+public class CheckInByQRActivity extends FaceShowBaseActivity {
 
+    @BindView(R.id.img_left)
+    ImageView imgLeft;
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
     /**
      * 条形码扫描管理器
      */
@@ -68,6 +77,7 @@ public class CheckInByQRActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         initWindow();
         setContentView(R.layout.activity_zxing_layout);
+        ButterKnife.bind(this);
         initToolbar();
         mBarcodeView = (DecoratedBarcodeView) findViewById(R.id.zxing_barcode_scanner);
         mCaptureManager = new CheckInCaptureManager(this, mBarcodeView);
@@ -85,7 +95,6 @@ public class CheckInByQRActivity extends AppCompatActivity {
                     }
 
                 } else {
-//            super.onActivityResult(requestCode, resultCode, data);
                     CheckInByQRActivity.this.finish();
                 }
             }
@@ -153,16 +162,17 @@ public class CheckInByQRActivity extends AppCompatActivity {
      */
     private void initWindow() {
         // API_19及其以上透明掉状态栏
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-            layoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | layoutParams.flags;
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+//            layoutParams.flags = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | layoutParams.flags;
+//        }
     }
 
     /**
      * 初始化标题栏
      */
     private void initToolbar() {
+        tvTitle.setText("签到");
     }
 
     @Override
@@ -205,4 +215,8 @@ public class CheckInByQRActivity extends AppCompatActivity {
         return mBarcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
+    @OnClick(R.id.img_left)
+    public void onViewClicked() {
+        this.finish();
+    }
 }

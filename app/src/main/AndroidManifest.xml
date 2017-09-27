@@ -98,10 +98,6 @@
         <activity android:name=".course.activity.CourseDiscussActivity" />
         <activity android:name=".course.activity.VoteActivity" />
         <activity android:name=".common.activity.PDFViewActivity" />
-        <activity
-            android:name=".homepage.activity.checkIn.CheckInActivity"
-            android:screenOrientation="portrait"
-            android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <!-- 设置二维码扫描界面方向为竖屏 -->
         <activity
             android:name=".homepage.activity.checkIn.CheckInByQRActivity"
