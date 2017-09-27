@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
+import com.yanxiu.gphone.faceshow.R;
+
 /**
  * Created by Canghaixiao.
  * Time : 2017/9/26 17:40.
@@ -37,6 +39,7 @@ public class SystemUpdataDialog{
 
         dialog=new AlertDialog.Builder(context);
         dialog.setMessage(content);
+        dialog.setTitle(R.string.version_updata);
         setListener();
         alertDialog=dialog.create();
         alertDialog.setOwnerActivity((Activity) mContext);
@@ -46,7 +49,7 @@ public class SystemUpdataDialog{
 
     private void setListener(){
         if (mUpdateType.equals(UPDATETYPE_MANDATORY)) {
-            dialog.setPositiveButton("退出", new DialogInterface.OnClickListener() {
+            dialog.setPositiveButton(mContext.getResources().getText(R.string.app_update_exit), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (mCallBack!=null){
@@ -55,7 +58,7 @@ public class SystemUpdataDialog{
                     dialog.dismiss();
                 }
             });
-            dialog.setNegativeButton("立即更新", new DialogInterface.OnClickListener() {
+            dialog.setNegativeButton(mContext.getResources().getText(R.string.updata_now), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (mCallBack!=null){
@@ -65,7 +68,7 @@ public class SystemUpdataDialog{
                 }
             });
         }else if (mUpdateType.equals(UPDATETYPE_UNMANDATORY)){
-            dialog.setPositiveButton("以后再说", new DialogInterface.OnClickListener() {
+            dialog.setPositiveButton(mContext.getResources().getText(R.string.updata_after), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (mCallBack!=null){
@@ -74,7 +77,7 @@ public class SystemUpdataDialog{
                     dialog.dismiss();
                 }
             });
-            dialog.setNegativeButton("立即更新", new DialogInterface.OnClickListener() {
+            dialog.setNegativeButton(mContext.getResources().getText(R.string.updata_now), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (mCallBack!=null){
