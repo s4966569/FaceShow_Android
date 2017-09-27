@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -40,13 +41,14 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
+    private View mTtitlt_bar_layout;
 
     private RecyclerView mRecyclerView;
     private CourseDetailAdapter mAdapter;
 
     private final static String COURSE_ID = "course_id";
     private String mCourseid;
-    private long mHeight;
+    private float mHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +69,9 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 
     private void initView() {
         mHeight = getResources().getDimensionPixelSize(R.dimen.course_img_bg_height);
+        mTtitlt_bar_layout = findViewById(R.id.titlt_bar_layout);
+        mTtitlt_bar_layout.getBackground().mutate();//因为加了alpha渐变，不加该方法，会在个别手机上造成闪屏。
+        mTtitlt_bar_layout.setVisibility(View.GONE);
         mBackView = (ImageView) findViewById(R.id.course_backView);
         mRecyclerView = (RecyclerView) findViewById(R.id.course_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -86,13 +91,15 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 long y = mRecyclerView.getChildAt(0).getTop();
-                if (Math.abs(y) >= mHeight - 20) {
-                    //变啦
-                    findViewById(R.id.titlt_bar_layout).setBackgroundColor(getResources().getColor(R.color.color_1da1f2));
-                } else {
-                    //透明
-                    findViewById(R.id.titlt_bar_layout).setBackgroundColor(Color.TRANSPARENT);
+                if (Math.abs(y) <= mHeight - 20) {
+                    float ratio = Math.abs(y) / (mHeight - 20f);
+                    Log.e("dyf", "onScrolled: " + ratio);
+                    int alpha = (int) (ratio * 255);
+                    mTtitlt_bar_layout.getBackground().setAlpha(alpha);
+                }else{
+                    mTtitlt_bar_layout.getBackground().setAlpha(255);
                 }
+
             }
         });
     }
@@ -120,6 +127,8 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
             public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mRootView.finish();
                 if (ret != null && ret.getCode() == 0) {
+                    mTtitlt_bar_layout.setVisibility(View.VISIBLE);
+                    mTtitlt_bar_layout.getBackground().setAlpha(0);
                     mAdapter.setData(ret.getCourseDetailData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
@@ -176,7 +185,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                     startActivity(intent);
 
                 } else {
-                    WebViewActivity.loadThisAct(CourseActivity.this, attachmentInfosBean.getPreviewUrl(),attachmentInfosBean.getResName());
+                    WebViewActivity.loadThisAct(CourseActivity.this, attachmentInfosBean.getPreviewUrl(), attachmentInfosBean.getResName());
                 }
 
                 break;
