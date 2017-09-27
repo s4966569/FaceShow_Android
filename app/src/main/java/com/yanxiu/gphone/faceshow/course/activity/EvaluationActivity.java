@@ -45,6 +45,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private ImageView mBackView;
     private TextView mTitle;
     private TextView mSubmit;
+    private boolean mCanSubmit = false;
 
     private RecyclerView mRecyclerView;
     private EvaluationAdapter mAdapter;
@@ -78,12 +79,23 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         mTitle = (TextView) findViewById(R.id.title_layout_title);
         mSubmit = (TextView) findViewById(R.id.submit);
         mBackView.setVisibility(View.VISIBLE);
-        mSubmit.setEnabled(false);
+//        mSubmit.setEnabled(false);
         mSubmit.setVisibility(View.GONE);
+        initSubmitView();
         mRecyclerView = (RecyclerView) findViewById(R.id.evlaution_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setFocusableInTouchMode(false);
         mAdapter = new EvaluationAdapter(this, this);
+    }
+
+    private void initSubmitView() {
+        if (mCanSubmit) {
+            mSubmit.setBackgroundColor(getResources().getColor(R.color.color_1da1f2));
+            mSubmit.setTextColor(getResources().getColor(R.color.color_ffffff));
+        } else {
+            mSubmit.setBackgroundColor(getResources().getColor(R.color.color_a6abad));
+            mSubmit.setTextColor(getResources().getColor(R.color.color_e2e2e2));
+        }
     }
 
     private void initListener() {
@@ -104,8 +116,12 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                 requestData();
                 break;
             case R.id.submit:
-//                ToastUtil.showToast(getApplication(), "asdasd");
-                submitDialog();
+                if (mCanSubmit) {
+                    submitDialog();
+                } else {
+                    ToastUtil.showToast(this, getString(R.string.submit_no_complete_tip));
+                }
+
                 break;
             default:
                 break;
@@ -243,7 +259,9 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
 
     @Override
     public void canSubmit(boolean is) {
-        mSubmit.setEnabled(is);
+//        mSubmit.setEnabled(is);
+        mCanSubmit = is;
+        initSubmitView();
     }
 
     private KeyboardChangeListener mKeyboardChangeListener;
@@ -273,7 +291,9 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                 }
 
             }
-            mSubmit.setEnabled(allChoose);
+//            mSubmit.setEnabled(allChoose);
+            mCanSubmit = allChoose;
+            initSubmitView();
         }
     }
 }
