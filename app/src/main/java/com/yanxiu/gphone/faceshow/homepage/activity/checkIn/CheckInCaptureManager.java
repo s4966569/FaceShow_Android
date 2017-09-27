@@ -36,7 +36,6 @@ public class CheckInCaptureManager extends CaptureManager {
             codeCallBack.callBack(rawResult.getResult().getText().toString());
 //        super.returnResult(rawResult);
 
-
     }
 
     public interface CodeCallBack {

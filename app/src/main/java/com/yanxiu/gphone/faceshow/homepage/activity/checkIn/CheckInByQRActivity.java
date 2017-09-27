@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -115,7 +116,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 mLoadingDialogView.dismiss();
-                ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
+                Toast.makeText(FaceShowApplication.getContext(),R.string.net_error,Toast.LENGTH_LONG).show();
             }
 
             @Override

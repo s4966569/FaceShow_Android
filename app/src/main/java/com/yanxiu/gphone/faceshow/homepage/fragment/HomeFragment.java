@@ -78,8 +78,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mCheckInEnterIMG.setVisibility(View.VISIBLE);
         mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
-        mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
-        mClass_tv.setText(mMainBean.getClazsInfo().getClazsName());
+        if (mMainBean != null && mMainBean.getClazsInfo() != null && mMainBean.getProjectInfo() != null) {
+            mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
+            mClass_tv.setText(mMainBean.getClazsInfo().getClazsName());
+        }
         initTabBar();
         mFragmentManager = getChildFragmentManager();
         mFragmentFactory = new HomeFragmentFactory();
