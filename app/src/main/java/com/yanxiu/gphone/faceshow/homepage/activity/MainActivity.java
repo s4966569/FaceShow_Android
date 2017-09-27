@@ -197,11 +197,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 break;
             case R.id.navi_2:
                 curItem = INDEX_NOTICE_TAB;
-
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(false);
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(true);
+                if (mNaviFragmentFactory.getNoticeFragment() != null) {
+                    mNaviFragmentFactory.getNoticeFragment().toRefresh();
+                }
                 break;
             case R.id.navi_3:
                 curItem = INDEX_CLASSCIRCLE_TAB;

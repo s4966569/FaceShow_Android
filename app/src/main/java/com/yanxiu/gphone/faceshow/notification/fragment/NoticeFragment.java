@@ -62,7 +62,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
         unbinder = ButterKnife.bind(this, mRootView);
         setRecyclerView(loadMoreRecyclerView);
 
-
+        mRootView.showLoadingView();
+        getNotifications();
         swipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
@@ -76,15 +77,13 @@ public class NoticeFragment extends FaceShowBaseFragment {
         return mRootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!isOnActivityResult) {
-            mRootView.showLoadingView();
-            getNotifications();
-        } else {
-            isOnActivityResult = false;
-        }
+    /**
+     * 手动刷新页面，当底部通知tab被点击时调用
+     */
+    public void toRefresh() {
+        mOffset = 0;
+        mRootView.showLoadingView();
+        getNotifications();
     }
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
@@ -128,9 +127,9 @@ public class NoticeFragment extends FaceShowBaseFragment {
                     mNotificationAdapter.update(mNotificationList);
                 } else {
                     if (mNotificationList.size() <= 0) {
-                        mRootView.showOtherErrorView(getString(R.string.no_notify));
+                        mRootView.showOtherErrorView("数据异常");
                     } else {
-                        ToastUtil.showToast(FaceShowApplication.getContext(), "没有更多的通知了");
+                        ToastUtil.showToast(FaceShowApplication.getContext(), "数据异常");
                     }
                 }
             }
@@ -190,13 +189,11 @@ public class NoticeFragment extends FaceShowBaseFragment {
         }
     }
 
-    private boolean isOnActivityResult = false;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
-            isOnActivityResult = true;
             mNotificationList.get(mCurrentItemPosition).setViewed(true);
             mNotificationAdapter.notifyItem(mNotificationList, mCurrentItemPosition);
         }
