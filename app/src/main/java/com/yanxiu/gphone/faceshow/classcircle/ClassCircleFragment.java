@@ -277,6 +277,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     mClassCircleAdapter.notifyItemChanged(position);
                     commentFinish();
                     mCommentView.setText("");
+                }else {
+                    ToastUtil.showToast(getContext(),R.string.error_tip);
                 }
             }
 
@@ -284,7 +286,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             public void onFail(RequestBase request, Error error) {
                 mCommentToMasterRequest=null;
                 isCommentLoading=false;
-                ToastUtil.showToast(getContext(),error.getMessage());
+                ToastUtil.showToast(getContext(),R.string.error_tip);
                 rootView.hiddenLoadingView();
             }
         });
@@ -312,6 +314,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     mClassCircleAdapter.notifyItemChanged(position);
                     commentFinish();
                     mCommentView.setText("");
+                }else {
+                    ToastUtil.showToast(getContext(),R.string.error_tip);
                 }
             }
 
@@ -320,7 +324,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 rootView.hiddenLoadingView();
                 isCommentLoading=false;
                 mCommentToUserRequest=null;
-                ToastUtil.showToast(getContext(),error.getMessage());
+                ToastUtil.showToast(getContext(),R.string.error_tip);
             }
         });
     }
