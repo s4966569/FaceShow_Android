@@ -272,9 +272,12 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private void hiddenInputMethod() {
 //        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
         mEd_comment.setText("");
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
     }
 
