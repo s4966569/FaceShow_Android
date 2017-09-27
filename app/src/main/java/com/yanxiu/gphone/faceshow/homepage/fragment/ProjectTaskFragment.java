@@ -20,7 +20,7 @@ import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListRequest;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
@@ -132,7 +132,7 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                 EvaluationActivity.invoke(getActivity(), taskBean.getStepId(), position, mHashCode);
                 break;
             case InteractStepsBean.CHECK_IN:
-                CheckInActivity.toThisAct(getActivity());
+                CheckInByQRActivity.toThisAct(getActivity());
                 break;
         }
     }

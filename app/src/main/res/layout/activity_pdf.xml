@@ -42,8 +42,7 @@
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
-                android:background="@android:color/transparent"
-                android:src="@color/color_ff7a05" />
+                android:src="@drawable/selector_back" />
 
             <TextView
                 android:id="@+id/tv_name"

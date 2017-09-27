@@ -23,7 +23,7 @@ import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
@@ -178,7 +178,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                         EvaluationActivity.invoke(this, interactStepsBean.getStepId());
                         break;
                     case InteractStepsBean.CHECK_IN:
-                        CheckInActivity.toThisAct(this);
+                        CheckInByQRActivity.toThisAct(this);
                         break;
                 }
 

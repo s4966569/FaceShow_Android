@@ -68,6 +68,10 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             tvCheckInTimeHere.setVisibility(View.GONE);
             tvCheckInTime.setVisibility(View.GONE);
             tvCheckInStatue.setText("您还未签到");
+            if (data.getOpenStatus()==7){
+                //签到已过期
+                tvCheckIn.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -85,7 +89,8 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in:
-                CheckInActivity.toThisAct(this);
+                CheckInByQRActivity.toThisAct(this);
+                this.finish();
                 break;
         }
     }

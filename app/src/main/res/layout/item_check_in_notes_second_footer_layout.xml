@@ -25,6 +25,7 @@
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@+id/tv_training_statue"
         android:contentDescription="@null" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,6 +40,7 @@
             android:id="@+id/tv_training_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:textColor="@color/color_333333"
             android:textSize="14dp"
             tools:text="针对项目的培训" />
