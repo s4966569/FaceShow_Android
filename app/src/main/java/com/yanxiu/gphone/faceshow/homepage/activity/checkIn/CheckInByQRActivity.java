@@ -104,8 +104,8 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             mLoadingDialogView = new LoadingDialogView(this);
         mLoadingDialogView.show();
 
-        if (NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
-            ToastUtil.showToast(FaceShowApplication.getContext(), R.string.net_error);
+        if (!NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
+            Toast.makeText(FaceShowApplication.getContext(),R.string.net_error,Toast.LENGTH_LONG).show();
             mLoadingDialogView.dismiss();
             return;
         }
@@ -116,7 +116,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 mLoadingDialogView.dismiss();
-                Toast.makeText(FaceShowApplication.getContext(),R.string.net_error,Toast.LENGTH_LONG).show();
+
             }
 
             @Override

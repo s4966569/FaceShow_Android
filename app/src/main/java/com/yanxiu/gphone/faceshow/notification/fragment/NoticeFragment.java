@@ -61,8 +61,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
         mRootView.setContentView(view);
         unbinder = ButterKnife.bind(this, mRootView);
         setRecyclerView(loadMoreRecyclerView);
-        mRootView.showLoadingView();
-        getNotifications();
+
 
         swipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
@@ -77,6 +76,16 @@ public class NoticeFragment extends FaceShowBaseFragment {
         return mRootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isOnActivityResult) {
+            mRootView.showLoadingView();
+            getNotifications();
+        } else {
+            isOnActivityResult = false;
+        }
+    }
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -181,12 +190,16 @@ public class NoticeFragment extends FaceShowBaseFragment {
         }
     }
 
+    private boolean isOnActivityResult = false;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
+            isOnActivityResult = true;
             mNotificationList.get(mCurrentItemPosition).setViewed(true);
-            mNotificationAdapter.notifyItem(mNotificationList,mCurrentItemPosition);
+            mNotificationAdapter.notifyItem(mNotificationList, mCurrentItemPosition);
         }
     }
+
 }
