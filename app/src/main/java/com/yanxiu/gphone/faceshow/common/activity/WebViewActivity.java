@@ -77,7 +77,7 @@ public class WebViewActivity extends FaceShowBaseActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (view.getTitle().equals("about:blank")||view.getTitle().equals("- no title specified")|| TextUtils.isEmpty(view.getTitle())){
+                if (view.getTitle().equals("about:blank")||view.getTitle().equals("- no title specified")|| TextUtils.isEmpty(view.getTitle())||view.getTitle().equals("网页无法打开")){
                     setTitle(title);
                 }else {
                     setTitle(view.getTitle());
