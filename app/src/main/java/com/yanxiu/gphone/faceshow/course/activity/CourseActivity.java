@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.course.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,6 +46,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 
     private final static String COURSE_ID = "course_id";
     private String mCourseid;
+    private long mHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     }
 
     private void initView() {
+        mHeight = getResources().getDimensionPixelSize(R.dimen.course_img_bg_height);
         mBackView = (ImageView) findViewById(R.id.course_backView);
         mRecyclerView = (RecyclerView) findViewById(R.id.course_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -73,8 +76,26 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
 
     private void initListener() {
         mBackView.setOnClickListener(this);
-    }
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
 
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                long y = mRecyclerView.getChildAt(0).getTop();
+                if (Math.abs(y) >= mHeight - 20) {
+                    //变啦
+                    findViewById(R.id.titlt_bar_layout).setBackgroundColor(getResources().getColor(R.color.color_1da1f2));
+                } else {
+                    //透明
+                    findViewById(R.id.titlt_bar_layout).setBackgroundColor(Color.TRANSPARENT);
+                }
+            }
+        });
+    }
 
     @Override
     public void onClick(View view) {
@@ -163,13 +184,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                 InteractStepsBean interactStepsBean = (InteractStepsBean) itemBean;
                 switch (interactStepsBean.getInteractType()) {
                     case InteractStepsBean.VOTE:
-//                        if (InteractStepsBean.NO_FINISH.equals(interactStepsBean.getStepFinished())) {
                         VoteActivity.invoke(this, interactStepsBean.getStepId());
-//                        } else if (InteractStepsBean.FINISH.equals(interactStepsBean.getStepFinished())) {
-//                            VoteResultActivity.invoke(this);
-//                        } else {
-//                            ToastUtil.showToast(this, interactStepsBean.getStepFinished());
-//                        }
                         break;
                     case InteractStepsBean.DISCUSS:
                         CourseDiscussActivity.invoke(CourseActivity.this, interactStepsBean);

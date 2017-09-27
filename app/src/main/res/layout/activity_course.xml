@@ -3,46 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <!--<LinearLayout-->
-    <!--android:id="@+id/top"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="100dp"-->
-    <!--android:layout_alignParentBottom="true"-->
-    <!--android:background="@color/color_ffffff"-->
-    <!--android:gravity="center_vertical"-->
-    <!--android:orientation="vertical">-->
-
-    <!--<RelativeLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="100dp"-->
-    <!--android:background="@color/color_002c0f">-->
-
-    <!--<TextView-->
-    <!--android:id="@+id/course_name"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginLeft="30dp"-->
-    <!--android:layout_marginTop="10dp"-->
-    <!--android:text="'国培计划'时间花经验"-->
-    <!--android:textColor="@color/color_ffffff" />-->
-
-    <!--</RelativeLayout>-->
-
-    <!--</LinearLayout>-->
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/course_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/color_ffffff" />
 
-    <ImageView
-        android:id="@+id/course_backView"
-        android:layout_width="@dimen/commontitle_title_rightIcon_width"
-        android:layout_height="@dimen/commontitle_title_rightIcon_width"
-        android:layout_marginLeft="@dimen/commontitle_margin_left"
-        android:layout_marginTop="14dp"
-        android:src="@drawable/ic_back_normal" />
+    <LinearLayout
+        android:id="@+id/titlt_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_layout_height"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/course_backView"
+            android:layout_width="@dimen/commontitle_title_rightIcon_width"
+            android:layout_height="@dimen/commontitle_title_rightIcon_width"
+            android:layout_marginLeft="@dimen/commontitle_margin_left"
+            android:src="@drawable/ic_back_normal" />
+
+    </LinearLayout>
 
 </RelativeLayout>
