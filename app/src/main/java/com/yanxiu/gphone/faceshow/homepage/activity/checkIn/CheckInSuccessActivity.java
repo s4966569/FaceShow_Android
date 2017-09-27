@@ -52,7 +52,7 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
         mUserSignInResponse = (CheckInResponse) getIntent().getSerializableExtra(DATA);
         if (mUserSignInResponse.getCode() == 0) {
             mTvCheckInStatue.setText(mUserSignInResponse.getMessage());
-            tvCheckInSuccessTime.setText(mUserSignInResponse.getData().getSigninTime());
+            tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : "此处需要server返回个signinTime字段");
         } else {
             mTvCheckInStatue.setText(mUserSignInResponse.getError().getMessage());
             tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : "此处需要server返回个signinTime字段");
@@ -73,4 +73,11 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        setResult(RESULT_OK);
+        super.onBackPressed();
+
+    }
 }
