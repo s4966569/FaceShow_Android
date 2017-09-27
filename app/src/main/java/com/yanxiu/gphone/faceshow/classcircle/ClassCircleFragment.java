@@ -286,7 +286,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             public void onFail(RequestBase request, Error error) {
                 mCommentToMasterRequest=null;
                 isCommentLoading=false;
-                ToastUtil.showToast(getContext(),R.string.error_tip);
+                ToastUtil.showToast(getContext(),error.getMessage());
                 rootView.hiddenLoadingView();
             }
         });
@@ -324,7 +324,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 rootView.hiddenLoadingView();
                 isCommentLoading=false;
                 mCommentToUserRequest=null;
-                ToastUtil.showToast(getContext(),R.string.error_tip);
+                ToastUtil.showToast(getContext(),error.getMessage());
             }
         });
     }
