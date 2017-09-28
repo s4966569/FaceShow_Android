@@ -5,7 +5,7 @@
     {
       "server": "http://yxb.yanxiu.com/pxt/platform/data.api",
       "loginServer": "http://pp.yanxiu.com/uc",
-      "uploadServer": "http://orz.yanxiu.com/easygo",
+      "uploadServer": "http://b.yanxiu.com/easygo",
       "initializeUrl": "http://appadmin.yanxiu.com",
       "mode": "release",
       "index": 0
