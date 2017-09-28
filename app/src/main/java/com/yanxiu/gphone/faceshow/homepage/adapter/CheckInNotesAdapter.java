@@ -20,6 +20,7 @@ import java.util.List;
 
 public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapter.ViewHolder> {
     private List<GetCheckInNotesResponse.Element> checkInNotesList = new ArrayList<>();
+    private int mPositionInList = -1;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -46,9 +47,10 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
     boolean isRefrsh = false;
     String json;
 
-    public void reFreshItem(String json) {
+    public void reFreshItem(String json, int position) {
         this.json = json;
         isRefrsh = true;
+        mPositionInList = position;
         notifyItemChanged(0);
     }
 
@@ -68,7 +70,6 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
             recyclerView_notes.setLayoutManager(linearLayoutManager);
             mCheckInNotesSecondAdapter = new CheckInNotesSecondAdapter();
             recyclerView_notes.setAdapter(mCheckInNotesSecondAdapter);
-
         }
 
         public void setData(GetCheckInNotesResponse.Element data) {
@@ -77,8 +78,10 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
 
             if (isRefrsh) {
                 isRefrsh = false;
-                mCheckInNotesSecondAdapter.refreshItem(data.getCheckInNotes(),json);
-
+                mCheckInNotesSecondAdapter.refreshItem(data.getCheckInNotes(),json, mPositionInList);
+                if(mPositionInList != -1) {
+                    recyclerView_notes.scrollToPosition(mPositionInList);
+                }
             } else {
                 mCheckInNotesSecondAdapter.update(data.getCheckInNotes());
             }

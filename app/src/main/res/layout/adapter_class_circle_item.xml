@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:orientation="horizontal"
         android:paddingEnd="15dp"
-        android:paddingStart="15dp"
-        android:orientation="horizontal">
+        android:paddingStart="15dp">
 
-        <ImageView
-            android:id="@+id/iv_head_img"
-            android:layout_width="40dp"
-            android:layout_height="40dp"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/iv_head_img_bg"
+                android:layout_width="40dp"
+                android:layout_marginTop="31dp"
+                android:layout_height="10dp"
+                android:visibility="gone"
+                android:src="@drawable/shape_image_bg"/>
+
+            <ImageView
+                android:id="@+id/iv_head_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,8 +40,8 @@
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
                 android:includeFontPadding="false"
                 android:textColor="#333333"
                 android:textSize="16dp"
@@ -38,23 +51,24 @@
                 android:id="@+id/tv_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="4dp"
                 app:contentSpaceLineHeight="4dp"
                 app:contentTextColor="#333333"
                 app:contentTextSize="16dp"
                 app:maxLines="4"
                 app:moreTextColor="@color/color_1da1f2"
-                app:moreTextSize="16dp"
-                app:moreTextMaginTop="15dp"/>
+                app:moreTextMaginTop="15dp"
+                app:moreTextSize="16dp" />
 
             <ImageView
                 android:id="@+id/gv_imgs"
                 android:layout_width="match_parent"
                 android:layout_height="174dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:visibility="gone"/>
+                android:background="@color/color_dadde0"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -84,6 +98,40 @@
                         android:layout_centerVertical="true"
                         android:background="@drawable/selector_classcircle_function" />
                 </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_like_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="38dp"
+                    android:background="@drawable/classcircle_like_comment"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView
+                        android:id="@+id/cc_thumb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp" />
+
+                    <View
+                        android:id="@+id/like_comment_line"
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:background="#d7dde0" />
+
+                    <com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout
+                        android:id="@+id/cc_comments"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_anim"
@@ -137,8 +185,8 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:background="@drawable/selector_classcircle_comment"
-                                android:layout_marginEnd="3dp"/>
+                                android:layout_marginEnd="3dp"
+                                android:background="@drawable/selector_classcircle_comment" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -152,39 +200,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/ll_like_comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/rl_anim"
-                    android:background="@drawable/classcircle_like_comment"
-                    android:visibility="gone"
-                    android:orientation="vertical">
-
-                    <com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView
-                        android:id="@+id/cc_thumb"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginStart="10dp" />
-
-                    <View
-                        android:id="@+id/like_comment_line"
-                        android:layout_width="match_parent"
-                        android:layout_height="2px"
-                        android:background="#d7dde0" />
-
-                    <com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout
-                        android:id="@+id/cc_comments"
-                        android:layout_width="match_parent"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp"/>
-                </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>

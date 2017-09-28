@@ -1,6 +1,12 @@
 package com.yanxiu.gphone.faceshow.classcircle.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -189,6 +196,25 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    private class ClassCircleImageTager extends BitmapImageViewTarget{
+
+        ClassCircleImageTager(ImageView view) {
+            super(view);
+        }
+
+        @Override
+        public void onLoadFailed(Exception e, Drawable errorDrawable) {
+            view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            view.setImageDrawable(errorDrawable);
+        }
+
+        @Override
+        protected void setResource(Bitmap resource) {
+            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            view.setImageBitmap(resource);
+        }
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof TitleViewHolder) {
@@ -209,7 +235,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (moments.album.get(0).attachment != null) {
                     String imgPath = moments.album.get(0).attachment.previewUrl;
                     if (classCircleViewHolder.mContentImgUrl == null || !classCircleViewHolder.mContentImgUrl.equals(imgPath)) {
-                        Glide.with(mContext).load(imgPath).asBitmap().centerCrop().error(R.drawable.net_error_picture).into(classCircleViewHolder.mContentImageView);
+                        Glide.with(mContext).load(imgPath).asBitmap().error(R.drawable.net_error_picture).into(new ClassCircleImageTager(classCircleViewHolder.mContentImageView));
                         classCircleViewHolder.mContentImgUrl = imgPath;
 
                         classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {

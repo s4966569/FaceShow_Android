@@ -36,6 +36,7 @@
             android:background="@drawable/shape_class_circle_edittext"
             android:hint="@string/class_circle_comment_hint"
             android:imeOptions="actionSend"
+            android:textCursorDrawable="@drawable/shape_fs_cursor"
             android:paddingEnd="10dp"
             android:paddingStart="10dp"
             android:singleLine="true" />

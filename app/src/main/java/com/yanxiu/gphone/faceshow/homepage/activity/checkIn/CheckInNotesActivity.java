@@ -165,7 +165,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     }
 
     public void onEventMainThread(CheckInSuccessEvent event) {
-        mCheckInNotesAdapter.reFreshItem(event.getmMsg());
+        mCheckInNotesAdapter.reFreshItem(event.getmMsg(), event.getmPosition());
     }
 
     @Override

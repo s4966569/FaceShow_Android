@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.customview;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,14 +118,16 @@ public class ClassCircleCommentLayout extends RelativeLayout {
             String text="";
             if (comment.level.equals("1")){
                 if (comment.publisher!=null) {
-                    text = String.format(mContext.getString(R.string.comment_to_master), comment.publisher.realName, comment.content);
+                    text="<b>"+comment.publisher.realName+"</b>: "+comment.content;
+//                    text = String.format(mContext.getString(R.string.comment_to_master), comment.publisher.realName, comment.content);
                 }
             }else {
                 if (comment.publisher != null) {
-                    text = String.format(mContext.getString(R.string.comment_to_user), comment.publisher.realName, comment.toUser.realName, comment.content);
+                    text="<b>"+comment.publisher.realName+"</b>对"+"<b>"+comment.toUser.realName+"</b>: "+comment.content;
+//                    text = String.format(mContext.getString(R.string.comment_to_user), comment.publisher.realName, comment.toUser.realName, comment.content);
                 }
             }
-            textView.setText(text);
+            textView.setText(Html.fromHtml(text));
             return convertView;
         }
 
