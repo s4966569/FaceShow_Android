@@ -3,13 +3,16 @@ package com.yanxiu.gphone.faceshow.user;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -22,16 +25,22 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.response.HeadimgUploadBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.user.request.UpdataUserMessageRequest;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
+import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.File;
@@ -74,6 +83,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private static final int TAKE_PHOTO = 2;
     private static final int CROP_PICTURE = 3;
     private File portraitFile, photoFile; //拍照裁剪后的照片文件，拍照之后存储的照片文件
+    private String path;
+    private String crop_path;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -196,25 +207,29 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
             @Override
             public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                File file = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait");
-                if (!file.exists()) {
-                    try {
-                        //按照指定的路径创建文件夹
-                        file.mkdirs();
-                    } catch (Exception e) {
-                        // TODO: handle exception
-                    }
-                }
-                photoFile = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
-                if (!photoFile.exists()) {
+//                File file = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait");
+//                if (!file.exists()) {
+//                    try {
+//                        //按照指定的路径创建文件夹
+//                        file.mkdirs();
+//                    } catch (Exception e) {
+//                        // TODO: handle exception
+//                        e.printStackTrace();
+//                    }
+//                }
+                path= FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+                photoFile = new File(path);
+                if (photoFile.exists()) {
                     try {
                         //在指定的文件夹中创建文件
                         photoFile.createNewFile();
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
 
                 Intent infoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                infoIntent.addCategory(Intent.CATEGORY_DEFAULT);
                 infoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(infoIntent, TAKE_PHOTO);
                 // 指定调用相机拍照后的照片存储的路径
@@ -249,11 +264,19 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                     break;
                 // 调用相机拍照时
                 case TAKE_PHOTO:
-                    if (photoFile == null) {
-                        photoFile = new File(Environment
-                                .getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
+                    if (photoFile != null) {
+//                        photoFile = new File(Environment
+//                                .getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
+                        File file=new File(path);
+                        Uri imageUri;
+                        if (Build.VERSION.SDK_INT < 24) {
+                            imageUri = Uri.fromFile(file);
+                        } else {
+                            imageUri = FileProvider.getUriForFile(ProfileActivity.this, "com.yanxiu.gphone.faceshow.fileprovider", file);
+                        }
+
+                        startPhotoZoom(imageUri, Uri.fromFile(createCroppedImageFile()));
                     }
-                    startPhotoZoom(Uri.fromFile(photoFile), Uri.fromFile(createCroppedImageFile()));
                     break;
                 // 取得裁剪后的图片
                 case CROP_PICTURE:
@@ -278,6 +301,9 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 //        if(intent.resolveActivity(getPackageManager())==null){
 //            ToastMaster.showToast("该手机不支持裁剪");
 //        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
         intent.setDataAndType(uri, "image/*");
         // crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true");
@@ -285,9 +311,12 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 //        intent.putExtra("aspectX", 1);
 //        intent.putExtra("aspectY", 1);
         // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 300);
-        intent.putExtra("outputY", 300);
+        intent.putExtra("outputX", 150);
+        intent.putExtra("outputY", 150);
+        intent.putExtra("scale", true);
         intent.putExtra("return-data", false);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());//输出图片格式
+        intent.putExtra("noFaceDetection", true);//取消人脸识别
         intent.putExtra(MediaStore.EXTRA_OUTPUT, saveCroppedImageFileUri);
         startActivityForResult(intent, CROP_PICTURE);
     }
@@ -298,10 +327,12 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
      * @return
      */
     private File createCroppedImageFile() {
-        File dir = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/");
-        if (!dir.exists())
-            dir.mkdir();
-        portraitFile = new File(dir, "photo_cropped.jpg");
+        crop_path= FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+
+//        File dir = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/");
+//        if (!dir.exists())
+//            dir.mkdir();
+        portraitFile = new File(crop_path);
         try {
             portraitFile.createNewFile();
         } catch (IOException e) {
@@ -348,13 +379,15 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 
             @Override
             public void onUpLoadSuccess(int position, Object tag, String jsonString) {
-                rootView.hiddenLoadingView();
-                Gson gson=new Gson();
-                HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
-                if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
-                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).url);
-                    setHeadimg();
-                }else {
+                try {
+                    Gson gson=new Gson();
+                    HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
+                    if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
+                        updataHeadimg(uploadBean.tplData.data.get(0).url);
+                    }else {
+                        ToastUtil.showToast(mContext,"头像上传失败");
+                    }
+                }catch (Exception e){
                     ToastUtil.showToast(mContext,"头像上传失败");
                 }
             }
@@ -369,6 +402,25 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             public void onError(String errorMsg) {
                 rootView.hiddenLoadingView();
                 ToastUtil.showToast(mContext,errorMsg);
+            }
+        });
+    }
+
+    private void updataHeadimg(final String url){
+        UpdataUserMessageRequest messageRequest=new UpdataUserMessageRequest();
+        messageRequest.avatar=url;
+        messageRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
+                rootView.hiddenLoadingView();
+                UserInfo.getInstance().getInfo().setAvatar(url);
+                setHeadimg();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                ToastUtil.showToast(mContext,"头像上传失败");
             }
         });
     }

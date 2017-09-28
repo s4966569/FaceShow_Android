@@ -17,7 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.ViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -202,12 +204,14 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void onLoadFailed(Exception e, Drawable errorDrawable) {
             view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             view.setImageDrawable(errorDrawable);
+            view.setEnabled(false);
         }
 
         @Override
         protected void setResource(Bitmap resource) {
             view.setScaleType(ImageView.ScaleType.CENTER_CROP);
             view.setImageBitmap(resource);
+            view.setEnabled(true);
         }
     }
 
@@ -226,6 +230,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 headimg = moments.publisher.avatar;
             }
             Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
+            classCircleViewHolder.mContentImageView.setEnabled(false);
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
                 if (moments.album.get(0).attachment != null) {

@@ -54,6 +54,8 @@ public class NoticeFragment extends FaceShowBaseFragment {
     private String mPageSize = "10";
     private int mCurrentItemPosition;
 
+    private int tatleNum=0;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notice, container, false);
@@ -105,14 +107,16 @@ public class NoticeFragment extends FaceShowBaseFragment {
                 mRootView.hiddenLoadingView();
                 mRootView.hiddenOtherErrorView();
                 mRootView.hiddenNetErrorView();
+                if (mOffset == 0) {
+                    mNotificationList.clear();
+                }
                 if (swipeRefreshLayout.isRefreshing())
                     swipeRefreshLayout.setRefreshing(false);
                 if (ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().getElements() != null) {
+                        tatleNum=ret.getData().getTotalElements();
                         if (ret.getData().getElements().size() > 0) {
-                            if (mOffset == 0) {
-                                mNotificationList.clear();
-                            }
+
                             mNotificationList.addAll(ret.getData().getElements());
                         } else {
                             if (mOffset == 0) {
@@ -125,6 +129,7 @@ public class NoticeFragment extends FaceShowBaseFragment {
                         }
                     }
                     mNotificationAdapter.update(mNotificationList);
+
                 } else {
                     if (mNotificationList.size() <= 0) {
                         mRootView.showOtherErrorView("数据异常");
@@ -160,8 +165,10 @@ public class NoticeFragment extends FaceShowBaseFragment {
             public void onLoadMore(RecyclerView recyclerView, int newState, int lastVisibleItem) {
                 if (mOffset > 0) {
                     mOffset = mNotificationList.size();
-                    mRootView.showLoadingView();
-                    getNotifications();
+                    if (mOffset<tatleNum) {
+                        mRootView.showLoadingView();
+                        getNotifications();
+                    }
                 } else {
                     mOffset = mNotificationList.size();
                 }
