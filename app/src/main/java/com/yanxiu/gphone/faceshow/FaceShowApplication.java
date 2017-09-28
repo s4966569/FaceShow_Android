@@ -26,9 +26,16 @@ public class FaceShowApplication extends LitePalApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        builder.detectFileUriExposure();
+        try {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+            builder.detectFileUriExposure();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (Error error) {
+            error.printStackTrace();
+        }
+
         instance = this;
         initUrlServer();
         Stetho.initializeWithDefaults(this);

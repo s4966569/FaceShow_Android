@@ -31,7 +31,7 @@
                 android:layout_width="250dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="140dp"
+                android:layout_marginTop="238dp"
                 android:background="@drawable/shape_password_bg"
                 android:hint="@string/please_input_account_number"
                 android:inputType="text"

@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -105,8 +106,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
         mMobileView.setText(UserInfo.getInstance().getInfo().getMobilePhone());
         mSexView.setText(getSex());
-        mStageView.setText(UserInfo.getInstance().getInfo().getStageName());
-        mSubjectView.setText(UserInfo.getInstance().getInfo().getSubjectName());
+        mStageView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getStageName()) ? "暂无":UserInfo.getInstance().getInfo().getStageName());
+        mSubjectView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSubjectName()) ? "暂无":UserInfo.getInstance().getInfo().getSubjectName());
     }
 
     private void setHeadimg(){

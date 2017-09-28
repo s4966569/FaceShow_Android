@@ -30,7 +30,7 @@
             android:layout_marginLeft="16dp"
             android:text="@string/headimg"
             android:textColor="@color/color_333333"
-            android:textSize="@dimen/home_nav_bar_textsize" />
+            android:textSize="@dimen/my_item_text_size" />
 
         <ImageView
             android:id="@+id/iv_enter"
@@ -63,7 +63,7 @@
                 android:layout_centerVertical="true"
                 android:text="@string/name"
                 android:textColor="@color/color_333333"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
             <TextView
                 android:id="@+id/tv_name"
@@ -73,7 +73,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
 
@@ -93,7 +93,7 @@
                 android:layout_centerVertical="true"
                 android:text="@string/mobil"
                 android:textColor="@color/color_333333"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
             <TextView
                 android:id="@+id/tv_phone"
@@ -104,7 +104,7 @@
                 android:layout_marginRight="15dp"
                 android:ellipsize="end"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
         <View
@@ -123,7 +123,7 @@
                 android:layout_centerVertical="true"
                 android:text="@string/sex"
                 android:textColor="@color/color_333333"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
             <TextView
                 android:id="@+id/tv_gender"
@@ -134,7 +134,7 @@
                 android:layout_marginRight="15dp"
                 android:ellipsize="end"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
         <View
@@ -153,7 +153,7 @@
                 android:layout_centerVertical="true"
                 android:text="@string/stagename"
                 android:textColor="@color/color_333333"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
             <TextView
                 android:id="@+id/tv_segment"
@@ -164,7 +164,7 @@
                 android:layout_marginRight="15dp"
                 android:ellipsize="end"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
         <View
@@ -183,7 +183,7 @@
                 android:layout_centerVertical="true"
                 android:text="@string/subjectname"
                 android:textColor="@color/color_333333"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
             <TextView
                 android:id="@+id/tv_stduy"
@@ -194,7 +194,7 @@
                 android:layout_marginRight="15dp"
                 android:ellipsize="end"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/home_nav_bar_textsize" />
+                android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
     </LinearLayout>
