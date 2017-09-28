@@ -44,6 +44,7 @@ import okhttp3.Response;
 
 public class CheckInByQRActivity extends FaceShowBaseActivity {
 
+    private static int mPositionInList = -1;
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -71,6 +72,16 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         intentIntegrator.initiateScan();
     }
 
+    public static void toThisAct(Activity activity, int position) {
+        IntentIntegrator intentIntegrator = new IntentIntegrator(activity);
+        // 设置自定义扫描Activity
+        intentIntegrator.setCaptureActivity(CheckInByQRActivity.class);
+        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+        intentIntegrator.setOrientationLocked(true);
+        intentIntegrator.setBeepEnabled(true);
+        intentIntegrator.initiateScan();
+        mPositionInList = position;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +149,11 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 try {
                     CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
-                        CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
+                        if(mPositionInList != -1) {
+                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse, mPositionInList);
+                        } else {
+                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
+                        }
                         CheckInByQRActivity.this.finish();
                     } else {
                         if (userSignInResponse.getError().getCode() == 210414) {//用户已签到

@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.http.base;
 
+import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
+
 import java.io.Serializable;
 
 /**
@@ -119,7 +121,7 @@ public class FaceShowBaseResponse implements Serializable {
         private int signInUserNum;
         private String opentStatusName;
         private int percent;
-        private Object userSignIn;
+        private UserSignInBean userSignIn;
         private String signinTime;
 
         public String getSigninTime() {
@@ -250,12 +252,25 @@ public class FaceShowBaseResponse implements Serializable {
             this.percent = percent;
         }
 
-        public Object getUserSignIn() {
+        public UserSignInBean getUserSignIn() {
             return userSignIn;
         }
 
-        public void setUserSignIn(Object userSignIn) {
+        public void setUserSignIn(UserSignInBean userSignIn) {
             this.userSignIn = userSignIn;
+        }
+
+    }
+
+    public class UserSignInBean implements Serializable {
+        private String signinTime;
+
+        public String getSigninTime() {
+            return signinTime;
+        }
+
+        public void setSigninTime(String signinTime) {
+            this.signinTime = signinTime;
         }
     }
 }

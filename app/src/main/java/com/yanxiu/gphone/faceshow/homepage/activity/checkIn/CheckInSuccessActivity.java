@@ -25,6 +25,7 @@ import de.greenrobot.event.EventBus;
  */
 public class CheckInSuccessActivity extends FaceShowBaseActivity {
     private static final String DATA = "data";
+    private final static String POSITION = "position";
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -39,10 +40,18 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
     TextView mTvCheckInStatue;
 
     private CheckInResponse mUserSignInResponse;
+    private int mPositionInList;
 
     public static void toThiAct(Activity activity, CheckInResponse userSignInResponse) {
         Intent intent = new Intent(activity, CheckInSuccessActivity.class);
         intent.putExtra(DATA, userSignInResponse);
+        activity.startActivity(intent);
+    }
+
+    public static void toThiAct(Activity activity, CheckInResponse userSignInResponse, int position) {
+        Intent intent = new Intent(activity, CheckInSuccessActivity.class);
+        intent.putExtra(DATA, userSignInResponse);
+        intent.putExtra(POSITION, position);
         activity.startActivity(intent);
     }
 
@@ -53,15 +62,16 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
         mUserSignInResponse = (CheckInResponse) getIntent().getSerializableExtra(DATA);
+        mPositionInList =  getIntent().getIntExtra(POSITION, -1);
 
         if (mUserSignInResponse.getCode() == 0) {
             mTvCheckInStatue.setText(mUserSignInResponse.getData().getSuccessPrompt());
             tvCheckInSuccessTime.setText(mUserSignInResponse.getData().getSigninTime() != null ? mUserSignInResponse.getData().getSigninTime() : "");
             String string =RequestBase.getGson().toJson(mUserSignInResponse.getData());
-            EventBus.getDefault().post(new CheckInSuccessEvent(string));//通知签到记录页面该记录签到成功 CheckInSuccessActivity
+            EventBus.getDefault().post(new CheckInSuccessEvent(string, mPositionInList));//通知签到记录页面该记录签到成功 CheckInSuccessActivity
         } else {
             mTvCheckInStatue.setText(mUserSignInResponse.getError().getData().getSuccessPrompt());
-            tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : "此处需要server返回个signinTime字段");
+            tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : mUserSignInResponse.getError().getData().getUserSignIn().getSigninTime());
         }
 
     }
