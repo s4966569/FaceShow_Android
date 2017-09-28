@@ -36,6 +36,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="9dp"
             android:text="@string/check_in_success"
+            android:textStyle="bold"
             android:textColor="@color/color_333333"
             android:textSize="18dp" />
 
