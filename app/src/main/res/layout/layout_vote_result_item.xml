@@ -11,14 +11,14 @@
         android:id="@+id/vote_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="7dp"
-        android:layout_marginTop="@dimen/choose_fragment_item_margin_t_b"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="7dp"
         android:gravity="center_vertical"
         android:lineSpacingExtra="@dimen/choose_fragment_item_content_line_space"
         android:lineSpacingMultiplier="1"
         android:textColor="@color/color_666666"
         android:textSize="@dimen/choose_fragment_item_content_text_size"
-        tools:text="aasdsdasdasdsad" />
+        tools:text="A.撒大帝" />
 
     <RelativeLayout
         android:layout_width="match_parent"

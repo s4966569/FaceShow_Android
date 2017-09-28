@@ -11,12 +11,12 @@
         android:id="@+id/all_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="20dp"
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="20dp"
         android:textColor="@color/color_333333"
-        android:textSize="18dp"
+        android:textSize="16dp"
         android:textStyle="bold"
         tools:text="手动阀撒所大所大所多所大大大大叔大叔大叔大大三大四的阿斯顿撒打算撒打算啊是大大阿发" />
 

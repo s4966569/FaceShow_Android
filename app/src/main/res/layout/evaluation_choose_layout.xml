@@ -24,7 +24,8 @@
     <com.yanxiu.gphone.faceshow.customview.ChooseLayout
         android:id="@+id/chooseLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp">
 
     </com.yanxiu.gphone.faceshow.customview.ChooseLayout>
 

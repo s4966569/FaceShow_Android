@@ -20,9 +20,11 @@
         android:layout_toRightOf="@id/resource_img"
         android:layout_marginTop="14dp"
         android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_marginRight="@dimen/course_adapter_marginleft"
         android:maxLines="1"
         android:ellipsize="end"
         android:text="资源名称"
+        android:textStyle="bold"
         android:textColor="@color/color_333333"
         android:textSize="@dimen/home_nav_bar_textsize" />
 
@@ -32,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/resource_img"
         android:layout_below="@id/resource_name"
-        android:layout_marginTop="@dimen/home_bottom_bar_paddingtop"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="@dimen/course_adapter_marginleft"
         android:text="2017.08.19 13:22"
         android:textColor="@color/color_999999"
