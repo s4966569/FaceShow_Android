@@ -41,6 +41,8 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
     TextView tvCheckInTimeHere;
 
     private final static String CHECK_IN_DETAIL = "check_in_detail";
+    private final static String POSITION = "position";
+    private int mPositionInList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in_detail);
         GetCheckInNotesResponse.CheckInNotesBean data = (GetCheckInNotesResponse.CheckInNotesBean) getIntent().getSerializableExtra(CHECK_IN_DETAIL);
+        mPositionInList =  getIntent().getIntExtra(POSITION, -1);
         showData(data);
     }
 
@@ -76,9 +79,10 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
     }
 
 
-    public static void toThisAct(Context activity, GetCheckInNotesResponse.CheckInNotesBean data) {
+    public static void toThisAct(Context activity, GetCheckInNotesResponse.CheckInNotesBean data, int position) {
         Intent intent = new Intent(activity, CheckInDetailActivity.class);
         intent.putExtra(CHECK_IN_DETAIL, data);
+        intent.putExtra(POSITION, position);
         activity.startActivity(intent);
     }
 
@@ -89,7 +93,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in:
-                CheckInByQRActivity.toThisAct(this);
+                CheckInByQRActivity.toThisAct(this, mPositionInList);
                 this.finish();
                 break;
         }

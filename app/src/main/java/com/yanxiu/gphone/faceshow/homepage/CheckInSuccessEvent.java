@@ -7,12 +7,18 @@ package com.yanxiu.gphone.faceshow.homepage;
 
 public class CheckInSuccessEvent {
     private String mMsg;
+    private int mPosition;
 
-    public CheckInSuccessEvent(String mMsg) {
+    public CheckInSuccessEvent(String mMsg, int position) {
         this.mMsg = mMsg;
+        this.mPosition = position;
     }
 
     public String getmMsg() {
         return mMsg;
+    }
+
+    public int getmPosition() {
+        return mPosition;
     }
 }

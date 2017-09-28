@@ -47,21 +47,23 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
             @Override
             public void onClick(View view) {
                 clickItemPosition = position;
-                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position));
+                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position), position);
             }
         });
 
     }
 
-    public void refreshItem(List<GetCheckInNotesResponse.CheckInNotesBean> data, String json) {
+    public void refreshItem(List<GetCheckInNotesResponse.CheckInNotesBean> data, String json, int mPositionInList) {
         this.checkInNotes = data;
         GetCheckInNotesResponse.UserSignIn userSignIn = new GetCheckInNotesResponse.UserSignIn();
         CheckInResponse.DataBean dataJson = RequestBase.getGson().fromJson(json, CheckInResponse.DataBean.class);
         userSignIn.setSigninTime(dataJson.getSigninTime());
         userSignIn.setSuccessPrompt(dataJson.getSuccessPrompt());
         userSignIn.setSigninStatus(1);
-        checkInNotes.get(clickItemPosition).setUserSignIn(userSignIn);
-        notifyItemChanged(clickItemPosition);
+        if(mPositionInList != -1) {
+            checkInNotes.get(mPositionInList).setUserSignIn(userSignIn);
+            notifyItemChanged(mPositionInList);
+        }
     }
 
     @Override

@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="18dp">
 
         <ImageView
             android:layout_width="match_parent"
@@ -34,7 +34,7 @@
         android:id="@+id/course_detaile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
         android:ellipsize="end"

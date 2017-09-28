@@ -10,7 +10,7 @@
         android:id="@+id/voteResult_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
         android:layout_marginTop="25dp"
@@ -23,7 +23,8 @@
     <com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout
         android:id="@+id/voteResult_Layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="14dp">
 
     </com.yanxiu.gphone.faceshow.customview.VoteRuseltLayout>
 

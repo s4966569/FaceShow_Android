@@ -99,7 +99,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     }
 
     private void setHeadimg(){
-        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext,mHeadImgView,12));
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(mContext,mHeadImgView,12));
     }
 
     private String getSex(){

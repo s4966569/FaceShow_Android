@@ -56,7 +56,8 @@ public class CornersImageTarget extends BitmapImageViewTarget {
         Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
         Bitmap bitmap = Bitmap.createBitmap(width, height, config);
         Canvas canvas = new Canvas(bitmap);
-        canvas.drawColor(ContextCompat.getColor(mContext, R.color.color_dadde0));
+//        canvas.drawColor(ContextCompat.getColor(mContext, R.color.color_dadde0));
+        canvas.drawColor(ContextCompat.getColor(mContext, R.color.color_EBEFF2));
         drawable.setBounds(width * 3 / 16, height * 3 / 16, width * 13 / 16, height * 13 / 16);
         drawable.draw(canvas);
         return bitmap;

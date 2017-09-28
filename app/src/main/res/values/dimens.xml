@@ -64,7 +64,7 @@
     <dimen name="question_fragment_q_line_space">10dp</dimen>
 
     <dimen name="choose_fragment_item_text_size">22dp</dimen>
-    <dimen name="choose_fragment_item_margin_t_b">15dp</dimen>
+    <dimen name="choose_fragment_item_margin_t_b">10dp</dimen>
     <dimen name="choose_fragment_item_content_text_size">16dp</dimen>
     <dimen name="choose_fragment_item_content_line_space">8dp</dimen>
     <dimen name="choose_fragment_item_content_width_yesno">39dp</dimen>
@@ -81,4 +81,6 @@
     <dimen name="dialog_class_circle">167dp</dimen>
 
     <dimen name="answer_card_submitbutton_textsize">20dp</dimen>
+    <!--我的 start-->
+    <dimen name="my_item_text_size">14dp</dimen>
 </resources>
