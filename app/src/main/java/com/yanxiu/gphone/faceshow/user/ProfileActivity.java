@@ -349,11 +349,10 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public void onUpLoadSuccess(int position, Object tag, String jsonString) {
                 rootView.hiddenLoadingView();
-                jsonString=jsonString.replace("default","defaults");
                 Gson gson=new Gson();
                 HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
                 if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
-                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).defaults.url);
+                    UserInfo.getInstance().getInfo().setAvatar(uploadBean.tplData.data.get(0).url);
                     setHeadimg();
                 }else {
                     ToastUtil.showToast(mContext,"头像上传失败");

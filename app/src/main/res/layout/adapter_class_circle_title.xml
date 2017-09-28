@@ -23,18 +23,17 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="15dp"
-            android:layout_marginTop="76dp">
+            android:layout_marginTop="75dp">
+
+            <com.yanxiu.gphone.faceshow.customview.ShadowImageview
+                android:layout_width="80dp"
+                android:layout_marginTop="40dp"
+                android:layout_height="41dp" />
 
             <ImageView
                 android:id="@+id/iv_head_img"
                 android:layout_width="80dp"
                 android:layout_height="80dp" />
-
-            <TextView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:shadowRadius="12"
-                android:shadowColor="#33000000"/>
         </RelativeLayout>
 
         <TextView

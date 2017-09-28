@@ -36,16 +36,15 @@ public class ShadowImageview extends ImageView {
         super.onLayout(changed, left, top, right, bottom);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Paint paint= new Paint();
-        paint.setAntiAlias(true);
-        paint.setShadowLayer(10f, 10.0f, 10.0f, Color.parseColor("#33000000")); //设置阴影层，这是关键。
-        Rect rect=new Rect();
-        canvas.getClipBounds(rect);
-        canvas.drawRect(rect,paint);
+//        Paint paint= new Paint();
+//        paint.setAntiAlias(true);
+//        paint.setShadowLayer(10f, 0, 10.0f, Color.parseColor("#cc000000")); //设置阴影层，这是关键。
+//        Rect rect=new Rect();
+//        canvas.getClipBounds(rect);
+//        canvas.drawRect(rect,paint);
     }
 }
