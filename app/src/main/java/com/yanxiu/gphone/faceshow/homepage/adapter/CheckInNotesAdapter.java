@@ -43,6 +43,15 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
         notifyDataSetChanged();
     }
 
+    boolean isRefrsh = false;
+    String json;
+
+    public void reFreshItem(String json) {
+        this.json = json;
+        isRefrsh = true;
+        notifyItemChanged(0);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_project_name;
         private TextView tv_class_name;
@@ -65,7 +74,14 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
         public void setData(GetCheckInNotesResponse.Element data) {
             tv_project_name.setText(data.getProjectName());
             tv_class_name.setText(data.getClazs().getClazsName());
-            mCheckInNotesSecondAdapter.update(data.getCheckInNotes());
+
+            if (isRefrsh) {
+                isRefrsh = false;
+                mCheckInNotesSecondAdapter.refreshItem(data.getCheckInNotes(),json);
+
+            } else {
+                mCheckInNotesSecondAdapter.update(data.getCheckInNotes());
+            }
 
         }
     }
