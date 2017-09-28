@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivity;
+import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
 
     private final int NORMAL = 0x001;
     private final int FOOTER = 0x002;
+    private int clickItemPosition;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,10 +46,22 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                clickItemPosition = position;
                 CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position));
             }
         });
 
+    }
+
+    public void refreshItem(List<GetCheckInNotesResponse.CheckInNotesBean> data, String json) {
+        this.checkInNotes = data;
+        GetCheckInNotesResponse.UserSignIn userSignIn = new GetCheckInNotesResponse.UserSignIn();
+        CheckInResponse.DataBean dataJson = RequestBase.getGson().fromJson(json, CheckInResponse.DataBean.class);
+        userSignIn.setSigninTime(dataJson.getSigninTime());
+        userSignIn.setSuccessPrompt(dataJson.getSuccessPrompt());
+        userSignIn.setSigninStatus(1);
+        checkInNotes.get(clickItemPosition).setUserSignIn(userSignIn);
+        notifyItemChanged(clickItemPosition);
     }
 
     @Override
@@ -90,12 +105,12 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
                 tv_training_check_in_time.setVisibility(View.VISIBLE);
                 tv_training_check_in_time.setText(checkInNotesBean.getUserSignIn().getSigninTime());
                 tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
-                img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_check_in_small_success));
+                img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_check_in_small_success));
             } else {
                 tv_training_check_in_time.setVisibility(View.GONE);
                 tv_training_statue.setText("未签到");
                 tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_999999));
-                img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(),R.drawable.ic_check_in_small_error));
+                img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_check_in_small_error));
             }
         }
     }

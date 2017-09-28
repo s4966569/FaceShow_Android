@@ -97,8 +97,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void initBottomBar() {
-        mSelNavTxtColor = getResources().getColor(R.color.color_336600);
-        mNormalNavTxtColor = getResources().getColor(R.color.color_999999);
+        mSelNavTxtColor = getResources().getColor(R.color.color_1da1f2);
+        mNormalNavTxtColor = getResources().getColor(R.color.color_a1a8b2);
         mNavBarViews[0] = findViewById(R.id.navi_1);
         mNavBarViews[1] = findViewById(R.id.navi_2);
         mNavBarViews[2] = findViewById(R.id.navi_3);

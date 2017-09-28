@@ -119,8 +119,7 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
         }
     }
 
-    public class UserSignIn implements Serializable {
-
+    public static class UserSignIn implements Serializable {
 
 
         private int id;
@@ -132,6 +131,15 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
         private String signinDevice;
         private Object userName;
         private Object avatar;
+        private String successPrompt;
+
+        public String getSuccessPrompt() {
+            return successPrompt;
+        }
+
+        public void setSuccessPrompt(String successPrompt) {
+            this.successPrompt = successPrompt;
+        }
 
         public int getId() {
             return id;
@@ -208,7 +216,6 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
 
 
     public static class Clazs {
-
 
 
         private int id;

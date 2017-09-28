@@ -67,8 +67,8 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                     tvErrorPrompt.setText("");
                     break;
                 default:
-                    tvErrorStatue.setText(mQrStatue.getMessage());
-                    tvErrorPrompt.setText("");
+                    tvErrorStatue.setText(R.string.check_in_qr_already_invalid);
+                    tvErrorPrompt.setText(R.string.please_scan_new_check_in_qr);
                     break;
             }
         } else {

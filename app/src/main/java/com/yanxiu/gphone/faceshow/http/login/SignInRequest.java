@@ -9,7 +9,7 @@ import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
  */
 
 public class SignInRequest extends FaceShowBaseRequest {
-    public String type = "MOBILE";
+    public String type = "ALL";
     public String loginName;
     public String password;
     public String appKey = "f749edf6-bc39-6ef9-8f81-158se5fds842";

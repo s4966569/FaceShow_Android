@@ -18,8 +18,7 @@
         android:gravity="center_vertical"
         android:text="2017年9月15日15:37:41"
         android:textColor="@color/color_1da1f2"
-        android:textStyle="bold" />
+        android:textSize="16dp" />
 
-    <include
-        layout="@layout/line" />
+    <include layout="@layout/line" />
 </LinearLayout>

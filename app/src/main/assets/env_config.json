@@ -1,28 +1,30 @@
 {
-	"currentIndex":1,
-	"multiConfig":true,
-	"data":[
-		{
-			"server":"http://orz.yanxiu.com/pxt/platform/data.api",
-			"loginServer":"http://orz.yanxiu.com/uc",
-			"uploadServer":"http://b.yanxiu.com/easygo/multiUpload",
-			"initializeUrl":"http://appadmin.yanxiu.com",
-			"mode":"release",
-			"index":0
-		},{
-			"server":"http://orz.yanxiu.com/pxt/platform/data.api",
-			"loginServer":"http://orz.yanxiu.com/uc",
-			"uploadServer":"http://orz.yanxiu.com/easygo/headImgUpload",
-			"initializeUrl":"http://test.hwk.yanxiu.com",
-			"mode":"test",
-			"index":1
-		},{
-			"server":"http://orz.yanxiu.com/pxt/platform/data.api",
-			"loginServer":"http://orz.yanxiu.com/uc",
-			"uploadServer":"http://orz.yanxiu.com/easygo/headImgUpload",
-			"initializeUrl":"http://dev.hwk.yanxiu.com",
-			"mode":"dev",
-			"index":2
-		}
-	]
+  "currentIndex": 0,
+  "multiConfig": true,
+  "data": [
+    {
+      "server": "http://yxb.yanxiu.com/pxt/platform/data.api",
+      "loginServer": "http://pp.yanxiu.com/uc",
+      "uploadServer": "http://b.yanxiu.com/easygo/multiUpload",
+      "initializeUrl": "http://appadmin.yanxiu.com",
+      "mode": "release",
+      "index": 0
+    },
+    {
+      "server": "http://orz.yanxiu.com/pxt/platform/data.api",
+      "loginServer": "http://orz.yanxiu.com/uc",
+      "uploadServer": "http://orz.yanxiu.com/easygo/headImgUpload",
+      "initializeUrl": "http://test.hwk.yanxiu.com",
+      "mode": "test",
+      "index": 1
+    },
+    {
+      "server": "http://orz.yanxiu.com/pxt/platform/data.api",
+      "loginServer": "http://orz.yanxiu.com/uc",
+      "uploadServer": "http://orz.yanxiu.com/easygo/headImgUpload",
+      "initializeUrl": "http://dev.hwk.yanxiu.com",
+      "mode": "dev",
+      "index": 2
+    }
+  ]
 }
