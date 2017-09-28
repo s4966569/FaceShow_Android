@@ -18,13 +18,24 @@
             android:layout_height="135dp"
             android:background="@drawable/classcircle_title_bg" />
 
-        <ImageView
-            android:id="@+id/iv_head_img"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="15dp"
-            android:layout_marginTop="76dp" />
+            android:layout_marginTop="76dp">
+
+            <ImageView
+                android:id="@+id/iv_head_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp" />
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:shadowRadius="12"
+                android:shadowColor="#33000000"/>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_name"

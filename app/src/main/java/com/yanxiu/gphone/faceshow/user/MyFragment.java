@@ -72,6 +72,7 @@ public class MyFragment extends FaceShowBaseFragment {
             case R.id.person_info://点击个人信息
                 Intent i = new Intent(getActivity(), ProfileActivity.class);
                 startActivity(i);
+//                getActivity().overridePendingTransition(R.anim.open_in, R.anim.open_out);
                 break;
             case R.id.registration://点击签到记录
                 CheckInNotesActivity.toThisAct(getActivity());
