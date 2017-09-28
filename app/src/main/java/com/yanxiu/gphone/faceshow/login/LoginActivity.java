@@ -27,6 +27,8 @@ import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
+import com.yanxiu.gphone.faceshow.http.main.MainRequest;
+import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
@@ -197,13 +199,11 @@ public class LoginActivity extends FaceShowBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
                 if (ret.getCode() == 0) {
-                    UserInfo.getInstance().setInfo(ret.getData());
-                    MainActivity.invoke(activity);
-                    LoginActivity.this.finish();
+                    requestClassData(activity, ret);
                 } else {
                     ToastUtil.showToast(activity, ret.getError().getMessage());
+                    rootView.hiddenLoadingView();
                 }
-                rootView.hiddenLoadingView();
             }
 
             @Override
@@ -212,6 +212,37 @@ public class LoginActivity extends FaceShowBaseActivity {
                 ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
             }
         });
+    }
+
+    /**
+     * 请求项目班级信息，如果code!=0，那么，不能进入首页，并且弹出toast提示
+     */
+    private void requestClassData(final Activity activity, final GetUserInfoResponse getUserInfoResponse) {
+        MainRequest mainRequest = new MainRequest();
+        mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, MainResponse ret) {
+                rootView.finish();
+                if (ret != null && ret.getCode() == 0) {
+                    UserInfo.getInstance().setInfo(getUserInfoResponse.getData());
+                    MainActivity.invoke(activity);
+                    LoginActivity.this.finish();
+                } else {
+                    if (ret != null && ret.getError() != null) {
+                        ToastUtil.showToast(FaceShowApplication.getContext(), ret.getError().getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                if (error != null) {
+                    ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
+                }
+            }
+        });
+
     }
 
 }
