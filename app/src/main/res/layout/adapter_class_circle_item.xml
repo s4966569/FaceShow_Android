@@ -20,9 +20,7 @@
                 android:id="@+id/iv_head_img_bg"
                 android:layout_width="40dp"
                 android:layout_marginTop="31dp"
-                android:layout_height="10dp"
-                android:visibility="gone"
-                android:src="@drawable/shape_image_bg"/>
+                android:layout_height="10dp"/>
 
             <ImageView
                 android:id="@+id/iv_head_img"

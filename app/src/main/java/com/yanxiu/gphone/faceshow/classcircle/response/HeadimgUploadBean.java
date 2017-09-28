@@ -19,14 +19,10 @@ public class HeadimgUploadBean {
 
         public class Data{
 
-            public Default defaults;
-
-            public class Default {
-                public String originalUrl;
-                public String shortUrl;
-                public String uniqueKey;
-                public String url;
-            }
+            public String originalUrl;
+            public String shortUrl;
+            public String uniqueKey;
+            public String url;
         }
     }
 }
