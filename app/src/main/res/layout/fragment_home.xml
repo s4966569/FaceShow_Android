@@ -93,6 +93,7 @@
                 android:gravity="center"
                 android:text="@string/courseArrange"
                 android:textColor="@drawable/selector_homepage_tab_text"
+                android:textStyle="bold"
                 android:textSize="@dimen/tab_bar_textsize" />
 
             <View
@@ -118,6 +119,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/resources"
+                android:textStyle="bold"
                 android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
@@ -144,6 +146,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/projectTask"
+                android:textStyle="bold"
                 android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
@@ -170,6 +173,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/schedule"
+                android:textStyle="bold"
                 android:textColor="@drawable/selector_homepage_tab_text"
                 android:textSize="@dimen/tab_bar_textsize" />
 
