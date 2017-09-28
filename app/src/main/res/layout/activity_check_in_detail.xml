@@ -28,15 +28,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:gravity="center"
             android:textColor="@color/color_333333"
+            android:textStyle="bold"
             android:textSize="18dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="29dp"
             android:text="@string/check_in_time_plan"
             android:textColor="@color/color_999999"
             android:textSize="13dp" />
@@ -46,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="7dp"
             android:textColor="@color/color_333333"
             android:textSize="14dp" />
 
@@ -54,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="30dp"
             android:text="@string/check_in_now"
             android:textColor="@color/color_999999"
             android:textSize="13dp" />
@@ -64,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:textColor="@color/color_1da1f2"
             android:textSize="18dp"
             tools:text="您还未签到" />
@@ -98,7 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="29dp"
+            android:layout_marginTop="30dp"
             android:text="签到时间"
             android:textColor="@color/color_999999"
             android:textSize="13dp"
@@ -109,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="7dp"
             android:textColor="@color/color_1da1f2"
             android:textSize="14dp"
             android:visibility="visible"

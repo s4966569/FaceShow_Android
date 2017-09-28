@@ -21,6 +21,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
@@ -102,7 +103,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                         CheckInByQRActivity.this.finish();
                     } else {
                         Log.e("frc","http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
-                        goCheckIn("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
+                        goCheckIn(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                     }
 
                 } else {
