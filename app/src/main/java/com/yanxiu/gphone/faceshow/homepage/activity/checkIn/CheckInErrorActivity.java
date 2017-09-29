@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,11 +56,11 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                     break;
                 case HAS_NOT_START:
                     tvErrorStatue.setText(mQrStatue.getMessage());
-                    tvErrorPrompt.setText(R.string.please_scan_correct_check_in_qr);
+                    tvErrorPrompt.setText(getString(R.string.check_in_plan, StringUtils.getCourseTime(mQrStatue.getData().getStartTime()), StringUtils.getCourseTime(mQrStatue.getData().getEndTime())));
                     break;
                 case QR_EXPIRED:
                     tvErrorStatue.setText(mQrStatue.getMessage());
-                    tvErrorPrompt.setText(mQrStatue.getData().getStartTime() + " - " + mQrStatue.getData().getEndTime());
+                    tvErrorPrompt.setText(getString(R.string.check_in_plan, StringUtils.getCourseTime(mQrStatue.getData().getStartTime()), StringUtils.getCourseTime(mQrStatue.getData().getEndTime())));
                     tvCheckInAgain.setVisibility(View.GONE);
                     break;
                 case QR_NOT_IN_CLASS:
