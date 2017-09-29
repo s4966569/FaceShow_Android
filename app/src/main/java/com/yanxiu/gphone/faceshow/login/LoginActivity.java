@@ -180,6 +180,7 @@ public class LoginActivity extends FaceShowBaseActivity {
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                     rootView.hiddenLoadingView();
+                    edt_account_password.setText(null);
                 }
 
             }
@@ -187,6 +188,7 @@ public class LoginActivity extends FaceShowBaseActivity {
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
+                edt_account_password.setText(null);
                 Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
