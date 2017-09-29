@@ -2,6 +2,7 @@ package com.test.yanxiu.network;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -145,7 +146,7 @@ public abstract class RequestBase {
                     // 如易学易练项目，需要Des解密
                     bodyString = bodyDealer.dealWithBody(bodyString);
                 }
-                final String retStr = bodyString;
+                final String retStr = Html.fromHtml(bodyString).toString();
                 try{
                     Log.e("http", retStr);
                 }catch(Exception e){
