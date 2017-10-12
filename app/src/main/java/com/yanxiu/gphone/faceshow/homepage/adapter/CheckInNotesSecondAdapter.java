@@ -47,7 +47,7 @@ class CheckInNotesSecondAdapter extends RecyclerView.Adapter<CheckInNotesSecondA
             @Override
             public void onClick(View view) {
                 clickItemPosition = position;
-                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position), position);
+                CheckInDetailActivity.toThisAct(holder.itemView.getContext(), checkInNotes.get(position));
             }
         });
 

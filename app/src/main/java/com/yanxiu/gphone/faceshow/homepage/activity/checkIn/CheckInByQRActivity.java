@@ -149,11 +149,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 try {
                     CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
-                        if (mPositionInList != -1) {
-                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse, mPositionInList);
-                        } else {
-                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
-                        }
+                        CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
                         CheckInByQRActivity.this.finish();
                     } else {
                         if (userSignInResponse.getError().getCode() == 210414) {//用户已签到

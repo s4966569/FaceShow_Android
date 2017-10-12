@@ -80,10 +80,9 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
     }
 
 
-    public static void toThisAct(Context activity, GetCheckInNotesResponse.CheckInNotesBean data, int position) {
+    public static void toThisAct(Context activity, GetCheckInNotesResponse.CheckInNotesBean data) {
         Intent intent = new Intent(activity, CheckInDetailActivity.class);
         intent.putExtra(CHECK_IN_DETAIL, data);
-        intent.putExtra(POSITION, position);
         activity.startActivity(intent);
     }
 

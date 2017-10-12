@@ -40,7 +40,6 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
     TextView mTvCheckInStatue;
 
     private CheckInResponse mUserSignInResponse;
-    private int mPositionInList;
 
     public static void toThiAct(Activity activity, CheckInResponse userSignInResponse) {
         Intent intent = new Intent(activity, CheckInSuccessActivity.class);
@@ -62,16 +61,16 @@ public class CheckInSuccessActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in);
         mUserSignInResponse = (CheckInResponse) getIntent().getSerializableExtra(DATA);
-        mPositionInList =  getIntent().getIntExtra(POSITION, -1);
 
         if (mUserSignInResponse.getCode() == 0) {
             mTvCheckInStatue.setText(mUserSignInResponse.getData().getSuccessPrompt());
             tvCheckInSuccessTime.setText(mUserSignInResponse.getData().getSigninTime() != null ? mUserSignInResponse.getData().getSigninTime() : "");
-            String string =RequestBase.getGson().toJson(mUserSignInResponse.getData());
-            EventBus.getDefault().post(new CheckInSuccessEvent(string, mPositionInList));//通知签到记录页面该记录签到成功 CheckInSuccessActivity
+            String string = RequestBase.getGson().toJson(mUserSignInResponse.getData());
+            EventBus.getDefault().post(new CheckInSuccessEvent(string));//通知签到记录页面该记录签到成功 CheckInSuccessActivity
         } else {
-            mTvCheckInStatue.setText(mUserSignInResponse.getError().getData().getSuccessPrompt());
-            tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getSigninTime() != null ? mUserSignInResponse.getError().getData().getSigninTime() : mUserSignInResponse.getError().getData().getUserSignIn().getSigninTime());
+            img.setImageResource(R.drawable.ic_check_in_error);
+            mTvCheckInStatue.setText(mUserSignInResponse.getError().getMessage());
+            tvCheckInSuccessTime.setText(mUserSignInResponse.getError().getData().getUserSignIn().getSigninTime());
         }
 
     }

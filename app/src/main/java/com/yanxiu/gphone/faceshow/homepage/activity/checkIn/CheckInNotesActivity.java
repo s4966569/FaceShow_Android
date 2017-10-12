@@ -106,7 +106,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         loadMoreRecyclerView.setLayoutManager(linearLayoutManager);
         loadMoreRecyclerView.setAdapter(mCheckInNotesAdapter);
         loadMoreRecyclerView.addLoadMoreListener(loadMoreListener);
-        loadMoreRecyclerView.setFocusableInTouchMode(false);//这个牛逼了 不要删除
+//        loadMoreRecyclerView.setFocusableInTouchMode(false);//这个牛逼了 不要删除
     }
 
     private void getCheckInNotes() {
@@ -165,7 +165,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
     }
 
     public void onEventMainThread(CheckInSuccessEvent event) {
-        mCheckInNotesAdapter.reFreshItem(event.getmMsg(), event.getmPosition());
+        mCheckInNotesAdapter.reFreshItem(event.getMsg());
     }
 
     @Override
