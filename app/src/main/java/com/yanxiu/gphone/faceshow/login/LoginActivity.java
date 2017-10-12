@@ -176,7 +176,7 @@ public class LoginActivity extends FaceShowBaseActivity {
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(ret.getToken());
                     SpManager.savePassPort(ret.getPassport());
-                    getUserInfo(LoginActivity.this);
+                    requestClassData(LoginActivity.this);
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                     rootView.hiddenLoadingView();
@@ -201,7 +201,11 @@ public class LoginActivity extends FaceShowBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
                 if (ret.getCode() == 0) {
-                    requestClassData(activity, ret);
+                    String userInfoStr = RequestBase.getGson().toJson(ret.getData());
+                    SpManager.saveUserInfo(userInfoStr);
+                    UserInfo.getInstance().setInfo(ret.getData());
+                    MainActivity.invoke(activity);
+                    LoginActivity.this.finish();
                 } else {
                     ToastUtil.showToast(activity, ret.getError().getMessage());
                     rootView.hiddenLoadingView();
@@ -219,18 +223,14 @@ public class LoginActivity extends FaceShowBaseActivity {
     /**
      * 请求项目班级信息，如果code!=0，那么，不能进入首页，并且弹出toast提示
      */
-    private void requestClassData(final Activity activity, final GetUserInfoResponse getUserInfoResponse) {
+    private void requestClassData(final Activity activity) {
         MainRequest mainRequest = new MainRequest();
         mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
             @Override
             public void onSuccess(RequestBase request, MainResponse ret) {
                 rootView.finish();
                 if (ret != null && ret.getCode() == 0) {
-                    String userInfoStr = RequestBase.getGson().toJson(getUserInfoResponse.getData());
-                    SpManager.saveUserInfo(userInfoStr);
-                    UserInfo.getInstance().setInfo(getUserInfoResponse.getData());
-                    MainActivity.invoke(activity);
-                    LoginActivity.this.finish();
+                    getUserInfo(activity);
                 } else {
                     if (ret != null && ret.getError() != null) {
                         ToastUtil.showToast(FaceShowApplication.getContext(), ret.getError().getMessage());
