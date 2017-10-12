@@ -166,6 +166,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                         activity.finish();
                     }
                 } else {
+                    UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                     isGetUserInfoFailure = true;
                     if (isAnimationEnd) {
                         LoginActivity.toThisAct(activity);
@@ -178,6 +179,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             public void onFail(RequestBase request, Error error) {
                 ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
                 isGetUserInfoFailure = true;
+                UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                 if (isAnimationEnd) {
                     LoginActivity.toThisAct(activity);
                     activity.finish();

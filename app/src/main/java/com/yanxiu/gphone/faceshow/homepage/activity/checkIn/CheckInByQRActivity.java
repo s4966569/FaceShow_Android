@@ -102,7 +102,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     if (TextUtils.isEmpty(result)) {
                         CheckInByQRActivity.this.finish();
                     } else {
-                        Log.e("frc","http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                         goCheckIn(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
                     }
 
@@ -150,7 +149,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 try {
                     CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
                     if (userSignInResponse.getCode() == 0) {
-                        if(mPositionInList != -1) {
+                        if (mPositionInList != -1) {
                             CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse, mPositionInList);
                         } else {
                             CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);

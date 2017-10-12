@@ -226,6 +226,8 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, MainResponse ret) {
                 rootView.finish();
                 if (ret != null && ret.getCode() == 0) {
+                    String userInfoStr = RequestBase.getGson().toJson(getUserInfoResponse.getData());
+                    SpManager.saveUserInfo(userInfoStr);
                     UserInfo.getInstance().setInfo(getUserInfoResponse.getData());
                     MainActivity.invoke(activity);
                     LoginActivity.this.finish();
