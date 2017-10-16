@@ -17,6 +17,9 @@ public class ClazsInfoBean extends BaseBean {
     private String startTime;
     private String endTime;
     private String description;
+    private String manager;
+    private String master;
+    private String clazsStatusName;
 
     public String getId() {
         return id;
@@ -88,5 +91,29 @@ public class ClazsInfoBean extends BaseBean {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getManager() {
+        return manager;
+    }
+
+    public void setManager(String manager) {
+        this.manager = manager;
+    }
+
+    public String getMaster() {
+        return master;
+    }
+
+    public void setMaster(String master) {
+        this.master = master;
+    }
+
+    public String getClazsStatusName() {
+        return clazsStatusName;
+    }
+
+    public void setClazsStatusName(String clazsStatusName) {
+        this.clazsStatusName = clazsStatusName;
     }
 }

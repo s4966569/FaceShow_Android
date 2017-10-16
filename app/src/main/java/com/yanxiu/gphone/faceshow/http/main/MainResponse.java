@@ -18,4 +18,13 @@ public class MainResponse extends FaceShowBaseResponse {
     public void setData(MainBean data) {
         this.data = data;
     }
+    private long currentTime ;
+
+    public long getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(long currentTime) {
+        this.currentTime = currentTime;
+    }
 }
