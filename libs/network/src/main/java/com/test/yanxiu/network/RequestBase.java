@@ -304,15 +304,21 @@ public abstract class RequestBase {
         return request;
     }
 
-    private  String jsonString(String s) {
+    private String jsonString(String s) {
         char[] temp = s.toCharArray();
         int n = temp.length;
         for (int i = 0; i < n; i++) {
             if (temp[i] == ':' && temp[i + 1] == '"') {
+                int count = 0;
                 for (int j = i + 2; j < n; j++) {
                     if (temp[j] == '"') {
+                        count++;
                         if (temp[j + 1] != ',' && temp[j + 1] != '}') {
-                            temp[j] = '”';
+                            if (count/2==1) {
+                                temp[j] = '”';
+                            }else {
+                                temp[j] = '“';
+                            }
                         } else if (temp[j + 1] == ',' || temp[j + 1] == '}') {
                             break;
                         }
