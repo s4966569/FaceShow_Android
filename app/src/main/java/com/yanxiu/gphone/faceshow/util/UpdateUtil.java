@@ -75,7 +75,7 @@ import java.util.List;
 //                                 if (true){
                                  showUpdateDialog(context, ret.data.get(0), new OnUpgradeCallBack() {
                                      @Override
-                                     public void onExit() {
+                                      public void onExit() {
                                          ActivityManger.destoryAll();
                                          android.os.Process.killProcess(android.os.Process.myPid());
                                          System.exit(-1);
