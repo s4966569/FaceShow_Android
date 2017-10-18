@@ -5,7 +5,9 @@ import android.os.StrictMode;
 
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
+import com.igexin.sdk.PushManager;
 import com.yanxiu.gphone.faceshow.constant.Constants;
+import com.yanxiu.gphone.faceshow.getui.FaceShowGeTuiService;
 import com.yanxiu.gphone.faceshow.http.envconfig.EnvConfigBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
@@ -40,6 +42,8 @@ public class FaceShowApplication extends LitePalApplication {
         initUrlServer();
         Stetho.initializeWithDefaults(this);
         CrashHandler.getInstance().init(this);
+        /*个推初始化*/
+        PushManager.getInstance().initialize(getApplicationContext(), FaceShowGeTuiService.class);
     }
 
     private void initUrlServer() {

@@ -13,6 +13,14 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        manifestPlaceholders = [
+                GETUI_APP_ID : "zaNla5e48i8v4GNp6pVIi4",
+                GETUI_APP_KEY : "Yh9txidrzX5de8V9V1onF",
+                GETUI_APP_SECRET : "ounLjVKG018HEym5jQnbm7",
+                PACKAGE_NAME: applicationId   //applicationId
+        ]
+
+
         buildTypes {
             release {
                 minifyEnabled false
@@ -24,9 +32,6 @@ android {
 
         }
 
-        manifestPlaceholders = [
-                PACKAGE_NAME: applicationId   //applicationId
-        ]
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86", "x86_64"
@@ -85,4 +90,7 @@ dependencies {
     compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //个推
+    compile 'com.getui:sdk:2.11.1.0'
+
 }
