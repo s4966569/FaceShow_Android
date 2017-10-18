@@ -164,6 +164,9 @@ public class LoginActivity extends FaceShowBaseActivity {
         }
     }
 
+    private String token;
+    private String passPort;
+
     private void signInRequest() {
         rootView.showLoadingView();
         SignInRequest signInRequest = new SignInRequest();
@@ -174,8 +177,8 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, SignInResponse ret) {
 
                 if (ret.getCode() == 0) {
-                    SpManager.saveToken(ret.getToken());
-                    SpManager.savePassPort(ret.getPassport());
+                    token = ret.getToken();
+                    passPort = ret.getPassport();
                     requestClassData(LoginActivity.this);
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
@@ -197,10 +200,14 @@ public class LoginActivity extends FaceShowBaseActivity {
 
     private void getUserInfo(final Activity activity) {
         GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.token =token;
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                rootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
+                    SpManager.saveToken(token);
+                    SpManager.savePassPort(passPort);
                     String userInfoStr = RequestBase.getGson().toJson(ret.getData());
                     SpManager.saveUserInfo(userInfoStr);
                     UserInfo.getInstance().setInfo(ret.getData());
@@ -225,10 +232,11 @@ public class LoginActivity extends FaceShowBaseActivity {
      */
     private void requestClassData(final Activity activity) {
         MainRequest mainRequest = new MainRequest();
+        mainRequest.token = token;
         mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
             @Override
             public void onSuccess(RequestBase request, MainResponse ret) {
-                rootView.finish();
+
                 if (ret != null && ret.getCode() == 0) {
                     getUserInfo(activity);
                 } else {
