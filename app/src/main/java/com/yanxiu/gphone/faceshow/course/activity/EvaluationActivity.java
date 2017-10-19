@@ -55,7 +55,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
     private EvaluationAdapter mAdapter;
 
     private VoteBean mData;
-    private final static String STEP_ID = "stepid";
+    public final static String STEP_ID = "stepid";
     private String mStepId;
     //eventbus 数据 start
     private int mHashCode;

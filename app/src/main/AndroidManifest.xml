@@ -117,6 +117,7 @@
             android:label="PushService"
             android:process=".pushservice" />
         <service android:name=".getui.FaceShowGeTuiIntentService" />
+        <receiver android:name=".getui.ToMainActivityBroadcastReceiver"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

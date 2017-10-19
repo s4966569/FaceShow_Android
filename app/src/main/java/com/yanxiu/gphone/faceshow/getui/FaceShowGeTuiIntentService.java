@@ -9,13 +9,9 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.igexin.sdk.GTIntentService;
-import com.igexin.sdk.PushManager;
 import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
-import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
-import com.yanxiu.gphone.faceshow.login.LoginActivity;
 
 /**
  * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
@@ -42,19 +38,16 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
         String msgStr = new String(gtTransmitMessage.getPayload());
         Log.e(TAG, msgStr);
 
-        Intent intent = new Intent(context, LoginActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(LoginActivity.class);
-        stackBuilder.addNextIntent(intent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         int id = (int) (System.currentTimeMillis() / 1000);
+        Intent intent = new Intent(context, ToMainActivityBroadcastReceiver.class);
+        intent.putExtra("notificationId",id);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.push_small);
         builder.setContentTitle("My title");
         builder.setContentText(msgStr);
-        builder.setContentIntent(resultPendingIntent);
+        builder.setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(id, builder.build());
 
