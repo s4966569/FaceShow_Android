@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -200,7 +201,7 @@ public class LoginActivity extends FaceShowBaseActivity {
 
     private void getUserInfo(final Activity activity) {
         GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
-        getUserInfoRequest.token =token;
+        getUserInfoRequest.token = token;
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
@@ -211,6 +212,8 @@ public class LoginActivity extends FaceShowBaseActivity {
                     String userInfoStr = RequestBase.getGson().toJson(ret.getData());
                     SpManager.saveUserInfo(userInfoStr);
                     UserInfo.getInstance().setInfo(ret.getData());
+                    PushManager.getInstance().turnOnPush(activity);//开启个推服务
+                    PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
                     MainActivity.invoke(activity);
                     LoginActivity.this.finish();
                 } else {

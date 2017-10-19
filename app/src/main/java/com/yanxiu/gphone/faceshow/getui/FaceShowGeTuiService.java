@@ -1,45 +1,46 @@
 package com.yanxiu.gphone.faceshow.getui;
 
-import android.content.Context;
-import android.util.Log;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 
-import com.igexin.sdk.GTIntentService;
-import com.igexin.sdk.message.GTCmdMessage;
-import com.igexin.sdk.message.GTTransmitMessage;
+import com.igexin.sdk.GTServiceManager;
 
 /**
- * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
- * onReceiveMessageData 处理透传消息<br>
- * onReceiveClientId 接收 cid <br>
- * onReceiveOnlineState cid 离线上线通知 <br>
- * onReceiveCommandResult 各种事件处理回执 <br>
- * Created by frc on 2017/10/18.
+ * Created by Think on 2017/10/18.
  */
 
-public class FaceShowGeTuiService extends GTIntentService {
+public class FaceShowGeTuiService extends Service {
 
     @Override
-    public void onReceiveServicePid(Context context, int i) {
-
+    public void onCreate() {
+        super.onCreate();
+        GTServiceManager.getInstance().onCreate(this);
     }
 
     @Override
-    public void onReceiveClientId(Context context, String clientid) {
-        Log.e(TAG, "onReceiveClientId -> " + "clientid = " + clientid);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return GTServiceManager.getInstance().onStartCommand(this, intent, flags, startId);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return GTServiceManager.getInstance().onBind(intent);
     }
 
     @Override
-    public void onReceiveMessageData(Context context, GTTransmitMessage gtTransmitMessage) {
-
+    public void onDestroy() {
+        super.onDestroy();
+        GTServiceManager.getInstance().onDestroy();
     }
 
     @Override
-    public void onReceiveOnlineState(Context context, boolean b) {
-
-    }
-
-    @Override
-    public void onReceiveCommandResult(Context context, GTCmdMessage gtCmdMessage) {
-
+    public void onLowMemory() {
+        super.onLowMemory();
+        GTServiceManager.getInstance().onLowMemory();
     }
 }

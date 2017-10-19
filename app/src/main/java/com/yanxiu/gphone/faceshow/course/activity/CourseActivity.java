@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -151,7 +152,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
      *
      * @param activity
      */
-    public static void invoke(Activity activity, String courseId) {
+    public static void invoke(Context activity, String courseId) {
         Intent intent = new Intent(activity, CourseActivity.class);
         intent.putExtra(COURSE_ID, courseId);
         activity.startActivity(intent);

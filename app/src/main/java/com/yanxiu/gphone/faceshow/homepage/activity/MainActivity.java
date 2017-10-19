@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -291,7 +293,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
      *
      * @param activity
      */
-    public static void invoke(Activity activity) {
+    public static void invoke(Context activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
     }

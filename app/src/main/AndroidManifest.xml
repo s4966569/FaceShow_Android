@@ -111,7 +111,12 @@
             android:name=".homepage.activity.checkIn.CheckInByQRActivity"
             android:screenOrientation="portrait" />
         <!--自定义个推服务-->
-        <service android:name=".getui.FaceShowGeTuiService" />
+        <service
+            android:name=".getui.FaceShowGeTuiService"
+            android:exported="true"
+            android:label="PushService"
+            android:process=".pushservice" />
+        <service android:name=".getui.FaceShowGeTuiIntentService" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

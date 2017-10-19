@@ -304,6 +304,12 @@ public abstract class RequestBase {
         return request;
     }
 
+    /**
+     * 将json格式字符串中返回的英文双引号改成中文的
+     *
+     * @param s
+     * @return
+     */
     private String jsonString(String s) {
         char[] temp = s.toCharArray();
         int n = temp.length;
@@ -314,9 +320,9 @@ public abstract class RequestBase {
                     if (temp[j] == '"') {
                         count++;
                         if (temp[j + 1] != ',' && temp[j + 1] != '}') {
-                            if (count/2==1) {
+                            if (count / 2 == 1) {
                                 temp[j] = '”';
-                            }else {
+                            } else {
                                 temp[j] = '“';
                             }
                         } else if (temp[j + 1] == ',' || temp[j + 1] == '}') {
