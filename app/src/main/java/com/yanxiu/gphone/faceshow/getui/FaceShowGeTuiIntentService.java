@@ -37,12 +37,12 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
     public void onReceiveMessageData(Context context, GTTransmitMessage gtTransmitMessage) {
         String msgStr = new String(gtTransmitMessage.getPayload());
         Log.e(TAG, msgStr);
-
-
         int id = (int) (System.currentTimeMillis() / 1000);
         Intent intent = new Intent(context, ToMainActivityBroadcastReceiver.class);
         intent.putExtra("notificationId",id);
+
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.push_small);
         builder.setContentTitle("My title");
@@ -50,10 +50,6 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
         builder.setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(id, builder.build());
-
-
-        //  MainActivity.invoke(context);
-//        CourseActivity.invoke(context,"");
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;

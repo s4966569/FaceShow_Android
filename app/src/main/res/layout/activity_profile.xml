@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_EBEFF2"
@@ -47,12 +48,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
         android:layout_marginTop="5dp"
+        android:background="@color/color_white"
         android:orientation="vertical"
-        android:background="@color/color_white">
+        android:paddingLeft="15dp">
 
         <RelativeLayout
+            android:id="@+id/rl_name"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:background="@color/color_white">
@@ -65,22 +67,33 @@
                 android:textColor="@color/color_333333"
                 android:textSize="@dimen/my_item_text_size" />
 
+            <ImageView
+                android:id="@+id/name_enter"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/selector_go" />
+
             <TextView
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@id/name_enter"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/my_item_text_size" />
+                android:textSize="@dimen/my_item_text_size"
+                tools:text="孙长龙" />
+
 
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2px"
-            android:background="@color/color_EBEFF2"/>
+            android:background="@color/color_EBEFF2" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -107,12 +120,14 @@
                 android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2px"
-            android:background="@color/color_EBEFF2"/>
+            android:background="@color/color_EBEFF2" />
 
         <RelativeLayout
+            android:id="@+id/rl_sex"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:background="@color/color_white">
@@ -125,22 +140,33 @@
                 android:textColor="@color/color_333333"
                 android:textSize="@dimen/my_item_text_size" />
 
+            <ImageView
+                android:id="@+id/sex_enter"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/selector_go" />
+
             <TextView
                 android:id="@+id/tv_gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@id/sex_enter"
                 android:ellipsize="end"
                 android:textColor="@color/color_999999"
-                android:textSize="@dimen/my_item_text_size" />
+                android:textSize="@dimen/my_item_text_size"
+                tools:text="男" />
 
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2px"
-            android:background="@color/color_EBEFF2"/>
+            android:background="@color/color_EBEFF2" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -167,10 +193,11 @@
                 android:textSize="@dimen/my_item_text_size" />
 
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2px"
-            android:background="@color/color_EBEFF2"/>
+            android:background="@color/color_EBEFF2" />
 
         <RelativeLayout
             android:layout_width="match_parent"

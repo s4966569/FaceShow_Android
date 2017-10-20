@@ -17,14 +17,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <!--个推-->
-    <!-- iBeancon功能所需权限 -->;
+    <!-- 个推 -->
+    <!-- iBeancon功能所需权限 -->
+    ;
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- 个推3.0电子围栏功能所需权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
 
     <application
         android:name=".FaceShowApplication"
@@ -101,23 +101,51 @@
         <activity
             android:name=".course.activity.EvaluationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".course.activity.SpecialistIntroductionActivity" />
-        <activity android:name=".course.activity.CourseIntroductionActivity" />
-        <activity android:name=".course.activity.CourseDiscussActivity" />
-        <activity android:name=".course.activity.VoteActivity" />
-        <activity android:name=".common.activity.PDFViewActivity" />
+        <activity
+            android:name=".course.activity.SpecialistIntroductionActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".course.activity.CourseIntroductionActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".course.activity.CourseDiscussActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".course.activity.VoteActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".common.activity.PDFViewActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".user.ModifyUserNameActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".login.ForgetPasswordActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
+        <activity
+            android:name=".user.ModifyUserSexActivity"
+            android:screenOrientation="portrait"
+            android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <!-- 设置二维码扫描界面方向为竖屏 -->
         <activity
             android:name=".homepage.activity.checkIn.CheckInByQRActivity"
             android:screenOrientation="portrait" />
-        <!--自定义个推服务-->
+        <!-- 自定义个推服务 -->
         <service
             android:name=".getui.FaceShowGeTuiService"
             android:exported="true"
             android:label="PushService"
             android:process=".pushservice" />
         <service android:name=".getui.FaceShowGeTuiIntentService" />
-        <receiver android:name=".getui.ToMainActivityBroadcastReceiver"/>
+
+        <receiver android:name=".getui.ToMainActivityBroadcastReceiver" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -128,6 +156,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+
     </application>
 
 </manifest>

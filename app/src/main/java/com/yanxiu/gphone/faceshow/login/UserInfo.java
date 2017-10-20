@@ -27,6 +27,10 @@ public class UserInfo {
         this.info = info;
     }
 
+    public static void update(Info userInfo) {
+        instance.info = userInfo;
+    }
+
     public class Info {
 
         private int id;
@@ -41,12 +45,20 @@ public class UserInfo {
         private Object school;
         private String avatar;
         private String sexName;
+        private int sex;
         private String stageName;
         private String subjectName;
         private String classId;
         private String className;
         private String token;
 
+        public void setSex(int sex) {
+            this.sex = sex;
+        }
+
+        public int getSex() {
+            return sex;
+        }
 
         public int getId() {
             return id;

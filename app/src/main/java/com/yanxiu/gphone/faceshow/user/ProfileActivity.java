@@ -8,19 +8,17 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.view.Gravity;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +31,6 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.response.HeadimgUploadBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
-import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
@@ -59,6 +56,10 @@ import butterknife.Unbinder;
  */
 
 public class ProfileActivity extends FaceShowBaseActivity implements OnPermissionCallback {
+    @BindView(R.id.rl_name)
+    RelativeLayout rlName;
+    @BindView(R.id.rl_sex)
+    RelativeLayout rlSex;
     private Unbinder unbinder;
     private Context mContext;
     private PublicLoadLayout rootView;
@@ -83,6 +84,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private static final int SELECT_FROM_GALLER = 1;
     private static final int TAKE_PHOTO = 2;
     private static final int CROP_PICTURE = 3;
+    private static final int MODIFY_NAME = 4;
+    private static final int MODIFY_SEX = 5;
     private File portraitFile, photoFile; //拍照裁剪后的照片文件，拍照之后存储的照片文件
     private String path;
     private String crop_path;
@@ -99,6 +102,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         initData();
     }
 
+
     private void initData() {
         mBackView.setVisibility(View.VISIBLE);
 
@@ -106,16 +110,16 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
         mMobileView.setText(UserInfo.getInstance().getInfo().getMobilePhone());
         mSexView.setText(getSex());
-        mStageView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getStageName()) ? "暂无":UserInfo.getInstance().getInfo().getStageName());
-        mSubjectView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSubjectName()) ? "暂无":UserInfo.getInstance().getInfo().getSubjectName());
+        mStageView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getStageName()) ? "暂无" : UserInfo.getInstance().getInfo().getStageName());
+        mSubjectView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSubjectName()) ? "暂无" : UserInfo.getInstance().getInfo().getSubjectName());
     }
 
-    private void setHeadimg(){
-        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(mContext,mHeadImgView,12));
+    private void setHeadimg() {
+        Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(mContext, mHeadImgView, 12));
     }
 
-    private String getSex(){
-        String sex=UserInfo.getInstance().getInfo().getSexName();
+    private String getSex() {
+        String sex = UserInfo.getInstance().getInfo().getSexName();
 //        String sexTxt="未知";
 //        if (!TextUtils.isEmpty(sex)) {
 //            if (sex.equals("0")) {
@@ -127,7 +131,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         return sex;
     }
 
-    @OnClick({R.id.person_info, R.id.title_layout_left_img})
+    @OnClick({R.id.person_info, R.id.title_layout_left_img, R.id.rl_name, R.id.rl_sex})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.person_info://点击修改头像
@@ -135,6 +139,12 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 break;
             case R.id.title_layout_left_img:
                 finish();
+                break;
+            case R.id.rl_name:
+                startActivityForResult(new Intent(this, ModifyUserNameActivity.class), MODIFY_NAME);
+                break;
+            case R.id.rl_sex:
+                startActivityForResult(new Intent(this, ModifyUserSexActivity.class), MODIFY_SEX);
                 break;
         }
     }
@@ -218,7 +228,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 //                        e.printStackTrace();
 //                    }
 //                }
-                path= FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+                path = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
                 photoFile = new File(path);
                 if (photoFile.exists()) {
                     try {
@@ -268,7 +278,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                     if (photoFile != null) {
 //                        photoFile = new File(Environment
 //                                .getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
-                        File file=new File(path);
+                        File file = new File(path);
                         Uri imageUri;
                         if (Build.VERSION.SDK_INT < 24) {
                             imageUri = Uri.fromFile(file);
@@ -284,6 +294,12 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                     if (portraitFile != null) {
                         uploadPortrait(portraitFile.getAbsolutePath());
                     }
+                    break;
+                case MODIFY_NAME:
+                    mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
+                    break;
+                case MODIFY_SEX:
+                    mSexView.setText(getSex());
                     break;
                 default:
                     break;
@@ -328,7 +344,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
      * @return
      */
     private File createCroppedImageFile() {
-        crop_path= FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+        crop_path = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
 
 //        File dir = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/");
 //        if (!dir.exists())
@@ -347,13 +363,13 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
      * 上传头像
      */
     private void uploadPortrait(final String path) {
-    //提交上传头像请求
+        //提交上传头像请求
         UpLoadRequest.getInstense().setConstantParams(new UpLoadRequest.findConstantParams() {
             @NonNull
             @Override
             public String findUpdataUrl() {
-                String token= SpManager.getToken();
-                return UrlRepository.getInstance().getUploadServer()+"?token="+token+"&width=110&height=110";
+                String token = SpManager.getToken();
+                return UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=110&height=110";
             }
 
             @Override
@@ -381,35 +397,35 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public void onUpLoadSuccess(int position, Object tag, String jsonString) {
                 try {
-                    Gson gson=new Gson();
-                    HeadimgUploadBean uploadBean=gson.fromJson(jsonString,HeadimgUploadBean.class);
-                    if (uploadBean!=null&&uploadBean.tplData!=null&&uploadBean.tplData.data!=null&&uploadBean.tplData.data.size()>0) {
+                    Gson gson = new Gson();
+                    HeadimgUploadBean uploadBean = gson.fromJson(jsonString, HeadimgUploadBean.class);
+                    if (uploadBean != null && uploadBean.tplData != null && uploadBean.tplData.data != null && uploadBean.tplData.data.size() > 0) {
                         updataHeadimg(uploadBean.tplData.data.get(0).url);
-                    }else {
-                        ToastUtil.showToast(mContext,"头像上传失败");
+                    } else {
+                        ToastUtil.showToast(mContext, "头像上传失败");
                     }
-                }catch (Exception e){
-                    ToastUtil.showToast(mContext,"头像上传失败");
+                } catch (Exception e) {
+                    ToastUtil.showToast(mContext, "头像上传失败");
                 }
             }
 
             @Override
             public void onUpLoadFailed(int position, Object tag, String failMsg) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext,failMsg);
+                ToastUtil.showToast(mContext, failMsg);
             }
 
             @Override
             public void onError(String errorMsg) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext,errorMsg);
+                ToastUtil.showToast(mContext, errorMsg);
             }
         });
     }
 
-    private void updataHeadimg(final String url){
-        UpdataUserMessageRequest messageRequest=new UpdataUserMessageRequest();
-        messageRequest.avatar=url;
+    private void updataHeadimg(final String url) {
+        UpdataUserMessageRequest messageRequest = new UpdataUserMessageRequest();
+        messageRequest.avatar = url;
         messageRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
             @Override
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
@@ -421,7 +437,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext,"头像上传失败");
+                ToastUtil.showToast(mContext, "头像上传失败");
             }
         });
     }
@@ -454,4 +470,6 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         UpLoadRequest.getInstense().cancle();
         unbinder.unbind();
     }
+
+
 }

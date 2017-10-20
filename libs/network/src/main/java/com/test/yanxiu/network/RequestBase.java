@@ -107,10 +107,8 @@ public abstract class RequestBase {
         Request request = null;
         try {
             request = generateRequest(uuid);
-            if (shouldLog()) {
-
-            }
         } catch (Exception e) {
+            Log.e("request",e.getMessage());
         }
         if (request == null) {
             callback.onFail(RequestBase.this, new Error("request start error"));

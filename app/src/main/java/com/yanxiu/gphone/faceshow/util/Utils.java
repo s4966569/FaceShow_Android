@@ -155,6 +155,17 @@ public class Utils {
         Matcher m = p.matcher(mobiles);
         return m.matches();
     }
+    /**
+     * 验证注册手机号码是否正确
+     */
+    public static boolean isMobileNO(CharSequence mobiles) {
+        if (mobiles == null) {
+            return false;
+        }
+        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2-9]))\\d{8}$");
+        Matcher m = p.matcher(mobiles);
+        return m.matches();
+    }
 
     /**
      * 根据不同的id类型，获取不同的组合文字结果

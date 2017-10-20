@@ -150,10 +150,17 @@ public class SpManager {
         editor.apply();
     }
 
+    public static void saveUserInfo(UserInfo.Info userInfo) {
+        String userInfoStr = RequestBase.getGson().toJson(userInfo);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString(USER_INFO, userInfoStr);
+        editor.apply();
+        UserInfo.update(userInfo);
+    }
+
 
     public static UserInfo.Info getUserInfo() {
         String userInfoStr = mySharedPreferences.getString(USER_INFO, "");
         return RequestBase.getGson().fromJson(userInfoStr, UserInfo.Info.class);
-
     }
 }

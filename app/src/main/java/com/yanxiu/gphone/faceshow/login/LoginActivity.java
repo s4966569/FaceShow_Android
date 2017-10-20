@@ -57,6 +57,8 @@ public class LoginActivity extends FaceShowBaseActivity {
     ImageView img_show_password;
     @BindView(R.id.tv_sign_in)
     TextView tv_sign_in;
+    @BindView(R.id.tv_forget_password)
+    TextView tv_forget_password;
     private boolean isPasswordShow = false;
     private UUID mSignInRequestUUID;
 
@@ -138,7 +140,7 @@ public class LoginActivity extends FaceShowBaseActivity {
         }
     }
 
-    @OnClick({R.id.img_show_password, R.id.tv_sign_in})
+    @OnClick({R.id.img_show_password, R.id.tv_sign_in, R.id.tv_forget_password})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_show_password:
@@ -161,6 +163,9 @@ public class LoginActivity extends FaceShowBaseActivity {
                     signInRequest();
                 }
 
+                break;
+            case R.id.tv_forget_password:
+                startActivity(new Intent(LoginActivity.this, ForgetPasswordActivity.class));
                 break;
         }
     }
