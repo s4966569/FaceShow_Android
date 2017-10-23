@@ -47,9 +47,9 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
     @Override
     public void onBindViewHolder(final BaseViewHolder holder, final int position) {
         if (getItemViewType(position) == ITEM_TYPE_CLASS_INFO) {
-            ((ClassInfoViewHolder) holder).setData(data.get(position));
+            holder.setData(data.get(position));
         } else {
-            ((CheckInViewHolder) holder).setData(data.get(position));
+            holder.setData(data.get(position));
             ((CheckInViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

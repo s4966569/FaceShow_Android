@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -45,7 +44,6 @@ import okhttp3.Response;
 
 public class CheckInByQRActivity extends FaceShowBaseActivity {
 
-    private static int mPositionInList = -1;
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -73,16 +71,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         intentIntegrator.initiateScan();
     }
 
-    public static void toThisAct(Activity activity, int position) {
-        IntentIntegrator intentIntegrator = new IntentIntegrator(activity);
-        // 设置自定义扫描Activity
-        intentIntegrator.setCaptureActivity(CheckInByQRActivity.class);
-        intentIntegrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-        intentIntegrator.setOrientationLocked(true);
-        intentIntegrator.setBeepEnabled(true);
-        intentIntegrator.initiateScan();
-        mPositionInList = position;
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,6 +1,10 @@
 package com.yanxiu.gphone.faceshow.login;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -8,10 +12,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseCallback;
+import com.yanxiu.gphone.faceshow.http.login.GetVerificationCodeRequest;
+import com.yanxiu.gphone.faceshow.http.login.GetVerificationCodeResponse;
+import com.yanxiu.gphone.faceshow.http.login.ModifyPasswordRequest;
+import com.yanxiu.gphone.faceshow.http.login.ModifyPasswordResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
@@ -40,6 +50,31 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
     private boolean isPhoneNumber = false;
     private boolean isVerificationCodeNull = true;
     private boolean isNewPasswordNull = true;
+    private int time = 60;
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            time--;
+            tvGetVerificationCode.setText(getString(R.string.time_count, time));
+            if (time == 0) {
+                time = 60;
+                if (Utils.isMobileNO(edtPhoneNumber.getText().toString())) {
+                    isPhoneNumber = true;
+                    tvGetVerificationCode.setTextColor(Color.parseColor("#1da1f2"));
+                    tvGetVerificationCode.setBackgroundResource(R.drawable.shape_verification_code_selected);
+                } else {
+                    isPhoneNumber = false;
+                    tvGetVerificationCode.setTextColor(Color.parseColor("#999999"));
+                    tvGetVerificationCode.setBackgroundResource(R.drawable.shape_verification_code_normal);
+                }
+                tvGetVerificationCode.setText(R.string.get_verification_code);
+            } else {
+                handler.sendEmptyMessageDelayed(1, 1000);
+            }
+        }
+    };
 
     private TextWatcher mPhoneNumberTextWatcher = new TextWatcher() {
         @Override
@@ -51,11 +86,11 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (Utils.isMobileNO(s)) {
                 isPhoneNumber = true;
-                tvGetVerificationCode.setTextColor(R.color.color_1da1f2);
+                tvGetVerificationCode.setTextColor(Color.parseColor("#1da1f2"));
                 tvGetVerificationCode.setBackgroundResource(R.drawable.shape_verification_code_selected);
             } else {
                 isPhoneNumber = false;
-                tvGetVerificationCode.setTextColor(R.color.color_999999);
+                tvGetVerificationCode.setTextColor(Color.parseColor("#999999"));
                 tvGetVerificationCode.setBackgroundResource(R.drawable.shape_verification_code_normal);
             }
             changSureBtnColor();
@@ -69,12 +104,13 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
     private TextWatcher mVerificationCodeTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            isVerificationCodeNull = TextUtils.isEmpty(s);
-            changSureBtnColor();
+
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            isVerificationCodeNull = TextUtils.isEmpty(s);
+            changSureBtnColor();
         }
 
         @Override
@@ -90,7 +126,7 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            isNewPasswordNull = TextUtils.isEmpty(s);
+            isNewPasswordNull = s.length() > 20 || s.length() < 6;
             changSureBtnColor();
         }
 
@@ -104,7 +140,7 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
      * 是否可以点击确定按钮
      */
     private boolean isCanSure() {
-        return isPhoneNumber && !isNewPasswordNull && isVerificationCodeNull;
+        return isPhoneNumber && !isNewPasswordNull && !isVerificationCodeNull;
     }
 
     private void changSureBtnColor() {
@@ -141,6 +177,8 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
                 break;
             case R.id.tv_get_verification_code:
                 if (isPhoneNumber) {
+                    handler.sendEmptyMessage(1);
+                    tvGetVerificationCode.setBackground(null);
                     getVerificationCode();
                 } else {
                     ToastUtil.showToast(getApplicationContext(), "请填入正确的手机号");
@@ -155,7 +193,7 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
                     } else if (isVerificationCodeNull) {
                         ToastUtil.showToast(getApplicationContext(), "验证码不能为空");
                     } else if (isNewPasswordNull) {
-                        ToastUtil.showToast(getApplicationContext(), "新密码不能为空");
+                        ToastUtil.showToast(getApplicationContext(), R.string.please_input_new_password);
                     }
                 }
                 break;
@@ -163,10 +201,70 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
     }
 
     private void resetNewPassword() {
+        final ModifyPasswordRequest modifyPasswordRequest = new ModifyPasswordRequest();
+        modifyPasswordRequest.mobile = edtPhoneNumber.getText().toString();
+        modifyPasswordRequest.code = edtVerificationCode.getText().toString();
+        modifyPasswordRequest.password = Utils.MD5Helper(edtInputNewPassword.getText().toString());
+        publicLoadLayout.showLoadingView();
+        modifyPasswordRequest.startRequest(ModifyPasswordResponse.class, new FaceShowBaseCallback<ModifyPasswordResponse>() {
+            @Override
+            protected void onResponse(RequestBase request, ModifyPasswordResponse response) {
+                publicLoadLayout.hiddenLoadingView();
+                if (response.getCode() == 0) {
+                    ToastUtil.showToast(getApplicationContext(), "密码重置成功");
+                    Intent intent = new Intent();
+                    intent.putExtra("password", edtInputNewPassword.getText().toString());
+                    intent.putExtra("phoneNumber", modifyPasswordRequest.mobile);
+                    ForgetPasswordActivity.this.setResult(RESULT_OK, intent);
+                    ForgetPasswordActivity.this.finish();
+                } else {
+                    ToastUtil.showToast(getApplicationContext(), response.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                publicLoadLayout.hiddenLoadingView();
+                ToastUtil.showToast(getApplicationContext(), error.getMessage());
+            }
+        });
+
 
     }
 
     private void getVerificationCode() {
+        publicLoadLayout.showLoadingView();
+        GetVerificationCodeRequest getVerificationCodeRequest = new GetVerificationCodeRequest();
+        getVerificationCodeRequest.mobile = edtPhoneNumber.getText().toString();
+        getVerificationCodeRequest.startRequest(GetVerificationCodeResponse.class, new FaceShowBaseCallback<GetVerificationCodeResponse>() {
+            @Override
+            protected void onResponse(RequestBase request, GetVerificationCodeResponse response) {
+                publicLoadLayout.hiddenLoadingView();
+                if (response.getCode() == 0) {
+                    ToastUtil.showToast(getApplicationContext(), response.getMessage());
+                } else {
+                    ToastUtil.showToast(getApplicationContext(), response.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                publicLoadLayout.hiddenLoadingView();
+                ToastUtil.showToast(getApplicationContext(), error.getMessage());
+
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
+        }
 
     }
 }

@@ -46,6 +46,8 @@ import butterknife.Unbinder;
  */
 public class LoginActivity extends FaceShowBaseActivity {
 
+    private static final int TO_FORGET_PASSWORD_REQUEST_CODE = 0X01;
+
     private Unbinder unbinder;
     private Context mContext;
     private PublicLoadLayout rootView;
@@ -61,6 +63,8 @@ public class LoginActivity extends FaceShowBaseActivity {
     TextView tv_forget_password;
     private boolean isPasswordShow = false;
     private UUID mSignInRequestUUID;
+    private String token;
+    private String passPort;
 
     public static void toThisAct(Activity activity) {
         activity.startActivity(new Intent(activity, LoginActivity.class));
@@ -165,13 +169,11 @@ public class LoginActivity extends FaceShowBaseActivity {
 
                 break;
             case R.id.tv_forget_password:
-                startActivity(new Intent(LoginActivity.this, ForgetPasswordActivity.class));
+                startActivityForResult(new Intent(LoginActivity.this, ForgetPasswordActivity.class), TO_FORGET_PASSWORD_REQUEST_CODE);
                 break;
         }
     }
 
-    private String token;
-    private String passPort;
 
     private void signInRequest() {
         rootView.showLoadingView();
@@ -262,7 +264,18 @@ public class LoginActivity extends FaceShowBaseActivity {
                 }
             }
         });
-
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == TO_FORGET_PASSWORD_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    edt_account_number.setText(data.getStringExtra("phoneNumber"));
+                    edt_account_password.setText(data.getStringExtra("password"));
+                }
+            }
+        }
+    }
 }

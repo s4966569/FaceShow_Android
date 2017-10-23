@@ -339,7 +339,6 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
          * percent : 0
          * userSignIn : null
          */
-
         private int id;
         private String title;
         private String startTime;
