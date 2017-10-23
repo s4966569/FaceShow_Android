@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.getui;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,23 +22,25 @@ import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivit
 public class ToEvaluationActivityBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        //用这个方法实现点击notification后的事件  不知为何不能自动清掉已点击的notification  故自己手动清就ok了
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(intent.getIntExtra("notificationId", -1));
         Intent interactIntent = null;
-        switch (intent.getStringExtra("type")) {
-            case InteractStepsBean.VOTE:
+        switch (intent.getIntExtra("type", -1)) {
+            case 101://投票
                 interactIntent = new Intent(context, VoteActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 break;
-            case InteractStepsBean.DISCUSS:
-                interactIntent = new Intent(context, CourseDiscussActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                break;
-            case InteractStepsBean.QUESTIONNAIRES:
+//            case InteractStepsBean.DISCUSS:
+//                interactIntent = new Intent(context, CourseDiscussActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                break;
+            case 120://问卷
                 interactIntent = new Intent(context, EvaluationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 break;
-            case InteractStepsBean.CHECK_IN:
+            case 100://签到
                 interactIntent = new Intent(context, CheckInDetailActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 break;
         }
-        interactIntent.putExtra("stepid", intent.getStringExtra(EvaluationActivity.STEP_ID));
+        interactIntent.putExtra("stepid", String.valueOf(intent.getIntExtra("objectId", -1)));
         context.startActivity(interactIntent);
 
     }

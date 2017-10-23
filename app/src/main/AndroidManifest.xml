@@ -144,8 +144,12 @@
             android:label="PushService"
             android:process=".pushservice" />
         <service android:name=".getui.FaceShowGeTuiIntentService" />
-
+        <!--自定义notification点击事件的接收者-->
         <receiver android:name=".getui.ToMainActivityBroadcastReceiver" />
+        <receiver android:name=".getui.ToCourseActivityBroadcastReceiver" />
+        <receiver android:name=".getui.ToEvaluationActivityBroadcastReceiver" />
+        <receiver android:name=".getui.ToNotificationDetailActivityBroadcastReceiver" />
+        <receiver android:name=".getui.ToResourceDetailActivityBroadcastReceiver" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
