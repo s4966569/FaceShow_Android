@@ -177,8 +177,6 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
                 break;
             case R.id.tv_get_verification_code:
                 if (isPhoneNumber) {
-                    handler.sendEmptyMessage(1);
-                    tvGetVerificationCode.setBackground(null);
                     getVerificationCode();
                 } else {
                     ToastUtil.showToast(getApplicationContext(), "请填入正确的手机号");
@@ -242,6 +240,8 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
             protected void onResponse(RequestBase request, GetVerificationCodeResponse response) {
                 publicLoadLayout.hiddenLoadingView();
                 if (response.getCode() == 0) {
+                    handler.sendEmptyMessage(1);
+                    tvGetVerificationCode.setBackground(null);
                     ToastUtil.showToast(getApplicationContext(), response.getMessage());
                 } else {
                     ToastUtil.showToast(getApplicationContext(), response.getMessage());

@@ -9,23 +9,36 @@ import java.io.Serializable;
 
 public class GTPayloadBean implements Serializable {
 
+
     /**
-     * content : 收到一条新通知，请及时查看
-     * extendOne : clazId
+     * appId : 1
+     * content : 啊啊啊啊啊
      * extendInfo : {"extendInfoOne":"One"}
-     * objectId : 1
+     * extendOne : clazId
+     * id : 0
+     * objectId : noticeId
      * title :
-     * type : 101
-     * userId : 1111111
+     * type : 2
+     * userId : 23246747
      */
 
+    private int appId;
     private String content;
-    private String extendOne;
     private ExtendInfoBean extendInfo;
+    private String extendOne;
+    private int id;
     private String objectId;
     private String title;
     private int type;
     private int userId;
+
+    public int getAppId() {
+        return appId;
+    }
+
+    public void setAppId(int appId) {
+        this.appId = appId;
+    }
 
     public String getContent() {
         return content;
@@ -33,6 +46,14 @@ public class GTPayloadBean implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public ExtendInfoBean getExtendInfo() {
+        return extendInfo;
+    }
+
+    public void setExtendInfo(ExtendInfoBean extendInfo) {
+        this.extendInfo = extendInfo;
     }
 
     public String getExtendOne() {
@@ -43,12 +64,12 @@ public class GTPayloadBean implements Serializable {
         this.extendOne = extendOne;
     }
 
-    public ExtendInfoBean getExtendInfo() {
-        return extendInfo;
+    public int getId() {
+        return id;
     }
 
-    public void setExtendInfo(ExtendInfoBean extendInfo) {
-        this.extendInfo = extendInfo;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getObjectId() {

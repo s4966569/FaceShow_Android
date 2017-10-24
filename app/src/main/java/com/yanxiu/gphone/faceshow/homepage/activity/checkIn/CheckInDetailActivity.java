@@ -48,7 +48,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
     TextView tvCheckInTimeHere;
 
     private final static String CHECK_IN_DETAIL = "check_in_detail";
-    private final static String STEP_ID = "stepId";
+    private final static String STEP_ID = "stepid";
     private PublicLoadLayout publicLoadLayout;
 
     public static void toThisAct(Context activity, String stepId) {

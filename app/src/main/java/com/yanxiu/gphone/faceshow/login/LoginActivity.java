@@ -9,6 +9,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -220,7 +221,7 @@ public class LoginActivity extends FaceShowBaseActivity {
                     SpManager.saveUserInfo(userInfoStr);
                     UserInfo.getInstance().setInfo(ret.getData());
                     PushManager.getInstance().turnOnPush(activity);//开启个推服务
-                    PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
+                   //boolean isBind= PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
                     MainActivity.invoke(activity);
                     LoginActivity.this.finish();
                 } else {

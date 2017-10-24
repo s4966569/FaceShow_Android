@@ -88,7 +88,7 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_999999));
                     holder2.project_task_img.setImageResource(R.drawable.task_uncompleted);
                 }
-                switch (data.getInteractType()){
+                switch (data.getInteractType()) {
                     case InteractStepsBean.VOTE:
                         holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_vote);
                         break;
@@ -99,7 +99,7 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_questionnaires);
                         break;
                     case InteractStepsBean.CHECK_IN:
-                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_vote);
+                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_check_in);
                         break;
                 }
 

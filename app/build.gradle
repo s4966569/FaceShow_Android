@@ -14,13 +14,41 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-                GETUI_APP_ID    : "zaNla5e48i8v4GNp6pVIi4",
-                GETUI_APP_KEY   : "Yh9txidrzX5de8V9V1onF",
-                GETUI_APP_SECRET: "ounLjVKG018HEym5jQnbm7",
+
                 PACKAGE_NAME    : applicationId   //applicationId
         ]
 
 
+
+        buildTypes {
+            debug {
+                minifyEnabled false
+//                signingConfig signingConfigs.debug
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                //参数说明
+                manifestPlaceholders = [
+                        //dev
+                        GETUI_APP_ID    : "9Ng5XgUmPl7ph0Ms20Y3G5",
+                        GETUI_APP_KEY   : "vzvNLfGIUP8h8aj6waobvA",
+                        GETUI_APP_SECRET: "pqVYEPxb6AAtvel7UHJsd2",
+                ]
+                //APP_ID、APP_KEY、APP_SECRET请根据个推开发者后台申请到的应用参数进行相应替换
+            }
+
+            release {
+                minifyEnabled false
+//                signingConfig signingConfigs.debug
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                //参数说明
+                manifestPlaceholders = [
+                        //realse
+                        GETUI_APP_ID    : "AzFI1hszEo6U21wtdrn5K8", //APP_ID
+                        GETUI_APP_KEY   : "EvZ1LJLZ0z5HyzqWvRFWG2",   //APP_KEY
+                        GETUI_APP_SECRET: "lydBIygOzJ9Rxm9aVBK8P6",   //APPSECRET
+                ]
+                //APP_ID、APP_KEY、APP_SECRET请根据个推开发者后台申请到的应用参数进行相应替换
+            }
+        }
         buildTypes {
             release {
                 minifyEnabled false

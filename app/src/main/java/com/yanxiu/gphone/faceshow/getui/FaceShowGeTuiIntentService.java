@@ -9,10 +9,13 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.igexin.sdk.GTIntentService;
+import com.igexin.sdk.PushManager;
 import com.igexin.sdk.message.GTCmdMessage;
 import com.igexin.sdk.message.GTTransmitMessage;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
@@ -32,11 +35,14 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
     @Override
     public void onReceiveClientId(Context context, String clientid) {
         Log.e(TAG, "onReceiveClientId -> " + "clientid = " + clientid);
+        boolean isBind = PushManager.getInstance().bindAlias(context, String.valueOf(UserInfo.getInstance().getInfo().getUserId()));
+        Log.e(TAG, "onReceiveClientId -> " + "isBind = " + isBind);
     }
 
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage gtTransmitMessage) {
         String msgStr = new String(gtTransmitMessage.getPayload());
+        ToastUtil.showToast(getApplicationContext(), msgStr);
         GTPayloadBean bean = RequestBase.getGson().fromJson(msgStr, GTPayloadBean.class);
         Intent intent = null;
         switch (bean.getType()) {
@@ -57,19 +63,26 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
             case 140://课程详情
                 intent = new Intent(context, ToCourseActivityBroadcastReceiver.class);
                 break;
+            default:
+                break;
         }
         Log.e(TAG, msgStr);
         int id = (int) (System.currentTimeMillis() / 1000);
-        intent.putExtra("objectId", bean.getObjectId());
-        intent.putExtra("notificationId", id);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-        builder.setSmallIcon(R.drawable.push_small);
-        builder.setContentTitle(bean.getTitle());
-        builder.setContentText(bean.getContent());
-        builder.setContentIntent(pendingIntent);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id, builder.build());
+        try {
+            intent.putExtra("objectId", bean.getObjectId());
+            intent.putExtra("notificationId", id);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+            builder.setSmallIcon(R.mipmap.ic_launcher);
+            builder.setContentTitle(bean.getTitle());
+            builder.setContentText(bean.getContent());
+            builder.setContentIntent(pendingIntent);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(id, builder.build());
+        } catch (Exception e) {
+            Log.e("frc", e.getMessage());
+        }
+
     }
 
     @Override
@@ -79,5 +92,6 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
 
     @Override
     public void onReceiveCommandResult(Context context, GTCmdMessage gtCmdMessage) {
+        Log.e("onReceiveCommandResult", "action:    " + gtCmdMessage.getAction());
     }
 }

@@ -33,14 +33,16 @@ public class ToEvaluationActivityBroadcastReceiver extends BroadcastReceiver {
 //            case InteractStepsBean.DISCUSS:
 //                interactIntent = new Intent(context, CourseDiscussActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                break;
-            case 120://问卷
+            case 102://问卷
                 interactIntent = new Intent(context, EvaluationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 break;
             case 100://签到
                 interactIntent = new Intent(context, CheckInDetailActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 break;
+            default:
+                return;
         }
-        interactIntent.putExtra("stepid", String.valueOf(intent.getIntExtra("objectId", -1)));
+        interactIntent.putExtra("stepid", String.valueOf(intent.getStringExtra("objectId")));
         context.startActivity(interactIntent);
 
     }
