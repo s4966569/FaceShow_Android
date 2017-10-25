@@ -89,7 +89,7 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
             protected void onResponse(RequestBase request, ModifyUserInfoResponse response) {
                 publicLoadLayout.hiddenLoadingView();
                 if (response.getCode() == 0) {
-                    UserInfo.Info userInfo = SpManager.getUserInfo();
+                    UserInfo.Info userInfo = UserInfo.getInstance().getInfo();
                     userInfo.setRealName(userName);
                     SpManager.saveUserInfo(userInfo);
                     ToastUtil.showToast(getApplicationContext(), "姓名保存成功");

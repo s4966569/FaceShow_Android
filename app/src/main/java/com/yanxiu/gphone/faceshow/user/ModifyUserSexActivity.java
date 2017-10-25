@@ -115,7 +115,7 @@ public class ModifyUserSexActivity extends FaceShowBaseActivity {
             protected void onResponse(RequestBase request, ModifyUserInfoResponse response) {
                 publicLoadLayout.hiddenLoadingView();
                 if (response.getCode() == 0) {
-                    UserInfo.Info userInfo = SpManager.getUserInfo();
+                    UserInfo.Info userInfo = UserInfo.getInstance().getInfo();
                     userInfo.setSexName(sexName);
                     userInfo.setSex(Integer.valueOf(sexId));
                     SpManager.saveUserInfo(userInfo);

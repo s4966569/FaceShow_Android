@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -123,7 +124,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             tvCheckInTime.setText(data.getUserSignIn().getSigninTime());
         } else {
             tvCheckIn.setVisibility(View.VISIBLE);
-            tvCheckInHere.setVisibility(View.GONE);
+            tvCheckInHere.setVisibility(View.VISIBLE);
             tvCheckInTimeHere.setVisibility(View.GONE);
             tvCheckInTime.setVisibility(View.GONE);
             tvCheckInStatue.setText("您还未签到");

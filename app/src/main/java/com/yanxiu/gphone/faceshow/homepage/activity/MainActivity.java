@@ -17,6 +17,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.getui.ToMainActivityBroadcastReceiver;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
@@ -134,7 +135,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 if (ret != null && ret.getCode() == 0 && ret.getData() != null && ret.getData().getClazsInfo() != null
                         && ret.getData().getProjectInfo() != null) {
                     mMainData = ret.getData();
-                    UserInfo.getInstance().getInfo().setClassId(mMainData.getClazsInfo().getId());
+                    UserInfo.Info info = UserInfo.getInstance().getInfo();
+                    info.setClassId(mMainData.getClazsInfo().getId());
+                    SpManager.saveUserInfo(info);
                     initFragment();
                 } else {
                     mRootView.showOtherErrorView();

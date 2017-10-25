@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.igexin.sdk.GTIntentService;
@@ -16,6 +17,8 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import org.w3c.dom.Text;
 
 /**
  * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
@@ -74,7 +77,9 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
             builder.setSmallIcon(R.mipmap.ic_launcher);
-            builder.setContentTitle(bean.getTitle());
+            if (!TextUtils.isEmpty(bean.getTitle())){
+                builder.setContentTitle(bean.getTitle());
+            }
             builder.setContentText(bean.getContent());
             builder.setContentIntent(pendingIntent);
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
