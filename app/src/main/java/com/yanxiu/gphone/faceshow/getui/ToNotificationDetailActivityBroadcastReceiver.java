@@ -22,7 +22,7 @@ public class ToNotificationDetailActivityBroadcastReceiver extends BroadcastRece
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(intent.getIntExtra("notificationId", -1));
         Intent notificationDetailIntent = new Intent(context, NotificationDetailActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        notificationDetailIntent.putExtra(NotificationDetailActivity.NOTIFICATION_ID, String.valueOf(intent.getIntExtra("objectId", -1)));
+        notificationDetailIntent.putExtra(NotificationDetailActivity.NOTIFICATION_ID, intent.getStringExtra("objectId"));
         context.startActivity(notificationDetailIntent);
 
     }

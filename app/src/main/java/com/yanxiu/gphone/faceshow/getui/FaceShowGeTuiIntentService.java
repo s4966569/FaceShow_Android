@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,8 +16,6 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-
-import org.w3c.dom.Text;
 
 /**
  * 继承 GTIntentService 接收来自个推的消息, 所有消息在线程中回调, 如果注册了该服务, 则务必要在 AndroidManifest中声明, 否则无法接受消息<br>
@@ -45,7 +42,6 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
     @Override
     public void onReceiveMessageData(Context context, GTTransmitMessage gtTransmitMessage) {
         String msgStr = new String(gtTransmitMessage.getPayload());
-        ToastUtil.showToast(getApplicationContext(), msgStr);
         GTPayloadBean bean = RequestBase.getGson().fromJson(msgStr, GTPayloadBean.class);
         Intent intent = null;
         switch (bean.getType()) {
@@ -59,6 +55,7 @@ public class FaceShowGeTuiIntentService extends GTIntentService {
                 intent = new Intent(context, ToNotificationDetailActivityBroadcastReceiver.class);
                 break;
             case 130://班级即将开班
+                intent = new Intent(context,ToMainActivityBroadcastReceiver.class);
                 break;
             case 131://班主任发布新资源
                 intent = new Intent(context, ToResourceDetailActivityBroadcastReceiver.class);

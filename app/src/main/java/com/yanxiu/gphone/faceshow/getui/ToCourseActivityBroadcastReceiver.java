@@ -22,7 +22,7 @@ public class ToCourseActivityBroadcastReceiver extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(intent.getIntExtra("notificationId", -1));
         Intent toCourseDetailIntent = new Intent(context, CourseActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        toCourseDetailIntent.putExtra(CourseActivity.COURSE_ID, String.valueOf(intent.getIntExtra("objectId", -1)));
+        toCourseDetailIntent.putExtra(CourseActivity.COURSE_ID, intent.getStringExtra("objectId"));
         context.startActivity(toCourseDetailIntent);
 
     }
