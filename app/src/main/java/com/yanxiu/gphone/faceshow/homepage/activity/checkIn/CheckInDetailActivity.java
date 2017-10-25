@@ -131,6 +131,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             if (data.getOpenStatus() == 7) {
                 //签到已过期
                 tvCheckIn.setVisibility(View.GONE);
+                tvCheckInHere.setVisibility(View.GONE);
             }
         }
     }
