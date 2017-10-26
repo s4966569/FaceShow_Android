@@ -115,7 +115,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
     private void showData(GetCheckInNotesResponse.CheckInNotesBean data) {
         tvCheckInName.setText(data.getTitle());
         tvCheckInTimePlan.setText(getString(R.string.check_in_plan, StringUtils.getCourseTime(data.getStartTime()), StringUtils.getCourseTime(data.getEndTime())));
-        if (data.getUserSignIn() != null && data.getUserSignIn().getSigninStatus() == 1) {//签到chengg
+        if (data.getUserSignIn() != null && data.getUserSignIn().getSigninStatus() == 1) {//签到
             tvCheckIn.setVisibility(View.GONE);
             tvCheckInHere.setVisibility(View.GONE);
             tvCheckInTimeHere.setVisibility(View.VISIBLE);

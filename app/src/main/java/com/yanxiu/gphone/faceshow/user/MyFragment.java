@@ -25,6 +25,7 @@ import com.igexin.sdk.PushManager;
 import com.igexin.sdk.message.GTPushMessage;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
@@ -86,6 +87,7 @@ public class MyFragment extends FaceShowBaseFragment {
                 LoginActivity.toThisAct(getActivity());
                 UserInfo.getInstance().setInfo(null);
                 SpManager.saveToken("");
+//                Constants.UPDATA_TYPE=0;
                 clearGTPushSettings();
                 SpManager.loginOut();//设置为登出状态
                 getActivity().finish();
