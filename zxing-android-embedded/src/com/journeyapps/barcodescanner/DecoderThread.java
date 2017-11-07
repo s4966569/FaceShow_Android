@@ -1,5 +1,6 @@
 package com.journeyapps.barcodescanner;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,14 +8,24 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 
+import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.R;
+import com.google.zxing.common.HybridBinarizer;
 import com.journeyapps.barcodescanner.camera.CameraInstance;
 import com.journeyapps.barcodescanner.camera.PreviewCallback;
 
 import java.util.List;
+
+import jp.co.cyberagent.android.gpuimage.GPUImage;
+import jp.co.cyberagent.android.gpuimage.GPUImageBrightnessFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageContrastFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageGammaFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageHueFilter;
 
 /**
  *
@@ -138,15 +149,44 @@ public class DecoderThread {
         }
     }
 
+    private GPUImage mGpuImage;
     private void decode(SourceData sourceData) {
         long start = System.currentTimeMillis();
         Result rawResult = null;
         sourceData.setCropRect(cropRect);
-        LuminanceSource source = createSource(sourceData);
 
-        if(source != null) {
-            rawResult = decoder.decode(source);
+        Bitmap src = sourceData.getBitmap();
+        if (mGpuImage == null) {
+            mGpuImage = new GPUImage(cameraInstance.context);
         }
+
+        for (int i = 0; i < 10; i++) {
+            if (rawResult != null) break;
+
+            mGpuImage.setImage(src);
+            mGpuImage.setFilter(new GPUImageGammaFilter(3.0f + i*0.2f)); // 改变gamma
+            Bitmap inter1 = mGpuImage.getBitmapWithFilterApplied(src);
+
+            mGpuImage.setFilter(new GPUImageContrastFilter(2.2f)); // 改变contrast
+            Bitmap des = mGpuImage.getBitmapWithFilterApplied(inter1);
+
+            int width = des.getWidth(), height = des.getHeight();
+            int[] pixels = new int[width * height];
+            des.getPixels(pixels, 0, width, 0, 0, width, height);
+            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
+            MultiFormatReader reader = new MultiFormatReader();
+            try {
+                rawResult = reader.decode(bBitmap);
+            } catch (Exception e) {
+                Log.e(TAG, "decode exception", e);
+            } finally {
+                inter1.recycle();
+                des.recycle();
+            }
+        }
+
+        src.recycle();
 
         if (rawResult != null) {
             // Don't log the barcode contents for security.
