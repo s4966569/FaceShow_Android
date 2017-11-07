@@ -115,8 +115,8 @@ dependencies {
     })
     compile files('libs/zxing.jar')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
     compile 'com.jakewharton:butterknife:8.8.1'
     compile 'com.getui:sdk:2.11.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile project(':zxing-android-embedded')
 }
