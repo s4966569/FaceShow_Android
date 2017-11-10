@@ -1,14 +1,21 @@
 package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseCallback;
+import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailRequest;
+import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
 
@@ -42,24 +49,73 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
     TextView tvCheckInTimeHere;
 
     private final static String CHECK_IN_DETAIL = "check_in_detail";
-    private final static String POSITION = "position";
-    private int mPositionInList;
+    private final static String STEP_ID = "stepid";
+    private PublicLoadLayout publicLoadLayout;
+
+    public static void toThisAct(Context activity, String stepId) {
+        Intent intent = new Intent(activity, CheckInDetailActivity.class);
+        intent.putExtra(STEP_ID, stepId);
+        activity.startActivity(intent);
+    }
+
+    public static void toThisAct(Context activity, GetCheckInNotesResponse.CheckInNotesBean data) {
+        Intent intent = new Intent(activity, CheckInDetailActivity.class);
+        intent.putExtra(CHECK_IN_DETAIL, data);
+        activity.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check_in_detail);
+        publicLoadLayout = new PublicLoadLayout(this);
+        publicLoadLayout.setContentView(R.layout.activity_check_in_detail);
+        setContentView(publicLoadLayout);
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in_detail);
+    /*从签到列表跳转过来，直接携带了签到详情，从其他地方跳转过来需要携带stepId，然后再获取详情信息*/
         GetCheckInNotesResponse.CheckInNotesBean data = (GetCheckInNotesResponse.CheckInNotesBean) getIntent().getSerializableExtra(CHECK_IN_DETAIL);
-        mPositionInList =  getIntent().getIntExtra(POSITION, -1);
-        showData(data);
+        String stepId = getIntent().getStringExtra(STEP_ID);
+        if (data != null) {
+            showData(data);
+        } else if (!TextUtils.isEmpty(stepId)) {
+            getCheckInDetail(stepId);
+        }
     }
+
+    private void getCheckInDetail(String stepId) {
+        GetCheckInDetailRequest getCheckInDetailRequest = new GetCheckInDetailRequest();
+        getCheckInDetailRequest.stepId = stepId;
+        publicLoadLayout.showLoadingView();
+        getCheckInDetailRequest.startRequest(GetCheckInDetailResponse.class, new FaceShowBaseCallback<GetCheckInDetailResponse>() {
+            @Override
+            protected void onResponse(RequestBase request, GetCheckInDetailResponse response) {
+                publicLoadLayout.hiddenLoadingView();
+                if (response.getCode() == 0) {
+                    if (response.getData() != null && response.getData().getSignIn() != null) {
+                        showData(response.getData().getSignIn());
+                    } else {
+                        publicLoadLayout.showOtherErrorView("没有详情");
+                    }
+                } else {
+                    publicLoadLayout.showOtherErrorView(response.getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                publicLoadLayout.showLoadingView();
+                publicLoadLayout.showNetErrorView();
+
+            }
+        });
+
+    }
+
 
     private void showData(GetCheckInNotesResponse.CheckInNotesBean data) {
         tvCheckInName.setText(data.getTitle());
         tvCheckInTimePlan.setText(getString(R.string.check_in_plan, StringUtils.getCourseTime(data.getStartTime()), StringUtils.getCourseTime(data.getEndTime())));
-        if (data.getUserSignIn() != null && data.getUserSignIn().getSigninStatus() == 1) {//签到chengg
+        if (data.getUserSignIn() != null && data.getUserSignIn().getSigninStatus() == 1) {//签到
             tvCheckIn.setVisibility(View.GONE);
             tvCheckInHere.setVisibility(View.GONE);
             tvCheckInTimeHere.setVisibility(View.VISIBLE);
@@ -68,24 +124,18 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             tvCheckInTime.setText(data.getUserSignIn().getSigninTime());
         } else {
             tvCheckIn.setVisibility(View.VISIBLE);
-            tvCheckInHere.setVisibility(View.GONE);
+            tvCheckInHere.setVisibility(View.VISIBLE);
             tvCheckInTimeHere.setVisibility(View.GONE);
             tvCheckInTime.setVisibility(View.GONE);
             tvCheckInStatue.setText("您还未签到");
-            if (data.getOpenStatus()==7){
+            if (data.getOpenStatus() == 7) {
                 //签到已过期
                 tvCheckIn.setVisibility(View.GONE);
+                tvCheckInHere.setVisibility(View.GONE);
             }
         }
     }
 
-
-    public static void toThisAct(Context activity, GetCheckInNotesResponse.CheckInNotesBean data, int position) {
-        Intent intent = new Intent(activity, CheckInDetailActivity.class);
-        intent.putExtra(CHECK_IN_DETAIL, data);
-        intent.putExtra(POSITION, position);
-        activity.startActivity(intent);
-    }
 
     @OnClick({R.id.img_left, R.id.tv_check_in})
     public void onViewClicked(View view) {
@@ -94,7 +144,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in:
-                CheckInByQRActivity.toThisAct(this, mPositionInList);
+                CheckInByQRActivity.toThisAct(this);
                 this.finish();
                 break;
         }

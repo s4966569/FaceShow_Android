@@ -13,7 +13,9 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
+import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
 
@@ -22,6 +24,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
+import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.lecturer;
 
 /**
  * Created by lufengqing on 2017/9/18.
@@ -73,14 +79,28 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 holder2.project_task_name.setText(data.getInteractName());
                 holder2.project_task_time.setText(StringUtils.getCourseTime(data.getCreateTime()));
 
-                if(TextUtils.equals(data.getStepFinished(), "1")) {
+                if (TextUtils.equals(data.getStepFinished(), "1")) {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_completed));
                     holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_333333));
-                    holder2.project_task_img.setImageResource(R.drawable.task_completed);
-                }else {
+//                    holder2.project_task_img.setImageResource(R.drawable.task_completed);
+                } else {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_uncompleted));
                     holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_999999));
-                    holder2.project_task_img.setImageResource(R.drawable.task_uncompleted);
+//                    holder2.project_task_img.setImageResource(R.drawable.task_uncompleted);
+                }
+                switch (data.getInteractType()) {
+                    case InteractStepsBean.VOTE:
+                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_vote);
+                        break;
+                    case InteractStepsBean.DISCUSS:
+                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_discuss);
+                        break;
+                    case InteractStepsBean.QUESTIONNAIRES:
+                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_questionnaires);
+                        break;
+                    case InteractStepsBean.CHECK_IN:
+                        holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_check_in);
+                        break;
                 }
 
                 holder2.project_task_layout.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +133,8 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ImageView project_task_img;
         @BindView(R.id.project_task_layout)
         RelativeLayout project_task_layout;
+        @BindView(R.id.course_detail_item_icon)
+        ImageView course_detail_item_icon;
 
         public ProjectTaskViewHolder(View itemView) {
             super(itemView);

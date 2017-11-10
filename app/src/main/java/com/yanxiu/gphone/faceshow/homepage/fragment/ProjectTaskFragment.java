@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +21,9 @@ import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.homepage.CheckInSuccessEvent;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ProjectTaskAdapter;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListRequest;
 import com.yanxiu.gphone.faceshow.http.course.ProjectTaskListResponse;
@@ -31,6 +34,8 @@ import java.util.List;
 import java.util.UUID;
 
 import de.greenrobot.event.EventBus;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -132,10 +137,11 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                 EvaluationActivity.invoke(getActivity(), taskBean.getStepId(), position, mHashCode);
                 break;
             case InteractStepsBean.CHECK_IN:
-                CheckInByQRActivity.toThisAct(getActivity());
+                CheckInDetailActivity.toThisAct(getActivity(), taskBean.getStepId());
                 break;
         }
     }
+
 
     public void onEventMainThread(InteractMessage message) {
         if (message != null && mHashCode == message.hascode) {
@@ -145,6 +151,13 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                 mAdapter.notifyItemChanged(message.position);
             }
 
+        }
+    }
+
+    public void onEventMainThread(CheckInSuccessEvent event) {
+        if (event != null) {
+            mProjectTaskList.clear();
+            getProjectTaskList();
         }
     }
 

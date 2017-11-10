@@ -2,10 +2,13 @@ package com.test.yanxiu.network;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -89,13 +92,13 @@ public abstract class RequestBase {
                 if (!(value instanceof String)) {
                     value = gson.toJson(entry.getValue());
                 }
-                urlBuilder.addEncodedQueryParameter(entry.getKey(), (String)value);
+                urlBuilder.addEncodedQueryParameter(entry.getKey(), (String) value);
             } catch (Exception e) {
             }
 
         }
         fullUrl = urlBuilder.build().toString();
-        Log.e("requestUrl",fullUrl.toString());
+        Log.e("requestUrl", fullUrl.toString());
         return fullUrl;
     }
 
@@ -104,10 +107,8 @@ public abstract class RequestBase {
         Request request = null;
         try {
             request = generateRequest(uuid);
-            if (shouldLog()){
-
-            }
         } catch (Exception e) {
+            Log.e("request",e.getMessage());
         }
         if (request == null) {
             callback.onFail(RequestBase.this, new Error("request start error"));
@@ -115,7 +116,7 @@ public abstract class RequestBase {
         }
         client = setClient();
         call = client.newCall(request);
-        Log.d("cwq",request.url().toString());
+        Log.d("cwq", request.url().toString());
         final long start = System.currentTimeMillis();
         call.enqueue(new Callback() {
             @Override
@@ -139,16 +140,16 @@ public abstract class RequestBase {
                     }
                 } catch (Exception e) {
                 }
-
                 String bodyString = response.body().string();
                 if (bodyDealer != null) {
                     // 如易学易练项目，需要Des解密
                     bodyString = bodyDealer.dealWithBody(bodyString);
                 }
-                final String retStr = bodyString;
-                try{
+                final String retStr = Html.fromHtml(bodyString).toString();
+                try {
                     Log.e("http", retStr);
-                }catch(Exception e){
+                } catch (Exception e) {
+                    Log.e("Gson error: ", e.getMessage());
                     e.printStackTrace();
                 }
 
@@ -161,7 +162,7 @@ public abstract class RequestBase {
                         }
                         T ret;
                         try {
-                            ret = RequestBase.gson.fromJson(retStr, clazz);
+                            ret = RequestBase.gson.fromJson(jsonString(retStr), clazz);
                         } catch (Exception e) {
                             e.printStackTrace();
                             callback.onFail(RequestBase.this, new Error("服务器返回格式错误"));
@@ -176,9 +177,11 @@ public abstract class RequestBase {
 
         return uuid;
     }
+
     protected OkHttpClient setClient() {
         return OkHttpClientManager.getInstance();
     }
+
     public void cancelRequest() {
         if (call != null) {
             call.cancel();
@@ -290,12 +293,43 @@ public abstract class RequestBase {
                 if (!(value instanceof String)) {
                     value = gson.toJson(entry.getValue());
                 }
-                bodyBuilder.add(entry.getKey(), (String)value);
+                bodyBuilder.add(entry.getKey(), (String) value);
             }
             builder.post(bodyBuilder.build());
         }
 
         Request request = builder.build();
         return request;
+    }
+
+    /**
+     * 将json格式字符串中返回的英文双引号改成中文的
+     *
+     * @param s
+     * @return
+     */
+    private String jsonString(String s) {
+        char[] temp = s.toCharArray();
+        int n = temp.length;
+        for (int i = 0; i < n; i++) {
+            if (temp[i] == ':' && temp[i + 1] == '"') {
+                int count = 0;
+                for (int j = i + 2; j < n; j++) {
+                    if (temp[j] == '"') {
+                        count++;
+                        if (temp[j + 1] != ',' && temp[j + 1] != '}') {
+                            if (count / 2 == 1) {
+                                temp[j] = '”';
+                            } else {
+                                temp[j] = '“';
+                            }
+                        } else if (temp[j + 1] == ',' || temp[j + 1] == '}') {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return new String(temp);
     }
 }

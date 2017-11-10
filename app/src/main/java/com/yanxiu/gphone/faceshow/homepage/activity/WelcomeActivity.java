@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
@@ -46,8 +47,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     private ImageView mImgLogo;
     private static boolean isAnimationEnd = false;
     private static boolean isCanLogin = false;
-    private static boolean isGetUserInfoSuccess = false;
-    private static boolean isGetUserInfoFailure = false;
+    private static boolean isGetUserInfoEnd = false;
     private Animator.AnimatorListener logoAnimatorListener = new Animator.AnimatorListener() {
         @Override
         public void onAnimationStart(Animator animator) {
@@ -57,12 +57,8 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         @Override
         public void onAnimationEnd(Animator animator) {
             isAnimationEnd = true;
-            if (isGetUserInfoSuccess) {
+            if (isGetUserInfoEnd) {
                 MainActivity.invoke(WelcomeActivity.this);
-                WelcomeActivity.this.finish();
-            }
-            if (isGetUserInfoFailure) {
-                LoginActivity.toThisAct(WelcomeActivity.this);
                 WelcomeActivity.this.finish();
             }
             if (isCanLogin) {
@@ -160,28 +156,24 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
                 if (ret.getCode() == 0) {
                     UserInfo.getInstance().setInfo(ret.getData());
-                    isGetUserInfoSuccess = true;
-                    if (isAnimationEnd) {
-                        MainActivity.invoke(activity);
-                        activity.finish();
-                    }
                 } else {
-                    isGetUserInfoFailure = true;
-                    if (isAnimationEnd) {
-                        LoginActivity.toThisAct(activity);
-                        activity.finish();
-                    }
+                    UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                 }
+                if (isAnimationEnd) {
+                    MainActivity.invoke(activity);
+                    activity.finish();
+                }
+                isGetUserInfoEnd = true;
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
-                isGetUserInfoFailure = true;
+                UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                 if (isAnimationEnd) {
-                    LoginActivity.toThisAct(activity);
+                    MainActivity.invoke(activity);
                     activity.finish();
                 }
+                isGetUserInfoEnd = true;
 
             }
         });

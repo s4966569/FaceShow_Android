@@ -18,6 +18,8 @@ public class ProjectInfoBean extends BaseBean {
     private String endTime;
     private String description;
     private ArrayList<ProjectManagerInfos> projectManagerInfos = new ArrayList<>();
+    private String projectStatusName;
+    private String manager;
 
     public class ProjectManagerInfos extends BaseBean {
         private String id;

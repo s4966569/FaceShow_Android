@@ -9,12 +9,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -45,6 +47,8 @@ import butterknife.Unbinder;
  */
 public class LoginActivity extends FaceShowBaseActivity {
 
+    private static final int TO_FORGET_PASSWORD_REQUEST_CODE = 0X01;
+
     private Unbinder unbinder;
     private Context mContext;
     private PublicLoadLayout rootView;
@@ -56,8 +60,12 @@ public class LoginActivity extends FaceShowBaseActivity {
     ImageView img_show_password;
     @BindView(R.id.tv_sign_in)
     TextView tv_sign_in;
+    @BindView(R.id.tv_forget_password)
+    TextView tv_forget_password;
     private boolean isPasswordShow = false;
     private UUID mSignInRequestUUID;
+    private String token;
+    private String passPort;
 
     public static void toThisAct(Activity activity) {
         activity.startActivity(new Intent(activity, LoginActivity.class));
@@ -137,7 +145,7 @@ public class LoginActivity extends FaceShowBaseActivity {
         }
     }
 
-    @OnClick({R.id.img_show_password, R.id.tv_sign_in})
+    @OnClick({R.id.img_show_password, R.id.tv_sign_in, R.id.tv_forget_password})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_show_password:
@@ -161,8 +169,12 @@ public class LoginActivity extends FaceShowBaseActivity {
                 }
 
                 break;
+            case R.id.tv_forget_password:
+                startActivityForResult(new Intent(LoginActivity.this, ForgetPasswordActivity.class), TO_FORGET_PASSWORD_REQUEST_CODE);
+                break;
         }
     }
+
 
     private void signInRequest() {
         rootView.showLoadingView();
@@ -174,12 +186,13 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, SignInResponse ret) {
 
                 if (ret.getCode() == 0) {
-                    SpManager.saveToken(ret.getToken());
-                    SpManager.savePassPort(ret.getPassport());
-                    getUserInfo(LoginActivity.this);
+                    token = ret.getToken();
+                    passPort = ret.getPassport();
+                    requestClassData(LoginActivity.this);
                 } else {
                     Toast.makeText(mContext, ret.getError().getMessage(), Toast.LENGTH_SHORT).show();
                     rootView.hiddenLoadingView();
+                    edt_account_password.setText(null);
                 }
 
             }
@@ -187,6 +200,7 @@ public class LoginActivity extends FaceShowBaseActivity {
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
+                edt_account_password.setText(null);
                 Toast.makeText(mContext, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -195,11 +209,21 @@ public class LoginActivity extends FaceShowBaseActivity {
 
     private void getUserInfo(final Activity activity) {
         GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.token = token;
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                rootView.hiddenLoadingView();
                 if (ret.getCode() == 0) {
-                    requestClassData(activity, ret);
+                    SpManager.saveToken(token);
+                    SpManager.savePassPort(passPort);
+                    String userInfoStr = RequestBase.getGson().toJson(ret.getData());
+                    SpManager.saveUserInfo(userInfoStr);
+                    UserInfo.getInstance().setInfo(ret.getData());
+                    PushManager.getInstance().turnOnPush(activity);//开启个推服务
+                   //boolean isBind= PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
+                    MainActivity.invoke(activity);
+                    LoginActivity.this.finish();
                 } else {
                     ToastUtil.showToast(activity, ret.getError().getMessage());
                     rootView.hiddenLoadingView();
@@ -217,16 +241,15 @@ public class LoginActivity extends FaceShowBaseActivity {
     /**
      * 请求项目班级信息，如果code!=0，那么，不能进入首页，并且弹出toast提示
      */
-    private void requestClassData(final Activity activity, final GetUserInfoResponse getUserInfoResponse) {
+    private void requestClassData(final Activity activity) {
         MainRequest mainRequest = new MainRequest();
+        mainRequest.token = token;
         mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
             @Override
             public void onSuccess(RequestBase request, MainResponse ret) {
-                rootView.finish();
+
                 if (ret != null && ret.getCode() == 0) {
-                    UserInfo.getInstance().setInfo(getUserInfoResponse.getData());
-                    MainActivity.invoke(activity);
-                    LoginActivity.this.finish();
+                    getUserInfo(activity);
                 } else {
                     if (ret != null && ret.getError() != null) {
                         ToastUtil.showToast(FaceShowApplication.getContext(), ret.getError().getMessage());
@@ -242,7 +265,18 @@ public class LoginActivity extends FaceShowBaseActivity {
                 }
             }
         });
-
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == TO_FORGET_PASSWORD_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    edt_account_number.setText(data.getStringExtra("phoneNumber"));
+                    edt_account_password.setText(data.getStringExtra("password"));
+                }
+            }
+        }
+    }
 }

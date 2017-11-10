@@ -3,7 +3,9 @@ package com.yanxiu.gphone.faceshow.db;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 /**
  * sharePreference管理类
@@ -26,6 +28,7 @@ public class SpManager {
         return instance;
     }
 
+    private static final String USER_INFO = "userInfo";
     /**
      * 第一次启动
      */
@@ -138,5 +141,26 @@ public class SpManager {
      */
     public static String getPassport() {
         return mySharedPreferences.getString(PASSPORT, "");
+    }
+
+
+    public static void saveUserInfo(String userInfoStr) {
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString(USER_INFO, userInfoStr);
+        editor.apply();
+    }
+
+    public static void saveUserInfo(UserInfo.Info userInfo) {
+        String userInfoStr = RequestBase.getGson().toJson(userInfo);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString(USER_INFO, userInfoStr);
+        editor.apply();
+        UserInfo.update(userInfo);
+    }
+
+
+    public static UserInfo.Info getUserInfo() {
+        String userInfoStr = mySharedPreferences.getString(USER_INFO, "");
+        return RequestBase.getGson().fromJson(userInfoStr, UserInfo.Info.class);
     }
 }

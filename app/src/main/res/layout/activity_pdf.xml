@@ -62,7 +62,6 @@
                 android:id="@+id/tv_save"
                 android:layout_width="35dp"
                 android:layout_height="match_parent"
-
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:gravity="center"

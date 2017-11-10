@@ -88,7 +88,7 @@ public class CourseArrangeAdapter extends RecyclerView.Adapter<RecyclerView.View
                 holder2.course_name.setText(data.getCourseName());
                 holder2.course_location.setText(TextUtils.isEmpty(data.getSite()) ? "待定" : data.getSite());
                 holder2.course_teacher.setText(data.getLecturer());
-                holder2.course_time.setText(StringUtils.getCourseTime(data.getStartTime()));
+                holder2.course_time.setText(StringUtils.getCourseTime(data.getStartTime()) + " 至 " + StringUtils.getCourseTime(data.getEndTime()));
                 holder2.course_layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

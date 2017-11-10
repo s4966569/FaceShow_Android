@@ -89,7 +89,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         switch (getItemViewType(position)) {
             case 1:
                 CourseHeaderViewHolder holder1 = (CourseHeaderViewHolder) holder;
-                holder1.course_detail_time.setText(StringUtils.getCourseTime(data.getStartTime()));
+                holder1.course_detail_time.setText(StringUtils.getCourseTime(data.getStartTime()) + " 至 " + StringUtils.getCourseTime(data.getEndTime()));
                 holder1.course_name.setText(data.getCourseName());
                 holder1.course_detail_location.setText(TextUtils.isEmpty(data.getSite()) ? "待定" : data.getSite());
                 holder1.course_detail_teacher.setText(data.getLecturer());

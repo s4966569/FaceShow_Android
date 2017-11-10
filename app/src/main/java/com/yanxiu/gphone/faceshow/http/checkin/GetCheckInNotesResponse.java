@@ -339,7 +339,6 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
          * percent : 0
          * userSignIn : null
          */
-
         private int id;
         private String title;
         private String startTime;
@@ -356,6 +355,15 @@ public class GetCheckInNotesResponse extends FaceShowBaseResponse {
         private String opentStatusName;
         private int percent;
         private UserSignIn userSignIn;
+        private boolean isFooter;
+
+        public boolean isFooter() {
+            return isFooter;
+        }
+
+        public void setFooter(boolean footer) {
+            isFooter = footer;
+        }
 
         public int getId() {
             return id;

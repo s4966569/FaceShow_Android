@@ -1,8 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.activity;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +18,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseDetailAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean;
@@ -28,7 +28,6 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
-import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
@@ -46,7 +45,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
     private RecyclerView mRecyclerView;
     private CourseDetailAdapter mAdapter;
 
-    private final static String COURSE_ID = "course_id";
+    public final static String COURSE_ID = "course_id";
     private String mCourseid;
     private float mHeight;
 
@@ -151,7 +150,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
      *
      * @param activity
      */
-    public static void invoke(Activity activity, String courseId) {
+    public static void invoke(Context activity, String courseId) {
         Intent intent = new Intent(activity, CourseActivity.class);
         intent.putExtra(COURSE_ID, courseId);
         activity.startActivity(intent);

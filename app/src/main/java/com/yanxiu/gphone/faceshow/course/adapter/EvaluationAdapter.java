@@ -108,6 +108,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 } else {
                     holder1.all_title_layout.setVisibility(View.GONE);
                 }
+
                 break;
             case TYPE_TEXT:
                 TextViewHolder holder2 = (TextViewHolder) holder;

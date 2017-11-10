@@ -1,1 +1,1 @@
-include ':app', 'libs:network'
+include ':app', 'libs:network', 'zxing-android-embedded'

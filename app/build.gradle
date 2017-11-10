@@ -10,9 +10,45 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
-        versionName "1.0"
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        manifestPlaceholders = [
+
+                PACKAGE_NAME: applicationId   //applicationId
+        ]
+
+
+
+        buildTypes {
+            debug {
+                minifyEnabled false
+//                signingConfig signingConfigs.debug
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                //参数说明
+                manifestPlaceholders = [
+                        //dev
+                        GETUI_APP_ID    : "9Ng5XgUmPl7ph0Ms20Y3G5",
+                        GETUI_APP_KEY   : "vzvNLfGIUP8h8aj6waobvA",
+                        GETUI_APP_SECRET: "pqVYEPxb6AAtvel7UHJsd2",
+                ]
+                //APP_ID、APP_KEY、APP_SECRET请根据个推开发者后台申请到的应用参数进行相应替换
+            }
+
+            release {
+                minifyEnabled false
+//                signingConfig signingConfigs.debug
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                //参数说明
+                manifestPlaceholders = [
+                        //realse
+                        GETUI_APP_ID    : "AzFI1hszEo6U21wtdrn5K8", //APP_ID
+                        GETUI_APP_KEY   : "EvZ1LJLZ0z5HyzqWvRFWG2",   //APP_KEY
+                        GETUI_APP_SECRET: "lydBIygOzJ9Rxm9aVBK8P6",   //APPSECRET
+                ]
+                //APP_ID、APP_KEY、APP_SECRET请根据个推开发者后台申请到的应用参数进行相应替换
+            }
+        }
         buildTypes {
             release {
                 minifyEnabled false
@@ -24,9 +60,6 @@ android {
 
         }
 
-        manifestPlaceholders = [
-                PACKAGE_NAME: applicationId   //applicationId
-        ]
 
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86", "x86_64"
@@ -72,6 +105,7 @@ android {
         testCompile "junit:junit:$rootProject.ext.junitVersion"
     }
 
+    buildToolsVersion '26.0.2'
 }
 
 
@@ -80,9 +114,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile files('libs/zxing.jar')
+//    compile files('libs/zxing.jar')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.journeyapps:zxing-android-embedded:3.5.0'
-    compile 'com.jakewharton:butterknife:8.8.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'com.getui:sdk:2.11.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile project(':zxing-android-embedded')
 }

@@ -1,6 +1,8 @@
 package com.yanxiu.gphone.faceshow.user;
 
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -18,8 +20,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.igexin.sdk.GTServiceManager;
+import com.igexin.sdk.PushManager;
+import com.igexin.sdk.message.GTPushMessage;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
@@ -55,7 +61,7 @@ public class MyFragment extends FaceShowBaseFragment {
         return view;
     }
 
-    private void initData(){
+    private void initData() {
         mTitleView.setText(R.string.my);
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
     }
@@ -63,7 +69,7 @@ public class MyFragment extends FaceShowBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(getContext(),mHeadImgView,12));
+        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(getContext(), mHeadImgView, 12));
     }
 
     @OnClick({R.id.person_info, R.id.registration, R.id.ll_logout})
@@ -81,10 +87,19 @@ public class MyFragment extends FaceShowBaseFragment {
                 LoginActivity.toThisAct(getActivity());
                 UserInfo.getInstance().setInfo(null);
                 SpManager.saveToken("");
+//                Constants.UPDATA_TYPE=0;
+                clearGTPushSettings();
                 SpManager.loginOut();//设置为登出状态
                 getActivity().finish();
                 break;
         }
+    }
+
+    private void clearGTPushSettings() {
+        NotificationManager notificationManager = (NotificationManager) this.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+        PushManager.getInstance().unBindAlias(this.getContext(),String.valueOf(SpManager.getUserInfo().getUserId()),true,"2000");//只对当前cid做解绑
+        PushManager.getInstance().turnOffPush(this.getContext());
     }
 
     @Override

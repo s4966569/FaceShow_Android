@@ -1,6 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +18,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.getui.ToMainActivityBroadcastReceiver;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
@@ -55,6 +56,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     public MainBean mMainData;
 
     private UUID mGetHasNotificationsNeedReadRequestUUID;
+    //推送过来的消息需要定位到第一页
+    private boolean isToFirstFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +75,21 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
+        if (isToFirstFragment) {
+            mNavIconViews[0].setEnabled(false);
+            mNavIconViews[1].setEnabled(true);
+            mNavIconViews[2].setEnabled(true);
+            mNavIconViews[3].setEnabled(true);
+            showCurrentFragment(0);
+            isToFirstFragment = false;
+        }
         pollingRedPointer();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        isToFirstFragment = intent.getBooleanExtra(ToMainActivityBroadcastReceiver.IS_TO_FIRST_FRAGMENT, false);
         setIntent(intent);
     }
 
@@ -123,7 +135,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 if (ret != null && ret.getCode() == 0 && ret.getData() != null && ret.getData().getClazsInfo() != null
                         && ret.getData().getProjectInfo() != null) {
                     mMainData = ret.getData();
-                    UserInfo.getInstance().getInfo().setClassId(mMainData.getClazsInfo().getId());
+                    UserInfo.Info info = UserInfo.getInstance().getInfo();
+                    info.setClassId(mMainData.getClazsInfo().getId());
+                    SpManager.saveUserInfo(info);
                     initFragment();
                 } else {
                     mRootView.showOtherErrorView();
@@ -248,7 +262,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void showCurrentFragment(int index) {
-        if (index == mLastSelectIndex) {
+        if (index == mLastSelectIndex && !isToFirstFragment) {
             return;
         }
         mLastSelectIndex = index;
@@ -291,7 +305,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
      *
      * @param activity
      */
-    public static void invoke(Activity activity) {
+    public static void invoke(Context activity) {
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
     }
