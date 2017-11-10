@@ -46,8 +46,8 @@ public class TranslationYAnimUtil {
 
     public TranslationYAnimUtil setDuration(Context context, int duration) {
         this.mDuration = duration;
-        int windowHeight = ScreenUtils.getScreenHeight(context);
-        mDuration = mDuration * (windowHeight / mTranslationY);
+//        int windowHeight = ScreenUtils.getScreenHeight(context);
+//        mDuration = mDuration * (windowHeight / mTranslationY);
         return translationYAnimUtil;
     }
 
