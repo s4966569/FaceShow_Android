@@ -213,7 +213,7 @@ public class LoginActivity extends FaceShowBaseActivity {
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
-                rootView.hiddenLoadingView();
+                rootView.finish();
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(token);
                     SpManager.savePassPort(passPort);
@@ -226,7 +226,6 @@ public class LoginActivity extends FaceShowBaseActivity {
                     LoginActivity.this.finish();
                 } else {
                     ToastUtil.showToast(activity, ret.getError().getMessage());
-                    rootView.hiddenLoadingView();
                 }
             }
 
@@ -252,6 +251,7 @@ public class LoginActivity extends FaceShowBaseActivity {
                     getUserInfo(activity);
                 } else {
                     if (ret != null && ret.getError() != null) {
+                        rootView.finish();
                         ToastUtil.showToast(FaceShowApplication.getContext(), ret.getError().getMessage());
                     }
                 }
@@ -259,7 +259,7 @@ public class LoginActivity extends FaceShowBaseActivity {
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                rootView.hiddenLoadingView();
+                rootView.finish();
                 if (error != null) {
                     ToastUtil.showToast(FaceShowApplication.getContext(), error.getMessage());
                 }

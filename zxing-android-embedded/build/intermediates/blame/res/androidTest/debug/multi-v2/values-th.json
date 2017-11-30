@@ -1,10 +1,25 @@
 {
     "logs": [
         {
-            "outputFile": "E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-th\\values-th.xml",
+            "outputFile": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values-th/values-th.xml",
             "map": [
                 {
-                    "source": "E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-th\\values-th.xml",
+                    "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/bundles/debug/res/values-th/values-th.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,114,163,281",
+                        "endColumns": "58,48,117,107",
+                        "endOffsets": "109,158,276,384"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values-th\\values-th.xml",
+            "map": [
+                {
+                    "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\values-th\\values-th.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
