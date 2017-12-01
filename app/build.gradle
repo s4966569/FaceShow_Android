@@ -69,6 +69,7 @@ android {
     sourceSets {
         main {
             jniLibs.srcDir(['libs'])
+            jni.srcDirs=[]//
             manifest.srcFile 'src/main/AndroidManifest.xml'
             java.srcDirs = ['src/main/java', 'src/main/aidl']
             resources.srcDirs = ['src/main/java', 'src/main/aidl']
@@ -114,10 +115,11 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-//    compile files('libs/zxing.jar')
+    //    compile files('libs/zxing.jar')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.jakewharton:butterknife:8.4.0'
     compile 'com.getui:sdk:2.11.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile project(':zxing-android-embedded')
+    implementation files('libs/BaiduLBS_Android.jar')
 }
