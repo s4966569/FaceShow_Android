@@ -155,13 +155,13 @@ public class PDFViewActivity extends Activity implements OnPageChangeListener, V
 //        }
 
 
-        File file = null;
-        file = new File(Constants.DIR_PDF+ name);
+//        File file = null;
+//        file = new File(Constants.DIR_PDF+ name);
         downpath = Environment.getExternalStorageDirectory() + Constants.DIR_PDF;
-
-        if (file.exists()) {
+        File pdfFile= new File(downpath+pdfbean.getName());
+        if (pdfFile.exists()) {
             view_loading.setVisibility(View.GONE);
-            displayFromFile(file);
+            displayFromFile(pdfFile);
         } else {
             view_loading.setVisibility(View.GONE);
 
