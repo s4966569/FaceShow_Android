@@ -87,7 +87,6 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
         mRecyclerView = (LoadMoreRecyclerView) mRootView.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new HomeResourcesAdapter(getActivity(), this);
-//        mAdapter.setData(ResourceBean.getMockData());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLoadMoreEnable(true);
         mRecyclerView.setLoadMoreListener(new LoadMoreRecyclerView.LoadMoreListener() {
@@ -157,30 +156,19 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
                 if (ret != null && ret.getCode() == 0) {
                     setIntent(ret.getData());
                 } else {
-                    ToastUtil.showToast(getActivity(), "数据异常");
+                    ToastUtil.showToast(getActivity(), ret.getError().getMessage());
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
-                ToastUtil.showToast(getActivity(), "网络异常");
+                ToastUtil.showToast(getActivity(),error.getMessage());
             }
         });
     }
 
     public void setIntent(ResourceDetailResponse.ResourceDetailBean data) {
-//        PdfBean pdfbean = new PdfBean();
-//        pdfbean.setName(data.getResName());
-////        pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
-//        pdfbean.setUrl(data.getUrl());
-//        pdfbean.setRecord(0);
-//
-//        Intent intent = new Intent(getActivity(), PDFViewActivity.class);
-//        Bundle mBundle = new Bundle();
-//        mBundle.putSerializable("pdfbean", pdfbean);
-//        intent.putExtras(mBundle);
-//        startActivity(intent);
         if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
             WebViewActivity.loadThisAct(getActivity(), data.getUrl(),data.getResName());
         } else if(TextUtils.equals(data.getType(), "0")) {
@@ -191,8 +179,6 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
                     || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
                     Intent intent;
                     PdfBean pdfbean = new PdfBean();
-//                    pdfbean.setName("pdfTest");
-//                    pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
                     pdfbean.setName(attachmentInfosBean.getResName());
                     pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
                     pdfbean.setRecord(0);
