@@ -18,6 +18,7 @@ import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.magicwindow.Session;
 import pub.devrel.easypermissions.EasyPermissions;
 
 /**
@@ -39,6 +40,7 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
 
     @Override
     protected void onResume() {
+        Session.onPause(this);
         super.onResume();
         Log.i(Constants.TAG, this.getClass().getName());
         if (!isActive) {
@@ -52,6 +54,13 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
         if (!isAppOnForeground()) {
             isActive = false;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        Session.onPause(this);
+        super.onPause();
+
     }
 
     @Override

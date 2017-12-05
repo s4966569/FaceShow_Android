@@ -46,6 +46,20 @@
     <!-- SD卡读取权限，用户写入离线定位数据-->
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"></uses-permission>
 
+
+    <!-- 连接互联网Internet权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 允许应用程序联网，以便向我们的服务器端发送数据。 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--判断程序是否在前台运行,必须 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <!-- 检测手机基本状态 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 缓存资源优先存入SDcard -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
     <application
         android:name=".FaceShowApplication"
         android:allowBackup="true"
@@ -59,7 +73,6 @@
             android:taskAffinity="com.yanxiu.gphone.faceshow">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -72,7 +85,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -81,7 +93,15 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <category android:name="android.intent.category.BROWSABLE"></category>
+                <data
+                    android:scheme="faceshow" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".course.activity.CourseActivity"
             android:screenOrientation="portrait"
@@ -186,6 +206,7 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="AKtPVxL4dScxxX5ss34QGUz8kAHyMECF" >
         </meta-data>
+        <meta-data android:name="MW_APPID" android:value="E5EH5ZUNBINIVA5NJ0NG9DIA5F8XRSRC" />
 
     </application>
 

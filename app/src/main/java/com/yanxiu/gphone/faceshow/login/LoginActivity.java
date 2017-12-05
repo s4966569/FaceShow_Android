@@ -48,6 +48,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import cn.magicwindow.MWConfiguration;
+import cn.magicwindow.MagicWindowSDK;
 
 
 /**
@@ -102,6 +104,9 @@ public class LoginActivity extends FaceShowBaseActivity {
             tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
         }
         testLsb();
+        MWConfiguration config = new MWConfiguration(this);
+        config.setLogEnable(true);//打开魔窗Log信息
+        MagicWindowSDK.initSDK(config);
     }
 
     private TextWatcher accountNumberChangedListener = new TextWatcher() {
