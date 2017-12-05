@@ -50,6 +50,8 @@ import com.yanxiu.gphone.faceshow.util.ScreenUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -580,7 +582,12 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 if (!TextUtils.isEmpty(mCameraPath)){
 //                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
 //                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
-                    startIntent(mCameraPath);
+                    try {
+                        new FileInputStream(new File(mCameraPath));
+                        startIntent(mCameraPath);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case REQUEST_CODE_CROP:
