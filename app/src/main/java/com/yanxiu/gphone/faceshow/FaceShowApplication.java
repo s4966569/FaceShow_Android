@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.StrictMode;
 
 import com.facebook.stetho.Stetho;
@@ -9,11 +10,13 @@ import com.igexin.sdk.PushManager;
 import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.getui.FaceShowGeTuiIntentService;
 import com.yanxiu.gphone.faceshow.getui.FaceShowGeTuiService;
+import com.yanxiu.gphone.faceshow.homepage.activity.WelcomeActivity;
 import com.yanxiu.gphone.faceshow.http.envconfig.EnvConfigBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.util.CrashHandler;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
+import com.yanxiu.gphone.faceshow.util.LBSManager;
 
 import org.litepal.LitePalApplication;
 
@@ -38,7 +41,6 @@ public class FaceShowApplication extends LitePalApplication {
         } catch (Error error) {
             error.printStackTrace();
         }
-
         instance = this;
         initUrlServer();
         Stetho.initializeWithDefaults(this);
@@ -47,6 +49,7 @@ public class FaceShowApplication extends LitePalApplication {
         PushManager.getInstance().initialize(getApplicationContext(), FaceShowGeTuiService.class);
         // FaceShowGeTuiIntentService 为第三方自定义的推送服务事件接收类
         PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), FaceShowGeTuiIntentService.class);
+        LBSManager.init(getApplicationContext());
     }
 
     private void initUrlServer() {

@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.login;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -36,6 +37,7 @@ import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
@@ -103,10 +105,6 @@ public class LoginActivity extends FaceShowBaseActivity {
         } else {
             tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
         }
-        testLsb();
-        MWConfiguration config = new MWConfiguration(this);
-        config.setLogEnable(true);//打开魔窗Log信息
-        MagicWindowSDK.initSDK(config);
     }
 
     private TextWatcher accountNumberChangedListener = new TextWatcher() {
@@ -295,52 +293,6 @@ public class LoginActivity extends FaceShowBaseActivity {
         }
     }
 
-    private void testLsb(){
 
-        // TODO: 2017/12/1 基本功能已经实现 缺乏6.0的动态权限判断
-        LocationClientOption locationClientOption =new LocationClientOption();
-        //可选，是否需要地址信息，默认为不需要，即参数为false
-        //如果开发者需要获得当前点的地址信息，此处必须为true
-        locationClientOption.setIsNeedAddress(true);
-        locationClientOption.setIsNeedLocationDescribe(true);
-        locationClientOption.setIsNeedLocationPoiList(true);
-        LocationClient locationClient =null;
-        MyLocationListener myLocationListener=new MyLocationListener();
-        locationClient=new LocationClient(getApplicationContext());
-        locationClient.setLocOption(locationClientOption);
-        locationClient.registerLocationListener(myLocationListener);
-        locationClient.start();
-    }
 
-    class MyLocationListener extends BDAbstractLocationListener {
-        @Override
-        public void onReceiveLocation(BDLocation bdLocation) {
-            //此处的BDLocation为定位结果信息类，通过它的各种get方法可获取定位相关的全部结果
-            //以下只列举部分获取经纬度相关（常用）的结果信息
-            //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
-
-            double latitude =bdLocation.getLatitude();
-            double longitude =bdLocation.getLongitude();
-            float radius =bdLocation.getRadius();
-            //获取经纬度坐标类型，以LocationClientOption中设置过的坐标类型为准
-            String coorType =bdLocation.getCoorType();
-            //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
-            int errorCode =bdLocation.getLocType();
-            Log.e("LBS","latitude:: "+latitude+"  longitude::"+longitude+"  radius::"+radius+"  coorType:"+coorType+"  errorCode::"+errorCode);
-            /**获取详细地址信息**/
-            String addr = bdLocation.getAddrStr();
-            String country = bdLocation.getCountry();    //获取国家
-            String province = bdLocation.getProvince();    //获取省份
-            String city = bdLocation.getCity();    //获取城市
-            String district = bdLocation.getDistrict();    //获取区县
-            String street = bdLocation.getStreet();    //获取街道信息
-
-            List<Poi> poiList=bdLocation.getPoiList();
-
-            Log.e("LBS","地址:"+country+province+city+district+street);
-            Log.e("LBS", "addr: "+addr );
-            Log.e("LBS","LocationDescribe: "+bdLocation.getLocationDescribe());
-            Log.e("LBS", "poiList:"+poiList.get(0).getName() );
-        }
-    }
 }

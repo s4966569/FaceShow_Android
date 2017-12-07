@@ -2,31 +2,47 @@ package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.animation.Animator;
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInErrorActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInSuccessActivity;
+import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.http.checkin.UserSignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+
+import cn.magicwindow.MWConfiguration;
+import cn.magicwindow.MagicWindowSDK;
 
 /**
  * 欢迎页面
@@ -58,8 +74,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         public void onAnimationEnd(Animator animator) {
             isAnimationEnd = true;
             if (isGetUserInfoEnd) {
-                MainActivity.invoke(WelcomeActivity.this);
-                WelcomeActivity.this.finish();
+                whereToGoWithGetUserInfoEnd(WelcomeActivity.this);
             }
             if (isCanLogin) {
                 LoginActivity.toThisAct(WelcomeActivity.this);
@@ -101,6 +116,37 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         });
 
     }
+    private void initMajicWindow(){
+        MWConfiguration config = new MWConfiguration(this);
+        config.setLogEnable(false);//打开魔窗Log信息
+        MagicWindowSDK.initSDK(config);
+
+    }
+
+    /**
+     *当用户有token 并请求UseInfo接口后该往哪跳转
+     * 正常是调往首页
+     * 当时如果用户是通过scheme进入  就可能会调完签到页
+     * @param activity this
+     */
+    private void whereToGoWithGetUserInfoEnd(WelcomeActivity activity){
+        if (isAppOpenByScheme()){
+            //目前通过只有签到是通过scheme打开app的
+            toCheckInActOrCheckInResultAct(activity);
+        }else {
+            MainActivity.invoke(activity);
+            activity.finish();
+        }
+    }
+
+    /**
+     * 判断app是否为用户通过微信或者浏览器打开 其实就是通过scheme
+     * @return boolean
+     */
+    public boolean isAppOpenByScheme(){
+        return Intent.ACTION_VIEW.equals(getIntent().getAction());
+
+    }
 
     private void initView() {
         mImgLogo = (ImageView) findViewById(R.id.img_logo);
@@ -116,9 +162,89 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             //用户信息不完整,跳转登录页
             mHandler.sendEmptyMessageDelayed(GO_LOGIN, LOAD_TIME);
         } else {
-            //用户信息完整，跳转首页
             mHandler.sendEmptyMessageDelayed(GO_MAIN, LOAD_TIME);
         }
+    }
+    private void toCheckInActOrCheckInResultAct(WelcomeActivity activity){
+        String stepId = "";
+        String timestamp="";
+        if(Intent.ACTION_VIEW.equals(getIntent().getAction())){
+            Uri uri = getIntent().getData();
+            if(uri != null){
+                stepId = uri.getQueryParameter("stepId");
+                timestamp =uri.getQueryParameter("timestamp");
+            }
+        }
+        if (!TextUtils.isEmpty(stepId)){
+            toCheckInResultAct(activity,stepId,timestamp);
+        }else {
+            toCheckInAct(activity);
+        }
+    }
+
+    private void toCheckInAct(WelcomeActivity activity){
+        CheckInByQRActivity.toThisAct(activity);
+        activity.finish();
+    }
+    private void  toCheckInResultAct(WelcomeActivity activity,String stepId,String timestamp){
+        getLocation(stepId,timestamp,activity);
+
+    }
+     private LoadingDialogView mLoadingDialogView;
+    private LocationClient getLocation(final String stepId, final String timestamp, final WelcomeActivity activity){
+        if (mLoadingDialogView == null) {
+            mLoadingDialogView = new LoadingDialogView(this);
+        }
+        mLoadingDialogView.show();
+        final LocationClient locationClient = LBSManager.getLocationClient();
+        locationClient.registerLocationListener(new BDAbstractLocationListener() {
+            @Override
+            public void onReceiveLocation(BDLocation bdLocation) {
+                locationClient.stop();
+                double latitude =bdLocation.getLatitude();
+                double longitude =bdLocation.getLongitude();
+                userSignIn(stepId,timestamp,latitude+","+longitude,bdLocation.getLocationDescribe(),activity);
+            }
+        });
+        locationClient.start();
+        return locationClient;
+    }
+    private void userSignIn(String stepId, String timestamps, @NonNull String position, @NonNull String site, final WelcomeActivity activity){
+        UserSignInRequest userSignInRequest = new UserSignInRequest();
+        userSignInRequest.position =position;
+        userSignInRequest.site=site;
+        userSignInRequest.stepId=stepId;
+        userSignInRequest.timestamp =timestamps;
+        userSignInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, CheckInResponse userSignInResponse) {
+                mLoadingDialogView.dismiss();
+                if (userSignInResponse.getCode() == 0) {
+                    CheckInSuccessActivity.toThiAct(activity, userSignInResponse);
+                    activity.finish();
+                } else {
+                    if (userSignInResponse.getError().getCode() == 210414) {
+                        //用户已签到
+                        CheckInSuccessActivity.toThiAct(activity, userSignInResponse);
+                    } else {
+                        Intent intent = new Intent(activity, CheckInErrorActivity.class);
+                        intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
+                        startActivity(intent);
+                    }
+                    activity.finish();
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mLoadingDialogView.dismiss();
+                Intent intent = new Intent(activity, CheckInErrorActivity.class);
+                startActivity(intent);
+                activity.finish();
+            }
+        });
+
     }
 
     private static class WelcomeHandler extends Handler {
@@ -149,7 +275,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         }
     }
 
-    private static void getUserInfo(final Activity activity) {
+    private static void getUserInfo(final WelcomeActivity activity) {
         GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
@@ -160,8 +286,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                 }
                 if (isAnimationEnd) {
-                    MainActivity.invoke(activity);
-                    activity.finish();
+                    activity.whereToGoWithGetUserInfoEnd(activity);
                 }
                 isGetUserInfoEnd = true;
             }

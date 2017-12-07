@@ -5,13 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.OkHttpClientManager;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -20,7 +25,10 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.http.checkin.UserSignInRequest;
+import com.yanxiu.gphone.faceshow.http.checkin.UserSignInResponse;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
@@ -84,83 +92,83 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         mCaptureManager = new CheckInCaptureManager(this, mBarcodeView);
         mCaptureManager.initializeFromIntent(getIntent(), savedInstanceState);
         mCaptureManager.decode();
-        mCaptureManager.setCodeCallBack(new CheckInCaptureManager.CodeCallBack() {
-            @Override
-            public void callBack(String result) {
-                if (result != null) {
-                    if (TextUtils.isEmpty(result)) {
-                        CheckInByQRActivity.this.finish();
-                    } else {
-                        goCheckIn(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn&" + result + "&token=" + SpManager.getToken() + "&device=android");
-                    }
-
+        mCaptureManager.setCodeCallBack(codeCallBack);
+    }
+    CheckInCaptureManager.CodeCallBack codeCallBack=new CheckInCaptureManager.CodeCallBack() {
+        @Override
+        public void callBack(String result) {
+            if (result != null) {
+                if (TextUtils.isEmpty(result)) {
+                    CheckInByQRActivity.this.finish();
                 } else {
-                    CheckInByQRActivity.this.finish();
+                    String [] values= result.split("&");
+                    getLocation((values[1].split("="))[1],(values[2].split("="))[1]);
                 }
+            } else {
+                CheckInByQRActivity.this.finish();
             }
-        });
-    }
-
-    private void goCheckIn(String resultString) {
-        if (mLoadingDialogView == null)
-            mLoadingDialogView = new LoadingDialogView(this);
-        mLoadingDialogView.show();
-
-        if (!NetWorkUtils.isNetworkAvailable(FaceShowApplication.getContext())) {
-            Toast.makeText(FaceShowApplication.getContext(), R.string.net_error, Toast.LENGTH_LONG).show();
-            mLoadingDialogView.dismiss();
-            return;
         }
-        Request request = new Request.Builder().url(resultString).build();
-        OkHttpClient client = OkHttpClientManager.getInstance();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
+    };
+
+    private LocationClient getLocation(final String stepId, final String timestamp){
+        if (mLoadingDialogView == null) {
+            mLoadingDialogView = new LoadingDialogView(this);
+        }
+        mLoadingDialogView.show();
+        final LocationClient locationClient = LBSManager.getLocationClient();
+        locationClient.registerLocationListener(new BDAbstractLocationListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                mLoadingDialogView.dismiss();
+            public void onReceiveLocation(BDLocation bdLocation) {
+                locationClient.stop();
+                double latitude =bdLocation.getLatitude();
+                double longitude =bdLocation.getLongitude();
+                userSignIn(stepId,timestamp,latitude+","+longitude,bdLocation.getLocationDescribe());
             }
+        });
+        locationClient.start();
+        return locationClient;
+    }
 
+    private void userSignIn(String stepId,String timestamps,@NonNull String position,@NonNull String site){
+        UserSignInRequest userSignInRequest = new UserSignInRequest();
+        userSignInRequest.position =position;
+        userSignInRequest.site=site;
+        userSignInRequest.stepId=stepId;
+        userSignInRequest.timestamp =timestamps;
+        userSignInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    if (call.isCanceled()) {
-                        return;
-                    }
-                } catch (Exception e) {
-                }
-
-                String bodyString = response.body().string();
-
-                if (!response.isSuccessful()) {
-                    ToastUtil.showToast(FaceShowApplication.getContext(), "服务器数据异常");
-                    return;
-                }
-                try {
-                    CheckInResponse userSignInResponse = RequestBase.getGson().fromJson(bodyString, CheckInResponse.class);
-                    if (userSignInResponse.getCode() == 0) {
+            public void onSuccess(RequestBase request, CheckInResponse userSignInResponse) {
+                mLoadingDialogView.dismiss();
+                if (userSignInResponse.getCode() == 0) {
+                    CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
+                    CheckInByQRActivity.this.finish();
+                } else {
+                    if (userSignInResponse.getError().getCode() == 210414) {
+                        //用户已签到
                         CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
-                        CheckInByQRActivity.this.finish();
                     } else {
-                        if (userSignInResponse.getError().getCode() == 210414) {//用户已签到
-                            CheckInSuccessActivity.toThiAct(CheckInByQRActivity.this, userSignInResponse);
-                        } else {
-                            Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
-                            intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
-                            startActivity(intent);
-                        }
-                        CheckInByQRActivity.this.finish();
+                        Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
+                        intent.putExtra(CheckInErrorActivity.QR_STATUE, userSignInResponse.getError());
+                        startActivity(intent);
                     }
-                } catch (Exception e) {
-                    Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
-                    startActivity(intent);
                     CheckInByQRActivity.this.finish();
                 }
-                mLoadingDialogView.dismiss();
+
             }
 
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mLoadingDialogView.dismiss();
+                Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
+                startActivity(intent);
+                CheckInByQRActivity.this.finish();
+            }
         });
 
     }
+
+
+
 
     /**
      * 初始化窗口
