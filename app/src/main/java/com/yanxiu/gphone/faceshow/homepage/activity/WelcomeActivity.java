@@ -22,6 +22,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.course.activity.ClassManagerActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
@@ -31,6 +32,8 @@ import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.UserSignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
+import com.yanxiu.gphone.faceshow.http.main.MainRequest;
+import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
@@ -269,10 +272,34 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     break;
                 case GO_MAIN:
                     //获取用户基本信息
-                    getUserInfo(activity);
+                    getCurrentClassId(activity);
+//                    ®
                     break;
             }
         }
+    }
+    private static void getCurrentClassId(final WelcomeActivity activity){
+
+        MainRequest getCurrentClassId= new MainRequest();
+        getCurrentClassId.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, MainResponse ret) {
+                if (ret!=null&&ret.getCode()==0){
+                    getUserInfo(activity);
+                }else {
+                    toNoClassPage(activity);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                toNoClassPage(activity);
+            }
+        });
+    }
+    private static void  toNoClassPage(WelcomeActivity activity){
+            activity.startActivity(new Intent(activity, ClassManagerActivity.class));
+            activity.finish();
     }
 
     private static void getUserInfo(final WelcomeActivity activity) {

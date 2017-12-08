@@ -144,4 +144,5 @@
     <string name="please_input_new_password">请输入6-20位新密码</string>
     <string name="forget_password">忘记密码</string>
     <string name="time_count">%1$ds</string>
+    <string name="back">退出</string>
 </resources>

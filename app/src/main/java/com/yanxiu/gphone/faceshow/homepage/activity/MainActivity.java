@@ -140,7 +140,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     SpManager.saveUserInfo(info);
                     initFragment();
                 } else {
-                    mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
 
@@ -334,7 +334,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     protected void onStop() {
         super.onStop();
         // TODO: 17-9-21 移除轮讯
-        if (handler != null)
+        if (handler != null) {
             handler.removeCallbacksAndMessages(null);
+        }
     }
 }
