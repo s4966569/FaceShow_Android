@@ -28,6 +28,11 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
+import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailRequest;
+import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailResponse;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import java.util.UUID;
 
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.attachment;
 import static com.yanxiu.gphone.faceshow.course.bean.CourseDetailItemBean.interact;
@@ -166,27 +171,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                 break;
             case attachment:
                 AttachmentInfosBean attachmentInfosBean = (AttachmentInfosBean) itemBean;
-                if (attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
-                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
-                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
-                    Intent intent;
-                    PdfBean pdfbean = new PdfBean();
-//                    pdfbean.setName("pdfTest");
-//                    pdfbean.setUrl("http://upload.ugc.yanxiu.com/doc/6bb6378e16add583a879bc94a2829127.pdf?from=107&rid=30089466");
-                    pdfbean.setName(attachmentInfosBean.getResName());
-                    pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
-                    pdfbean.setRecord(0);
-
-                    intent = new Intent(this, PDFViewActivity.class);
-                    Bundle mBundle = new Bundle();
-                    mBundle.putSerializable("pdfbean", pdfbean);
-                    intent.putExtras(mBundle);
-                    startActivity(intent);
-
-                } else {
-                    WebViewActivity.loadThisAct(CourseActivity.this, attachmentInfosBean.getPreviewUrl(), attachmentInfosBean.getResName());
-                }
-
+                getResourceDetail(attachmentInfosBean.getResId(),CourseActivity.this);
                 break;
             case interact:
                 InteractStepsBean interactStepsBean = (InteractStepsBean) itemBean;
@@ -210,5 +195,60 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                 break;
         }
 
+    }
+
+
+    private UUID mRequestUUID=null;
+    private void getResourceDetail(String resId, final CourseActivity activity) {
+        mRootView.showLoadingView();
+        ResourceDetailRequest resourceDetailRequest = new ResourceDetailRequest();
+        resourceDetailRequest.resId = resId;
+        mRequestUUID = resourceDetailRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
+                mRootView.hiddenLoadingView();
+                if (ret != null && ret.getCode() == 0) {
+                    setIntent(ret.getData(),activity);
+                } else {
+                    ToastUtil.showToast(activity, ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.hiddenLoadingView();
+                ToastUtil.showToast(activity,error.getMessage());
+            }
+        });
+    }
+
+    public void setIntent(ResourceDetailResponse.ResourceDetailBean data,final CourseActivity activity) {
+        if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
+            WebViewActivity.loadThisAct(activity, data.getUrl(),data.getResName());
+        } else if(TextUtils.equals(data.getType(), "0")) {
+            AttachmentInfosBean attachmentInfosBean = data.getAi();
+            if (attachmentInfosBean != null && attachmentInfosBean.getResType() != null) {
+                if(attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
+                    Intent intent;
+                    PdfBean pdfbean = new PdfBean();
+                    pdfbean.setName(attachmentInfosBean.getResName());
+                    pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
+                    pdfbean.setRecord(0);
+
+                    intent = new Intent(activity, PDFViewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("pdfbean", pdfbean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    return;
+                }
+            } else {
+                ToastUtil.showToast(activity, "数据异常");
+            }
+        } else {
+            ToastUtil.showToast(activity, "数据异常");
+        }
     }
 }

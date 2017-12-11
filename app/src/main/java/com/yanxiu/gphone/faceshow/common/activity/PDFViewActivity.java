@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
@@ -338,6 +339,12 @@ public class PDFViewActivity extends Activity implements OnPageChangeListener, V
         pdfView.fromFile(file)
                 .defaultPage(pageNumber)
                 .onPageChange(this)
+                .onError(new OnErrorListener() {
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.e("pdf",t.getMessage());
+                    }
+                })
                 .load();
 //        if ("0".equals(from)) {
 //            handler.postDelayed(runnable, 1000);//每1秒执行一次runnable
