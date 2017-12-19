@@ -102,7 +102,7 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".course.activity.CourseActivity"
             android:screenOrientation="portrait"
@@ -205,16 +205,18 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote"></service>
+            android:process=":remote" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="AKtPVxL4dScxxX5ss34QGUz8kAHyMECF"></meta-data>
+            android:value="AKtPVxL4dScxxX5ss34QGUz8kAHyMECF" />
         <meta-data
             android:name="MW_APPID"
             android:value="E5EH5ZUNBINIVA5NJ0NG9DIA5F8XRSRC" />
 
-        <activity android:name=".course.activity.ClassManagerActivity"></activity>
+        <activity android:name=".course.activity.ClassManagerActivity" />
+        <activity android:name=".user.ModifyUserStageActivity" />
+        <activity android:name=".user.ModifyUserSubjectActivity"></activity>
     </application>
 
 </manifest>

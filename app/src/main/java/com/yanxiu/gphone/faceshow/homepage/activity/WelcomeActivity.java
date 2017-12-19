@@ -293,7 +293,13 @@ public class WelcomeActivity extends FaceShowBaseActivity {
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                toNoClassPage(activity);
+//                (activity);
+                //todo
+                isCanLogin = true;
+                if (isAnimationEnd) {
+                    LoginActivity.toThisAct(activity);
+                    activity.finish();
+                }
             }
         });
     }

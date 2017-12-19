@@ -71,14 +71,14 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     TextView mMobileView;
     @BindView(R.id.tv_gender)
     TextView mSexView;
-    @BindView(R.id.tv_segment)
-    TextView mStageView;
-    @BindView(R.id.tv_stduy)
-    TextView mSubjectView;
+    @BindView(R.id.tv_stage_subject)
+    TextView mStageSubjectView;
     @BindView(R.id.title_layout_title)
     TextView mTitleView;
     @BindView(R.id.title_layout_left_img)
     ImageView mBackView;
+    @BindView(R.id.rl_stage_subject)
+    RelativeLayout mRlStageSubejct;
 
     private PopupWindow picPopupWindow;
     private static final int SELECT_FROM_GALLER = 1;
@@ -86,6 +86,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private static final int CROP_PICTURE = 3;
     private static final int MODIFY_NAME = 4;
     private static final int MODIFY_SEX = 5;
+    private static final int MODIFY_STAGE_SUBJECT = 6;
     private File portraitFile, photoFile; //拍照裁剪后的照片文件，拍照之后存储的照片文件
     private String path;
     private String crop_path;
@@ -110,8 +111,15 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
         mMobileView.setText(UserInfo.getInstance().getInfo().getMobilePhone());
         mSexView.setText(getSex());
-        mStageView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getStageName()) ? "暂无" : UserInfo.getInstance().getInfo().getStageName());
-        mSubjectView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSubjectName()) ? "暂无" : UserInfo.getInstance().getInfo().getSubjectName());
+        String stageName = TextUtils.isEmpty(UserInfo.getInstance().getInfo().getStageName()) ? "暂无" : UserInfo.getInstance().getInfo().getStageName();
+        String subjectName = TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSubjectName()) ? "暂无" : UserInfo.getInstance().getInfo().getSubjectName();
+        if (stageName.equals("暂无")) {
+            mStageSubjectView.setText("暂无");
+        } else if (subjectName.equals("暂无")) {
+            mStageSubjectView.setText(stageName);
+        } else {
+            mStageSubjectView.setText(stageName + subjectName);
+        }
     }
 
     private void setHeadimg() {
@@ -131,21 +139,30 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         return sex;
     }
 
-    @OnClick({R.id.person_info, R.id.title_layout_left_img, R.id.rl_name, R.id.rl_sex})
+    @OnClick({R.id.person_info, R.id.title_layout_left_img, R.id.rl_name, R.id.rl_sex, R.id.rl_stage_subject})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.person_info://点击修改头像
+            //点击修改头像
+            case R.id.person_info:
                 showPopWindow();
                 break;
             case R.id.title_layout_left_img:
                 finish();
                 break;
             case R.id.rl_name:
+                //修改用户名
                 startActivityForResult(new Intent(this, ModifyUserNameActivity.class), MODIFY_NAME);
                 break;
             case R.id.rl_sex:
+                //修改用户性别
                 startActivityForResult(new Intent(this, ModifyUserSexActivity.class), MODIFY_SEX);
                 break;
+            case R.id.rl_stage_subject:
+                //修改用户学段学科
+                startActivityForResult(new Intent(this, ModifyUserStageActivity.class), MODIFY_STAGE_SUBJECT);
+                break;
+            default:
+
         }
     }
 
@@ -270,8 +287,9 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             switch (requestCode) {
                 // 直接从相册获取
                 case SELECT_FROM_GALLER:
-                    if (data != null)
+                    if (data != null) {
                         startPhotoZoom(data.getData(), Uri.fromFile(createCroppedImageFile()));
+                    }
                     break;
                 // 调用相机拍照时
                 case TAKE_PHOTO:
@@ -300,6 +318,11 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                     break;
                 case MODIFY_SEX:
                     mSexView.setText(getSex());
+                    break;
+                case MODIFY_STAGE_SUBJECT:
+                    if (data != null) {
+                        mStageSubjectView.setText(data.getStringExtra("stageSubjectName"));
+                    }
                     break;
                 default:
                     break;

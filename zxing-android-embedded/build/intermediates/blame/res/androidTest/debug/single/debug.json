@@ -1,9 +1,5 @@
 [
     {
-        "merged": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout_zxing_barcode_scanner.xml.flat",
-        "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\layout\\zxing_barcode_scanner.xml"
-    },
-    {
         "merged": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/res/merged/androidTest/debug/layout_zxing_barcode_scanner.xml.flat",
         "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/bundles/debug/res/layout/zxing_barcode_scanner.xml"
     },
@@ -14,13 +10,5 @@
     {
         "merged": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/res/merged/androidTest/debug/layout_zxing_capture.xml.flat",
         "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/bundles/debug/res/layout/zxing_capture.xml"
-    },
-    {
-        "merged": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\res\\merged\\androidTest\\debug\\raw_zxing_beep.ogg.flat",
-        "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\raw\\zxing_beep.ogg"
-    },
-    {
-        "merged": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout_zxing_capture.xml.flat",
-        "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/E:\\AndroidStudio\\FaceShow_Android\\zxing-android-embedded\\build\\intermediates\\bundles\\debug\\res\\layout\\zxing_capture.xml"
     }
 ]

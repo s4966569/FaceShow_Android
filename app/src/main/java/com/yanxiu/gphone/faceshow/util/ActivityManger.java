@@ -80,6 +80,20 @@ public class ActivityManger {
     }
 
     /**
+     * 清楚list中最上面的几个Activity
+     * @param count
+     */
+    public static void destroyForwardActivityByCount(int count){
+        if (count>activityList.size()){
+            count=activityList.size();
+        }
+        for (int i = activityList.size(); activityList.size()-count<i; i--) {
+            activityList.get(i-1).finish();
+        }
+
+    }
+
+    /**
      * 获取当前Activity
      *
      * @return

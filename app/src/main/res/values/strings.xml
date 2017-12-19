@@ -128,8 +128,9 @@
     <string name="name">姓名</string>
     <string name="mobil">联系电话</string>
     <string name="sex">性别</string>
-    <string name="stagename">学段</string>
+    <string name="stagena">学段</string>
     <string name="subjectname">学科</string>
+    <string name="stage_subject">学段学科</string>
     <string name="logout">退出登录</string>
     <string name="pregistration">签到记录</string>
     <string name="lecturer">讲师</string>
@@ -145,4 +146,6 @@
     <string name="forget_password">忘记密码</string>
     <string name="time_count">%1$ds</string>
     <string name="back">退出</string>
+    <string name="choose_stage">选择学段</string>
+    <string name="choose_subject">选择学科</string>
 </resources>
