@@ -13,6 +13,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.common.adapter.PhotoPagerAdapter;
 import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
+import com.yanxiu.gphone.faceshow.common.dialog.PhotoDeleteDialog;
 import com.yanxiu.gphone.faceshow.customview.ZoomImageView;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
     private TextView mTitleView;
     private ImageView mDeleteView;
     private PhotoPagerAdapter mAdapter;
+    private PhotoDeleteDialog mDeleteDialog;
 
     private int mFromId;
     private int mSelectPosition=-1;
@@ -124,6 +126,30 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
         mDeleteView.setBackgroundResource(R.drawable.selector_large_delete);
     }
 
+    private void showDialog(){
+        if (mDeleteDialog==null){
+            mDeleteDialog=new PhotoDeleteDialog(mContext);
+            mDeleteDialog.setClickListener(new PhotoDeleteDialog.OnViewClickListener() {
+                @Override
+                public void onDeleteClick() {
+                    PhotoDeleteBean deleteBean = new PhotoDeleteBean();
+                    deleteBean.formId = mFromId;
+                    deleteBean.deleteId = mSelectPosition;
+                    EventBus.getDefault().post(deleteBean);
+                    mAdapter.deleteItem(mSelectPosition);
+                    mTotalNum=mAdapter.getCount();
+
+                    if (mTotalNum==0){
+                        PhotoActivity.this.finish();
+                    }else {
+                        mTitleView.setText((mSelectPosition + 1) + "/" + mTotalNum);
+                    }
+                }
+            });
+        }
+        mDeleteDialog.show();
+    }
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -155,18 +181,7 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
                 PhotoActivity.this.finish();
                 break;
             case R.id.iv_right:
-                PhotoDeleteBean deleteBean = new PhotoDeleteBean();
-                deleteBean.formId = mFromId;
-                deleteBean.deleteId = mSelectPosition;
-                EventBus.getDefault().post(deleteBean);
-                mAdapter.deleteItem(mSelectPosition);
-                mTotalNum=mAdapter.getCount();
-
-                if (mTotalNum==0){
-                    PhotoActivity.this.finish();
-                }else {
-                    mTitleView.setText((mSelectPosition + 1) + "/" + mTotalNum);
-                }
+                showDialog();
                 break;
         }
     }
