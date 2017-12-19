@@ -18,6 +18,7 @@ import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
+import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -144,8 +145,11 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_check_in:
+                EventUpdate.onSignInButtonInSignInDetailPage(this);
                 CheckInByQRActivity.toThisAct(this);
                 this.finish();
+                break;
+            default:
                 break;
         }
     }

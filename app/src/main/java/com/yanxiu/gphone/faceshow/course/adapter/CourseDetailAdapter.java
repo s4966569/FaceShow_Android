@@ -18,6 +18,7 @@ import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextView;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
+import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.util.ArrayList;
 
@@ -84,7 +85,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final CourseDetailItemBean data = mList.get(position);
         switch (getItemViewType(position)) {
             case 1:
@@ -97,6 +98,7 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 holder1.course_detail_all.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        EventUpdate.onCourseDetailButton(holder.itemView.getContext());
                         CourseIntroductionActivity.invoke(mContext, data.getBriefing());
                     }
                 });

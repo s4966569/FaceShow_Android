@@ -12,8 +12,6 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
@@ -58,6 +56,8 @@
     <!-- 缓存资源优先存入SDcard -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
+
 
     <application
         android:name=".FaceShowApplication"
@@ -213,10 +213,12 @@
         <meta-data
             android:name="MW_APPID"
             android:value="E5EH5ZUNBINIVA5NJ0NG9DIA5F8XRSRC" />
-
-        <activity android:name=".course.activity.ClassManagerActivity" />
-        <activity android:name=".user.ModifyUserStageActivity" />
-        <activity android:name=".user.ModifyUserSubjectActivity"></activity>
+        <activity android:name=".course.activity.ClassManagerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".user.ModifyUserStageActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".user.ModifyUserSubjectActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

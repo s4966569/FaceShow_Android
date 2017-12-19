@@ -17,6 +17,7 @@ import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
+import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 
 /**
@@ -130,6 +131,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[1].setSelected(false);
                 mNavBarViews[2].setSelected(false);
                 mNavBarViews[3].setSelected(false);
+                EventUpdate.onCourseButton(getContext());
                 break;
             case R.id.resources_tab:
                 curItem = INDEX_NOTICE_TAB;
@@ -142,6 +144,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[1].setSelected(true);
                 mNavBarViews[2].setSelected(false);
                 mNavBarViews[3].setSelected(false);
+                EventUpdate.onResourceButton(getContext());
                 break;
             case R.id.projectTask_tab:
                 curItem = INDEX_CLASSCIRCLE_TAB;
@@ -154,6 +157,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[1].setSelected(false);
                 mNavBarViews[2].setSelected(true);
                 mNavBarViews[3].setSelected(false);
+                EventUpdate.onTaskButton(getContext());
                 break;
             case R.id.schedule_tab:
                 curItem = INDEX_MY;
@@ -166,10 +170,12 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[1].setSelected(false);
                 mNavBarViews[2].setSelected(false);
                 mNavBarViews[3].setSelected(true);
+                EventUpdate.onScheduleButton(getContext());
                 break;
             case R.id.title_layout_signIn:
             case R.id.title_layout_right_img:
                 CheckInByQRActivity.toThisAct(getActivity());
+                EventUpdate.onHomeSignInButton(getContext());
                 return;
             default:
                 break;

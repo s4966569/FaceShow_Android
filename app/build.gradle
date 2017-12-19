@@ -124,4 +124,5 @@ dependencies {
     //魔窗用来解决通过浏览器打开app 兼容第三方浏览器
     compile 'cn.magicwindow:MagicWindowSDK:4.1'
     implementation files('libs/BaiduLBS_Android.jar')
+    implementation files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.12.jar')
 }

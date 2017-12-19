@@ -40,6 +40,7 @@ import com.yanxiu.gphone.faceshow.user.request.UpdataUserMessageRequest;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.io.File;
 import java.io.IOException;
@@ -159,6 +160,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 break;
             case R.id.rl_stage_subject:
                 //修改用户学段学科
+                EventUpdate.onChooseStageSubjectButton(this);
                 startActivityForResult(new Intent(this, ModifyUserStageActivity.class), MODIFY_STAGE_SUBJECT);
                 break;
             default:
