@@ -93,8 +93,8 @@
                 android:gravity="center"
                 android:text="@string/courseArrange"
                 android:textColor="@drawable/selector_homepage_tab_text"
-                android:textStyle="bold"
-                android:textSize="@dimen/tab_bar_textsize" />
+                android:textSize="@dimen/tab_bar_textsize"
+                android:textStyle="bold" />
 
             <View
                 android:id="@+id/courseArrange_line"
@@ -105,58 +105,94 @@
         </LinearLayout>
 
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/resources_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/resources_tv"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/resources"
-                android:textStyle="bold"
-                android:textColor="@drawable/selector_homepage_tab_text"
-                android:textSize="@dimen/tab_bar_textsize" />
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/resources_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="@string/resources"
+                    android:textColor="@drawable/selector_homepage_tab_text"
+                    android:textSize="@dimen/tab_bar_textsize"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_resource_red_dot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_toEndOf="@id/resources_tv"
+                    android:visibility="gone"
+                    android:src="@drawable/shape_red_circle_6dp" />
+
+            </RelativeLayout>
 
             <View
                 android:id="@+id/resources_line"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_bottomline_height"
+                android:layout_alignParentBottom="true"
                 android:background="@drawable/selector_homepage_tab_line" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/projectTask_tab"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/projectTask_tv"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/projectTask"
-                android:textStyle="bold"
-                android:textColor="@drawable/selector_homepage_tab_text"
-                android:textSize="@dimen/tab_bar_textsize" />
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/projectTask_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_centerInParent="true"
+                    android:text="@string/projectTask"
+                    android:textColor="@drawable/selector_homepage_tab_text"
+                    android:textSize="@dimen/tab_bar_textsize"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_project_task_red_dot"
+                    android:layout_width="6dp"
+                    android:visibility="gone"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_toEndOf="@id/projectTask_tv"
+                    android:src="@drawable/shape_red_circle_6dp" />
+
+            </RelativeLayout>
+
 
             <View
                 android:id="@+id/projectTask_line"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_bar_bottomline_height"
+                android:layout_alignParentBottom="true"
                 android:background="@drawable/selector_homepage_tab_line" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
         <LinearLayout
@@ -173,9 +209,9 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/schedule"
-                android:textStyle="bold"
                 android:textColor="@drawable/selector_homepage_tab_text"
-                android:textSize="@dimen/tab_bar_textsize" />
+                android:textSize="@dimen/tab_bar_textsize"
+                android:textStyle="bold" />
 
             <View
                 android:id="@+id/schedule_line"

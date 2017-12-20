@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
 import com.yanxiu.gphone.faceshow.user.MyFragment;
@@ -43,6 +44,13 @@ public class NaviFragmentFactory {
         }
     }
 
+    public HomeFragment getHomeFragment() {
+        return mHomeFragment;
+    }
+    public NoticeFragment getNoticeFragment() {
+        return  mNoticeFragment;
+    }
+
     private void hideFragment(FragmentTransaction transaction) {
 
         if (mCurrItem == 0 && mHomeFragment != null) {
@@ -60,14 +68,10 @@ public class NaviFragmentFactory {
     }
 
 
-    public NoticeFragment getNoticeFragment() {
-        if (mClassCircleFragment != null)
-            return mNoticeFragment;
-        else
-            return null;
-    }
 
-    public void hideAndShowFragment(FragmentManager fragmentManager, int index) {
+
+    public FaceShowBaseFragment hideAndShowFragment(FragmentManager fragmentManager, int index) {
+        FaceShowBaseFragment fragment = null;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (mCurrItem == 0 && mHomeFragment != null) {
             transaction.hide(mHomeFragment);
@@ -90,6 +94,7 @@ public class NaviFragmentFactory {
                 } else {
                     transaction.show(mHomeFragment);
                 }
+                fragment = mHomeFragment;
                 break;
             case 1:
                 if (mNoticeFragment == null) {
@@ -98,6 +103,7 @@ public class NaviFragmentFactory {
                 } else {
                     transaction.show(mNoticeFragment);
                 }
+                fragment = mNoticeFragment;
                 break;
             case 2:
                 if (mClassCircleFragment == null) {
@@ -106,6 +112,7 @@ public class NaviFragmentFactory {
                 } else {
                     transaction.show(mClassCircleFragment);
                 }
+                fragment = mClassCircleFragment;
                 break;
             case 3:
                 if (mMyFragment == null) {
@@ -114,8 +121,10 @@ public class NaviFragmentFactory {
                 } else {
                     transaction.show(mMyFragment);
                 }
+                fragment = mMyFragment;
                 break;
         }
         transaction.commit();
+        return fragment;
     }
 }

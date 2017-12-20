@@ -54,6 +54,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private TextView mClass_tv;//班级
     private ImageView mCheckInEnterIMG;
 
+    private ImageView mImgResourceRedDot, mImgProjectTaskRedDot;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getContext());
@@ -79,6 +81,9 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mCheckInEnterIMG.setVisibility(View.VISIBLE);
         mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
+        mImgProjectTaskRedDot = (ImageView) mRootView.findViewById(R.id.img_project_task_red_dot);
+        mImgResourceRedDot = (ImageView) mRootView.findViewById(R.id.img_resource_red_dot);
+
         if (mMainBean != null && mMainBean.getClazsInfo() != null && mMainBean.getProjectInfo() != null) {
             mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
             mClass_tv.setText(mMainBean.getClazsInfo().getClazsName());
@@ -101,6 +106,18 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mNavBarViews[3] = mSchedule_tab;
 
 
+    }
+
+    public void showResourceRedDot() {
+        mImgResourceRedDot.setVisibility(View.VISIBLE);
+    }
+
+    public void showTaskRedDot() {
+        mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
+    }
+
+    public void hideTaskRedDot() {
+        mImgProjectTaskRedDot.setVisibility(View.GONE);
     }
 
     private void intListener() {
@@ -145,6 +162,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mNavBarViews[2].setSelected(false);
                 mNavBarViews[3].setSelected(false);
                 EventUpdate.onResourceButton(getContext());
+                mImgResourceRedDot.setVisibility(View.GONE);
                 break;
             case R.id.projectTask_tab:
                 curItem = INDEX_CLASSCIRCLE_TAB;

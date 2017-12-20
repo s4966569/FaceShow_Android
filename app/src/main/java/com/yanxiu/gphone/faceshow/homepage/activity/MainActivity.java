@@ -16,13 +16,18 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.getui.ToMainActivityBroadcastReceiver;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
+import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
+import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+import com.yanxiu.gphone.faceshow.http.main.RedDotRequest;
+import com.yanxiu.gphone.faceshow.http.main.RedDotResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -108,9 +113,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void initListener() {
     }
 
+    private ImageView mImgClassCircleRedCircle;
+
     private void initBottomBar() {
         mSelNavTxtColor = getResources().getColor(R.color.color_1da1f2);
         mNormalNavTxtColor = getResources().getColor(R.color.color_a1a8b2);
+        mImgClassCircleRedCircle = (ImageView) findViewById(R.id.img_class_circle_red_circle);
         mNavBarViews[0] = findViewById(R.id.navi_1);
         mNavBarViews[1] = findViewById(R.id.navi_2);
         mNavBarViews[2] = findViewById(R.id.navi_3);
@@ -159,6 +167,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
      */
     private void pollingRedPointer() {
         getRedPointersRequest();
+        getRedDotRequest();
 
     }
 
@@ -168,6 +177,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             super.handleMessage(msg);
             if (msg.what == 1) {
                 getRedPointersRequest();
+            } else if (msg.what == 2) {
+                getRedDotRequest();
             }
         }
     };
@@ -223,6 +234,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 break;
             case R.id.navi_3:
                 curItem = INDEX_CLASSCIRCLE_TAB;
+                if (mImgClassCircleRedCircle.getVisibility() == View.VISIBLE) {
+                    mImgClassCircleRedCircle.setVisibility(View.GONE);
+                }
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(false);
@@ -261,9 +275,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         }
     }
 
-    private void showCurrentFragment(int index) {
+    private FaceShowBaseFragment mCurrentFragment;
+
+    private FaceShowBaseFragment showCurrentFragment(int index) {
         if (index == mLastSelectIndex && !isToFirstFragment) {
-            return;
+            return mCurrentFragment;
         }
         mLastSelectIndex = index;
         checkBottomBar(index);
@@ -273,7 +289,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         if (mFragmentManager == null) {
             mFragmentManager = getSupportFragmentManager();
         }
-        mNaviFragmentFactory.hideAndShowFragment(mFragmentManager, index);
+        mCurrentFragment = mNaviFragmentFactory.hideAndShowFragment(mFragmentManager, index);
+        return mCurrentFragment;
     }
 
     /**
@@ -322,10 +339,68 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private UUID mGetRedDotRequestUUID;
+    private boolean showResourceRedDot = false;
+    private boolean showTaskRedDot = false;
+
+    private void getRedDotRequest() {
+        RedDotRequest redDotRequest = new RedDotRequest();
+        redDotRequest.clazsId = SpManager.getUserInfo().getClassId();
+        redDotRequest.bizIds = "taskNew,momentNew,resourceNew";
+        mGetRedDotRequestUUID = redDotRequest.startRequest(RedDotResponse.class, new HttpCallback<RedDotResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, RedDotResponse ret) {
+                if (0 == ret.getCode()) {
+                    //有新的班级圈消息
+                    if (ret.getData().getMomentNew() != null) {
+                        if (ret.getData().getMomentNew().getPromptNum() >= 0) {
+                            mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
+                        } else {
+                            mImgClassCircleRedCircle.setVisibility(View.GONE);
+                        }
+                    }
+
+                    //有新的资源消息
+                    if (ret.getData().getResourceNew() != null) {
+                        if (ret.getData().getResourceNew().getPromptNum() >= 0) {
+                    if (mNaviFragmentFactory != null) {
+                        HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
+                        if (homeFragment != null) {
+                            homeFragment.showResourceRedDot();
+                        }
+                        }
+                    }
+                        //有新的任务信息
+                    if (ret.getData().getTaskNew()!=null){
+                        if (ret.getData().getTaskNew().getPromptNum()>=0){
+                            HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
+                        if (homeFragment != null) {
+                            homeFragment.showTaskRedDot();
+                            }
+                        }
+                        }
+                    }
+                }
+                handler.sendEmptyMessageDelayed(2, 30000);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                handler.sendEmptyMessageDelayed(2, 30000);
+
+            }
+        });
+    }
+
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mGetHasNotificationsNeedReadRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
+        }
+        if (mGetRedDotRequestUUID != null) {
+            RequestBase.cancelRequestWithUUID(mGetRedDotRequestUUID);
         }
 
     }

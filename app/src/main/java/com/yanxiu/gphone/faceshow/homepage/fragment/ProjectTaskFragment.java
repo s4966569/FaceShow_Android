@@ -92,11 +92,14 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                         mAdapter.setData(mProjectTaskList);
                         mRootView.hiddenOtherErrorView();
                         mRootView.hiddenNetErrorView();
+                        toHideRedDot();
                     } else {
                         mRootView.showOtherErrorView(getString(R.string.no_task_hint));
+                        toHideRedDot();
                     }
                 } else {
                     mRootView.showOtherErrorView(getString(R.string.no_task_hint));
+                    toHideRedDot();
                 }
             }
 
@@ -104,6 +107,7 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
+                toHideRedDot();
             }
         });
     }
@@ -149,9 +153,25 @@ public class ProjectTaskFragment extends HomePageBaseFragment implements OnRecyc
                 InteractStepsBean bean = mProjectTaskList.get(message.position);
                 bean.setStepFinished("1");
                 mAdapter.notifyItemChanged(message.position);
+                toHideRedDot();
             }
 
         }
+    }
+
+    private void toHideRedDot() {
+        if (mProjectTaskList == null) {
+            return;
+        }
+        for (InteractStepsBean interactStepsBean : mProjectTaskList) {
+            if (interactStepsBean.getInteractType().equals(InteractStepsBean.VOTE) || interactStepsBean.getInteractType().equals(InteractStepsBean.QUESTIONNAIRES)) {
+                if (interactStepsBean.getStepFinished().equals("0")) {
+                    return;
+                }
+            }
+        }
+        ((HomeFragment) this.getParentFragment()).hideTaskRedDot();
+
     }
 
     public void onEventMainThread(CheckInSuccessEvent event) {
