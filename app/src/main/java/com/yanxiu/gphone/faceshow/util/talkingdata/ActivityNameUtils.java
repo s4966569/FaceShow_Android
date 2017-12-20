@@ -14,116 +14,85 @@ public class ActivityNameUtils {
                 name = "";
                 break;
             case "MainActivity":
-                name="首页";
+                name = "首页";
                 break;
             case "LoginActivity":
-                name="登录";
+                name = "登录";
                 break;
             case "ForgetPasswordActivity":
-                name="忘记密码";
+                name = "忘记密码";
                 break;
-            case "ClassManageActivity":
-                name="课程选择";
+            case "CourseActivity":
+                name = "课程详情";
                 break;
-            case "CheckInNotesActivity":
-                name="签到记录";
+            case "CheckInSuccessActivity":
+                name = "签到成功";
                 break;
-            case "CreateNewCheckInActivity":
-                name="新建签到";
-                break;
-            case "MainDetailActivity":
-                name="班级详情";
+            case "CheckInErrorActivity":
+                name = "签到异常";
                 break;
             case "CheckInDetailActivity":
-                name="签到详情";
-                break;
-            case "NoticeManageActivity":
-                name="通知管理";
-                break;
-            case "NoticeDetailActivity":
-                name="通知详情";
-                break;
-            case "QrCodeShowActivity":
-                name="签到二维码";
-                break;
-            case "NoticePostActivity":
-                name="发布通知";
-                break;
-            case "ScheduleManageActivity":
-                name="日程管理";
-                break;
-            case "PublishScheduleActivity":
-                name="发布日程";
-                break;
-            case "UpdateScheduleActivity":
-                name="发布日程";
-                break;
-            case "ResourceMangerActivity":
-                name="资源管理";
-                break;
-            case "PublishResourceActivity":
-                name="上传资源";
-                break;
-            case "WebViewActivity":
-                name="";
-                break;
-            case "SendClassCircleActivity":
-                name="班级圈";
-                break;
-            case "PDFViewActivity":
-                name="";
+                name = "签到详情";
                 break;
             case "PhotoActivity":
-                name="";
+                name = "";
                 break;
-            case "AdressBookActivity":
-                name="通讯录";
+            case "NotificationDetailActivity":
+                name = "通知详情";
                 break;
-            case "PersonalDetailsActivity":
-                name="学员详情";
+            case "CheckInNotesActivity":
+                name = "签到记录";
                 break;
-            case "SignRecordActivity":
-                name="个人签到记录";
+            case "ProfileActivity":
+                name = "个人详情";
                 break;
-            case "UserMessageActivity":
-                name="我的资料";
+            case "WebViewActivity":
+                name = "";
                 break;
-            case "AddStudentActivity":
-                name="添加成员";
+            case "SendClassCircleActivity":
+                name = "班级圈";
                 break;
-            case "EditNameActivity":
-                name="编辑姓名";
+            case "PDFViewActivity":
+                name = "";
                 break;
-            case "EditSchoolActivity":
-                name="编辑学校";
+            case "EvaluationActivity":
+                name = "评论";
+                break;
+            case "SpecialistIntroductionActivity":
+                name = "讲师介绍";
+                break;
+            case "CourseIntroductionActivity":
+                name = "课程介绍";
+                break;
+            case "CourseDiscussActivity":
+                name = "课程讨论";
                 break;
             case "VoteActivity":
-                name="投票详情";
+                name = "投票详情";
                 break;
             case "QuestionnaireActivity":
-                name="问卷详情";
+                name = "问卷详情";
                 break;
-            case "SubmitDetailActivity":
-                name="";
+            case "ModifyUserNameActivity":
+                name = "修改用户名";
                 break;
-            case "VoteDetailActivity":
-                name="";
+            case "ModifyUserSexActivity":
+                name = "修改用户性别";
                 break;
-            case "CourseDetailActivity":
-                name="";
+            case "ModifyUserStageActivity":
+                name = "修改学段";
                 break;
-            case "CourseMessageActivity":
-                name="课程信息";
+            case "ModifyUserSubjectActivity":
+                name = "修改学科";
                 break;
-            case "CourseCommentActivity":
-                name="课程讨论";
+            case "CheckInByQRActivity":
+                name = "二维码扫描";
                 break;
-            case "ReplyDetailActivity":
-                name="回复";
+            case "ClassManagerActivity":
+                name = "课程选择";
                 break;
             default:
                 name = "";
-                break;
         }
         return name;
     }
