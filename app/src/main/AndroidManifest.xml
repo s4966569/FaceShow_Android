@@ -57,8 +57,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
-
-
     <application
         android:name=".FaceShowApplication"
         android:allowBackup="true"
@@ -213,12 +211,17 @@
         <meta-data
             android:name="MW_APPID"
             android:value="E5EH5ZUNBINIVA5NJ0NG9DIA5F8XRSRC" />
-        <activity android:name=".course.activity.ClassManagerActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".user.ModifyUserStageActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".user.ModifyUserSubjectActivity"
-            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".course.activity.ClassManagerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".user.ModifyUserStageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".user.ModifyUserSubjectActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".user.FeedBackActivity"></activity>
     </application>
 
 </manifest>

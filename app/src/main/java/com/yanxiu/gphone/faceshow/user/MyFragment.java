@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -52,6 +53,8 @@ public class MyFragment extends FaceShowBaseFragment {
     TextView mNameView;
     @BindView(R.id.title_layout_title)
     TextView mTitleView;
+    @BindView(R.id.rl_feedback)
+    RelativeLayout mRlFeedback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,7 +75,7 @@ public class MyFragment extends FaceShowBaseFragment {
         Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(getContext(), mHeadImgView, 12));
     }
 
-    @OnClick({R.id.person_info, R.id.registration, R.id.ll_logout})
+    @OnClick({R.id.person_info, R.id.registration, R.id.ll_logout, R.id.rl_feedback})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.person_info://点击个人信息
@@ -92,13 +95,18 @@ public class MyFragment extends FaceShowBaseFragment {
                 SpManager.loginOut();//设置为登出状态
                 getActivity().finish();
                 break;
+            case R.id.rl_feedback:
+                startActivity(new Intent(getContext(),FeedBackActivity.class));
+                break;
+            default:
+                break;
         }
     }
 
     private void clearGTPushSettings() {
         NotificationManager notificationManager = (NotificationManager) this.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
-        PushManager.getInstance().unBindAlias(this.getContext(),String.valueOf(SpManager.getUserInfo().getUserId()),true,"2000");//只对当前cid做解绑
+        PushManager.getInstance().unBindAlias(this.getContext(), String.valueOf(SpManager.getUserInfo().getUserId()), true, "2000");//只对当前cid做解绑
         PushManager.getInstance().turnOffPush(this.getContext());
     }
 
