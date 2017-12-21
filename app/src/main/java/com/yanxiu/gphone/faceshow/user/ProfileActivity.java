@@ -363,7 +363,6 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public String findUpdataUrl() {
                 String token = SpManager.getToken();
-                Log.e("frc", UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=110&height=110");
                 return UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=110&height=110";
             }
 
@@ -391,6 +390,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 
             @Override
             public void onUpLoadSuccess(int position, Object tag, String jsonString) {
+                rootView.hiddenLoadingView();
                 try {
                     Gson gson = new Gson();
                     HeadimgUploadBean uploadBean = gson.fromJson(jsonString, HeadimgUploadBean.class);
