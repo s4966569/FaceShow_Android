@@ -221,7 +221,9 @@
         <activity
             android:name=".user.ModifyUserSubjectActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".user.FeedBackActivity"></activity>
+        <activity
+            android:name=".user.FeedBackActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
