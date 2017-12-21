@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +40,13 @@ import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.user.request.UpdataUserMessageRequest;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
+import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -129,14 +133,6 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 
     private String getSex() {
         String sex = UserInfo.getInstance().getInfo().getSexName();
-//        String sexTxt="未知";
-//        if (!TextUtils.isEmpty(sex)) {
-//            if (sex.equals("0")) {
-//                sexTxt="女";
-//            } else if (sex.equals("1")) {
-//                sexTxt="男";
-//            }
-//        }
         return sex;
     }
 
@@ -237,22 +233,12 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
             @Override
             public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-//                File file = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait");
-//                if (!file.exists()) {
-//                    try {
-//                        //按照指定的路径创建文件夹
-//                        file.mkdirs();
-//                    } catch (Exception e) {
-//                        // TODO: handle exception
-//                        e.printStackTrace();
-//                    }
-//                }
-                path = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
-                photoFile = new File(path);
-                if (photoFile.exists()) {
+                mCameraPath = FileUtils.getImageCatchPath(System.currentTimeMillis() + ".jpg");
+                File file = new File(mCameraPath);
+                if (file.exists()) {
                     try {
                         //在指定的文件夹中创建文件
-                        photoFile.createNewFile();
+                        file.createNewFile();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -260,7 +246,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
 
                 Intent infoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 infoIntent.addCategory(Intent.CATEGORY_DEFAULT);
-                infoIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                Uri uri = Uri.fromFile(file);
+                infoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 startActivityForResult(infoIntent, TAKE_PHOTO);
                 // 指定调用相机拍照后的照片存储的路径
             }
@@ -282,6 +269,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         picPopupWindow.dismiss();
     }
 
+    private String mCropPath;
+    private String mCameraPath;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -290,29 +279,35 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 // 直接从相册获取
                 case SELECT_FROM_GALLER:
                     if (data != null) {
-                        startPhotoZoom(data.getData(), Uri.fromFile(createCroppedImageFile()));
+                        Uri uri = data.getData();
+                        mCropPath = FileUtils.getImageCatchPath(System.currentTimeMillis() + ".jpg");
+                        startPhotoZoom(uri, Uri.fromFile(new File(mCropPath)));
                     }
                     break;
                 // 调用相机拍照时
                 case TAKE_PHOTO:
-                    if (photoFile != null) {
-//                        photoFile = new File(Environment
-//                                .getExternalStorageDirectory() + "/yanxiu/portrait/photo.jpg");
-                        File file = new File(path);
-                        Uri imageUri;
-                        if (Build.VERSION.SDK_INT < 24) {
-                            imageUri = Uri.fromFile(file);
-                        } else {
-                            imageUri = FileProvider.getUriForFile(ProfileActivity.this, "com.yanxiu.gphone.faceshow.fileprovider", file);
+                    if (!TextUtils.isEmpty(mCameraPath)) {
+                        mCropPath = FileUtils.getImageCatchPath(System.currentTimeMillis() + ".jpg");
+                        try {
+                            new FileInputStream(new File(mCameraPath));
+                            Uri imageUri;
+                            if (Build.VERSION.SDK_INT < 24) {
+                                imageUri = Uri.fromFile(new File(mCameraPath));
+                            } else {
+                                imageUri = FileProvider.getUriForFile(ProfileActivity.this, "com.yanxiu.gphone.faceshow.fileprovider", new File(mCameraPath));
+                            }
+                            startPhotoZoom(imageUri, Uri.fromFile(new File(mCropPath)));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
                         }
-
-                        startPhotoZoom(imageUri, Uri.fromFile(createCroppedImageFile()));
                     }
                     break;
                 // 取得裁剪后的图片
                 case CROP_PICTURE:
-                    if (portraitFile != null) {
-                        uploadPortrait(portraitFile.getAbsolutePath());
+                    if (!TextUtils.isEmpty(mCropPath)) {
+                        if (new File(mCropPath).exists()) {
+                            uploadPortrait(mCropPath);
+                        }
                     }
                     break;
                 case MODIFY_NAME:
@@ -340,49 +335,23 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
      */
     public void startPhotoZoom(Uri uri, Uri saveCroppedImageFileUri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
-//        if(intent.resolveActivity(getPackageManager())==null){
-//            ToastMaster.showToast("该手机不支持裁剪");
-//        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
         intent.setDataAndType(uri, "image/*");
-        // crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true");
-        // aspectX aspectY 是宽高的比例
-//        intent.putExtra("aspectX", 1);
-//        intent.putExtra("aspectY", 1);
-        // outputX outputY 是裁剪图片宽高
         intent.putExtra("outputX", 150);
         intent.putExtra("outputY", 150);
         intent.putExtra("scale", true);
         intent.putExtra("return-data", false);
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());//输出图片格式
-        intent.putExtra("noFaceDetection", true);//取消人脸识别
+        //输出图片格式
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        //取消人脸识别
+        intent.putExtra("noFaceDetection", true);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, saveCroppedImageFileUri);
         startActivityForResult(intent, CROP_PICTURE);
     }
 
-    /**
-     * 创建保存裁剪后图片的文件
-     *
-     * @return
-     */
-    private File createCroppedImageFile() {
-        crop_path = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
-
-//        File dir = new File(Environment.getExternalStorageDirectory() + "/yanxiu/portrait/");
-//        if (!dir.exists())
-//            dir.mkdir();
-        portraitFile = new File(crop_path);
-        try {
-            portraitFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "裁剪文件异常", Toast.LENGTH_SHORT).show();
-        }
-        return portraitFile;
-    }
 
     /**
      * 上传头像
@@ -394,6 +363,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public String findUpdataUrl() {
                 String token = SpManager.getToken();
+                Log.e("frc", UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=110&height=110");
                 return UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=110&height=110";
             }
 

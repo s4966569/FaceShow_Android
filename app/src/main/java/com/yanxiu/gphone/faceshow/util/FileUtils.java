@@ -2,7 +2,10 @@ package com.yanxiu.gphone.faceshow.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.text.TextUtils;
+
+import com.yanxiu.gphone.faceshow.constant.Constants;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -155,6 +158,13 @@ public class FileUtils {
                 }
             }
         }
+    }
+    public static String getImageCatchPath(String name) {
+        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + Constants.DIR_ROOT + Constants.DIR_APP + Constants.DIR_IMAGE;
+        File file1 = new File(dir);
+        if (!file1.exists())
+            file1.mkdirs();
+        return dir + "/" + name;
     }
 
     /**
