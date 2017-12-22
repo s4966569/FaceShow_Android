@@ -73,7 +73,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
         setContentView(publicLoadLayout);
         ButterKnife.bind(this);
         tvTitle.setText(R.string.check_in_detail);
-    /*从签到列表跳转过来，直接携带了签到详情，从其他地方跳转过来需要携带stepId，然后再获取详情信息*/
+         /*从签到列表跳转过来，直接携带了签到详情，从其他地方跳转过来需要携带stepId，然后再获取详情信息*/
         GetCheckInNotesResponse.CheckInNotesBean data = (GetCheckInNotesResponse.CheckInNotesBean) getIntent().getSerializableExtra(CHECK_IN_DETAIL);
         String stepId = getIntent().getStringExtra(STEP_ID);
         if (data != null) {

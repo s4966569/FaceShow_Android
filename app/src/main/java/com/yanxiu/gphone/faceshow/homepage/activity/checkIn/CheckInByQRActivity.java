@@ -80,7 +80,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,15 +93,23 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         mCaptureManager.decode();
         mCaptureManager.setCodeCallBack(codeCallBack);
     }
-    CheckInCaptureManager.CodeCallBack codeCallBack=new CheckInCaptureManager.CodeCallBack() {
+
+    CheckInCaptureManager.CodeCallBack codeCallBack = new CheckInCaptureManager.CodeCallBack() {
         @Override
         public void callBack(String result) {
             if (result != null) {
                 if (TextUtils.isEmpty(result)) {
                     CheckInByQRActivity.this.finish();
                 } else {
-                    String [] values= result.split("&");
-                    getLocation((values[1].split("="))[1],(values[2].split("="))[1]);
+                    //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
+                    if (result.startsWith("http://orz.yanxiu.com/pxt/platform/")) {
+                        String[] values = result.split("&");
+                        getLocation((values[1].split("="))[1], (values[2].split("="))[1]);
+                    } else {
+                        ToastUtil.showToast(getApplicationContext(), "请扫描正确二维码");
+                        CheckInByQRActivity.this.finish();
+                    }
+
                 }
             } else {
                 CheckInByQRActivity.this.finish();
@@ -110,7 +117,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         }
     };
 
-    private LocationClient getLocation(final String stepId, final String timestamp){
+    private LocationClient getLocation(final String stepId, final String timestamp) {
         if (mLoadingDialogView == null) {
             mLoadingDialogView = new LoadingDialogView(this);
         }
@@ -120,21 +127,21 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
                 locationClient.stop();
-                double latitude =bdLocation.getLatitude();
-                double longitude =bdLocation.getLongitude();
-                userSignIn(stepId,timestamp,latitude+","+longitude,bdLocation.getLocationDescribe());
+                double latitude = bdLocation.getLatitude();
+                double longitude = bdLocation.getLongitude();
+                userSignIn(stepId, timestamp, latitude + "," + longitude, bdLocation.getLocationDescribe());
             }
         });
         locationClient.start();
         return locationClient;
     }
 
-    private void userSignIn(String stepId,String timestamps,@NonNull String position,@NonNull String site){
+    private void userSignIn(String stepId, String timestamps, @NonNull String position, @NonNull String site) {
         UserSignInRequest userSignInRequest = new UserSignInRequest();
-        userSignInRequest.position =position;
-        userSignInRequest.site=site;
-        userSignInRequest.stepId=stepId;
-        userSignInRequest.timestamp =timestamps;
+        userSignInRequest.position = position;
+        userSignInRequest.site = site;
+        userSignInRequest.stepId = stepId;
+        userSignInRequest.timestamp = timestamps;
         userSignInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
             @Override
             public void onSuccess(RequestBase request, CheckInResponse userSignInResponse) {
@@ -166,8 +173,6 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         });
 
     }
-
-
 
 
     /**
