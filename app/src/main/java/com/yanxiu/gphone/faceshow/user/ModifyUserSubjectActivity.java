@@ -112,7 +112,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
                     SpManager.saveUserInfo(userInfo);
                     ToastUtil.showToast(getApplicationContext(), "学段学科保存成功");
                     Intent intent = new Intent();
-                    intent.putExtra("stageSubjectName", mData.getName()+mData.getSub().get(mSelectedPosition).getName());
+                    intent.putExtra("stageSubjectName", mData.getName()+"-"+mData.getSub().get(mSelectedPosition).getName());
                     setResult(RESULT_OK,intent);
                     ModifyUserSubjectActivity.this.finish();
 
