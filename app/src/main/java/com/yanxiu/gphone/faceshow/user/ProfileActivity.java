@@ -123,7 +123,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         } else if (subjectName.equals("暂无")) {
             mStageSubjectView.setText(stageName);
         } else {
-            mStageSubjectView.setText(stageName + subjectName);
+            mStageSubjectView.setText(stageName +"-"+ subjectName);
         }
     }
 
