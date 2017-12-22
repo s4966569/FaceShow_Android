@@ -60,14 +60,14 @@ import de.greenrobot.event.EventBus;
  */
 public class SendClassCircleActivity extends FaceShowBaseActivity implements View.OnClickListener, TextWatcher {
 
-    private static final int REQUEST_CODE_ALBUM=0x000;
-    private static final int REQUEST_CODE_CAMERA=0x001;
+    private static final int REQUEST_CODE_ALBUM = 0x000;
+    private static final int REQUEST_CODE_CAMERA = 0x001;
 
-    public static final String TYPE_TEXT="text";
-    public static final String TYPE_IMAGE="image";
+    public static final String TYPE_TEXT = "text";
+    public static final String TYPE_IMAGE = "image";
 
-    private static final String KEY_TYPE="key_type";
-    private static final String KEY_IMAGE="key_image";
+    private static final String KEY_TYPE = "key_type";
+    private static final String KEY_IMAGE = "key_image";
 
     private Context mContext;
     private PublicLoadLayout rootView;
@@ -80,18 +80,18 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private TextView mFunctionView;
     private TextView mBackView;
     private ImageView mDeleteView;
-    private String mResourceIds="";
+    private String mResourceIds = "";
     private String mCameraPath;
 
     private ClassCircleDialog mClassCircleDialog;
 
     private UUID mSendDataRequest;
 
-    public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths){
-        Intent intent=new Intent(context,SendClassCircleActivity.class);
-        intent.putExtra(KEY_TYPE,type);
-        if (imgPaths!=null&&imgPaths.size()>0){
-            intent.putStringArrayListExtra(KEY_IMAGE,imgPaths);
+    public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths) {
+        Intent intent = new Intent(context, SendClassCircleActivity.class);
+        intent.putExtra(KEY_TYPE, type);
+        if (imgPaths != null && imgPaths.size() > 0) {
+            intent.putStringArrayListExtra(KEY_IMAGE, imgPaths);
         }
         context.startActivity(intent);
     }
@@ -99,14 +99,14 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext=SendClassCircleActivity.this;
-        rootView=new PublicLoadLayout(mContext);
+        mContext = SendClassCircleActivity.this;
+        rootView = new PublicLoadLayout(mContext);
         rootView.setContentView(R.layout.activity_send_classcircle);
         setContentView(rootView);
         EventBus.getDefault().register(mContext);
-        mType=getIntent().getStringExtra(KEY_TYPE);
-        if (mType.equals(TYPE_IMAGE)){
-            mImagePaths=getIntent().getStringArrayListExtra(KEY_IMAGE);
+        mType = getIntent().getStringExtra(KEY_TYPE);
+        if (mType.equals(TYPE_IMAGE)) {
+            mImagePaths = getIntent().getStringArrayListExtra(KEY_IMAGE);
         }
         initView();
         listener();
@@ -118,11 +118,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         super.onDestroy();
         UpLoadRequest.getInstense().cancle();
         EventBus.getDefault().unregister(mContext);
-        if (mSendDataRequest!=null){
+        if (mSendDataRequest != null) {
             RequestBase.cancelRequestWithUUID(mSendDataRequest);
-            mSendDataRequest=null;
+            mSendDataRequest = null;
         }
-     }
+    }
 
     private void initView() {
         mBackView = (TextView) findViewById(R.id.title_layout_left_txt);
@@ -131,10 +131,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mFunctionView = (TextView) findViewById(R.id.title_layout_right_txt);
         mFunctionView.setVisibility(View.VISIBLE);
 
-        mContentView= (EditText) findViewById(R.id.et_content);
-        mPictureView= (ImageView) findViewById(R.id.iv_picture);
-        mShowPictureView= (LinearLayout) findViewById(R.id.ll_picture);
-        mDeleteView= (ImageView) findViewById(R.id.iv_delete);
+        mContentView = (EditText) findViewById(R.id.et_content);
+        mPictureView = (ImageView) findViewById(R.id.iv_picture);
+        mShowPictureView = (LinearLayout) findViewById(R.id.ll_picture);
+        mDeleteView = (ImageView) findViewById(R.id.iv_delete);
     }
 
     private void listener() {
@@ -150,11 +150,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mBackView.setText(R.string.cancle);
         mFunctionView.setText(R.string.send);
         mFunctionView.setEnabled(false);
-        mFunctionView.setTextColor(ContextCompat.getColor(mContext,R.color.color_999999));
+        mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
 
-        if (mType.equals(TYPE_TEXT)){
+        if (mType.equals(TYPE_TEXT)) {
             mShowPictureView.setVisibility(View.GONE);
-        }else {
+        } else {
             mShowPictureView.setVisibility(View.VISIBLE);
             Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
         }
@@ -163,41 +163,49 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.title_layout_left_txt:
                 this.finish();
                 break;
             case R.id.title_layout_right_txt:
-                String content=mContentView.getText().toString();
-                rootView.showLoadingView();
-                if (mType.equals(TYPE_IMAGE)){
+                String content = mContentView.getText().toString();
+
+                if (mType.equals(TYPE_IMAGE)) {
+                    rootView.showLoadingView();
                     uploadImg(content);
-                }else {
-                    uploadData(content,mResourceIds);
+                } else {
+                    if (TextUtils.isEmpty(content)){
+                        ToastUtil.showToast(getApplicationContext(),"请输入要发布的内容");
+                    }else {
+                        rootView.showLoadingView();
+                        uploadData(content, mResourceIds);
+                    }
                 }
                 break;
             case R.id.iv_delete:
-                if (mImagePaths!=null&&!mImagePaths.isEmpty()){
+                if (mImagePaths != null && !mImagePaths.isEmpty()) {
                     mImagePaths.clear();
-                    mType=TYPE_TEXT;
+                    mType = TYPE_TEXT;
                     mDeleteView.setVisibility(View.GONE);
                     Glide.with(mContext).load(R.drawable.class_circle_add_picture).into(mPictureView);
                 }
                 break;
             case R.id.iv_picture:
-                if (mImagePaths!=null&&!mImagePaths.isEmpty()){
-                    PhotoActivity.LaunchActivity(mContext,mImagePaths,0,mContext.hashCode(),PhotoActivity.DELETE_CAN);
-                }else {
+                if (mImagePaths != null && !mImagePaths.isEmpty()) {
+                    PhotoActivity.LaunchActivity(mContext, mImagePaths, 0, mContext.hashCode(), PhotoActivity.DELETE_CAN);
+                } else {
                     showDialog();
                 }
+                break;
+            default:
                 break;
         }
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mTitleView.getWindowToken(), 0);
     }
 
-    private void showDialog(){
-        if (mClassCircleDialog==null) {
+    private void showDialog() {
+        if (mClassCircleDialog == null) {
             mClassCircleDialog = new ClassCircleDialog(mContext);
             mClassCircleDialog.setClickListener(new ClassCircleDialog.OnViewClickListener() {
                 @Override
@@ -213,7 +221,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
                         @Override
                         public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-                            ToastUtil.showToast(mContext,R.string.no_storage_permissions);
+                            ToastUtil.showToast(mContext, R.string.no_storage_permissions);
                         }
                     });
                 }
@@ -223,7 +231,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
                         @Override
                         public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                            mCameraPath = FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+                            mCameraPath = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
                             Intent intent = new Intent();
                             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
                             intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -242,7 +250,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
                         @Override
                         public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-                            ToastUtil.showToast(mContext,R.string.no_camera_permissions);
+                            ToastUtil.showToast(mContext, R.string.no_camera_permissions);
                         }
                     });
                 }
@@ -251,10 +259,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mClassCircleDialog.show();
     }
 
-    public void onEventMainThread(PhotoDeleteBean bean){
-        if (bean!=null&&bean.formId==mContext.hashCode()){
+    public void onEventMainThread(PhotoDeleteBean bean) {
+        if (bean != null && bean.formId == mContext.hashCode()) {
             mImagePaths.remove(bean.deleteId);
-            mType=TYPE_TEXT;
+            mType = TYPE_TEXT;
             mDeleteView.setVisibility(View.GONE);
             Glide.with(mContext).load(R.drawable.class_circle_add_picture).fitCenter().into(mPictureView);
         }
@@ -263,27 +271,27 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE_ALBUM:
-                if (data!=null) {
+                if (data != null) {
                     Uri uri = data.getData();
 //                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
 //                    startCropImg(uri,mCropPath);
-                    String path=FileUtil.getRealFilePath(mContext,uri);
+                    String path = FileUtil.getRealFilePath(mContext, uri);
                     mImagePaths.add(path);
-                    mType=TYPE_IMAGE;
+                    mType = TYPE_IMAGE;
                     Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
                     mDeleteView.setVisibility(View.VISIBLE);
                 }
                 break;
             case REQUEST_CODE_CAMERA:
-                if (!TextUtils.isEmpty(mCameraPath)){
+                if (!TextUtils.isEmpty(mCameraPath)) {
 //                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
 //                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
                     try {
                         new FileInputStream(new File(mCameraPath));
                         mImagePaths.add(mCameraPath);
-                        mType=TYPE_IMAGE;
+                        mType = TYPE_IMAGE;
                         Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
                         mDeleteView.setVisibility(View.VISIBLE);
                     } catch (FileNotFoundException e) {
@@ -294,10 +302,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         }
     }
 
-    private void uploadImg(final String content){
-        File file=new File(mImagePaths.get(0));
+    private void uploadImg(final String content) {
+        File file = new File(mImagePaths.get(0));
         final Map<String, String> map = new HashMap<>();
-        map.put("userId", UserInfo.getInstance().getInfo().getUserId()+"");
+        map.put("userId", UserInfo.getInstance().getInfo().getUserId() + "");
         map.put("name", file.getName());
         map.put("lastModifiedDate", String.valueOf(System.currentTimeMillis()));
         map.put("size", String.valueOf(FileUtils.getFileSize(file.getPath())));
@@ -313,12 +321,12 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 @Override
                 public void onSuccess(String responseStr) {
                     UploadResResponse resResponse = RequestBase.getGson().fromJson(responseStr, UploadResResponse.class);
-                    GetResId(resResponse.name, resResponse.md5,content);
+                    GetResId(resResponse.name, resResponse.md5, content);
                 }
 
                 @Override
                 public void onFail(String errorMessage) {
-                    ToastUtil.showToast(mContext,getString(R.string.send_class_circle_fail));
+                    ToastUtil.showToast(mContext, getString(R.string.send_class_circle_fail));
                     rootView.hiddenLoadingView();
                 }
             });
@@ -336,48 +344,48 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         getResIdRequest.md5 = md5;
         getResIdRequest.cookies = cookies;
         GetResIdRequest.Reserve reserve = new GetResIdRequest.Reserve();
-        reserve.title=fileName;
+        reserve.title = fileName;
         getResIdRequest.reserve = RequestBase.getGson().toJson(reserve);
         getResIdRequest.startRequest(GetResIdResponse.class, new HttpCallback<GetResIdResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetResIdResponse ret) {
-                mResourceIds=ret.result.resid;
-                mType=TYPE_TEXT;
-                uploadData(content,ret.result.resid);
+                mResourceIds = ret.result.resid;
+                mType = TYPE_TEXT;
+                uploadData(content, ret.result.resid);
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext,error.getMessage());
+                ToastUtil.showToast(mContext, error.getMessage());
             }
         });
 
     }
 
-    private void uploadData(String content,String resourceIds){
-        SendClassCircleRequest sendClassCircleRequest=new SendClassCircleRequest();
-        sendClassCircleRequest.content=content;
-        sendClassCircleRequest.resourceIds=resourceIds;
-        mSendDataRequest=sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+    private void uploadData(String content, String resourceIds) {
+        SendClassCircleRequest sendClassCircleRequest = new SendClassCircleRequest();
+        sendClassCircleRequest.content = content;
+        sendClassCircleRequest.resourceIds = resourceIds;
+        mSendDataRequest = sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
                 rootView.hiddenLoadingView();
-                if (ret.data!=null) {
+                if (ret.data != null) {
                     ToastUtil.showToast(mContext, R.string.send_success);
                     mSendDataRequest = null;
                     EventBus.getDefault().post(new RefreshClassCircle());
                     SendClassCircleActivity.this.finish();
-                }else {
-                    ToastUtil.showToast(mContext,R.string.error_tip);
+                } else {
+                    ToastUtil.showToast(mContext, R.string.error_tip);
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                mSendDataRequest=null;
-                ToastUtil.showToast(mContext,error.getMessage());
+                mSendDataRequest = null;
+                ToastUtil.showToast(mContext, error.getMessage());
             }
         });
     }
@@ -394,12 +402,12 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (TextUtils.isEmpty(s)&&(mImagePaths==null||mImagePaths.size()==0)){
+        if (TextUtils.isEmpty(s) && (mImagePaths == null || mImagePaths.size() == 0)) {
             mFunctionView.setEnabled(false);
-            mFunctionView.setTextColor(ContextCompat.getColor(mContext,R.color.color_999999));
-        }else {
+            mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
+        } else {
             mFunctionView.setEnabled(true);
-            mFunctionView.setTextColor(ContextCompat.getColor(mContext,R.color.color_1da1f2));
+            mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_1da1f2));
         }
     }
 }
