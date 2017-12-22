@@ -79,7 +79,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.title_layout_right_txt:
-                saveStageSubject(mData.getId(),mData.getSub().get(mSelectedPosition).getId());
+                saveStageSubject(mData.getId(),mData.getSub().get(mSelectedPosition).getId(),mData.getName(),mData.getSub().get(mSelectedPosition).getName());
 
                 break;
             default:
@@ -92,7 +92,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
      * 保存用户学段学科
      *
      */
-    private void saveStageSubject(final String stageId, final String subjectId) {
+    private void saveStageSubject(final String stageId, final String subjectId, final String stageName, final String subjectName) {
         if (publicLoadLayout==null)
         {
             publicLoadLayout = new PublicLoadLayout(this);
@@ -108,7 +108,9 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
                 if (response.getCode() == 0) {
                     UserInfo.Info userInfo = UserInfo.getInstance().getInfo();
                     userInfo.setStage(Integer.valueOf(stageId));
+                    userInfo.setStageName(stageName);
                     userInfo.setSubject(Integer.valueOf(subjectId));
+                    userInfo.setSubjectName(subjectName);
                     SpManager.saveUserInfo(userInfo);
                     ToastUtil.showToast(getApplicationContext(), "学段学科保存成功");
                     Intent intent = new Intent();

@@ -68,7 +68,7 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.title_layout_left_img:
-                exitDialog();
+                onBackPressed();
                 break;
             case R.id.title_layout_right_txt:
                 saveName(edtName.getText().toString());
@@ -84,8 +84,8 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
      * @param userName 用户名
      */
     private void saveName(final String userName) {
-        if (TextUtils.isEmpty(userName)){
-            ToastUtil.showToast(getApplicationContext(),"用户名不能为空");
+        if (TextUtils.isEmpty(userName)) {
+            ToastUtil.showToast(getApplicationContext(), "用户名不能为空");
             return;
         }
         publicLoadLayout.showLoadingView();

@@ -61,7 +61,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                 case QR_EXPIRED:
                     tvErrorStatue.setText(mQrStatue.getMessage());
                     tvErrorPrompt.setText(getString(R.string.check_in_plan, StringUtils.getCourseTime(mQrStatue.getData().getStartTime()), StringUtils.getCourseTime(mQrStatue.getData().getEndTime())));
-                    tvCheckInAgain.setVisibility(View.GONE);
+                        tvCheckInAgain.setVisibility(View.GONE);
                     break;
                 case QR_NOT_IN_CLASS:
                     tvErrorStatue.setText(mQrStatue.getMessage());
