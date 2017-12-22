@@ -86,7 +86,7 @@ public class ModifyUserSexActivity extends FaceShowBaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.title_layout_left_img:
-                exitDialog();
+                this.finish();
                 break;
             case R.id.rl_boy:
                 sexId = "1";
@@ -102,6 +102,8 @@ public class ModifyUserSexActivity extends FaceShowBaseActivity {
                 break;
             case R.id.title_layout_right_txt:
                 modifyUserInfo();
+                break;
+            default:
                 break;
         }
     }
@@ -136,10 +138,10 @@ public class ModifyUserSexActivity extends FaceShowBaseActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-        exitDialog();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        exitDialog();
+//    }
 
 
     private void exitDialog() {
@@ -181,6 +183,8 @@ public class ModifyUserSexActivity extends FaceShowBaseActivity {
                     break;
                 case R.id.tv_cancel:
                     dismissPopupWindow();
+                    break;
+                default:
                     break;
             }
 
