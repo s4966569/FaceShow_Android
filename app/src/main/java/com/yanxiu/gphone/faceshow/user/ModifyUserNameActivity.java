@@ -72,6 +72,8 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
             case R.id.title_layout_right_txt:
                 saveName(edtName.getText().toString());
                 break;
+            default:
+                break;
         }
     }
 
@@ -111,8 +113,11 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
 
     @Override
     public void onBackPressed() {
-        exitDialog();
-        super.onBackPressed();
+        if (!edtName.getText().toString().equals(SpManager.getUserInfo().getRealName())) {
+            exitDialog();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void exitDialog() {
@@ -155,6 +160,9 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
                 case R.id.tv_cancel:
                     dismissPopupWindow();
                     break;
+                default:
+                    break;
+
             }
 
         }
