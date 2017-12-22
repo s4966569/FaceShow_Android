@@ -82,11 +82,13 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_left:
-                this.finish();
+                CheckInErrorActivity.this.finish();
                 break;
             case R.id.tv_check_in_again:
                 CheckInByQRActivity.toThisAct(this);
-                this.finish();
+                CheckInErrorActivity.this.finish();
+                break;
+            default:
                 break;
         }
     }

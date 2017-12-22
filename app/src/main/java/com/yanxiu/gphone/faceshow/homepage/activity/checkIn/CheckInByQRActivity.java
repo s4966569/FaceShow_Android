@@ -126,6 +126,8 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         locationClient.registerLocationListener(new BDAbstractLocationListener() {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
+                //不解除监听下次再进来会注册多重监听
+                locationClient.unRegisterLocationListener(this);
                 locationClient.stop();
                 double latitude = bdLocation.getLatitude();
                 double longitude = bdLocation.getLongitude();
