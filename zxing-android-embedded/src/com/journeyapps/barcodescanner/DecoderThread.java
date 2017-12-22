@@ -155,38 +155,46 @@ public class DecoderThread {
         Result rawResult = null;
         sourceData.setCropRect(cropRect);
 
-        Bitmap src = sourceData.getBitmap();
-        if (mGpuImage == null) {
-            mGpuImage = new GPUImage(cameraInstance.context);
+        LuminanceSource source1 = createSource(sourceData);
+
+        if(source1 != null) {
+            rawResult = decoder.decode(source1);
         }
 
-        for (int i = 0; i < 10; i++) {
-            if (rawResult != null) break;
-
-            mGpuImage.setImage(src);
-            mGpuImage.setFilter(new GPUImageGammaFilter(3.0f + i*0.2f)); // 改变gamma
-            Bitmap inter1 = mGpuImage.getBitmapWithFilterApplied(src);
-
-            mGpuImage.setFilter(new GPUImageContrastFilter(2.2f)); // 改变contrast
-            Bitmap des = mGpuImage.getBitmapWithFilterApplied(inter1);
-
-            int width = des.getWidth(), height = des.getHeight();
-            int[] pixels = new int[width * height];
-            des.getPixels(pixels, 0, width, 0, 0, width, height);
-            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
-            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
-            MultiFormatReader reader = new MultiFormatReader();
-            try {
-                rawResult = reader.decode(bBitmap);
-            } catch (Exception e) {
-                Log.e(TAG, "decode exception", e);
-            } finally {
-                inter1.recycle();
-                des.recycle();
+        if (rawResult == null) { // 用笨笨的方法再试验一遍
+            Bitmap src = sourceData.getBitmap();
+            if (mGpuImage == null) {
+                mGpuImage = new GPUImage(cameraInstance.context);
             }
-        }
 
-        src.recycle();
+            for (int i = 0; i < 10; i++) {
+                if (rawResult != null) break;
+
+                mGpuImage.setImage(src);
+                mGpuImage.setFilter(new GPUImageGammaFilter(3.0f + i * 0.2f)); // 改变gamma
+                Bitmap inter1 = mGpuImage.getBitmapWithFilterApplied(src);
+
+                mGpuImage.setFilter(new GPUImageContrastFilter(2.2f)); // 改变contrast
+                Bitmap des = mGpuImage.getBitmapWithFilterApplied(inter1);
+
+                int width = des.getWidth(), height = des.getHeight();
+                int[] pixels = new int[width * height];
+                des.getPixels(pixels, 0, width, 0, 0, width, height);
+                RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+                BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
+                MultiFormatReader reader = new MultiFormatReader();
+                try {
+                    rawResult = reader.decode(bBitmap);
+                } catch (Exception e) {
+                    Log.e(TAG, "decode exception", e);
+                } finally {
+                    inter1.recycle();
+                    des.recycle();
+                }
+            }
+
+            src.recycle();
+        }
 
         if (rawResult != null) {
             // Don't log the barcode contents for security.
