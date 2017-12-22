@@ -22,6 +22,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
 
     public static final String QR_STATUE = "error_statue";
     public static final int QR_EXPIRED = 210413;//签到已过期
+    public static final int QR_EXPIRED_TWO = 210415;//签到已过期
     public static final int HAS_NOT_START = 210412;//签到未开始
     public static final int QR_INVALID = 210411;//签到不存在或已停用
     public static final int QR_NOT_IN_CLASS = 210305;//您不是班级成员
@@ -68,7 +69,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                     tvErrorPrompt.setText("");
                     break;
                 default:
-                    tvErrorStatue.setText(R.string.check_in_qr_already_invalid);
+                    tvErrorStatue.setText(mQrStatue.getMessage());
                     tvErrorPrompt.setText(R.string.please_scan_new_check_in_qr);
                     break;
             }
