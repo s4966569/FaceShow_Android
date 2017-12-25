@@ -68,7 +68,7 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.title_layout_left_img:
-                onBackPressed();
+                this.finish();
                 break;
             case R.id.title_layout_right_txt:
                 saveName(edtName.getText().toString());
@@ -116,14 +116,14 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!edtName.getText().toString().equals(SpManager.getUserInfo().getRealName())) {
-            exitDialog();
-        } else {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (!edtName.getText().toString().equals(SpManager.getUserInfo().getRealName())) {
+//            exitDialog();
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
 
     private void exitDialog() {
         if (imm == null) {
