@@ -104,15 +104,19 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
                     if (result.startsWith("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn")) {
                         String[] values = result.split("&");
-                        if (values.length>2) {
+                        if (values.length > 2) {
                             //包含timestamp的为动态二维码
                             getLocation((values[1].split("="))[1], (values[2].split("="))[1]);
-                        }else {
-                            getLocation((values[1].split("="))[1],"");
+                        } else {
+                            getLocation((values[1].split("="))[1], "");
                         }
 
                     } else {
-                        ToastUtil.showToast(getApplicationContext(), "请扫描正确二维码");
+                        Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
+                        CheckInResponse.Error error = new CheckInResponse.Error();
+                        error.setCode(CheckInErrorActivity.QR_NO_USE);
+                        intent.putExtra(CheckInErrorActivity.QR_STATUE, error);
+                        startActivity(intent);
                         CheckInByQRActivity.this.finish();
                     }
 

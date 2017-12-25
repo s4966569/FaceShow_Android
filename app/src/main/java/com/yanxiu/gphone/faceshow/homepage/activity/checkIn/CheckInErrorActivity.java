@@ -26,6 +26,7 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
     public static final int HAS_NOT_START = 210412;//签到未开始
     public static final int QR_INVALID = 210411;//签到不存在或已停用
     public static final int QR_NOT_IN_CLASS = 210305;//您不是班级成员
+    public static final int QR_NO_USE=11;//无效二维码
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -66,6 +67,10 @@ public class CheckInErrorActivity extends FaceShowBaseActivity {
                     break;
                 case QR_NOT_IN_CLASS:
                     tvErrorStatue.setText(mQrStatue.getMessage());
+                    tvErrorPrompt.setText("");
+                    break;
+                case QR_NO_USE:
+                    tvErrorStatue.setText("无效签到二维码");
                     tvErrorPrompt.setText("");
                     break;
                 default:

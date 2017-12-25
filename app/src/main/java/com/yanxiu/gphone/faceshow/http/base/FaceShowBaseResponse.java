@@ -46,7 +46,7 @@ public class FaceShowBaseResponse implements Serializable {
         this.error = error;
     }
 
-    public class Error implements Serializable {
+    public static class Error implements Serializable {
         private int code;
         private String title;
         private String message;
