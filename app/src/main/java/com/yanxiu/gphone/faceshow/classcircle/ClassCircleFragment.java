@@ -86,6 +86,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private ClassCircleDialog mClassCircleDialog;
     private SwipeRefreshLayout mRefreshView;
     private PublicLoadLayout rootView;
+    private View mDataEmptyView;
 
     private boolean isCommentLoading=false;
 
@@ -145,6 +146,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleRecycleView.setAdapter(mClassCircleAdapter);
 
         mRefreshView= (SwipeRefreshLayout) rootView.findViewById(R.id.srl_refresh);
+        mDataEmptyView=rootView.findViewById(R.id.rl_data_empty);
     }
 
     private void listener() {
@@ -199,6 +201,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                         mClassCircleAdapter.setData(ret.data.moments);
                     }else {
                         mClassCircleAdapter.addData(ret.data.moments);
+                    }
+                    if (ret.data.moments==null||ret.data.moments.size()==0){
+                        mDataEmptyView.setVisibility(View.VISIBLE);
+                    }else {
+                        mDataEmptyView.setVisibility(View.GONE);
                     }
                     mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
                 }else {
