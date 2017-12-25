@@ -78,7 +78,8 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 View item = inflater.inflate(R.layout.course_detail_item, parent, false);
                 viewHolder = new CourseItemViewHolder(item);
                 break;
-
+            default:
+                break;
         }
 
         return viewHolder;
@@ -114,12 +115,28 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     case attachment:
                         text = ((AttachmentInfosBean) data).getResName();
                         AttachmentInfosBean attachmentInfosBean = (AttachmentInfosBean) data;
-                        if (attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
-                                || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
-                                || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
-                            holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_pdf);
-                        } else {
-                            holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_link);
+
+                        switch (attachmentInfosBean.getResType()) {
+
+                            case AttachmentInfosBean.EXCEL:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_excel);
+                                break;
+                            case AttachmentInfosBean.PDF:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_pdf);
+                                break;
+                            case AttachmentInfosBean.PPT:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_ppt);
+                                break;
+                            case AttachmentInfosBean.TEXT:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_txt);
+                                break;
+                            case AttachmentInfosBean.WORD:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_word);
+                                break;
+                            default:
+                                holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_link);
+                                break;
+
                         }
                         break;
                     case interact:
@@ -138,6 +155,8 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             case InteractStepsBean.CHECK_IN:
                                 holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_vote);
                                 break;
+                            default:
+                                break;
                         }
                         break;
                     default:
@@ -152,6 +171,8 @@ public class CourseDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         }
                     }
                 });
+                break;
+            default:
                 break;
 
         }
