@@ -134,7 +134,7 @@
     <string name="logout">退出登录</string>
     <string name="pregistration">签到记录</string>
     <string name="lecturer">讲师</string>
-    <string name="modify_user_name">修改用户名</string>
+    <string name="modify_user_name">修改姓名</string>
     <string name="save">保存</string>
     <string name="boy">男</string>
     <string name="girl">女</string>
