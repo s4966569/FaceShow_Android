@@ -47,8 +47,8 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_user_subject);
         ButterKnife.bind(this);
-        initTitle();
         mData= (StageSubjectModel.DataBean) getIntent().getSerializableExtra("data");
+        initTitle();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerViewChooseSubject.setLayoutManager(linearLayoutManager);
@@ -69,7 +69,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
         mTitleLayoutRightTxt.setVisibility(View.VISIBLE);
         mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(this, R.color.color_1da1f2));
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
-        mTitleLayoutTitle.setText(R.string.choose_subject);
+        mTitleLayoutTitle.setText(mData.getName());
     }
 
     @OnClick({R.id.title_layout_left_img, R.id.title_layout_right_txt})
