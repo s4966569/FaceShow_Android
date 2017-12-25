@@ -363,34 +363,34 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     //有新的资源消息
                     if (ret.getData().getResourceNew() != null) {
                         if (ret.getData().getResourceNew().getPromptNum() >= 0) {
-                    if (mNaviFragmentFactory != null) {
-                        HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
-                        if (homeFragment != null) {
-                            homeFragment.showResourceRedDot();
-                        }
-                        }
-                    }
-                        //有新的任务信息
-                    if (ret.getData().getTaskNew()!=null){
-                        if (ret.getData().getTaskNew().getPromptNum()>=0){
-                            HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
-                        if (homeFragment != null) {
-                            homeFragment.showTaskRedDot();
+                            if (mNaviFragmentFactory != null) {
+                                HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
+                                if (homeFragment != null) {
+                                    homeFragment.showResourceRedDot();
+                                }
                             }
                         }
+                    }
+                    //有新的任务信息
+                    if (ret.getData().getTaskNew() != null) {
+                        if (ret.getData().getTaskNew().getPromptNum() >= 0) {
+                            HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
+                            if (homeFragment != null) {
+                                homeFragment.showTaskRedDot();
+                            }
                         }
                     }
                 }
-                handler.sendEmptyMessageDelayed(2, 30000);
-            }
+                handler.sendEmptyMessageDelayed(2,30000);
+        }
 
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                handler.sendEmptyMessageDelayed(2, 30000);
+        @Override
+        public void onFail (RequestBase request, Error error){
+            handler.sendEmptyMessageDelayed(2, 30000);
 
-            }
-        });
-    }
+        }
+    });
+}
 
 
     @Override

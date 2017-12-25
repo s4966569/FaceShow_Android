@@ -133,7 +133,6 @@
                     android:id="@+id/img_resource_red_dot"
                     android:layout_width="6dp"
                     android:layout_height="6dp"
-                    android:layout_marginStart="3dp"
                     android:layout_toEndOf="@id/resources_tv"
                     android:visibility="gone"
                     android:src="@drawable/shape_red_circle_6dp" />
@@ -178,7 +177,6 @@
                     android:layout_width="6dp"
                     android:visibility="gone"
                     android:layout_height="6dp"
-                    android:layout_marginStart="3dp"
                     android:layout_toEndOf="@id/projectTask_tv"
                     android:src="@drawable/shape_red_circle_6dp" />
 
