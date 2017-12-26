@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.login;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -12,6 +13,7 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -105,6 +107,8 @@ public class LoginActivity extends FaceShowBaseActivity {
             tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
         }
     }
+
+
 
     private TextWatcher accountNumberChangedListener = new TextWatcher() {
         @Override
