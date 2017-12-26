@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
+import com.yanxiu.gphone.faceshow.util.anim.AnimUtil;
 
 import java.util.List;
 import java.util.UUID;
@@ -79,10 +81,19 @@ public class LoginActivity extends FaceShowBaseActivity {
     TextView tv_sign_in;
     @BindView(R.id.tv_forget_password)
     TextView tv_forget_password;
+    @BindView(R.id.ll_login)
+    LinearLayout ll_login;
+
     private boolean isPasswordShow = false;
     private UUID mSignInRequestUUID;
     private String token;
     private String passPort;
+    //按钮底部在Y轴的坐标
+    int btnY = 0;
+    // 需要偏移的距离
+    float delta = 0;
+
+    private ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener;
 
     public static void toThisAct(Activity activity) {
         activity.startActivity(new Intent(activity, LoginActivity.class));
@@ -106,8 +117,66 @@ public class LoginActivity extends FaceShowBaseActivity {
         } else {
             tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
         }
+
+        tv_forget_password.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int[] location = new int[2];
+                tv_forget_password.getLocationOnScreen(location);
+                btnY = location[1] + tv_forget_password.getHeight();
+                tv_forget_password.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+
+        });
+
+        onGlobalLayoutListener = doMonitorSoftKeyboard(rootView, new OnSoftKeyBoardListener() {
+            @Override
+            public void hasShow(boolean isSoftVisible) {
+                if (isSoftVisible) {
+                    Rect r = new Rect();
+                    rootView.getWindowVisibleDisplayFrame(r);
+                    delta = (float) Math.abs(btnY - r.bottom);
+                    AnimUtil.up(ll_login, -delta/3);
+                } else {
+                    AnimUtil.up(ll_login, 0);
+
+                }
+
+
+            }
+        });
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
     }
 
+    /***
+     * 判断软件盘是否弹出
+     * @param v
+     * @param listener
+     * 备注：在不用的时候记得移除OnGlobalLayoutListener
+     * */
+    public ViewTreeObserver.OnGlobalLayoutListener doMonitorSoftKeyboard(final View v, final OnSoftKeyBoardListener listener) {
+        final ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                // 获取屏幕的可见范围保存在矩形r中
+                v.getWindowVisibleDisplayFrame(r);
+                int screenHeight = v.getRootView().getHeight();
+                //软件盘高度 = 屏幕真实高度 - 屏幕可见范围的高度
+                int heightDifference = screenHeight - r.bottom;
+                boolean isSoftVisible = heightDifference > (screenHeight / 3);
+                if (listener != null) {
+                    listener.hasShow(isSoftVisible);
+                }
+            }
+        };
+        v.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+        return layoutListener;
+    }
+
+    interface OnSoftKeyBoardListener {
+        void hasShow(boolean isSoftVisible);
+    }
 
 
     private TextWatcher accountNumberChangedListener = new TextWatcher() {
@@ -158,6 +227,9 @@ public class LoginActivity extends FaceShowBaseActivity {
         unbinder.unbind();
         if (mSignInRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mSignInRequestUUID);
+        }
+        if (onGlobalLayoutListener != null) {
+            rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
         }
     }
 
