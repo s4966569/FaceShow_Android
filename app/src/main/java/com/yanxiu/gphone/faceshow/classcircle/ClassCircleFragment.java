@@ -103,8 +103,13 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         initView(rootView);
         listener();
         initData();
-        startRequest("0");
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startRequest("0");
     }
 
     @Override
