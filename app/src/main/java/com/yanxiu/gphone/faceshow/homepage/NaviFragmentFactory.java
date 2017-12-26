@@ -47,9 +47,16 @@ public class NaviFragmentFactory {
     public HomeFragment getHomeFragment() {
         return mHomeFragment;
     }
+
     public NoticeFragment getNoticeFragment() {
-        return  mNoticeFragment;
+        return mNoticeFragment;
     }
+
+    public ClassCircleFragment getClassCircleFragment()
+    {
+        return mClassCircleFragment;
+    }
+
 
     private void hideFragment(FragmentTransaction transaction) {
 
@@ -66,8 +73,6 @@ public class NaviFragmentFactory {
             transaction.hide(mMyFragment);
         }
     }
-
-
 
 
     public FaceShowBaseFragment hideAndShowFragment(FragmentManager fragmentManager, int index) {

@@ -17,6 +17,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.getui.ToMainActivityBroadcastReceiver;
@@ -242,6 +243,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(false);
                 mNavIconViews[3].setEnabled(true);
+                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+                if (classCircleFragment != null && !classCircleFragment.firstEnter && showCommentRedDot) {
+                    showCommentRedDot = false;
+                    mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+                }
                 break;
             case R.id.navi_4:
                 curItem = INDEX_MY;
@@ -343,6 +349,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private UUID mGetRedDotRequestUUID;
     private boolean showResourceRedDot = false;
     private boolean showTaskRedDot = false;
+    private boolean showCommentRedDot = false;
 
     private void getRedDotRequest() {
         RedDotRequest redDotRequest = new RedDotRequest();
@@ -356,7 +363,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     if (ret.getData().getMomentNew() != null) {
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
                             mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
+                            showCommentRedDot = true;
                         } else {
+                            showCommentRedDot = false;
                             mImgClassCircleRedCircle.setVisibility(View.GONE);
                         }
                     }
@@ -382,16 +391,16 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                         }
                     }
                 }
-                handler.sendEmptyMessageDelayed(2,30000);
-        }
+                handler.sendEmptyMessageDelayed(2, 30000);
+            }
 
-        @Override
-        public void onFail (RequestBase request, Error error){
-            handler.sendEmptyMessageDelayed(2, 30000);
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                handler.sendEmptyMessageDelayed(2, 30000);
 
-        }
-    });
-}
+            }
+        });
+    }
 
 
     @Override

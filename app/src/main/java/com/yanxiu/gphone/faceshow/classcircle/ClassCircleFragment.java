@@ -64,9 +64,10 @@ import de.greenrobot.event.EventBus;
  */
 public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener {
 
-    private static final int REQUEST_CODE_ALBUM=0x000;
-    private static final int REQUEST_CODE_CAMERA=0x001;
-    private static final int REQUEST_CODE_CROP=0x002;
+    private static final int REQUEST_CODE_ALBUM = 0x000;
+    private static final int REQUEST_CODE_CAMERA = 0x001;
+    private static final int REQUEST_CODE_CROP = 0x002;
+    public  boolean firstEnter = true;
 
     private LoadMoreRecyclerView mClassCircleRecycleView;
     private ClassCircleAdapter mClassCircleAdapter;
@@ -76,9 +77,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private ImageView mFunctionView;
     private TextView mTitleView;
     private View mTopView;
-    private int mMomentPosition=-1;
-    private int mCommentPosition=-1;
-    private int mVisibility=View.INVISIBLE;
+    private int mMomentPosition = -1;
+    private int mCommentPosition = -1;
+    private int mVisibility = View.INVISIBLE;
     private int mHeight;
     private boolean isCommentMaster;
     private String mCameraPath;
@@ -88,12 +89,13 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private PublicLoadLayout rootView;
     private View mDataEmptyView;
 
-    private boolean isCommentLoading=false;
+    private boolean isCommentLoading = false;
 
     private UUID mClassCircleRequest;
     private UUID mClassCircleLikeRequest;
     private UUID mCommentToMasterRequest;
     private UUID mCommentToUserRequest;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,12 +105,21 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         initView(rootView);
         listener();
         initData();
+        startRequest("0");
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+
+    /**
+     * 手动刷新页面，当底部通知tab被点击时调用
+     */
+    public void toRefresh() {
+        mRefreshView.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshView.setRefreshing(true);
+            }
+        });
         startRequest("0");
     }
 
@@ -116,21 +127,21 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(ClassCircleFragment.this);
-        if (mClassCircleRequest!=null){
+        if (mClassCircleRequest != null) {
             RequestBase.cancelRequestWithUUID(mClassCircleRequest);
-            mClassCircleRequest=null;
+            mClassCircleRequest = null;
         }
-        if (mClassCircleLikeRequest!=null){
+        if (mClassCircleLikeRequest != null) {
             RequestBase.cancelRequestWithUUID(mClassCircleLikeRequest);
-            mClassCircleLikeRequest=null;
+            mClassCircleLikeRequest = null;
         }
-        if (mCommentToMasterRequest!=null){
+        if (mCommentToMasterRequest != null) {
             RequestBase.cancelRequestWithUUID(mCommentToMasterRequest);
-            mCommentToMasterRequest=null;
+            mCommentToMasterRequest = null;
         }
-        if (mCommentToUserRequest!=null){
+        if (mCommentToUserRequest != null) {
             RequestBase.cancelRequestWithUUID(mCommentToUserRequest);
-            mCommentToUserRequest=null;
+            mCommentToUserRequest = null;
         }
     }
 
@@ -150,8 +161,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleAdapter = new ClassCircleAdapter(getContext());
         mClassCircleRecycleView.setAdapter(mClassCircleAdapter);
 
-        mRefreshView= (SwipeRefreshLayout) rootView.findViewById(R.id.srl_refresh);
-        mDataEmptyView=rootView.findViewById(R.id.rl_data_empty);
+        mRefreshView = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_refresh);
+        mDataEmptyView = rootView.findViewById(R.id.rl_data_empty);
     }
 
     private void listener() {
@@ -172,7 +183,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mFunctionView.setBackgroundResource(R.drawable.selector_classcircle_photo);
         mClassCircleRecycleView.getItemAnimator().setChangeDuration(0);
         mClassCircleRecycleView.setLoadMoreEnable(true);
-        mRefreshView.setProgressViewOffset(false, ScreenUtils.dpToPxInt(getContext(),44),ScreenUtils.dpToPxInt(getContext(),100));
+        mRefreshView.setProgressViewOffset(false, ScreenUtils.dpToPxInt(getContext(), 44), ScreenUtils.dpToPxInt(getContext(), 100));
         mRefreshView.post(new Runnable() {
             @Override
             public void run() {
@@ -181,39 +192,40 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         });
     }
 
-    public void onEventMainThread(RefreshClassCircle refreshClassCircle){
+    public void onEventMainThread(RefreshClassCircle refreshClassCircle) {
         onRefresh();
     }
 
     /**
      * 班级圈
-     * */
-    private void startRequest(final String offset){
-        ClassCircleRequest circleRequest=new ClassCircleRequest();
-        circleRequest.offset=offset;
-        mClassCircleRequest=circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+     */
+    private void startRequest(final String offset) {
+        ClassCircleRequest circleRequest = new ClassCircleRequest();
+        circleRequest.offset = offset;
+        mClassCircleRequest = circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
-                mClassCircleRequest=null;
+                firstEnter=false;
+                mClassCircleRequest = null;
                 mRefreshView.post(new Runnable() {
                     @Override
                     public void run() {
                         mRefreshView.setRefreshing(false);
                     }
                 });
-                if (ret!=null&&ret.data!=null&&ret.data.moments!=null) {
+                if (ret != null && ret.data != null && ret.data.moments != null) {
                     if (offset.equals("0")) {
                         mClassCircleAdapter.setData(ret.data.moments);
-                    }else {
+                    } else {
                         mClassCircleAdapter.addData(ret.data.moments);
                     }
-                    if (ret.data.moments==null||ret.data.moments.size()==0){
+                    if (ret.data.moments == null || ret.data.moments.size() == 0) {
                         mDataEmptyView.setVisibility(View.VISIBLE);
-                    }else {
+                    } else {
                         mDataEmptyView.setVisibility(View.GONE);
                     }
                     mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
-                }else {
+                } else {
                     if (offset.equals("0")) {
                         rootView.showNetErrorView();
                         mClassCircleAdapter.clear();
@@ -223,7 +235,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                mClassCircleRequest=null;
+                firstEnter=false;
+                mClassCircleRequest = null;
                 mRefreshView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -240,67 +253,67 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     /**
      * 点赞
-     * */
-    private void startLikeRequest(final int position, final ClassCircleResponse.Data.Moments moments){
+     */
+    private void startLikeRequest(final int position, final ClassCircleResponse.Data.Moments moments) {
         rootView.showLoadingView();
-        ClassCircleLikeRequest classCircleLikeRequest=new ClassCircleLikeRequest();
-        classCircleLikeRequest.momentId=moments.id;
-        mClassCircleLikeRequest=classCircleLikeRequest.startRequest(LikeResponse.class, new HttpCallback<LikeResponse>() {
+        ClassCircleLikeRequest classCircleLikeRequest = new ClassCircleLikeRequest();
+        classCircleLikeRequest.momentId = moments.id;
+        mClassCircleLikeRequest = classCircleLikeRequest.startRequest(LikeResponse.class, new HttpCallback<LikeResponse>() {
             @Override
             public void onSuccess(RequestBase request, LikeResponse ret) {
                 rootView.hiddenLoadingView();
                 mClassCircleLikeRequest = null;
                 if (ret != null && ret.data != null) {
                     ClassCircleResponse.Data.Moments.Likes likes = moments.new Likes();
-                    likes.clazsId=ret.data.clazsId;
-                    likes.createTime=ret.data.createTime;
-                    likes.id=ret.data.id;
-                    likes.momentId=ret.data.momentId;
+                    likes.clazsId = ret.data.clazsId;
+                    likes.createTime = ret.data.createTime;
+                    likes.id = ret.data.id;
+                    likes.momentId = ret.data.momentId;
                     likes.publisher = ret.data.publisher;
                     moments.likes.add(likes);
-                    mClassCircleAdapter.notifyItemChanged(position,ClassCircleAdapter.REFRESH_LIKE_DATA);
+                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_LIKE_DATA);
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                mClassCircleLikeRequest=null;
-                ToastUtil.showToast(getContext(),error.getMessage());
+                mClassCircleLikeRequest = null;
+                ToastUtil.showToast(getContext(), error.getMessage());
             }
         });
     }
 
     /**
      * 评论
-     * */
-    private void startCommentToMasterRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments){
+     */
+    private void startCommentToMasterRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments) {
         rootView.showLoadingView();
-        ClassCircleCommentToMasterRequest masterRequest=new ClassCircleCommentToMasterRequest();
-        masterRequest.clazsId=moments.clazsId;
-        masterRequest.content=content;
-        masterRequest.momentId=moments.id;
-        mCommentToMasterRequest=masterRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
+        ClassCircleCommentToMasterRequest masterRequest = new ClassCircleCommentToMasterRequest();
+        masterRequest.clazsId = moments.clazsId;
+        masterRequest.content = content;
+        masterRequest.momentId = moments.id;
+        mCommentToMasterRequest = masterRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
             @Override
             public void onSuccess(RequestBase request, CommentResponse ret) {
                 rootView.hiddenLoadingView();
-                isCommentLoading=false;
-                mCommentToMasterRequest=null;
-                if (ret!=null&&ret.data!=null) {
+                isCommentLoading = false;
+                mCommentToMasterRequest = null;
+                if (ret != null && ret.data != null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position,ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     commentFinish();
                     mCommentView.setText("");
-                }else {
-                    ToastUtil.showToast(getContext(),R.string.error_tip);
+                } else {
+                    ToastUtil.showToast(getContext(), R.string.error_tip);
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                mCommentToMasterRequest=null;
-                isCommentLoading=false;
-                ToastUtil.showToast(getContext(),error.getMessage());
+                mCommentToMasterRequest = null;
+                isCommentLoading = false;
+                ToastUtil.showToast(getContext(), error.getMessage());
                 rootView.hiddenLoadingView();
             }
         });
@@ -308,37 +321,37 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     /**
      * 回复
-     * */
-    private void startCommentToUserRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments,final Comments comments){
+     */
+    private void startCommentToUserRequest(final int position, final String content, final ClassCircleResponse.Data.Moments moments, final Comments comments) {
         rootView.showLoadingView();
-        ClassCircleCommentToUserRequest userRequest=new ClassCircleCommentToUserRequest();
-        userRequest.clazsId=moments.clazsId;
-        userRequest.momentId=moments.id;
-        userRequest.content=content;
-        userRequest.toUserId=comments.publisher.userId;
-        userRequest.commentId=comments.id;
-        mCommentToUserRequest=userRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
+        ClassCircleCommentToUserRequest userRequest = new ClassCircleCommentToUserRequest();
+        userRequest.clazsId = moments.clazsId;
+        userRequest.momentId = moments.id;
+        userRequest.content = content;
+        userRequest.toUserId = comments.publisher.userId;
+        userRequest.commentId = comments.id;
+        mCommentToUserRequest = userRequest.startRequest(CommentResponse.class, new HttpCallback<CommentResponse>() {
             @Override
             public void onSuccess(RequestBase request, CommentResponse ret) {
                 rootView.hiddenLoadingView();
-                isCommentLoading=false;
-                mCommentToUserRequest=null;
-                if (ret!=null&&ret.data!=null) {
+                isCommentLoading = false;
+                mCommentToUserRequest = null;
+                if (ret != null && ret.data != null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position,ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     commentFinish();
                     mCommentView.setText("");
-                }else {
-                    ToastUtil.showToast(getContext(),R.string.error_tip);
+                } else {
+                    ToastUtil.showToast(getContext(), R.string.error_tip);
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                isCommentLoading=false;
-                mCommentToUserRequest=null;
-                ToastUtil.showToast(getContext(),error.getMessage());
+                isCommentLoading = false;
+                mCommentToUserRequest = null;
+                ToastUtil.showToast(getContext(), error.getMessage());
             }
         });
     }
@@ -372,8 +385,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         }
     }
 
-    private void showDialog(){
-        if (mClassCircleDialog==null) {
+    private void showDialog() {
+        if (mClassCircleDialog == null) {
             mClassCircleDialog = new ClassCircleDialog(getContext());
             mClassCircleDialog.setClickListener(new ClassCircleDialog.OnViewClickListener() {
                 @Override
@@ -389,7 +402,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
                         @Override
                         public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-                            ToastUtil.showToast(getContext(),R.string.no_storage_permissions);
+                            ToastUtil.showToast(getContext(), R.string.no_storage_permissions);
                         }
                     });
                 }
@@ -399,7 +412,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
                         @Override
                         public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                            mCameraPath = FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
+                            mCameraPath = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
                             Intent intent = new Intent();
                             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
                             intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -418,7 +431,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
                         @Override
                         public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-                            ToastUtil.showToast(getContext(),R.string.no_camera_permissions);
+                            ToastUtil.showToast(getContext(), R.string.no_camera_permissions);
                         }
                     });
                 }
@@ -428,40 +441,40 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments,int commentPosition, Comments comment, boolean isCommentMaster) {
-        this.isCommentMaster=isCommentMaster;
-        this.mCommentPosition=commentPosition;
-        this.mMomentPosition=position;
-        if (!isCommentMaster){
+    public void commentClick(final int position, ClassCircleResponse.Data.Moments moments, int commentPosition, Comments comment, boolean isCommentMaster) {
+        this.isCommentMaster = isCommentMaster;
+        this.mCommentPosition = commentPosition;
+        this.mMomentPosition = position;
+        if (!isCommentMaster) {
             mCommentView.setHint(String.format(getString(R.string.class_circle_comment_to_user), comment.publisher.realName));
-        }else {
+        } else {
             mCommentView.setHint(R.string.class_circle_comment_to_master);
         }
 
-        Logger.d("onSizeChanged","commentClick");
+        Logger.d("onSizeChanged", "commentClick");
         mCommentLayout.setVisibility(View.VISIBLE);
         mCommentView.setFocusable(true);
         mCommentView.clearFocus();
         mCommentView.requestFocus();
-        if (mVisibility==View.VISIBLE){
-            setScroll(position,mHeight,false);
+        if (mVisibility == View.VISIBLE) {
+            setScroll(position, mHeight, false);
         }
         mAdjustPanView.setViewSizeChangedCallback(new SizeChangeCallbackView.onViewSizeChangedCallback() {
             @Override
             public void sizeChanged(int visibility, int height) {
-                Logger.d("onSizeChanged","visibility  "+visibility);
-                mVisibility=visibility;
+                Logger.d("onSizeChanged", "visibility  " + visibility);
+                mVisibility = visibility;
                 if (visibility == View.VISIBLE) {
-                    mHeight=height;
+                    mHeight = height;
                     ((MainActivity) getActivity()).setBottomVisibility(View.GONE);
-                    setScroll(position,height,true);
+                    setScroll(position, height, true);
                 } else {
                     ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
                 }
             }
         });
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mCommentView,0);
+        imm.showSoftInput(mCommentView, 0);
     }
 
     @Override
@@ -469,16 +482,16 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleRecycleView.post(new Runnable() {
             @Override
             public void run() {
-                int visibleStart=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
-                int visibleEnd=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findLastVisibleItemPosition();
-                if ((position<visibleStart||position>visibleEnd)&&!isShowAll) {
+                int visibleStart = ((LinearLayoutManager) mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
+                int visibleEnd = ((LinearLayoutManager) mClassCircleRecycleView.getLayoutManager()).findLastVisibleItemPosition();
+                if ((position < visibleStart || position > visibleEnd) && !isShowAll) {
                     mClassCircleRecycleView.scrollToPosition(position);
                     mClassCircleRecycleView.post(new Runnable() {
                         @Override
                         public void run() {
-                            float diment=getResources().getDimension(R.dimen.top_layout_height);
+                            float diment = getResources().getDimension(R.dimen.top_layout_height);
 //                            int length=ScreenUtils.dpToPxInt(getContext(),diment);
-                            mClassCircleRecycleView.scrollBy(0,-(int) diment);
+                            mClassCircleRecycleView.scrollBy(0, -(int) diment);
                         }
                     });
                 }
@@ -488,12 +501,12 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     /**
      * 将选中item滚动到可见位置
-     * */
-    private void setScroll(final int position, final int height,boolean isShouldScroll){
-        Logger.d("mClassCircleRecycleView","adapter  position  "+position);
-        int visibleStart=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
-        int visibleEnd=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findLastVisibleItemPosition();
-        if ((mMomentPosition<visibleStart||mMomentPosition>visibleEnd)||isShouldScroll) {
+     */
+    private void setScroll(final int position, final int height, boolean isShouldScroll) {
+        Logger.d("mClassCircleRecycleView", "adapter  position  " + position);
+        int visibleStart = ((LinearLayoutManager) mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
+        int visibleEnd = ((LinearLayoutManager) mClassCircleRecycleView.getLayoutManager()).findLastVisibleItemPosition();
+        if ((mMomentPosition < visibleStart || mMomentPosition > visibleEnd) || isShouldScroll) {
             mClassCircleRecycleView.scrollToPosition(position);
         }
         ClassCircleTimeUtils.creat().start(new ClassCircleTimeUtils.onTimeUplistener() {
@@ -506,23 +519,23 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     /**
      * 检查选中item位置进行微调
-     * */
-    private void setSrcollBy(final int position, final int height){
-        int visibleIndex=((LinearLayoutManager)mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
+     */
+    private void setSrcollBy(final int position, final int height) {
+        int visibleIndex = ((LinearLayoutManager) mClassCircleRecycleView.getLayoutManager()).findFirstVisibleItemPosition();
         int n = position - visibleIndex;
-        Logger.d("mClassCircleRecycleView","visibile position  "+visibleIndex);
-        Logger.d("mClassCircleRecycleView","position  "+n);
-        if ( 0 <= n && n < mClassCircleRecycleView.getChildCount()) {
+        Logger.d("mClassCircleRecycleView", "visibile position  " + visibleIndex);
+        Logger.d("mClassCircleRecycleView", "position  " + n);
+        if (0 <= n && n < mClassCircleRecycleView.getChildCount()) {
             int top = mClassCircleRecycleView.getChildAt(n).getTop();
-            int bottom=mClassCircleRecycleView.getChildAt(n).getBottom();
+            int bottom = mClassCircleRecycleView.getChildAt(n).getBottom();
 
-            Logger.d("mClassCircleRecycleView","top "+top);
-            Logger.d("mClassCircleRecycleView","bottom "+bottom);
-            Logger.d("mClassCircleRecycleView","height "+height);
+            Logger.d("mClassCircleRecycleView", "top " + top);
+            Logger.d("mClassCircleRecycleView", "bottom " + bottom);
+            Logger.d("mClassCircleRecycleView", "height " + height);
 
-            final int heightMove=bottom-height;
-            if (heightMove!=0&&bottom!=height) {
-                Logger.d("mClassCircleRecycleView","heightMoves "+heightMove);
+            final int heightMove = bottom - height;
+            if (heightMove != 0 && bottom != height) {
+                Logger.d("mClassCircleRecycleView", "heightMoves " + heightMove);
                 mClassCircleRecycleView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -531,33 +544,33 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 });
             }
         }
-        Logger.d("mClassCircleRecycleView"," ");
+        Logger.d("mClassCircleRecycleView", " ");
     }
 
     @Override
     public void commentFinish() {
-        mVisibility=View.INVISIBLE;
+        mVisibility = View.INVISIBLE;
         mAdjustPanView.setViewSizeChangedCallback(null);
         mCommentLayout.setVisibility(View.GONE);
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
         ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
-        mMomentPosition=-1;
-        mCommentPosition=-1;
+        mMomentPosition = -1;
+        mCommentPosition = -1;
     }
 
     @Override
     public boolean onLongClick(View v) {
-        SendClassCircleActivity.LuanchActivity(getContext(),SendClassCircleActivity.TYPE_TEXT,null);
+        SendClassCircleActivity.LuanchActivity(getContext(), SendClassCircleActivity.TYPE_TEXT, null);
         return true;
     }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId== EditorInfo.IME_ACTION_SEND){
-            String comment=mCommentView.getText().toString();
-            if (!TextUtils.isEmpty(comment)&&!isCommentLoading) {
-                isCommentLoading=true;
+        if (actionId == EditorInfo.IME_ACTION_SEND) {
+            String comment = mCommentView.getText().toString();
+            if (!TextUtils.isEmpty(comment) && !isCommentLoading) {
+                isCommentLoading = true;
                 ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
                 if (isCommentMaster) {
                     startCommentToMasterRequest(mMomentPosition, comment, moments);
@@ -574,24 +587,24 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void likeClick(int position, ClassCircleResponse.Data.Moments moments) {
-        startLikeRequest(position,moments);
+        startLikeRequest(position, moments);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_CODE_ALBUM:
-                if (data!=null) {
+                if (data != null) {
                     Uri uri = data.getData();
 //                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
 //                    startCropImg(uri,mCropPath);
-                    String path=FileUtil.getRealFilePath(getContext(),uri);
+                    String path = FileUtil.getRealFilePath(getContext(), uri);
                     startIntent(path);
                 }
                 break;
             case REQUEST_CODE_CAMERA:
-                if (!TextUtils.isEmpty(mCameraPath)){
+                if (!TextUtils.isEmpty(mCameraPath)) {
 //                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
 //                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
                     try {
@@ -612,7 +625,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         }
     }
 
-    private void startCropImg(Uri uri,String savePath){
+    private void startCropImg(Uri uri, String savePath) {
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
@@ -623,9 +636,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         startActivityForResult(intent, REQUEST_CODE_CROP);
     }
 
-    private void startIntent(String path){
-        ArrayList<String> strings=new ArrayList<>();
+    private void startIntent(String path) {
+        ArrayList<String> strings = new ArrayList<>();
         strings.add(path);
-        SendClassCircleActivity.LuanchActivity(getContext(),SendClassCircleActivity.TYPE_IMAGE,strings);
+        SendClassCircleActivity.LuanchActivity(getContext(), SendClassCircleActivity.TYPE_IMAGE, strings);
     }
 }
