@@ -254,7 +254,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 if (ret != null && ret.getCode() == 0) {
                     ToastUtil.showToast(CourseDiscussActivity.this, "提交成功");
                 } else {
-                    ToastUtil.showToast(CourseDiscussActivity.this, getString(R.string.error_tip));
+                    ToastUtil.showToast(CourseDiscussActivity.this, ret.getError().getMessage());
                 }
                 requestData(false);
             }

@@ -216,7 +216,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
                     invoke(VoteActivity.this, mStepId);
                     finish();
                 } else {
-                    ToastUtil.showToast(getApplication(), getString(R.string.error_tip));
+                    ToastUtil.showToast(getApplication(), ret.getError().getMessage());
                 }
             }
 

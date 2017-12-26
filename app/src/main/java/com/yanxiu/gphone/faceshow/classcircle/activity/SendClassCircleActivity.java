@@ -174,9 +174,9 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     rootView.showLoadingView();
                     uploadImg(content);
                 } else {
-                    if (TextUtils.isEmpty(content)){
-                        ToastUtil.showToast(getApplicationContext(),"请输入要发布的内容");
-                    }else {
+                    if (TextUtils.isEmpty(content)) {
+                        ToastUtil.showToast(getApplicationContext(), "请输入要发布的内容");
+                    } else {
                         rootView.showLoadingView();
                         uploadData(content, mResourceIds);
                     }
@@ -299,6 +299,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     }
                 }
                 break;
+            default:
+                break;
         }
     }
 
@@ -377,7 +379,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     EventBus.getDefault().post(new RefreshClassCircle());
                     SendClassCircleActivity.this.finish();
                 } else {
-                    ToastUtil.showToast(mContext, R.string.error_tip);
+                    ToastUtil.showToast(mContext, ret.getError().getMessage());
                 }
             }
 
