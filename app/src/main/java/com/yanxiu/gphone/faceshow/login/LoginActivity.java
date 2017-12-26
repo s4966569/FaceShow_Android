@@ -12,6 +12,7 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,7 +57,8 @@ import cn.magicwindow.MagicWindowSDK;
 
 /**
  * 登录页面
- * created by frc
+ *
+ * @author frc
  */
 public class LoginActivity extends FaceShowBaseActivity {
 
@@ -91,13 +93,10 @@ public class LoginActivity extends FaceShowBaseActivity {
         rootView = new PublicLoadLayout(mContext);
         rootView.setContentView(R.layout.activity_login);
         setContentView(rootView);
-//    如果修改状态栏则ｓｃｒｏｌｌＶｉｅｗ失效    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            StatusBarUtils.setStatusBarFullScreen(LoginActivity.this);
-//        }
         unbinder = ButterKnife.bind(this);
-        if (SpManager.isFristStartUp())
+        if (SpManager.isFristStartUp()) {
             SpManager.setFristStartUp(false);
-
+        }
         edt_account_number.addTextChangedListener(accountNumberChangedListener);
         edt_account_password.addTextChangedListener(accountPasswordChangedListener);
         if (edt_account_number.getText().length() > 0 && edt_account_password.getText().length() > 0) {
@@ -185,6 +184,8 @@ public class LoginActivity extends FaceShowBaseActivity {
             case R.id.tv_forget_password:
                 startActivityForResult(new Intent(LoginActivity.this, ForgetPasswordActivity.class), TO_FORGET_PASSWORD_REQUEST_CODE);
                 break;
+            default:
+                break;
         }
     }
 
@@ -234,7 +235,7 @@ public class LoginActivity extends FaceShowBaseActivity {
                     SpManager.saveUserInfo(userInfoStr);
                     UserInfo.getInstance().setInfo(ret.getData());
                     PushManager.getInstance().turnOnPush(activity);//开启个推服务
-                   //boolean isBind= PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
+                    //boolean isBind= PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
                     MainActivity.invoke(activity);
                     LoginActivity.this.finish();
                 } else {
@@ -292,7 +293,6 @@ public class LoginActivity extends FaceShowBaseActivity {
             }
         }
     }
-
 
 
 }

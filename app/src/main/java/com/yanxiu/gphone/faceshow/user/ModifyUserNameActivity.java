@@ -103,7 +103,7 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
                     ModifyUserNameActivity.this.setResult(RESULT_OK);
                     ModifyUserNameActivity.this.finish();
                 } else {
-                    ToastUtil.showToast(getApplicationContext(), "姓名保存失败");
+                    ToastUtil.showToast(getApplicationContext(), response.getError().getMessage());
                 }
             }
 
