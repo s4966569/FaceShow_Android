@@ -17,6 +17,7 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseCallback;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
+import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
@@ -122,7 +123,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             tvCheckInTimeHere.setVisibility(View.VISIBLE);
             tvCheckInTime.setVisibility(View.VISIBLE);
             tvCheckInStatue.setText(R.string.you_have_check_in_success);
-            tvCheckInTime.setText(data.getUserSignIn().getSigninTime());
+            tvCheckInTime.setText(DateFormatUtil.translationBetweenTwoFormat(data.getUserSignIn().getSigninTime(),DateFormatUtil.FORMAT_ONE,DateFormatUtil.FORMAT_SIX));
         } else {
             tvCheckIn.setVisibility(View.VISIBLE);
             tvCheckInHere.setVisibility(View.VISIBLE);

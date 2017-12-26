@@ -17,6 +17,7 @@ import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetNotificationDetailResponse;
+import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                 if (ret.getCode() == 0) {
                     isLoadSuccess = true;
                     tvNotificationTitle.setText(ret.getData().getTitle());
-                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName() == null ? "专家:无 " : ret.getData().getAuthorName(), ret.getData().getCreateTime()));
+                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName() == null ? "专家:无 " : ret.getData().getAuthorName(), DateFormatUtil.translationBetweenTwoFormat(ret.getData().getCreateTime(),DateFormatUtil.FORMAT_ONE,DateFormatUtil.FORMAT_SIX)));
                     tvNotificationContent.setText(ret.getData().getContent());
                     imgNotification.setOnClickListener(new View.OnClickListener() {
                         @Override
