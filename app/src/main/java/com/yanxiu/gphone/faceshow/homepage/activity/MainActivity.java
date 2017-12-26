@@ -88,7 +88,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             showCurrentFragment(0);
             isToFirstFragment = false;
         }
-        pollingRedPointer();
+
     }
 
     @Override
@@ -147,6 +147,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     info.setClassId(mMainData.getClazsInfo().getId());
                     SpManager.saveUserInfo(info);
                     initFragment();
+                    pollingRedPointer();
                 } else {
                     mRootView.showOtherErrorView(ret.getError().getMessage());
                 }

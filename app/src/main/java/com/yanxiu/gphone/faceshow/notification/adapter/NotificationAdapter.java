@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
+import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,18 +61,18 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView tv_notification_name, tv_notification_created_time;
         ImageView img_notification_head;
-
         ViewHolder(View itemView) {
             super(itemView);
             tv_notification_name = (TextView) itemView.findViewById(R.id.tv_notification_name);
             tv_notification_created_time = (TextView) itemView.findViewById(R.id.tv_notification_created_time);
             img_notification_head = (ImageView) itemView.findViewById(R.id.img_notification_head);
         }
-
         public void setData(NotificationResponse.Notification notification) {
-            tv_notification_created_time.setText(notification.getUpdateTime());
+            tv_notification_created_time.setText(DateFormatUtil.translationBetweenTwoFormat(notification.getUpdateTime(),DateFormatUtil.FORMAT_ONE,DateFormatUtil.FORMAT_SIX));
+//            tv_notification_created_time.setText(notification.getUpdateTime());
             tv_notification_name.setText(notification.getTitle());
-            if (!notification.isViewed()) {//消息未读
+            //消息未读
+            if (!notification.isViewed()) {
                 tv_notification_name.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
                 img_notification_head.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_notification_un_viewed));
             } else {

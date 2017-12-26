@@ -28,7 +28,6 @@ import butterknife.OnClick;
 
 /**
  * 通知详情页
- *
  */
 public class NotificationDetailActivity extends FaceShowBaseActivity {
 
@@ -77,7 +76,8 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
             case R.id.img_left:
                 onBackPressed();
                 break;
-
+            default:
+                break;
         }
     }
 

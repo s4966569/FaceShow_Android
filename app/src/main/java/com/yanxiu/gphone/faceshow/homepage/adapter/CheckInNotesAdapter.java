@@ -13,6 +13,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivity;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
+import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,7 +130,7 @@ public class CheckInNotesAdapter extends RecyclerView.Adapter<CheckInNotesAdapte
             if (checkInNotesBean.getUserSignIn() != null && checkInNotesBean.getUserSignIn().getSigninStatus() == 1) {
                 tv_training_statue.setText("已签到");
                 tv_training_check_in_time.setVisibility(View.VISIBLE);
-                tv_training_check_in_time.setText(checkInNotesBean.getUserSignIn().getSigninTime());
+                tv_training_check_in_time.setText(DateFormatUtil.translationBetweenTwoFormat(checkInNotesBean.getUserSignIn().getSigninTime(),DateFormatUtil.FORMAT_ONE,DateFormatUtil.FORMAT_SIX));
                 tv_training_statue.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.color_333333));
                 img_training_statue.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_check_in_small_success));
             } else {
