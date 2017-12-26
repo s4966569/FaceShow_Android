@@ -41,7 +41,7 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
 
 /**
- * 评价页面
+ * 评价页面或者叫讨论
  */
 public class EvaluationActivity extends FaceShowBaseActivity implements View.OnClickListener, EvaluationAdapter.CanSubmitListener, KeyboardChangeListener.KeyBoardListener {
 
@@ -148,10 +148,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                     mData = ret.getData();
                     if (ret.getData().isAnswer()) {
                         mSubmit.setVisibility(View.GONE);
-//                        mTitle.setText("我的课程评价");
                     } else {
                         mSubmit.setVisibility(View.VISIBLE);
-//                        mTitle.setText("课程评价");
                     }
                     mTitle.setText(getString(R.string.evaluation));
                     mAdapter.setTitle(ret.getData().getQuestionGroup().getTitle());
@@ -206,14 +204,13 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                     invoke(EvaluationActivity.this, mStepId);
                     finish();
                 } else {
-                    ToastUtil.showToast(getApplication(), getString(R.string.error_tip));
+                    ToastUtil.showToast(getApplication(), ret.getError().getMessage());
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                mRootView.hiddenLoadingView();
-//                ToastUtil.showToast(getApplication(), error.getMessage());
+                mRootView.finish();
             }
         });
 
