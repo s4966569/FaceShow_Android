@@ -142,8 +142,10 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 double latitude = bdLocation.getLatitude();
                 double longitude = bdLocation.getLongitude();
                 if (TextUtils.isEmpty(bdLocation.getLocationDescribe())){
+                    ToastUtil.showToast(getApplicationContext(),"定位失败");
                     userSignIn(stepId, timestamp, "", "");
                 }else {
+                    ToastUtil.showToast(getApplicationContext(),"定位成功");
                     userSignIn(stepId, timestamp, longitude + "," + latitude, bdLocation.getLocationDescribe());
                 }
             }
