@@ -17,6 +17,9 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
+import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationListRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.NotificationResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -110,8 +113,9 @@ public class NoticeFragment extends FaceShowBaseFragment {
                 if (mOffset == 0) {
                     mNotificationList.clear();
                 }
-                if (swipeRefreshLayout.isRefreshing())
+                if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
+                }
                 if (ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().getElements() != null) {
                         tatleNum=ret.getData().getTotalElements();
@@ -203,7 +207,28 @@ public class NoticeFragment extends FaceShowBaseFragment {
         if (requestCode == 0) {
             mNotificationList.get(mCurrentItemPosition).setViewed(true);
             mNotificationAdapter.notifyItem(mNotificationList, mCurrentItemPosition);
+            getRedPointersRequest();
         }
     }
+    private void getRedPointersRequest() {
+        GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
+        getHasNotificationsNeedReadRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
+         getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
+                if (ret.getCode() == 0) {
+                    if (ret.getData().isHasUnView()) {
 
+                    } else {
+                        ((MainActivity) getActivity()).hideNoticeRedDot();
+                    }
+                } else {
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+            }
+        });
+    }
 }

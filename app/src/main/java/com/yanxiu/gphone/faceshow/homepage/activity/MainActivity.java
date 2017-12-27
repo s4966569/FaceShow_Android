@@ -197,9 +197,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                             mRedCircle.setVisibility(View.VISIBLE);
                         }
                     } else {
-                        if (mRedCircle.getVisibility() == View.VISIBLE) {
-                            mRedCircle.setVisibility(View.INVISIBLE);
-                        }
+                       hideNoticeRedDot();
                     }
                 } else {
                 }
@@ -211,6 +209,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 handler.sendEmptyMessageDelayed(1, 30000);
             }
         });
+    }
+    public void hideNoticeRedDot(){
+t         if (mRedCircle.getVisibility()==View.VISIBLE){
+            mRedCircle.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -412,15 +415,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         if (mGetRedDotRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mGetRedDotRequestUUID);
         }
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
         // TODO: 17-9-21 移除轮讯
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
+
     }
+
+
+
 }
