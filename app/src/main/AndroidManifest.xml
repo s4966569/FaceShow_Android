@@ -100,7 +100,7 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:taskAffinity="com.yanxiu.gphone.faceshow"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified" />
         <activity
             android:name=".course.activity.CourseActivity"
             android:screenOrientation="portrait"

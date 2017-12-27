@@ -181,6 +181,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 getRedPointersRequest();
             } else if (msg.what == 2) {
                 getRedDotRequest();
+            }else {
+
             }
         }
     };

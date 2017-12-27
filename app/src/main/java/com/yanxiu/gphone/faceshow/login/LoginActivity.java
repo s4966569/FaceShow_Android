@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,6 +84,8 @@ public class LoginActivity extends FaceShowBaseActivity {
     TextView tv_forget_password;
     @BindView(R.id.ll_login)
     LinearLayout ll_login;
+    @BindView(R.id.scroll_root)
+    ScrollView scroll_root;
 
     private boolean isPasswordShow = false;
     private UUID mSignInRequestUUID;
@@ -92,6 +95,7 @@ public class LoginActivity extends FaceShowBaseActivity {
     int btnY = 0;
     // 需要偏移的距离
     float delta = 0;
+    int rootH =0;
 
     private ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener;
 
@@ -118,31 +122,37 @@ public class LoginActivity extends FaceShowBaseActivity {
             tv_sign_in.setBackgroundResource(R.drawable.shape_sign_in_normal_bg);
         }
 
-        tv_forget_password.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        ll_login.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 int[] location = new int[2];
-                tv_forget_password.getLocationOnScreen(location);
-                btnY = location[1] + tv_forget_password.getHeight();
-                tv_forget_password.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                ll_login.getLocationOnScreen(location);
+                btnY = location[1] + ll_login.getHeight();
+                ll_login.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
 
+        });
+        scroll_root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int[] location =new int[2];
+                scroll_root.getLocationOnScreen(location);
+                rootH =location[1]+scroll_root.getHeight();
+                scroll_root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
         });
 
         onGlobalLayoutListener = doMonitorSoftKeyboard(rootView, new OnSoftKeyBoardListener() {
             @Override
             public void hasShow(boolean isSoftVisible) {
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
                 if (isSoftVisible) {
-                    Rect r = new Rect();
-                    rootView.getWindowVisibleDisplayFrame(r);
-                    delta = (float) Math.abs(btnY - r.bottom);
+                    delta = (float) Math.abs(btnY - r.bottom+(rootH-r.bottom));
                     AnimUtil.up(ll_login, -delta/3);
                 } else {
                     AnimUtil.up(ll_login, 0);
-
                 }
-
-
             }
         });
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
