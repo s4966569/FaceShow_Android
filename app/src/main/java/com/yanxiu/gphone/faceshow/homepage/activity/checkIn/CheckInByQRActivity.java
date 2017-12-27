@@ -147,6 +147,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     userSignIn(stepId, timestamp, longitude + "," + latitude, bdLocation.getLocationDescribe());
                 }
             }
+
         });
         locationClient.start();
         return locationClient;

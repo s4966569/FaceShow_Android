@@ -19,7 +19,7 @@
             android:id="@+id/specialist_backimg"
             android:layout_width="match_parent"
             android:layout_height="135dp"
-            android:src="@drawable/homepage_bg" />
+            android:src="@drawable/classcircle_title_bg" />
 
         <ImageView
             android:id="@+id/specialist_img"
