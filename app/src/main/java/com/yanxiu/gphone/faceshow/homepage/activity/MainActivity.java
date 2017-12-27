@@ -197,7 +197,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                             mRedCircle.setVisibility(View.VISIBLE);
                         }
                     } else {
-                       hideNoticeRedDot();
+                        hideNoticeRedDot();
                     }
                 } else {
                 }
@@ -210,8 +210,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             }
         });
     }
-    public void hideNoticeRedDot(){
-t         if (mRedCircle.getVisibility()==View.VISIBLE){
+
+    public void hideNoticeRedDot() {
+        if (mRedCircle.getVisibility() == View.VISIBLE) {
             mRedCircle.setVisibility(View.INVISIBLE);
         }
     }
@@ -421,7 +422,6 @@ t         if (mRedCircle.getVisibility()==View.VISIBLE){
         }
 
     }
-
 
 
 }
