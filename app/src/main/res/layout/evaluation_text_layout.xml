@@ -30,7 +30,7 @@
         android:layout_marginRight="@dimen/course_marginleft"
         android:background="@drawable/shape_evaluation"
         android:gravity="top"
-        android:hint="暂不支持表情，最多输入250个评价文字"
+        android:hint="最多输入250个评价文字"
         android:maxLength="250"
         android:minHeight="180dp"
         android:padding="10dp"

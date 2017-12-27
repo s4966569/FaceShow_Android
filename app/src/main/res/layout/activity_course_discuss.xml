@@ -46,7 +46,7 @@
             android:layout_height="35dp"
             android:layout_centerVertical="true"
             android:background="@drawable/shape_class_circle_edittext"
-            android:hint="评论(暂不支持表情)"
+            android:hint="评论"
             android:imeOptions="actionSend"
             android:paddingEnd="10dp"
             android:paddingStart="10dp"
