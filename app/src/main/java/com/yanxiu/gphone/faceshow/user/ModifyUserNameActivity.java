@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.customview.emoj.EmojiFilter;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseCallback;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -60,6 +62,7 @@ public class ModifyUserNameActivity extends FaceShowBaseActivity {
         titleLayoutTitle.setText(R.string.modify_user_name);
         titleLayoutRightTxt.setText(R.string.save);
         titleLayoutRightTxt.setVisibility(View.VISIBLE);
+        edtName.setFilters(new InputFilter[]{new EmojiFilter()});
         edtName.setText(SpManager.getUserInfo().getRealName());
     }
 
