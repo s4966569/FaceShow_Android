@@ -42,6 +42,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
 
     private StageSubjectModel.DataBean mData;
     private int mSelectedPosition =0;
+    private boolean canSelected=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,14 +61,16 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
         @Override
         public void onItemClick(View view, int postion) {
             mSelectedPosition =postion;
+            mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(ModifyUserSubjectActivity.this, R.color.color_1da1f2));
+            canSelected=true;
         }
     };
 
 
     private void initTitle() {
-        mTitleLayoutRightTxt.setText(R.string.sure);
+        mTitleLayoutRightTxt.setText(R.string.save);
         mTitleLayoutRightTxt.setVisibility(View.VISIBLE);
-        mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(this, R.color.color_1da1f2));
+        mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(ModifyUserSubjectActivity.this, R.color.color_999999));
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
         mTitleLayoutTitle.setText(mData.getName());
     }
@@ -79,8 +82,11 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.title_layout_right_txt:
-                saveStageSubject(mData.getId(),mData.getSub().get(mSelectedPosition).getId(),mData.getName(),mData.getSub().get(mSelectedPosition).getName());
-
+                if (canSelected) {
+                    saveStageSubject(mData.getId(), mData.getSub().get(mSelectedPosition).getId(), mData.getName(), mData.getSub().get(mSelectedPosition).getName());
+                }else {
+                    ToastUtil.showToast(ModifyUserSubjectActivity.this,"请先选择学科");
+                }
                 break;
             default:
                 break;

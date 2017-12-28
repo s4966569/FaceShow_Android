@@ -35,7 +35,7 @@ public class ModifyUserStageAdapter extends RecyclerView.Adapter<ModifyUserStage
 
     @Override
     public StageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_modify_stage_layout, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_modify_subject_layout, parent, false);
         return new StageViewHolder(itemView);
     }
 
