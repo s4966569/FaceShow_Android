@@ -61,23 +61,7 @@ public class EmojiFilter implements InputFilter {
         scopeSet = new HashSet<>();
 
         // See http://apps.timwhitlock.info/emoji/tables/unicode
-        addUnicodeRangeToSet(filterSet, 0xa9);
-        addUnicodeRangeToSet(filterSet, 0xae);
-        addUnicodeRangeToSet(filterSet, 0x3030);
-        addUnicodeRangeToSet(filterSet, 0x303d);
-        addUnicodeRangeToSet(filterSet, 0x2b55);
-        addUnicodeRangeToSet(filterSet, 0x2b1c);
-        addUnicodeRangeToSet(filterSet, 0x2b1b);
-        addUnicodeRangeToSet(filterSet, 0x2b50);
-        addUnicodeRangeToSet(filterSet, 0x231a);
-        addUnicodeRangeToSet(filterSet, 0x20e3);
 
-        addUnicodeRangeToSet(filterSet, 0xd800, 0xdbff);
-        addUnicodeRangeToSet(filterSet, 0x1d000, 0x1f77f);
-        addUnicodeRangeToSet(filterSet, 0x2100, 0x27ff);
-        addUnicodeRangeToSet(filterSet, 0x2B05, 0x2b07);
-        addUnicodeRangeToSet(filterSet, 0x2934, 0x2935);
-        addUnicodeRangeToSet(filterSet, 0x3297, 0x3299);
         // 1. Emoticons ( 1F601 - 1F64F )
         addUnicodeRangeToSet(filterSet, 0x1F601, 0X1F64F);
 
@@ -141,25 +125,7 @@ public class EmojiFilter implements InputFilter {
         addUnicodeRangeToSet(filterSet, 0X3297);
         addUnicodeRangeToSet(filterSet, 0X3299);
 
-        addUnicodeRangeToSet(filterSet, 0x1F601, 0X1F64F);
 
-        // 2702 - 27B0
-        addUnicodeRangeToSet(filterSet, 0x2702, 0X27B0);
-
-        // 1F680 - 1F6C0
-        addUnicodeRangeToSet(filterSet, 0X1F680, 0X1F6C0);
-
-        // 24C2 - 1F251
-        addUnicodeRangeToSet(filterSet, 0X24C2, 0X1F251);
-
-        // 1F600 - 1F636
-        addUnicodeRangeToSet(filterSet, 0X1F600, 0X1F636);
-
-        // 1F681 - 1F6C5
-        addUnicodeRangeToSet(filterSet, 0X1F681, 0X1F6C5);
-
-        // 1F30D - 1F567
-        addUnicodeRangeToSet(filterSet, 0X1F30D, 0X1F567);
     }
 
     public EmojiFilter() {

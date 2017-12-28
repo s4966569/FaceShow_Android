@@ -10,13 +10,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
+import com.yanxiu.gphone.faceshow.http.main.MainRequest;
+import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 
@@ -67,6 +73,34 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         return mRootView;
     }
 
+    public void toRefresh(){
+            requestData();
+    }
+
+    private void requestData() {
+        MainRequest mainRequest = new MainRequest();
+        mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, MainResponse ret) {
+                mRootView.finish();
+                if (ret != null && ret.getCode() == 0 && ret.getData() != null && ret.getData().getClazsInfo() != null
+                        && ret.getData().getProjectInfo() != null) {
+                    UserInfo.Info info = UserInfo.getInstance().getInfo();
+                    info.setClassId(ret.getData().getClazsInfo().getId());
+                    SpManager.saveUserInfo(info);
+                    mMainBean =ret.getData();
+                    initView();
+                } else {
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+
+    }
     private void initData() {
         mMainBean = mActivity.mMainData;
     }
@@ -111,6 +145,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     public void showResourceRedDot() {
         mImgResourceRedDot.setVisibility(View.VISIBLE);
         ResourcesFragment resourcesFragment = mFragmentFactory.getResourcesFragment();
+        //如果当前页在资源页就不显示红点
+        if (mFragmentFactory.getCurrentItem() != 1) {
+            mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
+        }
         if (resourcesFragment != null) {
             resourcesFragment.refreshData();
         }
@@ -118,10 +156,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     public void showTaskRedDot() {
-        //如果当前也是任务就不显示红点
-        if (mFragmentFactory.getCurrentItem() != 2) {
-            mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
-        }
+
         ProjectTaskFragment projectTaskFragment = mFragmentFactory.getProjectTaskFragment();
         if (projectTaskFragment != null) {
             projectTaskFragment.refreshData();
