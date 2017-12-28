@@ -61,6 +61,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private ImageView mCheckInEnterIMG;
 
     private ImageView mImgResourceRedDot, mImgProjectTaskRedDot;
+    private int lastIndex = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,8 +74,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         return mRootView;
     }
 
-    public void toRefresh(){
-            requestData();
+    public void toRefresh() {
+        requestData();
     }
 
     private void requestData() {
@@ -88,7 +89,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                     UserInfo.Info info = UserInfo.getInstance().getInfo();
                     info.setClassId(ret.getData().getClazsInfo().getId());
                     SpManager.saveUserInfo(info);
-                    mMainBean =ret.getData();
+                    mMainBean = ret.getData();
                     initView();
                 } else {
                 }
@@ -101,6 +102,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         });
 
     }
+
     private void initData() {
         mMainBean = mActivity.mMainData;
     }
@@ -125,7 +127,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         initTabBar();
         mFragmentManager = getChildFragmentManager();
         mFragmentFactory = new HomeFragmentFactory();
-        showCurrentFragment(0);
+        showCurrentFragment(lastIndex);
     }
 
     private void initTabBar() {
@@ -143,24 +145,31 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     public void showResourceRedDot() {
-        mImgResourceRedDot.setVisibility(View.VISIBLE);
+
         ResourcesFragment resourcesFragment = mFragmentFactory.getResourcesFragment();
         //如果当前页在资源页就不显示红点
-        if (mFragmentFactory.getCurrentItem() != 1) {
-            mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
-        }
+
         if (resourcesFragment != null) {
+            if (mFragmentFactory.getCurrentItem() != 1) {
+                mImgResourceRedDot.setVisibility(View.VISIBLE);
+            } else {
+                mImgResourceRedDot.setVisibility(View.GONE);
+            }
             resourcesFragment.refreshData();
+        }else {
+            mImgResourceRedDot.setVisibility(View.VISIBLE);
         }
 
     }
 
     public void showTaskRedDot() {
-
         ProjectTaskFragment projectTaskFragment = mFragmentFactory.getProjectTaskFragment();
         if (projectTaskFragment != null) {
-            projectTaskFragment.refreshData();
+            if (mImgProjectTaskRedDot.getVisibility() == View.GONE) {
+                projectTaskFragment.refreshData();
+            }
         }
+        mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
     }
 
     public void hideTaskRedDot() {
@@ -253,6 +262,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         if (mFragmentFactory.getCurrentItem() != curItem) {
             showCurrentFragment(curItem);
         }
+        lastIndex = curItem;
     }
 
     private void showCurrentFragment(int index) {
