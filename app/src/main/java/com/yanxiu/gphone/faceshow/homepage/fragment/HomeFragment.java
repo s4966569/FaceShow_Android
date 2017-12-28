@@ -118,7 +118,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     public void showTaskRedDot() {
-        mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
+        //如果当前也是任务就不显示红点
+        if (mFragmentFactory.getCurrentItem()!=2){
+            mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
+        }
         ProjectTaskFragment projectTaskFragment = mFragmentFactory.getProjectTaskFragment();
         if (projectTaskFragment!=null){
             projectTaskFragment.refreshData();

@@ -221,7 +221,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     public void hideClassCircleRedDot() {
         if (mImgClassCircleRedCircle.getVisibility() == View.VISIBLE) {
-            mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
+            mImgClassCircleRedCircle.setVisibility(View.INVISIBLE);
         }
     }
 
