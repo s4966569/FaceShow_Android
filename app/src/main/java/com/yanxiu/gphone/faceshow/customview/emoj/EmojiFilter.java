@@ -61,7 +61,23 @@ public class EmojiFilter implements InputFilter {
         scopeSet = new HashSet<>();
 
         // See http://apps.timwhitlock.info/emoji/tables/unicode
+        addUnicodeRangeToSet(filterSet, 0xa9);
+        addUnicodeRangeToSet(filterSet, 0xae);
+        addUnicodeRangeToSet(filterSet, 0x3030);
+        addUnicodeRangeToSet(filterSet, 0x303d);
+        addUnicodeRangeToSet(filterSet, 0x2b55);
+        addUnicodeRangeToSet(filterSet, 0x2b1c);
+        addUnicodeRangeToSet(filterSet, 0x2b1b);
+        addUnicodeRangeToSet(filterSet, 0x2b50);
+        addUnicodeRangeToSet(filterSet, 0x231a);
+        addUnicodeRangeToSet(filterSet, 0x20e3);
 
+        addUnicodeRangeToSet(filterSet, 0xd800, 0xdbff);
+        addUnicodeRangeToSet(filterSet, 0x1d000, 0x1f77f);
+        addUnicodeRangeToSet(filterSet, 0x2100, 0x27ff);
+        addUnicodeRangeToSet(filterSet, 0x2B05, 0x2b07);
+        addUnicodeRangeToSet(filterSet, 0x2934, 0x2935);
+        addUnicodeRangeToSet(filterSet, 0x3297, 0x3299);
         // 1. Emoticons ( 1F601 - 1F64F )
         addUnicodeRangeToSet(filterSet, 0x1F601, 0X1F64F);
 

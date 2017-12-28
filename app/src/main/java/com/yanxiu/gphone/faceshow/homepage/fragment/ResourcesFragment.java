@@ -111,7 +111,6 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
         resourceListRequest.offset = String.valueOf(mOffset);
         resourceListRequest.pageSize = mPageSize;
         resourceListRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
-        ;
         mRequestUUID = resourceListRequest.startRequest(ResourceListResponse.class, new HttpCallback<ResourceListResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceListResponse ret) {
@@ -157,6 +156,7 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
                 mRootView.hiddenLoadingView();
                 if (ret != null && ret.getCode() == 0) {
                     setIntent(ret.getData());
+                    ((HomeFragment)getParentFragment()).hideResourceRedDot();
                 } else {
                     ToastUtil.showToast(getActivity(), ret.getError().getMessage());
                 }

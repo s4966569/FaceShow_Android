@@ -110,8 +110,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
 
     public void showResourceRedDot() {
         mImgResourceRedDot.setVisibility(View.VISIBLE);
-        ResourcesFragment resourcesFragment=mFragmentFactory.getResourcesFragment();
-        if (resourcesFragment!=null){
+        ResourcesFragment resourcesFragment = mFragmentFactory.getResourcesFragment();
+        if (resourcesFragment != null) {
             resourcesFragment.refreshData();
         }
 
@@ -119,11 +119,11 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
 
     public void showTaskRedDot() {
         //如果当前也是任务就不显示红点
-        if (mFragmentFactory.getCurrentItem()!=2){
+        if (mFragmentFactory.getCurrentItem() != 2) {
             mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
         }
         ProjectTaskFragment projectTaskFragment = mFragmentFactory.getProjectTaskFragment();
-        if (projectTaskFragment!=null){
+        if (projectTaskFragment != null) {
             projectTaskFragment.refreshData();
         }
     }
@@ -132,6 +132,9 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mImgProjectTaskRedDot.setVisibility(View.GONE);
     }
 
+    public void hideResourceRedDot() {
+        mImgResourceRedDot.setVisibility(View.GONE);
+    }
 
 
     private void intListener() {
