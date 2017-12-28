@@ -110,10 +110,19 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
 
     public void showResourceRedDot() {
         mImgResourceRedDot.setVisibility(View.VISIBLE);
+        ResourcesFragment resourcesFragment=mFragmentFactory.getResourcesFragment();
+        if (resourcesFragment!=null){
+            resourcesFragment.refreshData();
+        }
+
     }
 
     public void showTaskRedDot() {
         mImgProjectTaskRedDot.setVisibility(View.VISIBLE);
+        ProjectTaskFragment projectTaskFragment = mFragmentFactory.getProjectTaskFragment();
+        if (projectTaskFragment!=null){
+            projectTaskFragment.refreshData();
+        }
     }
 
     public void hideTaskRedDot() {

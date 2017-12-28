@@ -71,6 +71,8 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
         return mRootView;
     }
 
+
+
     /**
      * 每次点击tab时，都要刷新数据
      */
@@ -163,20 +165,20 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
             @Override
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
-                ToastUtil.showToast(getActivity(),error.getMessage());
+                ToastUtil.showToast(getActivity(), error.getMessage());
             }
         });
     }
 
     public void setIntent(ResourceDetailResponse.ResourceDetailBean data) {
         if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
-            WebViewActivity.loadThisAct(getActivity(), data.getUrl(),data.getResName());
-        } else if(TextUtils.equals(data.getType(), "0")) {
+            WebViewActivity.loadThisAct(getActivity(), data.getUrl(), data.getResName());
+        } else if (TextUtils.equals(data.getType(), "0")) {
             AttachmentInfosBean attachmentInfosBean = data.getAi();
             if (attachmentInfosBean != null && attachmentInfosBean.getResType() != null) {
-                if(attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
-                    || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
-                    || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
+                if (attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
                     Intent intent;
                     PdfBean pdfbean = new PdfBean();
                     pdfbean.setName(attachmentInfosBean.getResName());

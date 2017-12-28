@@ -43,6 +43,14 @@ public class HomeFragmentFactory {
         }
     }
 
+    public ResourcesFragment getResourcesFragment() {
+        return mResourcesFragment;
+    }
+
+    public ProjectTaskFragment getProjectTaskFragment() {
+        return mProjectTaskFragment;
+    }
+
     private void hideFragment(FragmentTransaction transaction) {
 
         if (mCurrItem == 0 && mCourseArrangeFragment != null) {
