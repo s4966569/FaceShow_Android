@@ -181,7 +181,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 getRedPointersRequest();
             } else if (msg.what == 2) {
                 getRedDotRequest();
-            }else {
+            } else {
 
             }
         }
@@ -216,6 +216,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     public void hideNoticeRedDot() {
         if (mRedCircle.getVisibility() == View.VISIBLE) {
             mRedCircle.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void hideClassCircleRedDot() {
+        if (mImgClassCircleRedCircle.getVisibility() == View.VISIBLE) {
+            mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
         }
     }
 

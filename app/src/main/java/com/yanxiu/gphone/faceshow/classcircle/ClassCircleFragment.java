@@ -67,7 +67,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private static final int REQUEST_CODE_ALBUM = 0x000;
     private static final int REQUEST_CODE_CAMERA = 0x001;
     private static final int REQUEST_CODE_CROP = 0x002;
-    public  boolean firstEnter = true;
+    public boolean firstEnter = true;
 
     private LoadMoreRecyclerView mClassCircleRecycleView;
     private ClassCircleAdapter mClassCircleAdapter;
@@ -205,7 +205,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleRequest = circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
-                firstEnter=false;
+                firstEnter = false;
                 mClassCircleRequest = null;
                 mRefreshView.post(new Runnable() {
                     @Override
@@ -216,6 +216,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 if (ret != null && ret.data != null && ret.data.moments != null) {
                     if (offset.equals("0")) {
                         mClassCircleAdapter.setData(ret.data.moments);
+                        ((MainActivity) getActivity()).hideClassCircleRedDot();
                     } else {
                         mClassCircleAdapter.addData(ret.data.moments);
                     }
@@ -235,7 +236,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                firstEnter=false;
+                firstEnter = false;
                 mClassCircleRequest = null;
                 mRefreshView.post(new Runnable() {
                     @Override

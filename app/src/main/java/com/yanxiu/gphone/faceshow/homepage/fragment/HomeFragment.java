@@ -129,6 +129,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mImgProjectTaskRedDot.setVisibility(View.GONE);
     }
 
+
+
     private void intListener() {
         mCourseArrange_tab.setOnClickListener(this);
         mResources_tab.setOnClickListener(this);
