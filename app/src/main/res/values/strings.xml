@@ -118,7 +118,7 @@
     <string name="send_class_circle_fail">发布失败，请重试！</string>
     <string name="send_class_circle_hint">这一刻的想法...</string>
     <string name="class_circle_comment_hint">评论</string>
-    <string name="class_circle_like">点赞</string>
+    <string name="class_circle_like">赞</string>
     <string name="class_circle_comment">评论</string>
     <string name="comment_to_user">%1$s对%2$s说: %3$s</string>
     <string name="comment_to_master">%1$s: %2$s</string>
