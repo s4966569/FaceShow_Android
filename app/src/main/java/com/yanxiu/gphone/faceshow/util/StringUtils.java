@@ -322,6 +322,35 @@ public class StringUtils {
         }
     }
 
+    public static String getDiscussTime(String date,long serverCurrentDate) {
+        final long seconds = 1;
+        final long minutes = seconds * 60;
+        final long hour = minutes * 60;
+        final long day = hour * 24;
+        try {
+            String result;
+            long serverTime = dateToStamp(date);
+            long nowTime = serverCurrentDate;
+            long time = (nowTime - serverTime) / 1000;//秒
+            if (time < 0) {
+                return "刚刚";
+            }
+            if (time <= minutes) {
+                result = "刚刚";
+            } else if (time < hour) {
+                result = time / minutes + "分钟前";
+            } else if (time < day) {
+                result = time / hour + "小时前";
+            } else {
+                result = date;
+            }
+            return result;
+
+        } catch (Exception e) {
+            return date;
+        }
+    }
+
     /*
      * 将时间转换为时间戳
      */

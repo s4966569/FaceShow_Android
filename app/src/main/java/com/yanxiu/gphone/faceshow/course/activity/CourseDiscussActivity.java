@@ -184,7 +184,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                     } else {
                         mRecyclerView.setLoadMoreEnable(true);
                     }
-                    mAdapter.setData(ret.getData().getDataWithHeader(mDiscussTitle));
+                    mAdapter.setData(ret.getData().getDataWithHeader(mDiscussTitle),ret.getCurrentTime());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -215,7 +215,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 mRecyclerView.finishLoadMore();
                 if (ret == null || ret.getCode() == 0) {
                     if (mNowTotalCount < mTotalCount) {
-                        mAdapter.addData(ret.getData().getElements());
+                        mAdapter.addData(ret.getData().getElements(),ret.getCurrentTime());
                         mNowTotalCount += ret.getData().getElements().size();
                     } else {
                         ToastUtil.showToast(CourseDiscussActivity.this, "没有更多数据了");

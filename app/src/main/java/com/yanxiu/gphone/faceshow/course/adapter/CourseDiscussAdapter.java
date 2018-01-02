@@ -39,7 +39,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private final int HEADER = 1;//头部
     private final int ITEM = 2;//列表item
-
+    private long mCurrentTime ;
     private ArrayList<DiscussBean> mList;
 
     private OnRecyclerViewItemClickListener mListener;
@@ -49,13 +49,15 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
         mListener = listener;
     }
 
-    public void setData(ArrayList<DiscussBean> list) {
+    public void setData(ArrayList<DiscussBean> list, long currentTime) {
         mList = list;
+        mCurrentTime =currentTime;
     }
 
-    public void addData(ArrayList<DiscussBean> list) {
+    public void addData(ArrayList<DiscussBean> list, long currentTime) {
         mList.addAll(list);
         notifyDataSetChanged();
+        mCurrentTime=currentTime;
     }
 
     @Override
@@ -100,7 +102,7 @@ public class CourseDiscussAdapter extends RecyclerView.Adapter<RecyclerView.View
                 final DiscussItemViewHolder holder2 = (DiscussItemViewHolder) holder;
                 holder2.discuss_name.setText(data.getUserName());
                 holder2.discuss_content.setText(data.getContent());
-                holder2.discuss_time.setText(StringUtils.getDiscussTime(data.getCreateTime()));
+                holder2.discuss_time.setText(StringUtils.getDiscussTime(data.getCreateTime(),mCurrentTime));
                 holder2.discuss_laud.setText(data.getLikeNum() == 0 ? "赞" : (data.getLikeNum() + ""));
                 if (data.getUserLiked() == 1) {
                     holder2.discuss_laud.setTextColor(mContext.getResources().getColor(R.color.color_1da1f2));
