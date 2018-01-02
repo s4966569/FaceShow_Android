@@ -1,7 +1,9 @@
 package com.yanxiu.gphone.faceshow.classcircle.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,11 +12,15 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -37,6 +43,7 @@ import com.yanxiu.gphone.faceshow.http.base.UploadFileByHttp;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.user.ModifyUserNameActivity;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
@@ -82,9 +89,9 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private ImageView mDeleteView;
     private String mResourceIds = "";
     private String mCameraPath;
-
+    private InputMethodManager imm;
     private ClassCircleDialog mClassCircleDialog;
-
+    private PopupWindow mCancelPopupWindow;
     private UUID mSendDataRequest;
 
     public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths) {
@@ -165,7 +172,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.title_layout_left_txt:
-                this.finish();
+                exitDialog();
                 break;
             case R.id.title_layout_right_txt:
                 String content = mContentView.getText().toString();
@@ -266,6 +273,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             mDeleteView.setVisibility(View.GONE);
             Glide.with(mContext).load(R.drawable.class_circle_add_picture).fitCenter().into(mPictureView);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        exitDialog();
     }
 
     @Override
@@ -412,4 +424,53 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_1da1f2));
         }
     }
+
+
+    private void exitDialog() {
+        if (imm == null) {
+            imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        }
+        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(mBackView.getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+        showCancelPopupWindow(this);
+    }
+
+    private void showCancelPopupWindow(Activity context) {
+        if (mCancelPopupWindow == null) {
+            View pop = LayoutInflater.from(context).inflate(R.layout.pop_ask_cancel_layout, null);
+            (pop.findViewById(R.id.tv_pop_sure)).setOnClickListener(popupWindowClickListener);
+            (pop.findViewById(R.id.tv_cancel)).setOnClickListener(popupWindowClickListener);
+            mCancelPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mCancelPopupWindow.setAnimationStyle(R.style.pop_anim);
+            mCancelPopupWindow.setFocusable(true);
+            mCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+        }
+        mCancelPopupWindow.showAtLocation(context.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    private void dismissPopupWindow() {
+        if (mCancelPopupWindow != null) {
+            mCancelPopupWindow.dismiss();
+        }
+    }
+
+    View.OnClickListener popupWindowClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.tv_pop_sure:
+                    dismissPopupWindow();
+                    SendClassCircleActivity.this.finish();
+                    break;
+                case R.id.tv_cancel:
+                    dismissPopupWindow();
+                    break;
+                default:
+                    break;
+
+            }
+
+        }
+    };
 }
