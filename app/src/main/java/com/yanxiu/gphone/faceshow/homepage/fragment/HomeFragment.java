@@ -109,7 +109,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
 
     private void initView() {
         mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
-        mTitle.setText(R.string.homepage);
+        mTitle.setText("研修宝");
         mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
         mCheckInEnterTV.setVisibility(View.VISIBLE);
         mCheckInEnterIMG = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
