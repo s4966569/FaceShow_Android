@@ -181,7 +181,8 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         if (!TextUtils.isEmpty(stepId)){
             toCheckInResultAct(activity,stepId,timestamp);
         }else {
-            toCheckInAct(activity);
+            MainActivity.invoke(activity);
+            activity.finish();
         }
     }
 

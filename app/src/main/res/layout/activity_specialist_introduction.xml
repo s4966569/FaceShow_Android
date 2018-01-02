@@ -30,11 +30,11 @@
             android:layout_marginTop="-59dp"
              />
 
-        <View
-            android:layout_width="65dp"
-            android:layout_height="1dp"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/viewfinder_mask" />
+        <!--<View-->
+            <!--android:layout_width="65dp"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:background="@color/viewfinder_mask" />-->
 
         <TextView
             android:id="@+id/specialist_name"
