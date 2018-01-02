@@ -259,7 +259,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             default:
                 break;
         }
-        if (mFragmentFactory.getCurrentItem() != curItem) {
+        if (lastIndex != curItem) {
             showCurrentFragment(curItem);
         }
         lastIndex = curItem;
