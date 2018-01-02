@@ -64,7 +64,7 @@ public class SpecialistIntroductionActivity extends FaceShowBaseActivity impleme
         introduction_content.setText(info);
 //        YXPictureManager.getInstance().showRoundPic(this, "http://scc.jsyxw.cn/answer/images/2017/0831/file_59a7d19f6cc53.jpg", specialist_img, 5, R.mipmap.ic_launcher);
 //        YXPictureManager.getInstance().showRoundPic(this, imageUrl, specialist_img, 5, R.mipmap.ic_launcher);
-        Glide.with(this).load(imageUrl).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(this,specialist_img,5));
+        Glide.with(this).load(imageUrl).asBitmap().placeholder(R.drawable.classcircle_headimg).into(new CornersImageTarget(this,specialist_img,5));
     }
 
     private void initListener() {
