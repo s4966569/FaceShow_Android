@@ -216,7 +216,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 if (ret != null && ret.data != null && ret.data.moments != null) {
                     if (offset.equals("0")) {
                         mClassCircleAdapter.setData(ret.data.moments);
-                        ((MainActivity) getActivity()).hideClassCircleRedDot();
                     } else {
                         mClassCircleAdapter.addData(ret.data.moments);
                     }
@@ -253,7 +252,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     /**
-     * 点赞
+     * 赞
      */
     private void startLikeRequest(final int position, final ClassCircleResponse.Data.Moments moments) {
         rootView.showLoadingView();

@@ -251,13 +251,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 break;
             case R.id.navi_3:
                 curItem = INDEX_CLASSCIRCLE_TAB;
-                if (mImgClassCircleRedCircle.getVisibility() == View.VISIBLE) {
-                    mImgClassCircleRedCircle.setVisibility(View.GONE);
-                }
                 mNavIconViews[0].setEnabled(true);
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(false);
                 mNavIconViews[3].setEnabled(true);
+                if (mImgClassCircleRedCircle.getVisibility() == View.VISIBLE) {
+                    mImgClassCircleRedCircle.setVisibility(View.GONE);
+                }
                 ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
                 if (classCircleFragment != null && !classCircleFragment.firstEnter && showCommentRedDot) {
                     showCommentRedDot = false;
@@ -377,12 +377,18 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     //有新的班级圈消息
                     if (ret.getData().getMomentNew() != null) {
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
-                            mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
-                            showCommentRedDot = true;
-                            ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
-                            if (classCircleFragment != null && !classCircleFragment.firstEnter && showCommentRedDot) {
-                                mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+                            if (mNaviFragmentFactory.getCurrentItem()==2){
+                                //当前在班级圈页面
+                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
+                                    mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+                                }
+                            }else {
+                                //当前不在班级圈页面
+                                mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
+                                showCommentRedDot = true;
                             }
+
                         } else {
                             showCommentRedDot = false;
                             mImgClassCircleRedCircle.setVisibility(View.GONE);
