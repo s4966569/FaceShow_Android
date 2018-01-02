@@ -204,6 +204,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         locationClient.registerLocationListener(new BDAbstractLocationListener() {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
+                locationClient.unRegisterLocationListener(this);
                 locationClient.stop();
                 double latitude =bdLocation.getLatitude();
                 double longitude =bdLocation.getLongitude();
