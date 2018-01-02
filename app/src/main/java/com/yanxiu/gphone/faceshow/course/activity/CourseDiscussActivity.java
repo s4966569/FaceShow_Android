@@ -40,7 +40,7 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 /**
  * 课程讨论
  */
-public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener, TextView.OnEditorActionListener {
+public class CourseDiscussActivity extends FaceShowBaseActivity implements View.OnClickListener, OnRecyclerViewItemClickListener {
 
     private PublicLoadLayout mRootView;
     private ImageView mBackView;
@@ -58,6 +58,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     private InteractStepsBean stepsBean;
 
     private DiscussResponseBean mData;
+    private TextView mTvSure;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +83,13 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
         mRecyclerView = (LoadMoreRecyclerView) findViewById(R.id.discuss_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new CourseDiscussAdapter(this, this);
+        mTvSure = (TextView) findViewById(R.id.tv_sure);
 
     }
 
     private void initListener() {
         mBackView.setOnClickListener(this);
-        mEd_comment.setOnEditorActionListener(this);
+        mTvSure.setOnClickListener(this);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override
@@ -131,6 +133,14 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 }
 
                 break;
+            case R.id.tv_sure:
+                String comment = mEd_comment.getText().toString();
+                if (!TextUtils.isEmpty(comment)) {
+                    submitData(comment);
+                } else {
+                    ToastUtil.showToast(getApplicationContext(), "提交内容不能为空");
+                }
+                break;
             default:
                 break;
         }
@@ -165,16 +175,18 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     }
 
     private void requestData(final boolean isRefreshIng) {
-        if (!isRefreshIng)
+        if (!isRefreshIng) {
             mRootView.showLoadingView();
+        }
         DiscussRequest discussRequest = new DiscussRequest();
         discussRequest.stepId = stepsBean.getStepId();
         discussRequest.startRequest(DiscussResponse.class, new HttpCallback<DiscussResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscussResponse ret) {
                 mRootView.finish();
-                if (isRefreshIng)
+                if (isRefreshIng) {
                     mSwipeRefreshLayout.setRefreshing(false);
+                }
                 if (ret != null && ret.getCode() == 0) {
                     mData = ret.getData();
                     mTotalCount = ret.getData().getTotalElements();
@@ -184,7 +196,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                     } else {
                         mRecyclerView.setLoadMoreEnable(true);
                     }
-                    mAdapter.setData(ret.getData().getDataWithHeader(mDiscussTitle),ret.getCurrentTime());
+                    mAdapter.setData(ret.getData().getDataWithHeader(mDiscussTitle), ret.getCurrentTime());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mRootView.showOtherErrorView();
@@ -215,7 +227,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 mRecyclerView.finishLoadMore();
                 if (ret == null || ret.getCode() == 0) {
                     if (mNowTotalCount < mTotalCount) {
-                        mAdapter.addData(ret.getData().getElements(),ret.getCurrentTime());
+                        mAdapter.addData(ret.getData().getElements(), ret.getCurrentTime());
                         mNowTotalCount += ret.getData().getElements().size();
                     } else {
                         ToastUtil.showToast(CourseDiscussActivity.this, "没有更多数据了");
@@ -276,7 +288,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 //        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
         mEd_comment.setText("");
-        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
     }
@@ -297,16 +309,5 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
     }
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_SEND) {
-            String comment = mEd_comment.getText().toString();
-            if (!TextUtils.isEmpty(comment)) {
-                submitData(comment);
-            }
-            return true;
-        }
 
-        return false;
-    }
 }
