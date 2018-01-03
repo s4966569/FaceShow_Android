@@ -133,13 +133,13 @@ public class WelcomeActivity extends FaceShowBaseActivity {
      * @param activity this
      */
     private void whereToGoWithGetUserInfoEnd(WelcomeActivity activity){
-        if (isAppOpenByScheme()){
-            //目前通过只有签到是通过scheme打开app的
-            toCheckInActOrCheckInResultAct(activity);
-        }else {
+//        if (isAppOpenByScheme()){
+//            //目前通过只有签到是通过scheme打开app的
+//            toCheckInActOrCheckInResultAct(activity);
+//        }else {
             MainActivity.invoke(activity);
             activity.finish();
-        }
+//        }
     }
 
     /**
@@ -321,7 +321,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                 }
                 if (isAnimationEnd) {
-                    activity.whereToGoWithGetUserInfoEnd(activity);
+                    activity.wqwhereToGoWithGetUserInfoEnd(activity);
                 }
                 isGetUserInfoEnd = true;
             }
