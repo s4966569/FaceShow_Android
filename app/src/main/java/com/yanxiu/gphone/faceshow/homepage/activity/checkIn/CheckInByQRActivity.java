@@ -102,7 +102,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     CheckInByQRActivity.this.finish();
                 } else {
                     //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
-                    if (result.startsWith("http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn")) {
+                    if (result.startsWith(UrlRepository.getInstance().getServer()+"?method=interact.userSignIn")) {
                         String[] values = result.split("&");
                         if (values.length > 2) {
                             //包含timestamp的为动态二维码
