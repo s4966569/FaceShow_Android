@@ -321,7 +321,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                     UserInfo.getInstance().setInfo(SpManager.getUserInfo());
                 }
                 if (isAnimationEnd) {
-                    activity.wqwhereToGoWithGetUserInfoEnd(activity);
+                    activity.whereToGoWithGetUserInfoEnd(activity);
                 }
                 isGetUserInfoEnd = true;
             }
