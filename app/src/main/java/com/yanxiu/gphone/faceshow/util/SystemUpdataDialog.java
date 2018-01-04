@@ -78,10 +78,7 @@ public class SystemUpdataDialog {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     if (mCallBack != null) {
-<<<<<<< HEAD
                         ToastUtil.showToast(mContext, "正在下载,请等待");
-=======
->>>>>>> 73c14ba2f6a75d970b6100378cb3467683409d3a
 //                        mPbLoadApkView.setVisibility(View.VISIBLE);
                         mCallBack.update();
                     }
