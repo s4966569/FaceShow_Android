@@ -6,9 +6,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -245,13 +247,29 @@ import java.util.List;
      }
 
      private static void installApk(Context context, String filePath) {
+//         Intent intent = new Intent();
+//         intent.setAction(Intent.ACTION_VIEW);
+//         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//         SpManager.setFristStartUp(true);
+//         String type = "application/vnd.android.package-archive";
+//         File file = new File(filePath);
+//         intent.setDataAndType(Uri.fromFile(file), type);
+//         context.startActivity(intent);
+
          Intent intent = new Intent();
          intent.setAction(Intent.ACTION_VIEW);
          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-         SpManager.setFristStartUp(true);
+//        SpManager.setFristStartUp(true);
          String type = "application/vnd.android.package-archive";
          File file = new File(filePath);
-         intent.setDataAndType(Uri.fromFile(file), type);
+         Uri uri;
+         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+             uri=Uri.fromFile(file);
+         }else {
+             uri = FileProvider.getUriForFile(context, "com.yanxiu.gphone.faceshow.fileprovider", file);
+             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+         }
+         intent.setDataAndType(uri, type);
          context.startActivity(intent);
      }
 

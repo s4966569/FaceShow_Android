@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 
 import com.yanxiu.gphone.faceshow.R;
 
@@ -40,11 +41,13 @@ public class SystemUpdataDialog{
         dialog=new AlertDialog.Builder(context);
         dialog.setMessage(content);
         dialog.setTitle(R.string.version_updata);
+        dialog.setCancelable(false);
         setListener();
         alertDialog=dialog.create();
         alertDialog.setOwnerActivity((Activity) mContext);
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setCancelable(false);
+
     }
 
     private void setListener(){
@@ -58,15 +61,7 @@ public class SystemUpdataDialog{
                     dialog.dismiss();
                 }
             });
-            dialog.setNegativeButton(mContext.getResources().getText(R.string.updata_now), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (mCallBack!=null){
-//                        mPbLoadApkView.setVisibility(View.VISIBLE);
-                        mCallBack.update();
-                    }
-                }
-            });
+            dialog.setNegativeButton(mContext.getResources().getText(R.string.updata_now), null);
         }else if (mUpdateType.equals(UPDATETYPE_UNMANDATORY)){
             dialog.setPositiveButton(mContext.getResources().getText(R.string.updata_after), new DialogInterface.OnClickListener() {
                 @Override
@@ -77,15 +72,7 @@ public class SystemUpdataDialog{
                     dialog.dismiss();
                 }
             });
-            dialog.setNegativeButton(mContext.getResources().getText(R.string.updata_now), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (mCallBack!=null){
-//                        mPbLoadApkView.setVisibility(View.VISIBLE);
-                        mCallBack.update();
-                    }
-                }
-            });
+            dialog.setNegativeButton(mContext.getResources().getText(R.string.updata_now), null);
         }
     }
 
@@ -102,6 +89,16 @@ public class SystemUpdataDialog{
 
     public void show(){
         alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ToastUtil.showToast(view.getContext(),"正在下载,请等待");
+                if (mCallBack!=null){
+//                        mPbLoadApkView.setVisibility(View.VISIBLE);
+                    mCallBack.update();
+                }
+            }
+        });
     }
 
     public void setProgress(int progress){
@@ -109,5 +106,8 @@ public class SystemUpdataDialog{
 //            mPbLoadApkView.setProgress(progress);
 //        }
     }
+
+
+
 
 }

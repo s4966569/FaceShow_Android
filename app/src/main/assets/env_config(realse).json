@@ -1,7 +1,0 @@
-{
-	"server":"http://orz.yanxiu.com/pxt/platform/data.api",
-	"loginServer":"http://orz.yanxiu.com/uc",
-	"uploadServer":"http://appadmin.yanxiu.com",
-	"initializeUrl":"http://mobile.yanxiu.com/v14/api",
-	"mode":"release"
-}
