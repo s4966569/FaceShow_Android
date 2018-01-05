@@ -46,21 +46,6 @@
             ]
         },
         {
-            "outputFile": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/res/merged/androidTest/debug/values-da_values-da.arsc.flat",
-            "map": [
-                {
-                    "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/bundles/debug/res/values-da/values-da.xml",
-                    "from": {
-                        "startLines": "2,3,4,5",
-                        "startColumns": "4,4,4,4",
-                        "startOffsets": "55,114,161,307",
-                        "endColumns": "58,46,145,109",
-                        "endOffsets": "109,156,302,412"
-                    }
-                }
-            ]
-        },
-        {
             "outputFile": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/res/merged/androidTest/debug/values-ru_values-ru.arsc.flat",
             "map": [
                 {
@@ -71,6 +56,21 @@
                         "startOffsets": "55,117,164,306",
                         "endColumns": "61,46,141,125",
                         "endOffsets": "112,159,301,427"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/res/merged/androidTest/debug/values-da_values-da.arsc.flat",
+            "map": [
+                {
+                    "source": "/Users/zhen/AndroidStudioProjects/srt/FaceShow_Android/zxing-android-embedded/build/intermediates/bundles/debug/res/values-da/values-da.xml",
+                    "from": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,114,161,307",
+                        "endColumns": "58,46,145,109",
+                        "endOffsets": "109,156,302,412"
                     }
                 }
             ]
