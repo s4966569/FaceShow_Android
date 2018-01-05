@@ -412,9 +412,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                             HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
                             if (homeFragment != null) {
                                 homeFragment.showTaskRedDot();
-                            }else {
-                                homeFragment.hideTaskRedDot();
                             }
+                        }
+                    }else {
+                        HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
+                        if (homeFragment != null) {
+                            homeFragment.hideTaskRedDot();
                         }
                     }
                 }
