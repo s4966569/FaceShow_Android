@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,12 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
@@ -38,7 +36,6 @@ import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.GetResIdResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.classcircle.response.UploadResResponse;
-import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
@@ -91,6 +88,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private ClassCircleDialog mClassCircleDialog;
     private PopupWindow mCancelPopupWindow;
     private UUID mSendDataRequest;
+    /**
+     * 用来展示已经选中的图片
+     */
+    private RecyclerView mImageSelectedRecyclerView;
 
     public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths) {
         Intent intent = new Intent(context, SendClassCircleActivity.class);
@@ -160,8 +161,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mTitleView = (TextView) findViewById(R.id.title_layout_title);
         mFunctionView = (TextView) findViewById(R.id.title_layout_right_txt);
         mFunctionView.setVisibility(View.VISIBLE);
-
         mContentView = (EditText) findViewById(R.id.et_content);
+        mImageSelectedRecyclerView = (RecyclerView) findViewById(R.id.selected_images_recycler_view);
     }
 
     private void listener() {
