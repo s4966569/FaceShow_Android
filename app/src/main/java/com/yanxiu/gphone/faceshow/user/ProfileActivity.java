@@ -382,6 +382,21 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             public String getImgPath(int position) {
                 return path;
             }
+        }).setProgressListener(new UpLoadRequest.onProgressListener() {
+            @Override
+            public void onRequestStart() {
+
+            }
+
+            @Override
+            public void onProgress(int index, int position) {
+
+            }
+
+            @Override
+            public void onRequestEnd() {
+
+            }
         }).setListener(new UpLoadRequest.onUpLoadlistener() {
             @Override
             public void onUpLoadStart(int position, Object tag) {
@@ -416,6 +431,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 ToastUtil.showToast(mContext, errorMsg);
             }
         });
+
     }
 
     private void updataHeadimg(final String url) {

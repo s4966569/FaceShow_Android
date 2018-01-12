@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
@@ -62,7 +63,7 @@ import de.greenrobot.event.EventBus;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, View.OnLongClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, View.OnLongClickListener {
 
     private static final int REQUEST_CODE_ALBUM = 0x000;
     private static final int REQUEST_CODE_CAMERA = 0x001;
@@ -74,7 +75,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private RelativeLayout mCommentLayout;
     private EditText mCommentView;
     private SizeChangeCallbackView mAdjustPanView;
-    private ImageView mFunctionView;
+    private TextView mFunctionView;
     private TextView mTitleView;
     private View mTopView;
     private int mMomentPosition = -1;
@@ -83,7 +84,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private int mHeight;
     private boolean isCommentMaster;
     private String mCameraPath;
-    private String mCropPath;
     private ClassCircleDialog mClassCircleDialog;
     private SwipeRefreshLayout mRefreshView;
     private PublicLoadLayout rootView;
@@ -150,7 +150,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         ImageView mBackView = (ImageView) rootView.findViewById(R.id.title_layout_left_img);
         mBackView.setVisibility(View.INVISIBLE);
         mTitleView = (TextView) rootView.findViewById(R.id.title_layout_title);
-        mFunctionView = (ImageView) rootView.findViewById(R.id.title_layout_right_img);
+        mFunctionView = (TextView) rootView.findViewById(R.id.title_layout_right_txt);
+        mFunctionView.setText(R.string.publish);
+        mFunctionView.setTextColor(ContextCompat.getColor(ClassCircleFragment.this.getContext(), R.color.color_1da1f2));
         mFunctionView.setVisibility(View.VISIBLE);
 
         mCommentLayout = (RelativeLayout) rootView.findViewById(R.id.ll_edit);
@@ -374,13 +376,15 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.title_layout_right_img:
-                showDialog();
+            case R.id.title_layout_right_txt:
+                SendClassCircleActivity.LuanchActivity(getContext(), SendClassCircleActivity.TYPE_IMAGE, null);
                 break;
             case R.id.retry_button:
                 mRefreshView.setRefreshing(true);
                 rootView.hiddenNetErrorView();
                 onRefresh();
+                break;
+            default:
                 break;
         }
     }
@@ -578,8 +582,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     startCommentToUserRequest(mMomentPosition, comment, moments, moments.comments.get(mCommentPosition));
                 }
             }
-//            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-//            imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
             return true;
         }
         return false;
@@ -593,36 +595,34 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_CODE_ALBUM:
-                if (data != null) {
-                    Uri uri = data.getData();
-//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-//                    startCropImg(uri,mCropPath);
-                    String path = FileUtil.getRealFilePath(getContext(), uri);
-                    startIntent(path);
-                }
-                break;
-            case REQUEST_CODE_CAMERA:
-                if (!TextUtils.isEmpty(mCameraPath)) {
-//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-//                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
-                    try {
-                        new FileInputStream(new File(mCameraPath));
-                        startIntent(mCameraPath);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            case REQUEST_CODE_CROP:
-                if (!TextUtils.isEmpty(mCropPath)) {
-                    if (new File(mCropPath).exists()) {
-                        startIntent(mCropPath);
-                    }
-                }
-                break;
-        }
+//        switch (requestCode) {
+//            case REQUEST_CODE_ALBUM:
+//                if (data != null) {
+//                    Uri uri = data.getData();
+//                    String path = FileUtil.getRealFilePath(getContext(), uri);
+//                    startIntent(path);
+//                }
+//                break;
+//            case REQUEST_CODE_CAMERA:
+//                if (!TextUtils.isEmpty(mCameraPath)) {
+//                    try {
+//                        new FileInputStream(new File(mCameraPath));
+//                        startIntent(mCameraPath);
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                break;
+//            case REQUEST_CODE_CROP:
+//                if (!TextUtils.isEmpty(mCropPath)) {
+//                    if (new File(mCropPath).exists()) {
+//                        startIntent(mCropPath);
+//                    }
+//                }
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     private void startCropImg(Uri uri, String savePath) {

@@ -152,4 +152,5 @@
     <string name="input_feedback">请输入您的宝贵意见,最多输入200字</string>
     <string name="submit">提交</string>
     <string name="feedback_content_cannot_be_empty">反馈内容不能为空</string>
+    <string name="publish">发布</string>
 </resources>

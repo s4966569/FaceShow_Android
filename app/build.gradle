@@ -128,4 +128,15 @@ dependencies {
     compile 'cn.magicwindow:MagicWindowSDK:4.1'
     implementation files('libs/BaiduLBS_Android.jar')
     implementation files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.12.jar')
+
+    /*imagepicker*/
+    compile('com.lzy.widget:imagepicker:0.6.1') {
+        //
+        exclude group: 'com.android.support'
+    }
+    /*九张图显示View*/
+    compile ('com.lzy.widget:ninegridview:0.2.0'){
+        exclude group: 'com.android.support'
+
+    }
 }

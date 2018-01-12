@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,10 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.lzy.imagepicker.ImagePicker;
+import com.lzy.imagepicker.bean.ImageItem;
+import com.lzy.imagepicker.ui.ImageGridActivity;
+import com.lzy.imagepicker.view.CropImageView;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -43,14 +46,12 @@ import com.yanxiu.gphone.faceshow.http.base.UploadFileByHttp;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
-import com.yanxiu.gphone.faceshow.user.ModifyUserNameActivity;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,14 +62,15 @@ import java.util.UUID;
 import de.greenrobot.event.EventBus;
 
 /**
- * Created by Canghaixiao.
- * Time : 2017/9/19 12:08.
- * Function :
+ * @author frc
+ *         Time : 2018/1/12
+ *         Function :
  */
 public class SendClassCircleActivity extends FaceShowBaseActivity implements View.OnClickListener, TextWatcher {
 
-    private static final int REQUEST_CODE_ALBUM = 0x000;
-    private static final int REQUEST_CODE_CAMERA = 0x001;
+
+    private static final int IMAGE_PICKER = 0x03;
+    private static final int REQUEST_CODE_SELECT = 0x04;
 
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE = "image";
@@ -81,14 +83,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private String mType;
     private ArrayList<String> mImagePaths;
     private EditText mContentView;
-    private LinearLayout mShowPictureView;
-    private ImageView mPictureView;
     private TextView mTitleView;
     private TextView mFunctionView;
     private TextView mBackView;
-    private ImageView mDeleteView;
     private String mResourceIds = "";
-    private String mCameraPath;
     private InputMethodManager imm;
     private ClassCircleDialog mClassCircleDialog;
     private PopupWindow mCancelPopupWindow;
@@ -118,6 +116,31 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         initView();
         listener();
         initData();
+        setImagePicker();
+    }
+
+    private void setImagePicker() {
+        GlideImageLoader glideImageLoader = new GlideImageLoader();
+        ImagePicker imagePicker = ImagePicker.getInstance();
+        imagePicker.setImageLoader(glideImageLoader);
+        //显示拍照按钮
+        imagePicker.setShowCamera(true);
+        //允许裁剪（单选才有效）
+        imagePicker.setCrop(true);
+        //是否按矩形区域保存
+        imagePicker.setSaveRectangle(true);
+        //选中数量限制
+        imagePicker.setSelectLimit(9);
+        //裁剪框的形状
+        imagePicker.setStyle(CropImageView.Style.RECTANGLE);
+        //裁剪框的宽度。单位像素（圆形自动取宽高最小值）
+        imagePicker.setFocusWidth(800);
+        //裁剪框的高度。单位像素（圆形自动取宽高最小值）
+        imagePicker.setFocusHeight(800);
+        //保存文件的宽度。单位像素
+        imagePicker.setOutPutX(1000);
+        //保存文件的高度。单位像素
+        imagePicker.setOutPutY(1000);
     }
 
     @Override
@@ -139,17 +162,12 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mFunctionView.setVisibility(View.VISIBLE);
 
         mContentView = (EditText) findViewById(R.id.et_content);
-        mPictureView = (ImageView) findViewById(R.id.iv_picture);
-        mShowPictureView = (LinearLayout) findViewById(R.id.ll_picture);
-        mDeleteView = (ImageView) findViewById(R.id.iv_delete);
     }
 
     private void listener() {
         mBackView.setOnClickListener(this);
         mFunctionView.setOnClickListener(this);
         mContentView.addTextChangedListener(this);
-        mDeleteView.setOnClickListener(this);
-        mPictureView.setOnClickListener(this);
     }
 
     private void initData() {
@@ -160,10 +178,15 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
 
         if (mType.equals(TYPE_TEXT)) {
-            mShowPictureView.setVisibility(View.GONE);
+//            mShowPictureView.setVisibility(View.GONE);
         } else {
-            mShowPictureView.setVisibility(View.VISIBLE);
-            Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
+//            mShowPictureView.setVisibility(View.VISIBLE);
+//            if (mImagePaths != null) {
+//                Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
+//            } else {
+//                mDeleteView.setVisibility(View.GONE);
+//                Glide.with(mContext).load(R.drawable.class_circle_add_picture).into(mPictureView);
+//            }
         }
         mContentView.setText("");
     }
@@ -189,26 +212,13 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     }
                 }
                 break;
-            case R.id.iv_delete:
-                if (mImagePaths != null && !mImagePaths.isEmpty()) {
-                    mImagePaths.clear();
-                    mType = TYPE_TEXT;
-                    mDeleteView.setVisibility(View.GONE);
-                    Glide.with(mContext).load(R.drawable.class_circle_add_picture).into(mPictureView);
-                }
-                break;
-            case R.id.iv_picture:
-                if (mImagePaths != null && !mImagePaths.isEmpty()) {
-                    PhotoActivity.LaunchActivity(mContext, mImagePaths, 0, mContext.hashCode(), PhotoActivity.DELETE_CAN);
-                } else {
-                    showDialog();
-                }
-                break;
             default:
                 break;
         }
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mTitleView.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(mTitleView.getWindowToken(), 0);
+        }
     }
 
     private void showDialog() {
@@ -220,10 +230,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     FaceShowBaseActivity.requestWriteAndReadPermission(new OnPermissionCallback() {
                         @Override
                         public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                            Intent intent = new Intent();
-                            intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(intent, REQUEST_CODE_ALBUM);
+                            Intent intent = new Intent(SendClassCircleActivity.this, ImageGridActivity.class);
+                            startActivityForResult(intent, IMAGE_PICKER);
                         }
 
                         @Override
@@ -238,21 +246,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
                         @Override
                         public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                            mCameraPath = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
-                            Intent intent = new Intent();
-                            intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                            intent.addCategory(Intent.CATEGORY_DEFAULT);
-                            File file = new File(mCameraPath);
-                            if (file.exists()) {
-                                try {
-                                    file.createNewFile();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Uri uri = Uri.fromFile(file);
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                            startActivityForResult(intent, REQUEST_CODE_CAMERA);
+
+                            Intent intent = new Intent(SendClassCircleActivity.this, ImageGridActivity.class);
+                            // 是否是直接打开相机
+                            intent.putExtra(ImageGridActivity.EXTRAS_TAKE_PICKERS, true);
+                            startActivityForResult(intent, REQUEST_CODE_SELECT);
                         }
 
                         @Override
@@ -266,12 +264,16 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mClassCircleDialog.show();
     }
 
+    /**
+     * 删除图片回调
+     *
+     * @param bean
+     */
     public void onEventMainThread(PhotoDeleteBean bean) {
+
         if (bean != null && bean.formId == mContext.hashCode()) {
             mImagePaths.remove(bean.deleteId);
             mType = TYPE_TEXT;
-            mDeleteView.setVisibility(View.GONE);
-            Glide.with(mContext).load(R.drawable.class_circle_add_picture).fitCenter().into(mPictureView);
         }
     }
 
@@ -280,36 +282,18 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         exitDialog();
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE_ALBUM:
-                if (data != null) {
-                    Uri uri = data.getData();
-//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-//                    startCropImg(uri,mCropPath);
-                    String path = FileUtil.getRealFilePath(mContext, uri);
-                    mImagePaths.add(path);
-                    mType = TYPE_IMAGE;
-                    Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
-                    mDeleteView.setVisibility(View.VISIBLE);
-                }
-                break;
-            case REQUEST_CODE_CAMERA:
-                if (!TextUtils.isEmpty(mCameraPath)) {
-//                    mCropPath=FileUtil.getImageCatchPath(System.currentTimeMillis()+".jpg");
-//                    startCropImg(Uri.fromFile(new File(mCameraPath)),mCropPath);
-                    try {
-                        new FileInputStream(new File(mCameraPath));
-                        mImagePaths.add(mCameraPath);
-                        mType = TYPE_IMAGE;
-                        Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
-                        mDeleteView.setVisibility(View.VISIBLE);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
+            case IMAGE_PICKER:
+                ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+                Log.e("imagPicker", "image count:  " + images.size());
+
+            case REQUEST_CODE_SELECT:
+                ArrayList<ImageItem> sel = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+                Log.e("imagPicker", "image count:  " + sel.size());
                 break;
             default:
                 break;

@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_EBEFF2"
     android:orientation="vertical">
 
     <include
@@ -33,47 +32,16 @@
             android:textCursorDrawable="@drawable/shape_fs_cursor"
             android:textSize="16dp" />
 
-        <LinearLayout
-            android:id="@+id/ll_picture"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/selected_images_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2">
-
-                <com.yanxiu.gphone.faceshow.customview.SquareImageView
-                    android:id="@+id/iv_picture"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp" />
-
-                <!--  start 固定图片位置，防止图片尺寸变小-->
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/class_circle_delete_picture"
-                    android:visibility="invisible" />
-                <!--end-->
-
-                <ImageView
-                    android:id="@+id/iv_delete"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/class_circle_delete_picture" />
-            </RelativeLayout>
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-        </LinearLayout>
+            android:layout_marginTop="15dp" />
     </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@color/color_EBEFF2" />
 
 </LinearLayout>
