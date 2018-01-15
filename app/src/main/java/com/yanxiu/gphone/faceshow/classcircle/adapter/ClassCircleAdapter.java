@@ -55,6 +55,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public interface onLikeClickListener {
         void likeClick(int position, ClassCircleResponse.Data.Moments response);
+
+        void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response);
     }
 
     public interface onContentLinesChangedlistener {
@@ -190,11 +192,15 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mLikeCommentLayout.setVisibility(View.GONE);
         }
         if (checkIsThumb(moments.likes)) {
-            classCircleViewHolder.mThumbView.setVisibility(View.GONE);
-            classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal_80);
+//            classCircleViewHolder.mThumbView.setVisibility(View.GONE);
+//            classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal_80);
+            classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
+            classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
+            classCircleViewHolder.mThumbViewContent.setText("取消赞");
         } else {
             classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
             classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal);
+            classCircleViewHolder.mThumbViewContent.setText("赞");
         }
     }
 
@@ -351,7 +357,11 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onClick(View v) {
                     if (mLikeClickListener != null) {
-                        mLikeClickListener.likeClick(classCircleViewHolder.getAdapterPosition(), moments);
+                        if (checkIsThumb(moments.likes)){
+                            mLikeClickListener.cancelLikeClick(classCircleViewHolder.getAdapterPosition(),moments);
+                        }else {
+                            mLikeClickListener.likeClick(classCircleViewHolder.getAdapterPosition(), moments);
+                        }
                     }
                     classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
                     classCircleViewHolder.mAnimLayout.setEnabled(false);
@@ -473,6 +483,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         LinearLayout mAnimLayout;
         @BindView(R.id.tv_thumb)
         RelativeLayout mThumbView;
+        @BindView(R.id.tv_thumb_content)
+        TextView mThumbViewContent;
         @BindView(R.id.tv_comment)
         RelativeLayout mCommentView;
         @BindView(R.id.like_comment_line)

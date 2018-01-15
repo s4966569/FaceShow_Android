@@ -30,10 +30,12 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.activity.SendClassCircleActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCancelLikeRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToMasterRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToUserRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleLikeRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleRequest;
+import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleCancelLikeResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.CommentResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -43,6 +45,7 @@ import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.SizeChangeCallbackView;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.ClassCircleTimeUtils;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
@@ -63,7 +66,7 @@ import de.greenrobot.event.EventBus;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, View.OnLongClickListener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener {
 
     private static final int REQUEST_CODE_ALBUM = 0x000;
     private static final int REQUEST_CODE_CAMERA = 0x001;
@@ -93,6 +96,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     private UUID mClassCircleRequest;
     private UUID mClassCircleLikeRequest;
+    private UUID mClassCircleCancelLikeRequest;
     private UUID mCommentToMasterRequest;
     private UUID mCommentToUserRequest;
 
@@ -135,6 +139,10 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             RequestBase.cancelRequestWithUUID(mClassCircleLikeRequest);
             mClassCircleLikeRequest = null;
         }
+        if (mClassCircleCancelLikeRequest != null) {
+            RequestBase.cancelRequestWithUUID(mClassCircleCancelLikeRequest);
+            mClassCircleCancelLikeRequest = null;
+        }
         if (mCommentToMasterRequest != null) {
             RequestBase.cancelRequestWithUUID(mCommentToMasterRequest);
             mCommentToMasterRequest = null;
@@ -173,7 +181,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleAdapter.setThumbClickListener(ClassCircleFragment.this);
         mClassCircleAdapter.setContentLinesChangedlistener(ClassCircleFragment.this);
         mFunctionView.setOnClickListener(ClassCircleFragment.this);
-        mFunctionView.setOnLongClickListener(ClassCircleFragment.this);
         mCommentView.setOnEditorActionListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
         rootView.setRetryButtonOnclickListener(this);
@@ -274,6 +281,34 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     likes.publisher = ret.data.publisher;
                     moments.likes.add(likes);
                     mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_LIKE_DATA);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                mClassCircleLikeRequest = null;
+                ToastUtil.showToast(getContext(), error.getMessage());
+            }
+        });
+    }
+
+    private void cancelLikeRequest(final int postion, final ClassCircleResponse.Data.Moments moments) {
+        rootView.showLoadingView();
+        final ClassCircleCancelLikeRequest classCircleCancelLikeRequest = new ClassCircleCancelLikeRequest();
+        classCircleCancelLikeRequest.momentId = moments.id;
+        mClassCircleCancelLikeRequest = classCircleCancelLikeRequest.startRequest(ClassCircleCancelLikeResponse.class, new HttpCallback<ClassCircleCancelLikeResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, ClassCircleCancelLikeResponse ret) {
+                rootView.hiddenLoadingView();
+                mClassCircleLikeRequest = null;
+                if (ret != null && ret.getCode() == 0) {
+                    for (int i = 0; i < moments.likes.size(); i++) {
+                        if (moments.likes.get(i).publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
+                            moments.likes.remove(i);
+                        }
+                    }
+                    mClassCircleAdapter.notifyItemChanged(postion, ClassCircleAdapter.REFRESH_LIKE_DATA);
                 }
             }
 
@@ -563,11 +598,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mCommentPosition = -1;
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        SendClassCircleActivity.LuanchActivity(getContext(), SendClassCircleActivity.TYPE_TEXT, null);
-        return true;
-    }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -590,6 +620,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void likeClick(int position, ClassCircleResponse.Data.Moments moments) {
         startLikeRequest(position, moments);
+    }
+
+    @Override
+    public void cancelLikeClick(int position, ClassCircleResponse.Data.Moments moments) {
+        cancelLikeRequest(position, moments);
     }
 
     @Override
