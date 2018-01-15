@@ -37,6 +37,7 @@ import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.GetResIdResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.classcircle.response.UploadResResponse;
+import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
@@ -125,9 +126,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         setImagePicker();
     }
 
+    ImagePicker imagePicker;
+
     private void setImagePicker() {
         GlideImageLoader glideImageLoader = new GlideImageLoader();
-        ImagePicker imagePicker = ImagePicker.getInstance();
+        imagePicker = ImagePicker.getInstance();
         imagePicker.setImageLoader(glideImageLoader);
         //显示拍照按钮
         imagePicker.setShowCamera(true);
@@ -185,18 +188,20 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mSelectedImageListAdapter.addPicClickListener(new SelectedImageListAdapter.PicClickListener() {
             @Override
             public void addPic() {
+                imagePicker.setSelectLimit(9 - (mImagePaths != null ? mImagePaths.size() : 0));
                 showDialog();
             }
 
             @Override
             public void showBigPic(int position) {
-
+                PhotoActivity.LaunchActivity(mContext, mImagePaths, position, mContext.hashCode(), PhotoActivity.DELETE_CAN);
             }
         });
         mSelectedImageListAdapter.setDataRemoveListener(new SelectedImageListAdapter.DataRemoveListener() {
             @Override
             public void remove(int pos) {
                 mSelectedImageListAdapter.notifyItemRemoved(pos);
+                mImagePaths.remove(pos);
                 if (pos != mSelectedImageList.size()) {
                     mSelectedImageListAdapter.notifyItemRangeChanged(pos, mSelectedImageList.size() - pos);
                 }
@@ -306,7 +311,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
         if (bean != null && bean.formId == mContext.hashCode()) {
             mImagePaths.remove(bean.deleteId);
-            mType = TYPE_TEXT;
+            mSelectedImageList.remove(bean.deleteId);
+            mSelectedImageListAdapter.update(mSelectedImageList);
         }
     }
 
@@ -321,25 +327,42 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMAGE_PICKER:
-                ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
-                    mSelectedImageList.remove(mSelectedImageList.size() - 1);
-                }
-                mSelectedImageList.addAll(images);
-                mSelectedImageList.add(mAddPicItem);
-                mSelectedImageListAdapter.update(mSelectedImageList);
+                createSelectedImagesList(data);
                 break;
             case REQUEST_CODE_SELECT:
-                ArrayList<ImageItem> sel = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
-                    mSelectedImageList.remove(mSelectedImageList.size() - 1);
-                }
-                mSelectedImageList.addAll(sel);
-                mSelectedImageList.add(mAddPicItem);
-                mSelectedImageListAdapter.update(mSelectedImageList);
-                break;
+                createSelectedImagesList(data);
             default:
                 break;
+        }
+
+    }
+
+    private void createSelectedImagesList(Intent data) {
+        ArrayList<ImageItem> images = null;
+        try {
+            images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+        } catch (Exception e) {
+
+        }
+        if (images == null) {
+            return;
+        }
+
+        if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
+            mSelectedImageList.remove(mSelectedImageList.size() - 1);
+        }
+        mSelectedImageList.addAll(images);
+        mSelectedImageList.add(mAddPicItem);
+        mSelectedImageListAdapter.update(mSelectedImageList);
+        if (mImagePaths != null) {
+            mImagePaths.clear();
+        } else {
+            mImagePaths = new ArrayList<>();
+        }
+        for (int i = 0; i < mSelectedImageList.size(); i++) {
+            if (i < mSelectedImageList.size() - 1) {
+                mImagePaths.add(mSelectedImageList.get(i).path);
+            }
         }
     }
 
