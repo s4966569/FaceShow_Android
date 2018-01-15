@@ -7,11 +7,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +29,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.classcircle.adapter.SelectedImageListAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
 import com.yanxiu.gphone.faceshow.classcircle.request.GetResIdRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.SendClassCircleRequest;
@@ -88,10 +89,14 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private ClassCircleDialog mClassCircleDialog;
     private PopupWindow mCancelPopupWindow;
     private UUID mSendDataRequest;
+    private ImageItem mAddPicItem;
+
     /**
      * 用来展示已经选中的图片
      */
     private RecyclerView mImageSelectedRecyclerView;
+    private SelectedImageListAdapter mSelectedImageListAdapter;
+    private List<ImageItem> mSelectedImageList;
 
     public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths) {
         Intent intent = new Intent(context, SendClassCircleActivity.class);
@@ -162,7 +167,41 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mFunctionView = (TextView) findViewById(R.id.title_layout_right_txt);
         mFunctionView.setVisibility(View.VISIBLE);
         mContentView = (EditText) findViewById(R.id.et_content);
+        initRecyclerView();
+
+    }
+
+    private void initRecyclerView() {
         mImageSelectedRecyclerView = (RecyclerView) findViewById(R.id.selected_images_recycler_view);
+        if (mSelectedImageList == null) {
+            mSelectedImageList = new ArrayList<>();
+        }
+        mSelectedImageList.clear();
+        mSelectedImageList.add(mAddPicItem);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
+        mImageSelectedRecyclerView.setLayoutManager(gridLayoutManager);
+        mSelectedImageListAdapter = new SelectedImageListAdapter((ArrayList<ImageItem>) mSelectedImageList);
+        mImageSelectedRecyclerView.setAdapter(mSelectedImageListAdapter);
+        mSelectedImageListAdapter.addPicClickListener(new SelectedImageListAdapter.PicClickListener() {
+            @Override
+            public void addPic() {
+                showDialog();
+            }
+
+            @Override
+            public void showBigPic(int position) {
+
+            }
+        });
+        mSelectedImageListAdapter.setDataRemoveListener(new SelectedImageListAdapter.DataRemoveListener() {
+            @Override
+            public void remove(int pos) {
+                mSelectedImageListAdapter.notifyItemRemoved(pos);
+                if (pos != mSelectedImageList.size()) {
+                    mSelectedImageListAdapter.notifyItemRangeChanged(pos, mSelectedImageList.size() - pos);
+                }
+            }
+        });
     }
 
     private void listener() {
@@ -177,19 +216,12 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mFunctionView.setText(R.string.send);
         mFunctionView.setEnabled(false);
         mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
-
-        if (mType.equals(TYPE_TEXT)) {
-//            mShowPictureView.setVisibility(View.GONE);
-        } else {
-//            mShowPictureView.setVisibility(View.VISIBLE);
-//            if (mImagePaths != null) {
-//                Glide.with(mContext).load(mImagePaths.get(0)).centerCrop().into(mPictureView);
-//            } else {
-//                mDeleteView.setVisibility(View.GONE);
-//                Glide.with(mContext).load(R.drawable.class_circle_add_picture).into(mPictureView);
-//            }
-        }
         mContentView.setText("");
+
+        //生成添加图片item的数据
+        mAddPicItem = new ImageItem();
+        mAddPicItem.path = String.valueOf(ContextCompat.getDrawable(this, R.drawable.class_circle_add_picture));
+        mAddPicItem.name = "添加图片";
     }
 
     @Override
@@ -290,11 +322,21 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         switch (requestCode) {
             case IMAGE_PICKER:
                 ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                Log.e("imagPicker", "image count:  " + images.size());
-
+                if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
+                    mSelectedImageList.remove(mSelectedImageList.size() - 1);
+                }
+                mSelectedImageList.addAll(images);
+                mSelectedImageList.add(mAddPicItem);
+                mSelectedImageListAdapter.update(mSelectedImageList);
+                break;
             case REQUEST_CODE_SELECT:
                 ArrayList<ImageItem> sel = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
-                Log.e("imagPicker", "image count:  " + sel.size());
+                if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
+                    mSelectedImageList.remove(mSelectedImageList.size() - 1);
+                }
+                mSelectedImageList.addAll(sel);
+                mSelectedImageList.add(mAddPicItem);
+                mSelectedImageListAdapter.update(mSelectedImageList);
                 break;
             default:
                 break;
