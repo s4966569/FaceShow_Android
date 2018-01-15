@@ -58,14 +58,13 @@
                 app:moreTextMaginTop="15dp"
                 app:moreTextSize="16dp" />
 
-            <ImageView
+            <com.lzy.ninegrid.NineGridView
                 android:id="@+id/gv_imgs"
                 android:layout_width="match_parent"
                 android:layout_height="174dp"
                 android:layout_marginBottom="5dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/color_dadde0"
                 android:visibility="gone" />
 
             <RelativeLayout
