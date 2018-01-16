@@ -1,8 +1,10 @@
 package com.yanxiu.gphone.faceshow.classcircle;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -35,10 +39,13 @@ import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToMaster
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToUserRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleLikeRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.DiscardCommentRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.DiscardMomentRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleCancelLikeResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.CommentResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
+import com.yanxiu.gphone.faceshow.classcircle.response.DiscardMomentResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.LikeResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
@@ -66,7 +73,7 @@ import de.greenrobot.event.EventBus;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, ClassCircleAdapter.onDeleteClickListener {
 
     private static final int REQUEST_CODE_ALBUM = 0x000;
     private static final int REQUEST_CODE_CAMERA = 0x001;
@@ -99,6 +106,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private UUID mClassCircleCancelLikeRequest;
     private UUID mCommentToMasterRequest;
     private UUID mCommentToUserRequest;
+    private UUID mDiscardMomentRequest;
+    private UUID mDiscardCommentRequest;
 
 
     @Override
@@ -151,6 +160,14 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             RequestBase.cancelRequestWithUUID(mCommentToUserRequest);
             mCommentToUserRequest = null;
         }
+        if (mDiscardMomentRequest != null) {
+            RequestBase.cancelRequestWithUUID(mDiscardMomentRequest);
+            mDiscardMomentRequest = null;
+        }
+        if (mDiscardCommentRequest != null) {
+            RequestBase.cancelRequestWithUUID(mDiscardCommentRequest);
+            mDiscardCommentRequest = null;
+        }
     }
 
     private void initView(View rootView) {
@@ -180,6 +197,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleAdapter.setCommentClickListener(ClassCircleFragment.this);
         mClassCircleAdapter.setThumbClickListener(ClassCircleFragment.this);
         mClassCircleAdapter.setContentLinesChangedlistener(ClassCircleFragment.this);
+        mClassCircleAdapter.setDeleteClickListener(ClassCircleFragment.this);
         mFunctionView.setOnClickListener(ClassCircleFragment.this);
         mCommentView.setOnEditorActionListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
@@ -424,60 +442,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         }
     }
 
-    private void showDialog() {
-        if (mClassCircleDialog == null) {
-            mClassCircleDialog = new ClassCircleDialog(getContext());
-            mClassCircleDialog.setClickListener(new ClassCircleDialog.OnViewClickListener() {
-                @Override
-                public void onAlbumClick() {
-                    FaceShowBaseActivity.requestWriteAndReadPermission(new OnPermissionCallback() {
-                        @Override
-                        public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                            Intent intent = new Intent();
-                            intent.setType("image/*");
-                            intent.setAction(Intent.ACTION_GET_CONTENT);
-                            startActivityForResult(intent, REQUEST_CODE_ALBUM);
-                        }
-
-                        @Override
-                        public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-                            ToastUtil.showToast(getContext(), R.string.no_storage_permissions);
-                        }
-                    });
-                }
-
-                @Override
-                public void onCameraClick() {
-                    FaceShowBaseActivity.requestCameraPermission(new OnPermissionCallback() {
-                        @Override
-                        public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
-                            mCameraPath = FileUtil.getImageCatchPath(System.currentTimeMillis() + ".jpg");
-                            Intent intent = new Intent();
-                            intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                            intent.addCategory(Intent.CATEGORY_DEFAULT);
-                            File file = new File(mCameraPath);
-                            if (file.exists()) {
-                                try {
-                                    file.createNewFile();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            Uri uri = Uri.fromFile(file);
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                            startActivityForResult(intent, REQUEST_CODE_CAMERA);
-                        }
-
-                        @Override
-                        public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
-                            ToastUtil.showToast(getContext(), R.string.no_camera_permissions);
-                        }
-                    });
-                }
-            });
-        }
-        mClassCircleDialog.show();
-    }
 
     @Override
     public void commentClick(final int position, ClassCircleResponse.Data.Moments moments, int commentPosition, Comments comment, boolean isCommentMaster) {
@@ -514,6 +478,24 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         });
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mCommentView, 0);
+    }
+
+    @Override
+    public void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int commentPosition, Comments comment) {
+        showDiscardCommentPopupWindow(pos, data, commentPosition, comment);
+    }
+
+
+    @Override
+    public void commentFinish() {
+        mVisibility = View.INVISIBLE;
+        mAdjustPanView.setViewSizeChangedCallback(null);
+        mCommentLayout.setVisibility(View.GONE);
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+        ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
+        mMomentPosition = -1;
+        mCommentPosition = -1;
     }
 
     @Override
@@ -587,19 +569,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void commentFinish() {
-        mVisibility = View.INVISIBLE;
-        mAdjustPanView.setViewSizeChangedCallback(null);
-        mCommentLayout.setVisibility(View.GONE);
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
-        ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
-        mMomentPosition = -1;
-        mCommentPosition = -1;
-    }
-
-
-    @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEND) {
             String comment = mCommentView.getText().toString();
@@ -628,52 +597,112 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-//        switch (requestCode) {
-//            case REQUEST_CODE_ALBUM:
-//                if (data != null) {
-//                    Uri uri = data.getData();
-//                    String path = FileUtil.getRealFilePath(getContext(), uri);
-//                    startIntent(path);
-//                }
-//                break;
-//            case REQUEST_CODE_CAMERA:
-//                if (!TextUtils.isEmpty(mCameraPath)) {
-//                    try {
-//                        new FileInputStream(new File(mCameraPath));
-//                        startIntent(mCameraPath);
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                break;
-//            case REQUEST_CODE_CROP:
-//                if (!TextUtils.isEmpty(mCropPath)) {
-//                    if (new File(mCropPath).exists()) {
-//                        startIntent(mCropPath);
-//                    }
-//                }
-//                break;
-//            default:
-//                break;
-//        }
+    public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
+        discardMoment(position, data);
     }
 
-    private void startCropImg(Uri uri, String savePath) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        intent.putExtra("crop", "true");
-        intent.putExtra("outputX", 150);
-        intent.putExtra("outputY", 150);
-        intent.putExtra("return-data", false);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(savePath)));
-        startActivityForResult(intent, REQUEST_CODE_CROP);
+    /**
+     * 删除自己发布的班级圈
+     *
+     * @param position 所在位置
+     * @param data     所有班级圈信息
+     */
+    private void discardMoment(final int position, final List<ClassCircleResponse.Data.Moments> data) {
+        rootView.showLoadingView();
+        DiscardMomentRequest discardMomentRequest = new DiscardMomentRequest();
+        discardMomentRequest.momentId = data.get(position - 1).id;
+        mDiscardMomentRequest = discardMomentRequest.startRequest(DiscardMomentResponse.class, new HttpCallback<DiscardMomentResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, DiscardMomentResponse ret) {
+                rootView.hiddenLoadingView();
+                mDiscardMomentRequest = null;
+                if (ret != null && ret.getCode() == 0) {
+                    data.remove(position - 1);
+                    mClassCircleAdapter.notifyItemRemoved(position);
+                } else {
+                    ToastUtil.showToast(ClassCircleFragment.this.getContext(), ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                mDiscardMomentRequest = null;
+                ToastUtil.showToast(ClassCircleFragment.this.getContext(), error.getMessage());
+            }
+        });
     }
 
-    private void startIntent(String path) {
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add(path);
-        SendClassCircleActivity.LuanchActivity(getContext(), SendClassCircleActivity.TYPE_IMAGE, strings);
+    /**
+     * 删除自己发布的评论
+     *
+     * @param pos             当前评论所在的话题列表的位置
+     * @param data         当前评论所在的话题列表
+     * @param commentPosition 当前评论所在评论列表的位置
+     * @param comment         当期评论内容
+     */
+    private void discardComment(final int pos, final List<ClassCircleResponse.Data.Moments> data, final int commentPosition, final Comments comment) {
+        rootView.showLoadingView();
+        DiscardCommentRequest discardCommentRequest = new DiscardCommentRequest();
+        discardCommentRequest.commentId = data.get(pos-1).comments.get(commentPosition).id;
+        mDiscardCommentRequest = discardCommentRequest.startRequest(DiscardMomentResponse.class, new HttpCallback<DiscardMomentResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, DiscardMomentResponse ret) {
+                rootView.hiddenLoadingView();
+                mDiscardCommentRequest = null;
+                if (ret != null && ret.getCode() == 0) {
+                    data.get(pos-1).comments.remove(commentPosition);
+                    mClassCircleAdapter.notifyItemChanged(pos, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    commentFinish();
+                } else {
+                    ToastUtil.showToast(ClassCircleFragment.this.getContext(), ret.getError().getMessage());
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                mDiscardCommentRequest = null;
+                ToastUtil.showToast(ClassCircleFragment.this.getContext(), error.getMessage());
+            }
+        });
+
+
     }
+
+
+    private PopupWindow mCancelPopupWindow;
+
+    private void showDiscardCommentPopupWindow(final int pos, final List<ClassCircleResponse.Data.Moments> data, final int commentPosition, final Comments comment) {
+        if (mCancelPopupWindow == null) {
+            View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
+            (pop.findViewById(R.id.tv_pop_sure)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissPopupWindow();
+                    discardComment(pos, data, commentPosition, comment);
+                }
+            });
+            (pop.findViewById(R.id.tv_cancel)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissPopupWindow();
+                }
+            });
+            mCancelPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mCancelPopupWindow.setAnimationStyle(R.style.pop_anim);
+            mCancelPopupWindow.setFocusable(true);
+            mCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+        }
+        mCancelPopupWindow.showAtLocation(this.getActivity().getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    private void dismissPopupWindow() {
+        if (mCancelPopupWindow != null) {
+            mCancelPopupWindow.dismiss();
+        }
+    }
+
+
 }

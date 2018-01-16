@@ -129,6 +129,7 @@ dependencies {
     implementation files('libs/BaiduLBS_Android.jar')
     implementation files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.12.jar')
 
+
     /*imagepicker*/
     compile('com.lzy.widget:imagepicker:0.6.1') {
         //
