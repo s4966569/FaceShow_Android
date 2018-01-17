@@ -207,7 +207,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void initData() {
         mTopView.setBackgroundColor(Color.parseColor("#e6ffffff"));
         mTitleView.setText(R.string.classcircle);
-        mFunctionView.setBackgroundResource(R.drawable.selector_classcircle_photo);
         mClassCircleRecycleView.getItemAnimator().setChangeDuration(0);
         mClassCircleRecycleView.setLoadMoreEnable(true);
         mRefreshView.setProgressViewOffset(false, ScreenUtils.dpToPxInt(getContext(), 44), ScreenUtils.dpToPxInt(getContext(), 100));
