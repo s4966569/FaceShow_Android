@@ -118,12 +118,12 @@ public class ClassCircleCommentLayout extends RelativeLayout {
             String text="";
             if (comment.level.equals("1")){
                 if (comment.publisher!=null) {
-                    text="<b>"+comment.publisher.realName+"</b>: "+comment.content;
+                    text="<font color='#1da1f2'>"+comment.publisher.realName+"</font>: "+comment.content;
 //                    text = String.format(mContext.getString(R.string.comment_to_master), comment.publisher.realName, comment.content);
                 }
             }else {
                 if (comment.publisher != null) {
-                    text="<b>"+comment.publisher.realName+"</b>对"+"<b>"+comment.toUser.realName+"</b>: "+comment.content;
+                    text="<font color='#1da1f2'>"+comment.publisher.realName+"</font>回复"+"<font color='#1da1f2'>"+comment.toUser.realName+"</font>: "+comment.content;
 //                    text = String.format(mContext.getString(R.string.comment_to_user), comment.publisher.realName, comment.toUser.realName, comment.content);
                 }
             }
