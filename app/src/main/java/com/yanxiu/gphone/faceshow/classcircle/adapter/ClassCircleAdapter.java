@@ -209,7 +209,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         if (checkIsThumb(moments.likes)) {
             classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
-            classCircleViewHolder.mThumbViewContent.setText("取消赞");
+            classCircleViewHolder.mThumbViewContent.setText("取消");
         } else {
             classCircleViewHolder.mThumbView.setVisibility(View.VISIBLE);
             classCircleViewHolder.mThumbViewContent.setText("赞");

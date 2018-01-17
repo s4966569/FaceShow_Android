@@ -119,6 +119,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mType = getIntent().getStringExtra(KEY_TYPE);
         if (mType.equals(TYPE_IMAGE)) {
             mImagePaths = getIntent().getStringArrayListExtra(KEY_IMAGE);
+        } else {
+            mType = TYPE_TEXT;
         }
         initView();
         listener();
@@ -205,6 +207,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 if (pos != mSelectedImageList.size()) {
                     mSelectedImageListAdapter.notifyItemRangeChanged(pos, mSelectedImageList.size() - pos);
                 }
+                if (mImagePaths.size() == 0 && TextUtils.isEmpty(mContentView.getText().toString())) {
+                    openPublishButton(false);
+                } else {
+                    openPublishButton(true);
+                }
             }
         });
     }
@@ -237,8 +244,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 break;
             case R.id.title_layout_right_txt:
                 String content = mContentView.getText().toString();
-
-                if (mType.equals(TYPE_IMAGE)) {
+                if (mImagePaths != null && mImagePaths.size() > 0) {
                     rootView.showLoadingView();
                     uploadImg(content);
                 } else {
@@ -313,6 +319,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             mImagePaths.remove(bean.deleteId);
             mSelectedImageList.remove(bean.deleteId);
             mSelectedImageListAdapter.update(mSelectedImageList);
+            if (mImagePaths.size() == 0 && TextUtils.isEmpty(mContentView.getText().toString())) {
+                openPublishButton(false);
+            } else {
+                openPublishButton(true);
+            }
         }
     }
 
@@ -335,6 +346,21 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 break;
         }
 
+    }
+
+    /**
+     * 开发发布按钮
+     *
+     * @param bool 是否开启
+     */
+    private void openPublishButton(boolean bool) {
+        if (bool) {
+            mFunctionView.setEnabled(true);
+            mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_1da1f2));
+        } else {
+            mFunctionView.setEnabled(false);
+            mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
+        }
     }
 
     private void createSelectedImagesList(Intent data) {
@@ -364,6 +390,12 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 mImagePaths.add(mSelectedImageList.get(i).path);
             }
         }
+        if (mImagePaths.size() == 0 && TextUtils.isEmpty(mContentView.getText().toString())) {
+            openPublishButton(false);
+        } else {
+            openPublishButton(true);
+        }
+
     }
 
     private void uploadImg(final String content) {
@@ -466,13 +498,16 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (TextUtils.isEmpty(s) && (mImagePaths == null || mImagePaths.size() == 0)) {
-            mFunctionView.setEnabled(false);
-            mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
+        if (mImagePaths == null || mImagePaths.size() == 0) {
+            if (TextUtils.isEmpty(s)) {
+                openPublishButton(false);
+            } else {
+                openPublishButton(true);
+            }
         } else {
-            mFunctionView.setEnabled(true);
-            mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_1da1f2));
+            openPublishButton(true);
         }
+
     }
 
 
