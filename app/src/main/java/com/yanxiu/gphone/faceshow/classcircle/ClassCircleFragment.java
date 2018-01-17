@@ -676,7 +676,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void showDiscardCommentPopupWindow(final int pos, final List<ClassCircleResponse.Data.Moments> data, final int commentPosition, final Comments comment) {
         if (mCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
-            (pop.findViewById(R.id.tv_pop_sure)).setOnClickListener(new View.OnClickListener() {
+            TextView tvDel= (TextView) pop.findViewById(R.id.tv_pop_sure);
+            tvDel.setText(R.string.class_circle_delete);
+            tvDel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     dismissPopupWindow();
