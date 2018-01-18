@@ -154,4 +154,6 @@
     <string name="feedback_content_cannot_be_empty">反馈内容不能为空</string>
     <string name="publish">发布</string>
     <string name="class_circle_delete">删除</string>
+    <string name="message">消息</string>
+    <string name="data_refresh_fail">刷新数据失败</string>
 </resources>

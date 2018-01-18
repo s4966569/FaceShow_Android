@@ -224,9 +224,11 @@
         <activity
             android:name=".user.FeedBackActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".classcircle.activity.PublishedMomentListActivity"
-            android:screenOrientation="portrait"
-            />
+        <activity
+            android:name=".classcircle.activity.PublishedMomentListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".classcircle.activity.ClassCircleMessageActivity" />
+        <activity android:name=".classcircle.activity.ClassCircleDetailActivity"></activity>
     </application>
 
 </manifest>
