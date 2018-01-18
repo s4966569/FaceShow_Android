@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -74,9 +75,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setContentView(mRootView);
         initView();
         initListener();
-        requestData();
+        getData();
         UpdateUtil.Initialize(this, false);
     }
+
 
     @Override
     protected void onResume() {
@@ -134,6 +136,16 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     }
 
+
+    private void getData() {
+        if (TextUtils.isEmpty(UserInfo.getInstance().getInfo().getClassId())) {
+            requestData();
+        } else {
+            initFragment();
+            pollingRedPointer();
+        }
+    }
+
     private void requestData() {
         mRootView.showLoadingView();
         MainRequest mainRequest = new MainRequest();
@@ -146,6 +158,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     mMainData = ret.getData();
                     UserInfo.Info info = UserInfo.getInstance().getInfo();
                     info.setClassId(mMainData.getClazsInfo().getId());
+                    info.setClassName(mMainData.getClazsInfo().getClazsName());
+                    info.setProjectName(mMainData.getProjectInfo().getProjectName());
                     SpManager.saveUserInfo(info);
                     initFragment();
                     pollingRedPointer();
@@ -157,7 +171,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             @Override
             public void onFail(RequestBase request, Error error) {
                 mRootView.hiddenLoadingView();
-                mRootView.showNetErrorView();
+                mRootView.showOtherErrorView(error.getMessage());
 
             }
         });
@@ -235,7 +249,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(true);
-                if (mNaviFragmentFactory.getHomeFragment()!=null){
+                if (mNaviFragmentFactory.getHomeFragment() != null) {
                     mNaviFragmentFactory.getHomeFragment().toRefresh();
                 }
                 break;
@@ -275,7 +289,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 ToastUtil.showToast(getApplicationContext(), "扫描");
                 break;
             case R.id.retry_button:
-                requestData();
+                getData();
                 break;
             default:
                 break;
@@ -359,6 +373,25 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == HomeFragment.CHOOSE_CLASS) {
+            if (resultCode == RESULT_OK) {
+//                getData();
+                reFreshFragment();
+                pollingRedPointer();
+            }
+        }
+    }
+
+    private void reFreshFragment() {
+        if (mNaviFragmentFactory.getHomeFragment() != null) {
+            mNaviFragmentFactory.getHomeFragment().toRefresh();
+        }
+        if (mNaviFragmentFactory.getNoticeFragment() != null) {
+            mNaviFragmentFactory.getNoticeFragment().toRefresh();
+        }
+        if (mNaviFragmentFactory.getClassCircleFragment() != null) {
+            mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+        }
     }
 
     private UUID mGetRedDotRequestUUID;
@@ -377,13 +410,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     //有新的班级圈消息
                     if (ret.getData().getMomentNew() != null) {
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
-                            if (mNaviFragmentFactory.getCurrentItem()==2){
+                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
                                 //当前在班级圈页面
                                 ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {
                                     mNaviFragmentFactory.getClassCircleFragment().toRefresh();
                                 }
-                            }else {
+                            } else {
                                 //当前不在班级圈页面
                                 mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
                                 showCommentRedDot = true;
@@ -414,7 +447,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                                 homeFragment.showTaskRedDot();
                             }
                         }
-                    }else {
+                    } else {
                         HomeFragment homeFragment = mNaviFragmentFactory.getHomeFragment();
                         if (homeFragment != null) {
                             homeFragment.hideTaskRedDot();

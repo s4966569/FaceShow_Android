@@ -1,8 +1,10 @@
 package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
+import com.yanxiu.gphone.faceshow.homepage.activity.ChooseClassActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
@@ -75,7 +78,11 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     public void toRefresh() {
-        requestData();
+        if (TextUtils.isEmpty(UserInfo.getInstance().getInfo().getClassId())) {
+            requestData();
+        } else {
+            initView();
+        }
     }
 
     private void requestData() {
@@ -88,6 +95,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                         && ret.getData().getProjectInfo() != null) {
                     UserInfo.Info info = UserInfo.getInstance().getInfo();
                     info.setClassId(ret.getData().getClazsInfo().getId());
+                    info.setClassName(ret.getData().getClazsInfo().getClazsName());
+                    info.setProjectName(ret.getData().getProjectInfo().getProjectName());
                     SpManager.saveUserInfo(info);
                     mMainBean = ret.getData();
                     initView();
@@ -104,8 +113,11 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     private void initData() {
-        mMainBean = mActivity.mMainData;
+//        mMainBean = mActivity.mMainData;
+        toRefresh();
     }
+
+    public final static int CHOOSE_CLASS = 0X003;
 
     private void initView() {
         mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
@@ -115,6 +127,15 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mCheckInEnterIMG = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
         mCheckInEnterIMG.setImageResource(R.drawable.scan_selector);
         mCheckInEnterIMG.setVisibility(View.VISIBLE);
+        TextView textView = (TextView) mRootView.findViewById(R.id.title_layout_left_txt);
+        textView.setText(R.string.choose_class);
+        textView.setVisibility(View.VISIBLE);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().startActivityForResult(new Intent(HomeFragment.this.getActivity(), ChooseClassActivity.class), CHOOSE_CLASS);
+            }
+        });
         mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
         mImgProjectTaskRedDot = (ImageView) mRootView.findViewById(R.id.img_project_task_red_dot);
@@ -123,10 +144,22 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         if (mMainBean != null && mMainBean.getClazsInfo() != null && mMainBean.getProjectInfo() != null) {
             mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
             mClass_tv.setText(mMainBean.getClazsInfo().getClazsName());
+        } else {
+            mProject_tv.setText(UserInfo.getInstance().getInfo().getProjectName());
+            mClass_tv.setText(UserInfo.getInstance().getInfo().getClassName());
         }
         initTabBar();
         mFragmentManager = getChildFragmentManager();
-        mFragmentFactory = new HomeFragmentFactory();
+        if (mFragmentFactory == null) {
+            mFragmentFactory = new HomeFragmentFactory();
+        } else {
+            if (mFragmentFactory.getProjectTaskFragment() != null) {
+                mFragmentFactory.getProjectTaskFragment().refreshData();
+            }
+            if (mFragmentFactory.getResourcesFragment() != null) {
+                mFragmentFactory.getResourcesFragment().refreshData();
+            }
+        }
         showCurrentFragment(lastIndex);
     }
 
@@ -156,7 +189,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mImgResourceRedDot.setVisibility(View.GONE);
             }
             resourcesFragment.refreshData();
-        }else {
+        } else {
             mImgResourceRedDot.setVisibility(View.VISIBLE);
         }
 

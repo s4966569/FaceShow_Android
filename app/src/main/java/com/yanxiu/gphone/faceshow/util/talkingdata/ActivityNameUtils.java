@@ -88,7 +88,7 @@ public class ActivityNameUtils {
             case "CheckInByQRActivity":
                 name = "二维码扫描";
                 break;
-            case "ClassManagerActivity":
+            case "ChooseClassActivity":
                 name = "课程选择";
                 break;
             default:

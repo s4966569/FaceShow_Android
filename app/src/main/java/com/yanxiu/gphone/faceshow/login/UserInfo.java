@@ -50,7 +50,16 @@ public class UserInfo {
         private String subjectName;
         private String classId;
         private String className;
+        private String projectName;
         private String token;
+
+        public String getProjectName() {
+            return projectName;
+        }
+
+        public void setProjectName(String projectName) {
+            this.projectName = projectName;
+        }
 
         public void setSex(int sex) {
             this.sex = sex;

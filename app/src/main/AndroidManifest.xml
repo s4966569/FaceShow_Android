@@ -227,7 +227,10 @@
         <activity
             android:name=".classcircle.activity.PublishedMomentListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".classcircle.activity.ClassCircleMessageActivity" />
+        <activity android:name=".classcircle.activity.ClassCircleMessageActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".homepage.activity.ChooseClassActivity"
+            android:screenOrientation="portrait"  />
     </application>
 
 </manifest>
