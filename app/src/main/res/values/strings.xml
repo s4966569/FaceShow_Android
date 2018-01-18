@@ -156,4 +156,5 @@
     <string name="class_circle_delete">删除</string>
     <string name="message">消息</string>
     <string name="data_refresh_fail">刷新数据失败</string>
+    <string name="new_message">%1$d条新消息</string>
 </resources>

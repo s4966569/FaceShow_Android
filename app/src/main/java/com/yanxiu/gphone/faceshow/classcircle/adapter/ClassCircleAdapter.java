@@ -48,6 +48,10 @@ import butterknife.ButterKnife;
  */
 public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public void showNewMessageNumber(int newMessageNumber) {
+        mNewMessageNumber = newMessageNumber;
+    }
+
     public interface onCommentClickListener {
         void commentClick(int position, ClassCircleResponse.Data.Moments response, int commentPosition, Comments comment, boolean isCommentMaster);
 
@@ -56,6 +60,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int
                 commentPosition, Comments comment);
 
+    }
+
+    public interface onNewMessageButtonClickListener {
+        void newMessageButtonClick();
     }
 
     public interface onLikeClickListener {
@@ -87,7 +95,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int REFRESH_ANIM_VIEW = 0x0004;
     public static final int REFRESH_LIKE_DATA = 0x0005;
     public static final int REFRESH_COMMENT_DATA = 0x0006;
+    public static final int SHOW_NEW_MESSAGE = 0x0007;
 
+    private int mNewMessageNumber = 0;
     private Context mContext;
     private List<ClassCircleResponse.Data.Moments> mData = new ArrayList<>();
     private int animPosition = ANIM_POSITION_DEFAULT;
@@ -96,6 +106,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private onContentLinesChangedlistener mContentLinesChangedlistener;
     private onDeleteClickListener mDeleteClickListener;
     private onMomentHeadImageClickListener mMomentHeadImageClickListener;
+    private onNewMessageButtonClickListener mNewMessageButtonClickListener;
 
     public ClassCircleAdapter(Context context) {
         this.mContext = context;
@@ -123,6 +134,12 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.notifyDataSetChanged();
     }
 
+    public void hideNewMessageButton() {
+        mNewMessageNumber = 0;
+        notifyDataSetChanged();
+    }
+
+
     public ClassCircleResponse.Data.Moments getDataFromPosition(int position) {
         if (position < 1 || position > mData.size()) {
             return null;
@@ -137,6 +154,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return "0";
         }
     }
+
 
     public void setCommentClickListener(onCommentClickListener commentClickListener) {
         this.mCommentClickListener = commentClickListener;
@@ -156,6 +174,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setMomentHeadImageClickListener(onMomentHeadImageClickListener momentHeadImageClickListener) {
         this.mMomentHeadImageClickListener = momentHeadImageClickListener;
+    }
+
+    public void setNewMessageButtonClickListener(onNewMessageButtonClickListener newMessageButtonClickListener) {
+        this.mNewMessageButtonClickListener = newMessageButtonClickListener;
     }
 
     @Override
@@ -183,24 +205,38 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
-            final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
-            final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
-            int refresh = (int) payloads.get(0);
-            switch (refresh) {
-                case REFRESH_ANIM_VIEW:
-                    classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
-                    classCircleViewHolder.mAnimLayout.setEnabled(false);
-                    break;
-                case REFRESH_COMMENT_DATA:
-                    setViewVisibly(classCircleViewHolder, moments);
-                    classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
-                    break;
-                case REFRESH_LIKE_DATA:
-                    setViewVisibly(classCircleViewHolder, moments);
-                    classCircleViewHolder.mCircleThumbView.setData(moments.likes);
-                    break;
-                default:
-                    break;
+            if ((int) payloads.get(0) == SHOW_NEW_MESSAGE) {
+                final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+                titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
+                titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
+                titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mNewMessageButtonClickListener != null) {
+                            mNewMessageButtonClickListener.newMessageButtonClick();
+                        }
+                    }
+                });
+            } else {
+                final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
+                final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
+                int refresh = (int) payloads.get(0);
+                switch (refresh) {
+                    case REFRESH_ANIM_VIEW:
+                        classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
+                        classCircleViewHolder.mAnimLayout.setEnabled(false);
+                        break;
+                    case REFRESH_COMMENT_DATA:
+                        setViewVisibly(classCircleViewHolder, moments);
+                        classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
+                        break;
+                    case REFRESH_LIKE_DATA:
+                        setViewVisibly(classCircleViewHolder, moments);
+                        classCircleViewHolder.mCircleThumbView.setData(moments.likes);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -259,9 +295,24 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof TitleViewHolder) {
-            TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+            final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
             Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext, titleViewHolder.mHeadImgView, 10));
+            if (mNewMessageNumber == 0) {
+                titleViewHolder.mRlNewMessage.setVisibility(View.GONE);
+            } else {
+                titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
+                titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, 10));
+                titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mNewMessageButtonClickListener != null) {
+                            mNewMessageButtonClickListener.newMessageButtonClick();
+                        }
+                    }
+                });
+            }
+
         } else if (holder instanceof ClassCircleViewHolder) {
             final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
             final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
@@ -578,6 +629,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         ImageView mHeadImgView;
         @BindView(R.id.tv_name)
         TextView mNameView;
+        @BindView(R.id.rl_new_message)
+        RelativeLayout mRlNewMessage;
+        @BindView(R.id.tv_message_number)
+        TextView mTvMessageNumber;
 
         TitleViewHolder(View itemView) {
             super(itemView);

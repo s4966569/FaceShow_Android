@@ -29,6 +29,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.activity.PublishedMomentListActivity;
 import com.yanxiu.gphone.faceshow.classcircle.activity.SendClassCircleActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
+import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleMessageAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCancelLikeRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToMasterRequest;
@@ -71,7 +72,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, ClassCircleAdapter.onDeleteClickListener, ClassCircleAdapter.onMomentHeadImageClickListener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, ClassCircleAdapter.onDeleteClickListener, ClassCircleAdapter.onMomentHeadImageClickListener, ClassCircleAdapter.onNewMessageButtonClickListener {
 
     private static final int REQUEST_CODE_MY_PUBLISHED_MOMENTS = 0x000;
     public boolean firstEnter = true;
@@ -195,6 +196,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleAdapter.setContentLinesChangedlistener(ClassCircleFragment.this);
         mClassCircleAdapter.setDeleteClickListener(ClassCircleFragment.this);
         mClassCircleAdapter.setMomentHeadImageClickListener(ClassCircleFragment.this);
+        mClassCircleAdapter.setNewMessageButtonClickListener(ClassCircleFragment.this);
         mFunctionView.setOnClickListener(ClassCircleFragment.this);
         mCommentView.setOnEditorActionListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
@@ -723,5 +725,15 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 onRefresh();
             }
         }
+    }
+
+    @Override
+    public void newMessageButtonClick() {
+        ToastUtil.showToast(getContext(), "test");
+    }
+
+    private void showNewMessageButton(int number) {
+        mClassCircleAdapter.showNewMessageNumber(number);
+        mClassCircleAdapter.notifyItemChanged(0, ClassCircleAdapter.SHOW_NEW_MESSAGE);
     }
 }
