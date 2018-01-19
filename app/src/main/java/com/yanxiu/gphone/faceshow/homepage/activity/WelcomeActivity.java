@@ -119,7 +119,8 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         });
 
     }
-    private void initMajicWindow(){
+
+    private void initMajicWindow() {
         MWConfiguration config = new MWConfiguration(this);
         config.setLogEnable(false);//打开魔窗Log信息
         MagicWindowSDK.initSDK(config);
@@ -127,26 +128,28 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     }
 
     /**
-     *当用户有token 并请求UseInfo接口后该往哪跳转
+     * 当用户有token 并请求UseInfo接口后该往哪跳转
      * 正常是调往首页
      * 当时如果用户是通过scheme进入  就可能会调完签到页
+     *
      * @param activity this
      */
-    private void whereToGoWithGetUserInfoEnd(WelcomeActivity activity){
+    private void whereToGoWithGetUserInfoEnd(WelcomeActivity activity) {
 //        if (isAppOpenByScheme()){
 //            //目前通过只有签到是通过scheme打开app的
 //            toCheckInActOrCheckInResultAct(activity);
 //        }else {
-            MainActivity.invoke(activity);
-            activity.finish();
+        MainActivity.invoke(activity);
+        activity.finish();
 //        }
     }
 
     /**
      * 判断app是否为用户通过微信或者浏览器打开 其实就是通过scheme
+     *
      * @return boolean
      */
-    public boolean isAppOpenByScheme(){
+    public boolean isAppOpenByScheme() {
         return Intent.ACTION_VIEW.equals(getIntent().getAction());
 
     }
@@ -168,34 +171,38 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             mHandler.sendEmptyMessageDelayed(GO_MAIN, LOAD_TIME);
         }
     }
-    private void toCheckInActOrCheckInResultAct(WelcomeActivity activity){
+
+    private void toCheckInActOrCheckInResultAct(WelcomeActivity activity) {
         String stepId = "";
-        String timestamp="";
-        if(Intent.ACTION_VIEW.equals(getIntent().getAction())){
+        String timestamp = "";
+        if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
             Uri uri = getIntent().getData();
-            if(uri != null){
+            if (uri != null) {
                 stepId = uri.getQueryParameter("stepId");
-                timestamp =uri.getQueryParameter("timestamp");
+                timestamp = uri.getQueryParameter("timestamp");
             }
         }
-        if (!TextUtils.isEmpty(stepId)){
-            toCheckInResultAct(activity,stepId,timestamp);
-        }else {
+        if (!TextUtils.isEmpty(stepId)) {
+            toCheckInResultAct(activity, stepId, timestamp);
+        } else {
             MainActivity.invoke(activity);
             activity.finish();
         }
     }
 
-    private void toCheckInAct(WelcomeActivity activity){
+    private void toCheckInAct(WelcomeActivity activity) {
         CheckInByQRActivity.toThisAct(activity);
         activity.finish();
     }
-    private void  toCheckInResultAct(WelcomeActivity activity,String stepId,String timestamp){
-        getLocation(stepId,timestamp,activity);
+
+    private void toCheckInResultAct(WelcomeActivity activity, String stepId, String timestamp) {
+        getLocation(stepId, timestamp, activity);
 
     }
-     private LoadingDialogView mLoadingDialogView;
-    private LocationClient getLocation(final String stepId, final String timestamp, final WelcomeActivity activity){
+
+    private LoadingDialogView mLoadingDialogView;
+
+    private LocationClient getLocation(final String stepId, final String timestamp, final WelcomeActivity activity) {
         if (mLoadingDialogView == null) {
             mLoadingDialogView = new LoadingDialogView(this);
         }
@@ -206,20 +213,21 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             public void onReceiveLocation(BDLocation bdLocation) {
                 locationClient.unRegisterLocationListener(this);
                 locationClient.stop();
-                double latitude =bdLocation.getLatitude();
-                double longitude =bdLocation.getLongitude();
-                userSignIn(stepId,timestamp,latitude+","+longitude,bdLocation.getLocationDescribe(),activity);
+                double latitude = bdLocation.getLatitude();
+                double longitude = bdLocation.getLongitude();
+                userSignIn(stepId, timestamp, latitude + "," + longitude, bdLocation.getLocationDescribe(), activity);
             }
         });
         locationClient.start();
         return locationClient;
     }
-    private void userSignIn(String stepId, String timestamps, @NonNull String position, @NonNull String site, final WelcomeActivity activity){
+
+    private void userSignIn(String stepId, String timestamps, @NonNull String position, @NonNull String site, final WelcomeActivity activity) {
         UserSignInRequest userSignInRequest = new UserSignInRequest();
-        userSignInRequest.position =position;
-        userSignInRequest.site=site;
-        userSignInRequest.stepId=stepId;
-        userSignInRequest.timestamp =timestamps;
+        userSignInRequest.position = position;
+        userSignInRequest.site = site;
+        userSignInRequest.stepId = stepId;
+        userSignInRequest.timestamp = timestamps;
         userSignInRequest.startRequest(CheckInResponse.class, new HttpCallback<CheckInResponse>() {
             @Override
             public void onSuccess(RequestBase request, CheckInResponse userSignInResponse) {
@@ -280,34 +288,38 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             }
         }
     }
-    private static void getCurrentClassId(final WelcomeActivity activity){
 
-        MainRequest getCurrentClassId= new MainRequest();
-        getCurrentClassId.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, MainResponse ret) {
-                if (ret!=null&&ret.getCode()==0){
-                    getUserInfo(activity);
-                }else {
-                    toNoClassPage(activity);
+    private static void getCurrentClassId(final WelcomeActivity activity) {
+        if (SpManager.getUserInfo() != null && !TextUtils.isEmpty(SpManager.getUserInfo().getClassId())) {
+            getUserInfo(activity);
+        } else {
+            MainRequest getCurrentClassId = new MainRequest();
+            getCurrentClassId.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
+                @Override
+                public void onSuccess(RequestBase request, MainResponse ret) {
+                    if (ret != null && ret.getCode() == 0) {
+                        getUserInfo(activity);
+                    } else {
+                        toNoClassPage(activity);
+                    }
                 }
-            }
 
-            @Override
-            public void onFail(RequestBase request, Error error) {
-//                (activity);
-                //todo
-                isCanLogin = true;
-                if (isAnimationEnd) {
-                    LoginActivity.toThisAct(activity);
-                    activity.finish();
+                @Override
+                public void onFail(RequestBase request, Error error) {
+                    //todo
+                    isCanLogin = true;
+                    if (isAnimationEnd) {
+                        LoginActivity.toThisAct(activity);
+                        activity.finish();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
-    private static void  toNoClassPage(WelcomeActivity activity){
-            activity.startActivity(new Intent(activity, ClassManagerActivity.class));
-            activity.finish();
+
+    private static void toNoClassPage(WelcomeActivity activity) {
+        activity.startActivity(new Intent(activity, ClassManagerActivity.class));
+        activity.finish();
     }
 
     private static void getUserInfo(final WelcomeActivity activity) {
@@ -316,9 +328,13 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
                 if (ret.getCode() == 0) {
-                    UserInfo.getInstance().setInfo(ret.getData());
+                    UserInfo.Info info = ret.getData();
+                    info.setClassId(SpManager.getUserInfo().getClassId());
+                    info.setClassName(SpManager.getUserInfo().getClassName());
+                    info.setProjectName(SpManager.getUserInfo().getProjectName());
+                    SpManager.saveUserInfo(info);
                 } else {
-                    UserInfo.getInstance().setInfo(SpManager.getUserInfo());
+
                 }
                 if (isAnimationEnd) {
                     activity.whereToGoWithGetUserInfoEnd(activity);

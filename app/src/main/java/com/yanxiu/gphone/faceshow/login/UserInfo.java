@@ -28,6 +28,9 @@ public class UserInfo {
     }
 
     public static void update(Info userInfo) {
+        if (instance == null) {
+            instance = getInstance();
+        }
         instance.info = userInfo;
     }
 

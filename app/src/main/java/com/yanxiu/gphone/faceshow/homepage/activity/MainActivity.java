@@ -138,7 +138,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
 
     private void getData() {
-        if (TextUtils.isEmpty(UserInfo.getInstance().getInfo().getClassId())) {
+        if (TextUtils.isEmpty(SpManager.getUserInfo().getClassId())) {
             requestData();
         } else {
             initFragment();
@@ -156,7 +156,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 if (ret != null && ret.getCode() == 0 && ret.getData() != null && ret.getData().getClazsInfo() != null
                         && ret.getData().getProjectInfo() != null) {
                     mMainData = ret.getData();
-                    UserInfo.Info info = UserInfo.getInstance().getInfo();
+                    UserInfo.Info info = SpManager.getUserInfo();
                     info.setClassId(mMainData.getClazsInfo().getId());
                     info.setClassName(mMainData.getClazsInfo().getClazsName());
                     info.setProjectName(mMainData.getProjectInfo().getProjectName());

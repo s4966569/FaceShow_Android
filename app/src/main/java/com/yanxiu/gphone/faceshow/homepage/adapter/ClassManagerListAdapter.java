@@ -25,6 +25,7 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
     private List<GetStudentClazsesResponse.ClazsInfosBean> data = new ArrayList<>();
     private IRecyclerViewItemClick mIRecyclerViewItemClick;
 
+    private int mSelectedPosition = -1;
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -57,6 +58,9 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
                 }
             }
         });
+        if (mSelectedPosition != -1 && mSelectedPosition == position) {
+            views.get(position).setSelected(true);
+        }
     }
 
     public void setIRecyclerViewItemClick(IRecyclerViewItemClick iRecyclerViewItemClick) {
@@ -68,8 +72,9 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
         return data.size();
     }
 
-    public void update(List<GetStudentClazsesResponse.ClazsInfosBean> clazsInfos) {
+    public void update(List<GetStudentClazsesResponse.ClazsInfosBean> clazsInfos, int selcetPosition) {
         this.data = clazsInfos;
+        this.mSelectedPosition = selcetPosition;
         notifyDataSetChanged();
     }
 

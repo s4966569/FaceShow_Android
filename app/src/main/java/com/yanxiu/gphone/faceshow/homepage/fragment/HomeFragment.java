@@ -72,13 +72,13 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mRootView.setContentView(R.layout.fragment_home);
         mActivity = (MainActivity) getActivity();
         initData();
-        initView();
+//        initView();
         intListener();
         return mRootView;
     }
 
     public void toRefresh() {
-        if (TextUtils.isEmpty(UserInfo.getInstance().getInfo().getClassId())) {
+        if (TextUtils.isEmpty(SpManager.getUserInfo().getClassId())) {
             requestData();
         } else {
             initView();
@@ -93,11 +93,12 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                 mRootView.finish();
                 if (ret != null && ret.getCode() == 0 && ret.getData() != null && ret.getData().getClazsInfo() != null
                         && ret.getData().getProjectInfo() != null) {
-                    UserInfo.Info info = UserInfo.getInstance().getInfo();
-                    info.setClassId(ret.getData().getClazsInfo().getId());
+                    UserInfo.Info info = SpManager.getUserInfo();
+                    info.setClassId(String.valueOf(ret.getData().getClazsInfo().getId()));
                     info.setClassName(ret.getData().getClazsInfo().getClazsName());
                     info.setProjectName(ret.getData().getProjectInfo().getProjectName());
                     SpManager.saveUserInfo(info);
+
                     mMainBean = ret.getData();
                     initView();
                 } else {
@@ -145,8 +146,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
             mClass_tv.setText(mMainBean.getClazsInfo().getClazsName());
         } else {
-            mProject_tv.setText(UserInfo.getInstance().getInfo().getProjectName());
-            mClass_tv.setText(UserInfo.getInstance().getInfo().getClassName());
+            mProject_tv.setText(SpManager.getUserInfo().getProjectName());
+            mClass_tv.setText(SpManager.getUserInfo().getClassName());
         }
         initTabBar();
         mFragmentManager = getChildFragmentManager();
@@ -158,6 +159,12 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             }
             if (mFragmentFactory.getResourcesFragment() != null) {
                 mFragmentFactory.getResourcesFragment().refreshData();
+            }
+            if (mFragmentFactory.getCourseArrangeFragment() != null) {
+                mFragmentFactory.getCourseArrangeFragment().refreshData();
+            }
+            if (mFragmentFactory.getScheduleFragment() != null) {
+                mFragmentFactory.getScheduleFragment().refreshData();
             }
         }
         showCurrentFragment(lastIndex);
@@ -302,7 +309,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         if (index == mLastSelectIndex) {
             return;
         }
-        if (index == 0) { //默认选项
+        if (index == 0) {
+            //默认选项
             mNavBarViews[0].setEnabled(false);
             mNavBarViews[0].setSelected(true);
         }

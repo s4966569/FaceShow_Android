@@ -36,6 +36,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoResponse;
 import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
@@ -95,7 +96,7 @@ public class LoginActivity extends FaceShowBaseActivity {
     int btnY = 0;
     // 需要偏移的距离
     float delta = 0;
-    int rootH =0;
+    int rootH = 0;
 
     private ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener;
 
@@ -135,9 +136,9 @@ public class LoginActivity extends FaceShowBaseActivity {
         scroll_root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                int[] location =new int[2];
+                int[] location = new int[2];
                 scroll_root.getLocationOnScreen(location);
-                rootH =location[1]+scroll_root.getHeight();
+                rootH = location[1] + scroll_root.getHeight();
                 scroll_root.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -148,8 +149,8 @@ public class LoginActivity extends FaceShowBaseActivity {
                 Rect r = new Rect();
                 rootView.getWindowVisibleDisplayFrame(r);
                 if (isSoftVisible) {
-                    delta = (float) Math.abs(btnY - r.bottom+(rootH-r.bottom));
-                    AnimUtil.up(ll_login, -delta/3);
+                    delta = (float) Math.abs(btnY - r.bottom + (rootH - r.bottom));
+                    AnimUtil.up(ll_login, -delta / 3);
                 } else {
                     AnimUtil.up(ll_login, 0);
                 }
@@ -307,7 +308,7 @@ public class LoginActivity extends FaceShowBaseActivity {
     }
 
 
-    private void getUserInfo(final Activity activity) {
+    private void getUserInfo(final Activity activity, final MainBean data) {
         GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
         getUserInfoRequest.token = token;
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
@@ -317,9 +318,11 @@ public class LoginActivity extends FaceShowBaseActivity {
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(token);
                     SpManager.savePassPort(passPort);
-                    String userInfoStr = RequestBase.getGson().toJson(ret.getData());
-                    SpManager.saveUserInfo(userInfoStr);
-                    UserInfo.getInstance().setInfo(ret.getData());
+                    UserInfo.Info info = ret.getData();
+                    info.setProjectName(data.getProjectInfo().getProjectName());
+                    info.setClassName(data.getClazsInfo().getClazsName());
+                    info.setClassId(data.getClazsInfo().getId());
+                    SpManager.saveUserInfo(info);
                     PushManager.getInstance().turnOnPush(activity);//开启个推服务
                     //boolean isBind= PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
                     MainActivity.invoke(activity);
@@ -348,7 +351,7 @@ public class LoginActivity extends FaceShowBaseActivity {
             public void onSuccess(RequestBase request, MainResponse ret) {
 
                 if (ret != null && ret.getCode() == 0) {
-                    getUserInfo(activity);
+                    getUserInfo(activity, ret.getData());
                 } else {
                     if (ret != null && ret.getError() != null) {
                         rootView.finish();

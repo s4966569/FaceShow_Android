@@ -105,7 +105,12 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
                             data.clear();
                             data = ret.getData().getClazsInfos();
                         }
-                        mClassManagerListAdapter.update(ret.getData().getClazsInfos());
+                        for (int i = 0; i < data.size(); i++) {
+                            if (SpManager.getUserInfo().getClassId().equals(String.valueOf(data.get(i).getId()))) {
+                                mSelcetPosition = i;
+                            }
+                        }
+                        mClassManagerListAdapter.update(ret.getData().getClazsInfos(), mSelcetPosition);
                     } else {
                         mRootView.showOtherErrorView("暂无班级");
                     }
@@ -138,7 +143,7 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.title_layout_right_txt:
-                UserInfo.Info info = UserInfo.getInstance().getInfo();
+                UserInfo.Info info = SpManager.getUserInfo();
                 info.setClassId(String.valueOf(data.get(mSelcetPosition).getId()));
                 info.setClassName(data.get(mSelcetPosition).getClazsName());
                 info.setProjectName(data.get(mSelcetPosition).getProjectName());

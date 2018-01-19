@@ -51,6 +51,14 @@ public class HomeFragmentFactory {
         return mProjectTaskFragment;
     }
 
+    public CourseArrangeFragment getCourseArrangeFragment() {
+        return mCourseArrangeFragment;
+    }
+
+    public ScheduleFragment getScheduleFragment() {
+        return mScheduleFragment;
+    }
+
     private void hideFragment(FragmentTransaction transaction) {
 
         if (mCurrItem == 0 && mCourseArrangeFragment != null) {
