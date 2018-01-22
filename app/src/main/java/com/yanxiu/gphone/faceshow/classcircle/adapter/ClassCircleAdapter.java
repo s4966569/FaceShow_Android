@@ -337,31 +337,17 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mContentImageView.setEnabled(false);
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                if (moments.album.get(0).attachment != null) {
-                    String imgPath = moments.album.get(0).attachment.previewUrl;
-
+                if (moments.album != null && moments.album.size() > 0) {
                     GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
                     NineGridView.setImageLoader(glideNineImageLoader);
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
-                    for (int i = 0; i < position % 9; i++) {
+                    for (int i = 0; i < moments.album.size(); i++) {
                         ImageInfo imageInfo = new ImageInfo();
-                        imageInfo.setThumbnailUrl(imgPath);
-                        imageInfo.setBigImageUrl(imgPath);
+                        imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
+                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
                         imageInfos.add(imageInfo);
                     }
                     ((ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));
-
-//                        Glide.with(mContext).load(imgPath).asBitmap().error(R.drawable.net_error_picture).into(new ClassCircleImageTager(classCircleViewHolder.mContentImageView));
-                    classCircleViewHolder.mContentImgUrl = imgPath;
-                    classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ArrayList<String> list = new ArrayList<>();
-                            list.add(moments.album.get(0).attachment.downloadUrl);
-                            PhotoActivity.LaunchActivity(mContext, list, 0, mContext.hashCode(), PhotoActivity.DELETE_CANNOT);
-                        }
-                    });
-//                    }
                 }
             } else {
                 classCircleViewHolder.mContentImageView.setVisibility(View.GONE);

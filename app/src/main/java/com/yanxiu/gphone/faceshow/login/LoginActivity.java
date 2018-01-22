@@ -27,14 +27,18 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
+import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.NeedModel;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.db.cityModel;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
@@ -43,11 +47,13 @@ import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 import com.yanxiu.gphone.faceshow.util.anim.AnimUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -157,6 +163,47 @@ public class LoginActivity extends FaceShowBaseActivity {
             }
         });
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+
+//        String city = FileUtils.getFromAssets(getApplicationContext(), "city.json");
+//        String shen = FileUtils.getFromAssets(getApplicationContext(), "shen.json");
+//        String difang = FileUtils.getFromAssets(getApplicationContext(), "difang.json");
+//        cityModel cityModel = RequestBase.getGson().fromJson(city, cityModel.class);
+//        cityModel shenModel = RequestBase.getGson().fromJson(shen, cityModel.class);
+//        cityModel difangModel = RequestBase.getGson().fromJson(difang, cityModel.class);
+//        for (int i = 0; i < cityModel.getData().size(); i++) {
+//            for (int j = 0; j < difangModel.getData().size(); j++) {
+//                if (difangModel.getData().get(j).getParentId() == cityModel.getData().get(i).getId()) {
+//                    if (cityModel.getData().get(i).getNextLevelData() != null) {
+//                        cityModel.getData().get(i).getNextLevelData().add(difangModel.getData().get(j));
+//                    } else {
+//                        List<com.yanxiu.gphone.faceshow.db.cityModel.DataBean> nextLevelData = new ArrayList<>();
+//                        nextLevelData.add(difangModel.getData().get(j));
+//                        cityModel.getData().get(i).setNextLevelData(nextLevelData);
+//                    }
+//                }
+//            }
+//        }
+//
+//        for (int i = 0; i < shenModel.getData().size(); i++) {
+//            for (int j = 0; j < cityModel.getData().size(); j++) {
+//                if (shenModel.getData().get(i).getId() == cityModel.getData().get(j).getParentId()) {
+//                    if (shenModel.getData().get(i).getNextLevelData() != null) {
+//                        shenModel.getData().get(i).getNextLevelData().add(cityModel.getData().get(j));
+//                    } else {
+//                        List<com.yanxiu.gphone.faceshow.db.cityModel.DataBean> nextLevelData = new ArrayList<>();
+//                        nextLevelData.add(cityModel.getData().get(j));
+//                        shenModel.getData().get(i).setNextLevelData(nextLevelData);
+//                    }
+//                }
+//            }
+//        }
+//
+//        String data = RequestBase.getGson().toJson(shenModel);
+//        Log.e("frc",data);
+//
+//        FileUtils.writeFile(Constants.SDCARD_ROOT_NAME+"/xzz.txt", data,false);
+
+
     }
 
     /***

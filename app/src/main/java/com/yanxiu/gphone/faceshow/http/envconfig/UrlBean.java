@@ -16,7 +16,9 @@ public class UrlBean implements Serializable {
     private String loginServer;//登陆接口
     private String uploadServer;
     private String initializeUrl;
+    private String qiNiuServer;
     private String mode;
+
 
     public String getServer() {
         return server;
@@ -56,5 +58,13 @@ public class UrlBean implements Serializable {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public String getQiNiuServer() {
+        return qiNiuServer;
+    }
+
+    public void setQiNiuServer(String qiNiuServer) {
+        this.qiNiuServer = qiNiuServer;
     }
 }

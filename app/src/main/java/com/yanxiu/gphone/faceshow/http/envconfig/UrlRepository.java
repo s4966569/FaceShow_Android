@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.http.envconfig;
 
 
-
 /**
  * 存储url
  * application里去获取到的server信息，存储到这里，供全局使用
@@ -55,6 +54,14 @@ public class UrlRepository {
     public String getMode() {
         if (mUrlBean != null) {
             return mUrlBean.getMode();
+        } else {
+            return null;
+        }
+    }
+
+    public String getQiNiuServer() {
+        if (mUrlBean != null) {
+            return mUrlBean.getQiNiuServer();
         } else {
             return null;
         }

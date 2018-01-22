@@ -128,7 +128,6 @@ dependencies {
     compile 'cn.magicwindow:MagicWindowSDK:4.1'
     implementation files('libs/BaiduLBS_Android.jar')
     implementation files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.12.jar')
-
     /*imagepicker*/
     compile('com.lzy.widget:imagepicker:0.6.1') {
         //
@@ -139,4 +138,9 @@ dependencies {
         exclude group: 'com.android.support'
 
     }
+    /*七牛*/
+    compile files('libs/happy-dns-0.2.3.2.jar')
+    //    compile files('libs/okio-1.6.0.jar')
+    //    compile files('libs/qiniu-android-sdk-7.2.0.jar')
+    implementation files('libs/qiniu-android-sdk-7.2.0.jar')
 }

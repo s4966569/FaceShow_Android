@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,15 +27,23 @@ import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.lzy.imagepicker.view.CropImageView;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
+import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.SelectedImageListAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
+import com.yanxiu.gphone.faceshow.classcircle.request.GetQiNiuTokenRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.GetResIdRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.SendClassCircleRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.GetQiNiuTokenResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.GetResIdResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.classcircle.response.UploadResResponse;
@@ -49,6 +59,9 @@ import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,6 +104,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private PopupWindow mCancelPopupWindow;
     private UUID mSendDataRequest;
     private ImageItem mAddPicItem;
+
+    private UUID mGetSendDataRequestUUID;
 
     /**
      * 用来展示已经选中的图片
@@ -246,7 +261,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 String content = mContentView.getText().toString();
                 if (mImagePaths != null && mImagePaths.size() > 0) {
                     rootView.showLoadingView();
-                    uploadImg(content);
+                    getQiNiuToken();
                 } else {
                     if (TextUtils.isEmpty(content)) {
                         ToastUtil.showToast(getApplicationContext(), "请输入要发布的内容");
@@ -532,6 +547,115 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             mCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
         }
         mCancelPopupWindow.showAtLocation(context.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    /**
+     * 获取七牛token
+     */
+    private void getQiNiuToken() {
+        GetQiNiuTokenRequest getQiNiuTokenRequest = new GetQiNiuTokenRequest();
+        getQiNiuTokenRequest.from = "100";
+        getQiNiuTokenRequest.dtype = "app";
+        mGetSendDataRequestUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
+                if (ret != null) {
+                    if (ret.getCode() == 0) {
+                        uploadPicListByQiNiu(ret.getData().getToken(), mImagePaths);
+                    } else {
+                        rootView.hiddenLoadingView();
+                        ToastUtil.showToast(getApplicationContext(), ret.getError() != null ? ret.getError().getMessage() : getString(R.string.get_qiniu_token_error));
+                    }
+
+                } else {
+                    rootView.hiddenLoadingView();
+                    ToastUtil.showToast(getApplicationContext(), getString(R.string.get_qiniu_token_error));
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                rootView.hiddenLoadingView();
+                ToastUtil.showToast(getApplicationContext(), error.getMessage());
+            }
+        });
+    }
+
+    UploadManager uploadManager = null;
+    Configuration config = new Configuration.Builder()
+            .chunkSize(2 * 1024 * 1024)        // 分片上传时，每片的大小。 默认256K
+            .putThreshhold(4 * 1024 * 1024)   // 启用分片上传阀值。默认512K
+            .connectTimeout(10)           // 链接超时。默认10秒
+            .responseTimeout(60)          // 服务器响应超时。默认60秒
+            .build();
+
+    /**
+     * 通过七牛云上传图片
+     *
+     * @param token 七牛上传证书
+     */
+    private void uploadPicListByQiNiu(String token, @NonNull List<String> fileList) {
+        if (uploadManager == null) {
+            uploadManager = new UploadManager(config);
+        }
+        if (fileList != null && fileList.size() > 0) {
+            uploadPicByQiNiu(fileList, -1, null, token);
+        }
+    }
+
+    public class QiNiuResponse {
+
+
+        private String hash;
+        private String key;
+
+        public String getHash() {
+            return hash;
+        }
+
+        public void setHash(String hash) {
+            this.hash = hash;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+    }
+
+    private void uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
+        position++;
+        if (filePathList.size() <= position) {
+            uploadData(mContentView.getText().toString(), mResourceIds);
+        } else {
+            final int finalPosition = position;
+            uploadManager.put(filePathList.get(finalPosition), null, token, new UpCompletionHandler() {
+                @Override
+                public void complete(String key, ResponseInfo info, JSONObject res) {
+                    //res包含hash、key等信息，具体字段取决于上传策略的设置
+                    if (info.isOK()) {
+                        try {
+                            mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileType(filePathList.get(finalPosition));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        uploadPicByQiNiu(filePathList, finalPosition, null, token);
+
+                    } else {
+                        mResourceIds = "";
+                        rootView.hiddenLoadingView();
+                    }
+
+                }
+            }, new UploadOptions(null, null, false, new UpProgressHandler() {
+                @Override
+                public void progress(String s, double v) {
+                }
+            }, null));
+        }
     }
 
     private void dismissPopupWindow() {

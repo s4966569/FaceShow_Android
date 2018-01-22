@@ -12,14 +12,18 @@ import com.yanxiu.gphone.faceshow.login.UserInfo;
  * Time : 2017/9/20 18:53.
  * Function :
  */
-public class SendClassCircleRequest extends RequestBase{
+public class SendClassCircleRequest extends RequestBase {
 
-    public String method="moment.publishMoment";
-    public String token= SpManager.getToken();
-//    public String clazsId="7";
-    public String clazsId=UserInfo.getInstance().getInfo().getClassId();
+    public String method = "moment.publishMoment";
+    public String token = SpManager.getToken();
+    //    public String clazsId="7";
+    public String clazsId = UserInfo.getInstance().getInfo().getClassId();
     public String content;
-    public String resourceIds="";
+    public String resourceIds = "";
+    /**
+     * 通过七牛上传,写死
+     */
+    private String resourceSource = "qiniu";
 
     @Override
     protected boolean shouldLog() {
