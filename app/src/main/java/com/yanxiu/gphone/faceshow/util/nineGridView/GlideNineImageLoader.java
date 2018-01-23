@@ -17,7 +17,7 @@ import com.yanxiu.gphone.faceshow.R;
 public class GlideNineImageLoader implements NineGridView.ImageLoader {
     @Override
     public void onDisplayImage(Context context, ImageView imageView, String url) {
-        Glide.with(context).load(url).fitCenter().placeholder(R.drawable.ic_default_color).error(R.drawable.net_error_picture).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+        Glide.with(context).load(url).centerCrop().placeholder(R.drawable.ic_default_color).error(R.drawable.net_error_picture).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
 
     }
 

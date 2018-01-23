@@ -33,6 +33,7 @@ import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.Utils;
 import com.yanxiu.gphone.faceshow.util.nineGridView.GlideNineImageLoader;
 
 import java.util.ArrayList;
@@ -347,6 +348,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
                         imageInfos.add(imageInfo);
                     }
+
                     ((ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));
                 }
             } else {
