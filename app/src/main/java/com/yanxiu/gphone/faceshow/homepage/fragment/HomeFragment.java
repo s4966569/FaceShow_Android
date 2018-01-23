@@ -23,9 +23,12 @@ import com.yanxiu.gphone.faceshow.homepage.activity.ChooseClassActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
+import com.yanxiu.gphone.faceshow.http.main.GetToolsRequest;
+import com.yanxiu.gphone.faceshow.http.main.GetToolsResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 
@@ -62,6 +65,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private TextView mProject_tv;//项目名称
     private TextView mClass_tv;//班级
     private ImageView mCheckInEnterIMG;
+    private TextView mImgTools;
 
     private ImageView mImgResourceRedDot, mImgProjectTaskRedDot;
     private int lastIndex = 0;
@@ -74,7 +78,39 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         initData();
 //        initView();
         intListener();
+
         return mRootView;
+    }
+
+    /**
+     * 目前仅年会信息
+     */
+    private void getToolsData() {
+        GetToolsRequest getToolsRequest = new GetToolsRequest();
+        getToolsRequest.clazsId = SpManager.getUserInfo().getClassId();
+        getToolsRequest.startRequest(GetToolsResponse.class, new HttpCallback<GetToolsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, final GetToolsResponse ret) {
+                if (ret != null && ret.getData() != null && ret.getData().getTools() != null && ret.getData().getTools().size() > 0) {
+                    mImgTools.setVisibility(View.VISIBLE);
+                    mImgTools.setText(ret.getData().getTools().get(0).getName());
+                    mImgTools.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ToastUtil.showToast(getContext(),ret.getData().getTools().get(0).getEventObj().getContent());
+                        }
+                    });
+                }else {
+                    mImgTools.setVisibility(View.GONE);
+                }
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mImgTools.setVisibility(View.GONE);
+            }
+        });
     }
 
     public void toRefresh() {
@@ -83,6 +119,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         } else {
             initView();
         }
+        getToolsData();
     }
 
     private void requestData() {
@@ -141,6 +178,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
         mImgProjectTaskRedDot = (ImageView) mRootView.findViewById(R.id.img_project_task_red_dot);
         mImgResourceRedDot = (ImageView) mRootView.findViewById(R.id.img_resource_red_dot);
+        mImgTools = (TextView) mRootView.findViewById(R.id.img_tools);
 
         if (mMainBean != null && mMainBean.getClazsInfo() != null && mMainBean.getProjectInfo() != null) {
             mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
