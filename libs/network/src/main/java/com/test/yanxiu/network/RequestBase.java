@@ -108,7 +108,7 @@ public abstract class RequestBase {
         try {
             request = generateRequest(uuid);
         } catch (Exception e) {
-            Log.e("request", e.getMessage());
+            Log.e("request",e.getMessage());
         }
         if (request == null) {
             callback.onFail(RequestBase.this, new Error("request start error"));
@@ -162,8 +162,6 @@ public abstract class RequestBase {
                         }
                         T ret;
                         try {
-                            String str = jsonString(retStr);
-                            Log.e("frc", str);
                             ret = RequestBase.gson.fromJson(jsonString(retStr), clazz);
                         } catch (Exception e) {
                             e.printStackTrace();

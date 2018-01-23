@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.bean.VoteInfoBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteItemBean;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
             final ViewHolder holder = new ViewHolder();
             holder.position = i;
             holder.mQuestionContentView = (TextView) view.findViewById(R.id.tv_question_content);
-            holder.mQuestionContentView.setText(mEms[i]+bean.getItemName());
+            holder.mQuestionContentView.setText(mEms[i] + bean.getItemName());
             holder.mQuestionSelectView = view.findViewById(R.id.v_question_select);
             if (this.mIsClick) { //选项界面
                 if (mChooseType == TYPE_MULTI) {
@@ -178,15 +179,20 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                         onClick(i, false);
                     }
                 } else {
-                    setItemSelect(holder);
-                    if (isCallBack) {
-                        if (mChooseType == TYPE_SINGLE) {
-                            mAnswerList.clear();
+                    if (mData.getMaxSelectNum() >= mAnswerList.size() - 1) {
+                        setItemSelect(holder);
+                        if (isCallBack) {
+                            if (mChooseType == TYPE_SINGLE) {
+                                mAnswerList.clear();
+                            }
+                            //没有，添加
+                            if (!mAnswerList.contains(String.valueOf(position))) {
+                                mAnswerList.add(String.valueOf(position));
+                            }
+                            onClick(i, true);
                         }
-                        if (!mAnswerList.contains(String.valueOf(position))) { //没有，添加
-                            mAnswerList.add(String.valueOf(position));
-                        }
-                        onClick(i, true);
+                    } else {
+                        ToastUtil.showToast(getContext(), "该题最多可勾选" + mData.getMaxSelectNum() + "个答案");
                     }
                 }
             } else {
@@ -219,7 +225,11 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
 
     private void onClick(int position, boolean isSelected) {
         if (mOnItemClickListener != null) {
+//            if (mData.getMaxSelectNum()<mAnswerList.size()) {
             mOnItemClickListener.onChooseItemClick(position, isSelected);
+//            }else {
+//                ToastUtil.showToast(getContext(),"该题最多可勾选"+mData.getMaxSelectNum()+"个答案");
+//            }
         }
     }
 
