@@ -225,11 +225,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
 
     private void onClick(int position, boolean isSelected) {
         if (mOnItemClickListener != null) {
-//            if (mData.getMaxSelectNum()<mAnswerList.size()) {
             mOnItemClickListener.onChooseItemClick(position, isSelected);
-//            }else {
-//                ToastUtil.showToast(getContext(),"该题最多可勾选"+mData.getMaxSelectNum()+"个答案");
-//            }
         }
     }
 

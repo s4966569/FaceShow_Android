@@ -157,6 +157,6 @@
     <string name="message">消息</string>
     <string name="data_refresh_fail">刷新数据失败</string>
     <string name="new_message">%1$d条新消息</string>
-    <string name="choose_class">选择班级</string>
+    <string name="choose_class">切换班级</string>
     <string name="get_qiniu_token_error">获取七牛上传凭证失败</string>
 </resources>
