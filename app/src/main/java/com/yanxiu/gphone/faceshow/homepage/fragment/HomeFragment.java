@@ -4,6 +4,7 @@ package com.yanxiu.gphone.faceshow.homepage.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,10 +98,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                     mImgTools.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            ToastUtil.showToast(getContext(),ret.getData().getTools().get(0).getEventObj().getContent());
+                            ToastUtil.showToast(getContext(), ret.getData().getTools().get(0).getEventObj().getContent());
                         }
                     });
-                }else {
+                } else {
                     mImgTools.setVisibility(View.GONE);
                 }
 
@@ -167,6 +168,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mCheckInEnterIMG.setVisibility(View.VISIBLE);
         TextView textView = (TextView) mRootView.findViewById(R.id.title_layout_left_txt);
         textView.setText(R.string.choose_class);
+        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.color_1da1f2));
         textView.setVisibility(View.VISIBLE);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
