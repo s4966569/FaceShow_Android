@@ -205,8 +205,12 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mSelectedImageListAdapter.addPicClickListener(new SelectedImageListAdapter.PicClickListener() {
             @Override
             public void addPic() {
-                imagePicker.setSelectLimit(9 - (mImagePaths != null ? mImagePaths.size() : 0));
-                showDialog();
+                if (mImagePaths!=null&&mImagePaths.size() >=9) {
+                    ToastUtil.showToast(getApplicationContext(), "一次最多上传9张图片");
+                } else {
+                    imagePicker.setSelectLimit(9 - (mImagePaths != null ? mImagePaths.size() : 0));
+                    showDialog();
+                }
             }
 
             @Override
