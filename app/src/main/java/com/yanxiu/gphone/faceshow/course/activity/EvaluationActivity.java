@@ -251,7 +251,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
             }
         }
         sb.append("]");
-        return sb.toString();
+        return jsonString(sb.toString());
     }
 
     /**
@@ -322,5 +322,35 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
         interactMessage.setpId = mStepId;
         interactMessage.position = mPosition;
         EventBus.getDefault().post(interactMessage);
+    }
+    /**
+     * 将json格式字符串中返回的英文双引号改成中文的
+     *
+     * @param s
+     * @return
+     */
+    private String jsonString(String s) {
+        char[] temp = s.toCharArray();
+        int n = temp.length;
+        for (int i = 0; i < n; i++) {
+            if (temp[i] == ':' && temp[i + 1] == '"') {
+                int count = 0;
+                for (int j = i + 2; j < n; j++) {
+                    if (temp[j] == '"') {
+                        count++;
+                        if (temp[j + 1] != ',' && temp[j + 1] != '}') {
+                            if (count / 2 == 1) {
+                                temp[j] = '”';
+                            } else {
+                                temp[j] = '“';
+                            }
+                        } else if (temp[j + 1] == ',' || temp[j + 1] == '}') {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return new String(temp);
     }
 }
