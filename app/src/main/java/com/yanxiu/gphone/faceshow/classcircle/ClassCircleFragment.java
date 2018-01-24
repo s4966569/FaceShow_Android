@@ -596,7 +596,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
-        discardMoment(position, data);
+        showDiscardMomentPopupWindow(position,data);
+
     }
 
     /**
@@ -682,6 +683,31 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 public void onClick(View view) {
                     dismissPopupWindow();
                     discardComment(pos, data, commentPosition, comment);
+                }
+            });
+            (pop.findViewById(R.id.tv_cancel)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissPopupWindow();
+                }
+            });
+            mCancelPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mCancelPopupWindow.setAnimationStyle(R.style.pop_anim);
+            mCancelPopupWindow.setFocusable(true);
+            mCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+        }
+        mCancelPopupWindow.showAtLocation(this.getActivity().getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+    private void showDiscardMomentPopupWindow(final int position, final List<ClassCircleResponse.Data.Moments> data) {
+        if (mCancelPopupWindow == null) {
+            View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
+            TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);
+            tvDel.setText(R.string.class_circle_delete);
+            tvDel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissPopupWindow();
+                    discardMoment(position, data);
                 }
             });
             (pop.findViewById(R.id.tv_cancel)).setOnClickListener(new View.OnClickListener() {
