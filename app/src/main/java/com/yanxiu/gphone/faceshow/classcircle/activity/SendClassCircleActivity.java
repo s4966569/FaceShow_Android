@@ -3,6 +3,8 @@ package com.yanxiu.gphone.faceshow.classcircle.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -63,7 +65,11 @@ import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -205,7 +211,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mSelectedImageListAdapter.addPicClickListener(new SelectedImageListAdapter.PicClickListener() {
             @Override
             public void addPic() {
-                if (mImagePaths!=null&&mImagePaths.size() >=9) {
+                if (mImagePaths != null && mImagePaths.size() >= 9) {
                     ToastUtil.showToast(getApplicationContext(), "一次最多上传9张图片");
                 } else {
                     imagePicker.setSelectLimit(9 - (mImagePaths != null ? mImagePaths.size() : 0));
@@ -396,6 +402,9 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
             mSelectedImageList.remove(mSelectedImageList.size() - 1);
         }
+        for (int i = 0; i < images.size(); i++) {
+            reSizeBitmap(images.get(i).path);
+        }
         mSelectedImageList.addAll(images);
         mSelectedImageList.add(mAddPicItem);
         mSelectedImageListAdapter.update(mSelectedImageList);
@@ -415,6 +424,33 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             openPublishButton(true);
         }
 
+    }
+
+    /**
+     * 压缩下图片
+     *
+     * @param filePath
+     */
+    private void reSizeBitmap(String filePath) {
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        int options = 90;
+        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
+            baos.reset(); // 重置baos即清空baos
+            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+            options -= 10;// 每次都减少10
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
+
+
+        Bitmap mBitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
+        try {
+            FileOutputStream out = new FileOutputStream(filePath);
+            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void uploadImg(final String content) {
