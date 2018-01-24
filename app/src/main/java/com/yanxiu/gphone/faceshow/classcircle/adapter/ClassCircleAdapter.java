@@ -299,6 +299,14 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
             titleViewHolder.mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
             Glide.with(mContext).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(mContext, titleViewHolder.mHeadImgView, 10));
+            titleViewHolder.mHeadImgView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mMomentHeadImageClickListener != null) {
+                        mMomentHeadImageClickListener.myHeadClicked(titleViewHolder.getAdapterPosition(),String.valueOf(UserInfo.getInstance().getInfo().getUserId()));
+                    }
+                }
+            });
             if (mNewMessageNumber == 0) {
                 titleViewHolder.mRlNewMessage.setVisibility(View.GONE);
             } else {
