@@ -265,7 +265,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.title_layout_left_txt:
-                exitDialog();
+                onBackPressed();
                 break;
             case R.id.title_layout_right_txt:
                 String content = mContentView.getText().toString();
@@ -354,7 +354,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     @Override
     public void onBackPressed() {
-        exitDialog();
+        if (mCanPublish) {
+            exitDialog();
+        }else {
+            this.finish();
+        }
     }
 
 
@@ -373,6 +377,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
+    private boolean mCanPublish;
+
     /**
      * 开发发布按钮
      *
@@ -386,6 +392,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             mFunctionView.setEnabled(false);
             mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
         }
+        mCanPublish = bool;
     }
 
     private void createSelectedImagesList(Intent data) {
@@ -574,6 +581,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 .hideSoftInputFromWindow(mBackView.getWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
         showCancelPopupWindow(this);
+
     }
 
     private void showCancelPopupWindow(Activity context) {
