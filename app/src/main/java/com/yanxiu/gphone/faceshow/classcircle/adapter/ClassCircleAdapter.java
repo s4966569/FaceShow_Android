@@ -327,19 +327,6 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 headimg = moments.publisher.avatar;
             }
             Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
-            classCircleViewHolder.mHeadImgView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (isSelf(moments)) {
-                        if (mMomentHeadImageClickListener != null) {
-                            mMomentHeadImageClickListener.myHeadClicked(classCircleViewHolder.getAdapterPosition(), moments.publisher.userId);
-                        } else {
-                            mMomentHeadImageClickListener.otherUserHeadClicked(classCircleViewHolder.getAdapterPosition(), moments.publisher.userId);
-                        }
-                    }
-                }
-            });
-//            classCircleViewHolder.mContentImageView.setEnabled(false);
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
                 ((NineGridView)classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
