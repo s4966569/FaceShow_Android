@@ -11,6 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,7 +43,11 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
-
+        // 隐藏标题
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // 设置全屏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         final TextView tv_pager = (TextView) findViewById(R.id.tv_pager);
         rootView = (RelativeLayout) findViewById(R.id.rootView);
@@ -74,7 +80,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         finishActivityAnim();
     }
 
-    /** 绘制前开始动画 */
+    /**
+     * 绘制前开始动画
+     */
     @Override
     public boolean onPreDraw() {
         rootView.getViewTreeObserver().removeOnPreDrawListener(this);
@@ -107,7 +115,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         return true;
     }
 
-    /** activity的退场动画 */
+    /**
+     * activity的退场动画
+     */
     public void finishActivityAnim() {
         final View view = imagePreviewAdapter.getPrimaryItem();
         final ImageView imageView = imagePreviewAdapter.getPrimaryImageView();
@@ -137,7 +147,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         valueAnimator.start();
     }
 
-    /** 计算图片的宽高 */
+    /**
+     * 计算图片的宽高
+     */
     private void computeImageWidthAndHeight(ImageView imageView) {
 
         // 获取真实大小
@@ -155,7 +167,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         imageWidth = (int) (intrinsicWidth * w);
     }
 
-    /** 进场动画过程监听 */
+    /**
+     * 进场动画过程监听
+     */
     private void addIntoListener(ValueAnimator valueAnimator) {
         valueAnimator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -177,7 +191,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         });
     }
 
-    /** 退场动画过程监听 */
+    /**
+     * 退场动画过程监听
+     */
     private void addOutListener(ValueAnimator valueAnimator) {
         valueAnimator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -201,19 +217,25 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         });
     }
 
-    /** Integer 估值器 */
+    /**
+     * Integer 估值器
+     */
     public Integer evaluateInt(float fraction, Integer startValue, Integer endValue) {
         int startInt = startValue;
         return (int) (startInt + fraction * (endValue - startInt));
     }
 
-    /** Float 估值器 */
+    /**
+     * Float 估值器
+     */
     public Float evaluateFloat(float fraction, Number startValue, Number endValue) {
         float startFloat = startValue.floatValue();
         return startFloat + fraction * (endValue.floatValue() - startFloat);
     }
 
-    /** Argb 估值器 */
+    /**
+     * Argb 估值器
+     */
     public int evaluateArgb(float fraction, int startValue, int endValue) {
         int startA = (startValue >> 24) & 0xff;
         int startR = (startValue >> 16) & 0xff;
