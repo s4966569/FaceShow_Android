@@ -121,7 +121,7 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public ClassCircleResponse.Data.Moments getDataFromPosition(int position) {
-        if (position < 1 || position > mData.size()) {
+        if (position < 0 || position > mData.size()) {
             return null;
         }
         return mData.get(position);
