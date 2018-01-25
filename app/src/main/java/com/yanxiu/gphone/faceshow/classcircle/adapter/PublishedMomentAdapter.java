@@ -28,6 +28,7 @@ import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.ninegrid.ImageInfo;
 import com.yanxiu.gphone.faceshow.ninegrid.NineGridView;
+import com.yanxiu.gphone.faceshow.ninegrid.NineGridViewWrapper;
 import com.yanxiu.gphone.faceshow.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.nineGridView.GlideNineImageLoader;
@@ -268,32 +269,33 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 headimg = moments.publisher.avatar;
             }
             Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
-            classCircleViewHolder.mContentImageView.setEnabled(false);
+//            classCircleViewHolder.mContentImageView.setEnabled(false);
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                if (moments.album.get(0).attachment != null) {
-                    String imgPath = moments.album.get(0).attachment.previewUrl;
-
+                ((NineGridView)classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
+                    @Override
+                    public void onViewTouch(MotionEvent event) {
+                        if (animPosition != ANIM_POSITION_DEFAULT) {
+                            notifyItemChanged(animPosition, REFRESH_ANIM_VIEW);
+                            animPosition = ANIM_POSITION_DEFAULT;
+                        }
+                        if (mCommentClickListener != null) {
+                            mCommentClickListener.commentFinish();
+                        }
+                    }
+                });
+                if (moments.album != null && moments.album.size() > 0) {
                     GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
                     NineGridView.setImageLoader(glideNineImageLoader);
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
-                    for (int i = 0; i < position % 9; i++) {
+                    for (int i = 0; i < moments.album.size(); i++) {
                         ImageInfo imageInfo = new ImageInfo();
-                        imageInfo.setThumbnailUrl(imgPath);
-                        imageInfo.setBigImageUrl(imgPath);
+                        imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
+                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
                         imageInfos.add(imageInfo);
                     }
-                    ((ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));
-                    classCircleViewHolder.mContentImgUrl = imgPath;
-                    classCircleViewHolder.mContentImageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ArrayList<String> list = new ArrayList<>();
-                            list.add(moments.album.get(0).attachment.downloadUrl);
-                            PhotoActivity.LaunchActivity(mContext, list, 0, mContext.hashCode(), PhotoActivity.DELETE_CANNOT);
-                        }
-                    });
-//                    }
+
+                    ((PublishedMomentAdapter.ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));
                 }
             } else {
                 classCircleViewHolder.mContentImageView.setVisibility(View.GONE);

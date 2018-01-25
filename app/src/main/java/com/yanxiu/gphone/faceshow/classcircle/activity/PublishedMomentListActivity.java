@@ -88,7 +88,8 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     private SwipeRefreshLayout mRefreshView;
     private PublicLoadLayout rootView;
     private View mDataEmptyView;
-    private PopupWindow mCancelPopupWindow;
+    private PopupWindow mDiscardCommentCancelPopupWindow;
+    private PopupWindow mDiscardMomentCancelPopupWindow;
     private ImageView mBackView;
 
     private boolean isCommentLoading = false;
@@ -107,6 +108,12 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         super.onCreate(savedInstanceState);
         rootView = new PublicLoadLayout(this);
         rootView.setContentView(R.layout.activity_published_classcircle);
+        rootView.setRetryButtonOnclickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startRequest("0");
+            }
+        });
         setContentView(rootView);
         initView(rootView);
         listener();
@@ -204,7 +211,9 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
 
         @Override
         public void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int commentPosition, Comments comment) {
-            showDiscardCommentPopupWindow(pos, data, commentPosition, comment);
+            mMomentPosition = pos;
+            mCommentPosition = commentPosition;
+            showDiscardCommentPopupWindow(data);
         }
     };
     private PublishedMomentAdapter.onContentLinesChangedlistener mOnContentLinesChangedlistener = new PublishedMomentAdapter.onContentLinesChangedlistener() {
@@ -233,7 +242,8 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     private PublishedMomentAdapter.onDeleteClickListener mOnDeleteClickListener = new PublishedMomentAdapter.onDeleteClickListener() {
         @Override
         public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
-            discardMoment(position, data);
+            mMomentPosition = position;
+            showDiscardMomentPopupWindow(data);
         }
     };
 
@@ -540,21 +550,20 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     /**
      * 删除自己发布的班级圈
      *
-     * @param position 所在位置
-     * @param data     所有班级圈信息
+     * @param data 所有班级圈信息
      */
-    private void discardMoment(final int position, final List<ClassCircleResponse.Data.Moments> data) {
+    private void discardMoment(final List<ClassCircleResponse.Data.Moments> data) {
         rootView.showLoadingView();
         DiscardMomentRequest discardMomentRequest = new DiscardMomentRequest();
-        discardMomentRequest.momentId = data.get(position - 1).id;
+        discardMomentRequest.momentId = data.get(mMomentPosition).id;
         mDiscardMomentRequest = discardMomentRequest.startRequest(DiscardMomentResponse.class, new HttpCallback<DiscardMomentResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscardMomentResponse ret) {
                 rootView.hiddenLoadingView();
                 mDiscardMomentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
-                    data.remove(position - 1);
-                    mClassCircleAdapter.notifyItemRemoved(position);
+                    data.remove(mMomentPosition);
+                    mClassCircleAdapter.notifyItemRemoved(mMomentPosition);
                 } else {
                     ToastUtil.showToast(PublishedMomentListActivity.this, ret.getError().getMessage());
                 }
@@ -572,23 +581,20 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     /**
      * 删除自己发布的评论
      *
-     * @param pos             当前评论所在的话题列表的位置
-     * @param data            当前评论所在的话题列表
-     * @param commentPosition 当前评论所在评论列表的位置
-     * @param comment         当期评论内容
+     * @param data 当前评论所在的话题列表
      */
-    private void discardComment(final int pos, final List<ClassCircleResponse.Data.Moments> data, final int commentPosition, final Comments comment) {
+    private void discardComment(final List<ClassCircleResponse.Data.Moments> data) {
         rootView.showLoadingView();
         DiscardCommentRequest discardCommentRequest = new DiscardCommentRequest();
-        discardCommentRequest.commentId = data.get(pos - 1).comments.get(commentPosition).id;
+        discardCommentRequest.commentId = data.get(mMomentPosition).comments.get(mCommentPosition).id;
         mDiscardCommentRequest = discardCommentRequest.startRequest(DiscardMomentResponse.class, new HttpCallback<DiscardMomentResponse>() {
             @Override
             public void onSuccess(RequestBase request, DiscardMomentResponse ret) {
                 rootView.hiddenLoadingView();
                 mDiscardCommentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
-                    data.get(pos - 1).comments.remove(commentPosition);
-                    mClassCircleAdapter.notifyItemChanged(pos, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    data.get(mMomentPosition).comments.remove(mCommentPosition);
+                    mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     mOnCommentClickListener.commentFinish();
                 } else {
                     ToastUtil.showToast(PublishedMomentListActivity.this, ret.getError().getMessage());
@@ -608,8 +614,8 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     }
 
 
-    private void showDiscardCommentPopupWindow(final int pos, final List<ClassCircleResponse.Data.Moments> data, final int commentPosition, final Comments comment) {
-        if (mCancelPopupWindow == null) {
+    private void showDiscardCommentPopupWindow(final List<ClassCircleResponse.Data.Moments> data) {
+        if (mDiscardCommentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this).inflate(R.layout.pop_ask_cancel_layout, null);
             TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);
             tvDel.setText(R.string.class_circle_delete);
@@ -617,7 +623,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
                 @Override
                 public void onClick(View view) {
                     dismissPopupWindow();
-                    discardComment(pos, data, commentPosition, comment);
+                    discardComment(data);
                 }
             });
             (pop.findViewById(R.id.tv_cancel)).setOnClickListener(new View.OnClickListener() {
@@ -626,17 +632,46 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
                     dismissPopupWindow();
                 }
             });
-            mCancelPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mCancelPopupWindow.setAnimationStyle(R.style.pop_anim);
-            mCancelPopupWindow.setFocusable(true);
-            mCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+            mDiscardCommentCancelPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mDiscardCommentCancelPopupWindow.setAnimationStyle(R.style.pop_anim);
+            mDiscardCommentCancelPopupWindow.setFocusable(true);
+            mDiscardCommentCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
         }
-        mCancelPopupWindow.showAtLocation(this.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+        mDiscardCommentCancelPopupWindow.showAtLocation(this.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    private void showDiscardMomentPopupWindow( final List<ClassCircleResponse.Data.Moments> data) {
+        if (mDiscardMomentCancelPopupWindow == null) {
+            View pop = LayoutInflater.from(this).inflate(R.layout.pop_ask_cancel_layout, null);
+            TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);
+            tvDel.setText(R.string.class_circle_delete);
+            tvDel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissPopupWindow();
+                    discardMoment(data);
+                }
+            });
+            (pop.findViewById(R.id.tv_cancel)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismissPopupWindow();
+                }
+            });
+            mDiscardMomentCancelPopupWindow = new PopupWindow(pop, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mDiscardMomentCancelPopupWindow.setAnimationStyle(R.style.pop_anim);
+            mDiscardMomentCancelPopupWindow.setFocusable(true);
+            mDiscardMomentCancelPopupWindow.setBackgroundDrawable(new ColorDrawable(0));
+        }
+        mDiscardMomentCancelPopupWindow.showAtLocation(this.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
     }
 
     private void dismissPopupWindow() {
-        if (mCancelPopupWindow != null) {
-            mCancelPopupWindow.dismiss();
+        if (mDiscardCommentCancelPopupWindow != null) {
+            mDiscardCommentCancelPopupWindow.dismiss();
+        }
+        if (mDiscardMomentCancelPopupWindow!=null){
+            mDiscardMomentCancelPopupWindow.dismiss();
         }
     }
 
