@@ -74,7 +74,9 @@ import static android.app.Activity.RESULT_OK;
  */
 public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener,
         View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener,
-        SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, ClassCircleAdapter.onDeleteClickListener, ClassCircleAdapter.onMomentHeadImageClickListener, ClassCircleAdapter.onNewMessageButtonClickListener {
+        SwipeRefreshLayout.OnRefreshListener, ClassCircleAdapter.onContentLinesChangedlistener,
+        ClassCircleAdapter.onDeleteClickListener, ClassCircleAdapter.onMomentHeadImageClickListener
+        , ClassCircleAdapter.onNewMessageButtonClickListener {
 
     private static final int REQUEST_CODE_MY_PUBLISHED_MOMENTS = 0x000;
     public boolean firstEnter = true;
@@ -97,6 +99,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private SwipeRefreshLayout mRefreshView;
     private PublicLoadLayout rootView;
     private View mDataEmptyView;
+    private TextView mTvSureComment;
 
     private boolean isCommentLoading = false;
 
@@ -178,7 +181,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mFunctionView.setText(R.string.publish);
         mFunctionView.setTextColor(ContextCompat.getColor(ClassCircleFragment.this.getContext(), R.color.color_1da1f2));
         mFunctionView.setVisibility(View.VISIBLE);
-
+        mTvSureComment = (TextView) rootView.findViewById(R.id.tv_sure);
         mCommentLayout = (RelativeLayout) rootView.findViewById(R.id.ll_edit);
         mCommentView = (EditText) rootView.findViewById(R.id.ed_comment);
         mAdjustPanView = (SizeChangeCallbackView) rootView.findViewById(R.id.sc_adjustpan);
@@ -200,9 +203,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mClassCircleAdapter.setMomentHeadImageClickListener(ClassCircleFragment.this);
         mClassCircleAdapter.setNewMessageButtonClickListener(ClassCircleFragment.this);
         mFunctionView.setOnClickListener(ClassCircleFragment.this);
-        mCommentView.setOnEditorActionListener(ClassCircleFragment.this);
         mRefreshView.setOnRefreshListener(ClassCircleFragment.this);
         rootView.setRetryButtonOnclickListener(this);
+        mTvSureComment.setOnClickListener(ClassCircleFragment.this);
     }
 
     private void initData() {
@@ -437,6 +440,18 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 rootView.hiddenNetErrorView();
                 onRefresh();
                 break;
+            case R.id.tv_sure:
+                String comment = mCommentView.getText().toString();
+                if (!TextUtils.isEmpty(comment) && !isCommentLoading) {
+                    isCommentLoading = true;
+                    ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
+                    if (isCommentMaster) {
+                        startCommentToMasterRequest(mMomentPosition, comment, moments);
+                    } else {
+                        startCommentToUserRequest(mMomentPosition, comment, moments, moments.comments.get(mCommentPosition));
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -570,23 +585,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         Logger.d("mClassCircleRecycleView", " ");
     }
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (actionId == EditorInfo.IME_ACTION_SEND) {
-            String comment = mCommentView.getText().toString();
-            if (!TextUtils.isEmpty(comment) && !isCommentLoading) {
-                isCommentLoading = true;
-                ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
-                if (isCommentMaster) {
-                    startCommentToMasterRequest(mMomentPosition, comment, moments);
-                } else {
-                    startCommentToUserRequest(mMomentPosition, comment, moments, moments.comments.get(mCommentPosition));
-                }
-            }
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public void likeClick(int position, ClassCircleResponse.Data.Moments moments) {
@@ -600,7 +598,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
-        mMomentPosition =position;
+        mMomentPosition = position;
         showDiscardMomentPopupWindow(data);
 
     }
@@ -608,9 +606,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     /**
      * 删除自己发布的班级圈
      *
-     * @param data     所有班级圈信息
+     * @param data 所有班级圈信息
      */
-    private void discardMoment( final List<ClassCircleResponse.Data.Moments> data) {
+    private void discardMoment(final List<ClassCircleResponse.Data.Moments> data) {
         rootView.showLoadingView();
         DiscardMomentRequest discardMomentRequest = new DiscardMomentRequest();
         discardMomentRequest.momentId = data.get(mMomentPosition - 1).id;
@@ -639,8 +637,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     /**
      * 删除自己发布的评论
      *
-     * @param data            当前评论所在的话题列表
-     * @param comment         当期评论内容
+     * @param data    当前评论所在的话题列表
+     * @param comment 当期评论内容
      */
     private void discardComment(final List<ClassCircleResponse.Data.Moments> data, final Comments comment) {
         rootView.showLoadingView();
@@ -676,7 +674,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private PopupWindow mDiscardCommentCancelPopupWindow;
     private PopupWindow mDiscardMomentCancelPopupWindow;
 
-    private void showDiscardCommentPopupWindow( final List<ClassCircleResponse.Data.Moments> data, final Comments comment) {
+    private void showDiscardCommentPopupWindow(final List<ClassCircleResponse.Data.Moments> data, final Comments comment) {
         mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
         if (mDiscardCommentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
@@ -702,7 +700,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         }
         mDiscardCommentCancelPopupWindow.showAtLocation(this.getActivity().getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
     }
-    private void showDiscardMomentPopupWindow( final List<ClassCircleResponse.Data.Moments> data) {
+
+    private void showDiscardMomentPopupWindow(final List<ClassCircleResponse.Data.Moments> data) {
         mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
         if (mDiscardMomentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
@@ -733,7 +732,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         if (mDiscardMomentCancelPopupWindow != null) {
             mDiscardMomentCancelPopupWindow.dismiss();
         }
-        if (mDiscardCommentCancelPopupWindow!=null){
+        if (mDiscardCommentCancelPopupWindow != null) {
             mDiscardCommentCancelPopupWindow.dismiss();
         }
     }

@@ -30,27 +30,40 @@
         <RelativeLayout
             android:id="@+id/ll_edit"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="@color/color_fafafa"
-            android:paddingEnd="15dp"
+            android:minHeight="52dp"
+            android:paddingEnd="5dp"
             android:paddingStart="15dp"
             android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_sure"
+                android:layout_width="45dp"
+                android:layout_height="35dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/shape_sure_btn_bg"
+                android:gravity="center"
+                android:text="@string/sure"
+                android:textColor="@color/color_white"
+                android:textSize="15sp" />
 
             <EditText
                 android:id="@+id/ed_comment"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@+id/tv_sure"
                 android:background="@drawable/shape_class_circle_edittext"
-                android:hint="@string/class_circle_comment_hint"
-                android:imeOptions="actionSend"
+                android:hint="评论"
+                android:maxLines="3"
+                android:minHeight="35dp"
                 android:paddingEnd="10dp"
-                android:paddingStart="10dp"
-                android:singleLine="true"
-                android:textCursorDrawable="@drawable/shape_fs_cursor" />
+                android:paddingStart="10dp" />
         </RelativeLayout>
-
 
         <!-- 修改layout_marginTop数值时需要注意用户头像背景（PS SBPM） -->
         <RelativeLayout

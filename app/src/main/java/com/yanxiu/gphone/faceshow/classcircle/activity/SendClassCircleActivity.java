@@ -17,9 +17,11 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -197,6 +199,17 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
+    private TextView.OnEditorActionListener mOnEditorActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+            if (actionId == EditorInfo.IME_ACTION_SEND) {
+
+                return true;
+            }
+            return false;
+        }
+    };
+
     private void initRecyclerView() {
         mImageSelectedRecyclerView = (RecyclerView) findViewById(R.id.selected_images_recycler_view);
         if (mSelectedImageList == null) {
@@ -356,7 +369,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     public void onBackPressed() {
         if (mCanPublish) {
             exitDialog();
-        }else {
+        } else {
             this.finish();
         }
     }

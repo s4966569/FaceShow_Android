@@ -91,7 +91,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     private PopupWindow mDiscardCommentCancelPopupWindow;
     private PopupWindow mDiscardMomentCancelPopupWindow;
     private ImageView mBackView;
-
+    private TextView mTvSureComment;
     private boolean isCommentLoading = false;
     private String mUserId;
 
@@ -145,6 +145,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         mTitleView = (TextView) rootView.findViewById(R.id.title_layout_title);
         mTitleView.setVisibility(View.VISIBLE);
 
+        mTvSureComment = (TextView) rootView.findViewById(R.id.tv_sure);
         mCommentLayout = (RelativeLayout) rootView.findViewById(R.id.ll_edit);
         mCommentView = (EditText) rootView.findViewById(R.id.ed_comment);
         mAdjustPanView = (SizeChangeCallbackView) rootView.findViewById(R.id.sc_adjustpan);
@@ -159,8 +160,8 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
 
     private void listener() {
         mBackView.setOnClickListener(mOnClickListener);
+        mTvSureComment.setOnClickListener(mOnClickListener);
         mClassCircleRecycleView.setLoadMoreListener(mLoadMoreListener);
-        mCommentView.setOnEditorActionListener(mOnEditorActionListener);
         mRefreshView.setOnRefreshListener(mOnRefreshListener);
 
         mClassCircleAdapter.setCommentClickListener(mOnCommentClickListener);
@@ -269,6 +270,17 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
                 mRefreshView.setRefreshing(true);
                 rootView.hiddenNetErrorView();
                 mOnRefreshListener.onRefresh();
+            } else if (view == mTvSureComment) {
+                String comment = mCommentView.getText().toString();
+                if (!TextUtils.isEmpty(comment) && !isCommentLoading) {
+                    isCommentLoading = true;
+                    ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
+                    if (isCommentMaster) {
+                        startCommentToMasterRequest(mMomentPosition, comment, moments);
+                    } else {
+                        startCommentToUserRequest(mMomentPosition, comment, moments, moments.comments.get(mCommentPosition));
+                    }
+                }
             }
         }
     };
@@ -284,25 +296,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
 
         }
     };
-    private TextView.OnEditorActionListener mOnEditorActionListener = new TextView.OnEditorActionListener() {
-        @Override
-        public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-            if (actionId == EditorInfo.IME_ACTION_SEND) {
-                String comment = mCommentView.getText().toString();
-                if (!TextUtils.isEmpty(comment) && !isCommentLoading) {
-                    isCommentLoading = true;
-                    ClassCircleResponse.Data.Moments moments = mClassCircleAdapter.getDataFromPosition(mMomentPosition);
-                    if (isCommentMaster) {
-                        startCommentToMasterRequest(mMomentPosition, comment, moments);
-                    } else {
-                        startCommentToUserRequest(mMomentPosition, comment, moments, moments.comments.get(mCommentPosition));
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
-    };
+
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
@@ -641,7 +635,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         mDiscardCommentCancelPopupWindow.showAtLocation(this.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
     }
 
-    private void showDiscardMomentPopupWindow( final List<ClassCircleResponse.Data.Moments> data) {
+    private void showDiscardMomentPopupWindow(final List<ClassCircleResponse.Data.Moments> data) {
         mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
         if (mDiscardMomentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this).inflate(R.layout.pop_ask_cancel_layout, null);
@@ -672,7 +666,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         if (mDiscardCommentCancelPopupWindow != null) {
             mDiscardCommentCancelPopupWindow.dismiss();
         }
-        if (mDiscardMomentCancelPopupWindow!=null){
+        if (mDiscardMomentCancelPopupWindow != null) {
             mDiscardMomentCancelPopupWindow.dismiss();
         }
     }
