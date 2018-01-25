@@ -31,6 +31,7 @@ import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+import com.yanxiu.gphone.faceshow.webView.FaceShowWebActivity;
 
 
 /**
@@ -98,7 +99,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                     mImgTools.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            ToastUtil.showToast(getContext(), ret.getData().getTools().get(0).getEventObj().getContent());
+                            Intent intent = new Intent(getActivity(), FaceShowWebActivity.class);
+                            intent.putExtra("data",ret);
+                            startActivity(intent);
+//                            ToastUtil.showToast(getContext(), ret.getData().getTools().get(0).getEventObj().getContent());
                         }
                     });
                 } else {

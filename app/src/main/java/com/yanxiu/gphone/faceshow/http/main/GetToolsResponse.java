@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.http.main;
 
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class GetToolsResponse extends FaceShowBaseResponse {
         this.currentTime = currentTime;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         private List<ToolsBean> tools;
         private List<?> notices;
 
@@ -51,24 +52,7 @@ public class GetToolsResponse extends FaceShowBaseResponse {
             this.notices = notices;
         }
 
-        public static class ToolsBean {
-            /**
-             * id : 5
-             * parentId : 0
-             * platId : 1
-             * projectId : 1
-             * clazsId : 1
-             * name : 年会赢大奖
-             * toolType : page
-             * event :
-             * eventObj : {"eventType":"url","title":"点一点小游戏","content":"http://orz.yanxiu.com/pxt/platform/data.api?method=game.getGame&gameId=2","vHtml":null}
-             * state : 1
-             * toolOrder : 1
-             * needToken : 1
-             * needScene : 1
-             * description : null
-             * subTools : null
-             */
+        public static class ToolsBean implements Serializable {
 
             private int id;
             private int parentId;
@@ -206,13 +190,7 @@ public class GetToolsResponse extends FaceShowBaseResponse {
                 this.subTools = subTools;
             }
 
-            public static class EventObjBean {
-                /**
-                 * eventType : url
-                 * title : 点一点小游戏
-                 * content : http://orz.yanxiu.com/pxt/platform/data.api?method=game.getGame&gameId=2
-                 * vHtml : null
-                 */
+            public static class EventObjBean implements Serializable {
 
                 private String eventType;
                 private String title;

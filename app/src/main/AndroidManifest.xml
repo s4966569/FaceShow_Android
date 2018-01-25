@@ -227,12 +227,16 @@
         <activity
             android:name=".classcircle.activity.PublishedMomentListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".classcircle.activity.ClassCircleMessageActivity"
+        <activity
+            android:name=".classcircle.activity.ClassCircleMessageActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".homepage.activity.ChooseClassActivity"
-            android:screenOrientation="portrait"  />
-        <activity android:name=".ninegrid.preview.ImagePreviewActivity"
+        <activity
+            android:name=".homepage.activity.ChooseClassActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ninegrid.preview.ImagePreviewActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".webView.FaceShowWebActivity"></activity>
     </application>
 
 </manifest>
