@@ -7,8 +7,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.lzy.ninegrid.NineGridView;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.ninegrid.NineGridView;
 
 /**
  * @author frc on 2018/1/15.

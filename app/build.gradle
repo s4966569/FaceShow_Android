@@ -134,10 +134,12 @@ dependencies {
         exclude group: 'com.android.support'
     }
     /*九张图显示View*/
-    compile('com.lzy.widget:ninegridview:0.2.0') {
-        exclude group: 'com.android.support'
+//    compile('com.lzy.widget:ninegridview:0.2.0') {
+//        exclude group: 'com.android.support'
+//
+//    }
+    compile 'com.github.chrisbanes.photoview:library:1.2.4'
 
-    }
     /*七牛*/
     compile files('libs/happy-dns-0.2.3.2.jar')
     implementation files('libs/qiniu-android-sdk-7.2.0.jar')

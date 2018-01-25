@@ -72,7 +72,9 @@ import static android.app.Activity.RESULT_OK;
 /**
  * 首页 “班级圈”Fragment
  */
-public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener, View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener, SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, ClassCircleAdapter.onDeleteClickListener, ClassCircleAdapter.onMomentHeadImageClickListener, ClassCircleAdapter.onNewMessageButtonClickListener {
+public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMoreRecyclerView.LoadMoreListener,
+        View.OnClickListener, ClassCircleAdapter.onCommentClickListener, ClassCircleAdapter.onLikeClickListener,
+        SwipeRefreshLayout.OnRefreshListener, TextView.OnEditorActionListener, ClassCircleAdapter.onContentLinesChangedlistener, ClassCircleAdapter.onDeleteClickListener, ClassCircleAdapter.onMomentHeadImageClickListener, ClassCircleAdapter.onNewMessageButtonClickListener {
 
     private static final int REQUEST_CODE_MY_PUBLISHED_MOMENTS = 0x000;
     public boolean firstEnter = true;

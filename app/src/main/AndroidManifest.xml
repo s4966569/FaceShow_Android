@@ -231,6 +231,8 @@
             android:screenOrientation="portrait" />
         <activity android:name=".homepage.activity.ChooseClassActivity"
             android:screenOrientation="portrait"  />
+        <activity android:name=".ninegrid.preview.ImagePreviewActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

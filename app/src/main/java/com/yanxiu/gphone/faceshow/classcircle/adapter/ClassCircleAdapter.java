@@ -17,23 +17,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.ViewTarget;
-import com.lzy.ninegrid.ImageInfo;
-import com.lzy.ninegrid.NineGridView;
-import com.lzy.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
-import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.ninegrid.ImageInfo;
+import com.yanxiu.gphone.faceshow.ninegrid.NineGridView;
+import com.yanxiu.gphone.faceshow.ninegrid.NineGridViewWrapper;
+import com.yanxiu.gphone.faceshow.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.yanxiu.gphone.faceshow.util.Utils;
 import com.yanxiu.gphone.faceshow.util.nineGridView.GlideNineImageLoader;
 
 import java.util.ArrayList;
@@ -303,7 +299,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onClick(View view) {
                     if (mMomentHeadImageClickListener != null) {
-                        mMomentHeadImageClickListener.myHeadClicked(titleViewHolder.getAdapterPosition(),String.valueOf(UserInfo.getInstance().getInfo().getUserId()));
+                        mMomentHeadImageClickListener.myHeadClicked(titleViewHolder.getAdapterPosition(), String.valueOf(UserInfo.getInstance().getInfo().getUserId()));
                     }
                 }
             });
@@ -343,9 +339,21 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 }
             });
-            classCircleViewHolder.mContentImageView.setEnabled(false);
+//            classCircleViewHolder.mContentImageView.setEnabled(false);
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
+                ((NineGridView)classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
+                    @Override
+                    public void onViewTouch(MotionEvent event) {
+                        if (animPosition != ANIM_POSITION_DEFAULT) {
+                            notifyItemChanged(animPosition, REFRESH_ANIM_VIEW);
+                            animPosition = ANIM_POSITION_DEFAULT;
+                        }
+                        if (mCommentClickListener != null) {
+                            mCommentClickListener.commentFinish();
+                        }
+                    }
+                });
                 if (moments.album != null && moments.album.size() > 0) {
                     GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
                     NineGridView.setImageLoader(glideNineImageLoader);

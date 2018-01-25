@@ -18,9 +18,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.lzy.ninegrid.ImageInfo;
-import com.lzy.ninegrid.NineGridView;
-import com.lzy.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -29,6 +26,9 @@ import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.ninegrid.ImageInfo;
+import com.yanxiu.gphone.faceshow.ninegrid.NineGridView;
+import com.yanxiu.gphone.faceshow.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.nineGridView.GlideNineImageLoader;
 
