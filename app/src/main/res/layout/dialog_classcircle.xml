@@ -36,14 +36,6 @@
                 android:textColor="@color/color_333333"
                 android:textSize="16dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="照片或视频"
-                android:textColor="@color/color_666666"
-                android:textSize="13dp" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
