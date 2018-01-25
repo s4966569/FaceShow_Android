@@ -89,7 +89,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int ANIM_CLOSE = 0x0003;
     private static final int ANIM_DURATION = 200;
     private static final int ANIM_POSITION_DEFAULT = -1;
-    private static final int REFRESH_ANIM_VIEW = 0x0004;
+    public static final int REFRESH_ANIM_VIEW = 0x0004;
     public static final int REFRESH_LIKE_DATA = 0x0005;
     public static final int REFRESH_COMMENT_DATA = 0x0006;
     public static final int SHOW_NEW_MESSAGE = 0x0007;
