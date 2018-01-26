@@ -9,7 +9,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleNewMessageResponse;
+import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,7 +25,8 @@ import butterknife.ButterKnife;
 public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleMessageAdapter.ViewHolder> {
 
 
-    IRecyclerViewItemClick mIRecyclerViewItemClick;
+    private IRecyclerViewItemClick mIRecyclerViewItemClick;
+    private List<ClassCircleNewMessageResponse.DataBean.MsgsBean> mMsgsBeanList;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,19 +45,19 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
             }
         });
 
-        holder.mTvPublisherName.setText("葛长龙");
-        holder.mTvMessageContent.setText("咦  咋打成了葛长龙吗  不应该是孙长龙吗?");
-        holder.mTvPublishTime.setText("10亿年前");
-        // TODO: 2018/1/18 需要占位图
-        Glide.with(holder.itemView.getContext()).load("").into(holder.mImgPic);
+        holder.mTvPublisherName.setText(mMsgsBeanList.get(position).getUserName());
+        holder.mTvMessageContent.setText(mMsgsBeanList.get(position).getComment());
+        holder.mTvPublishTime.setText(mMsgsBeanList.get(position).getCreateTime());
+        Glide.with(holder.itemView.getContext()).load(mMsgsBeanList.get(position).getMomentSimple().getImage()).into(holder.mImgPic);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mMsgsBeanList != null ? mMsgsBeanList.size() : 0;
     }
 
-    public void update() {
+    public void update(List<ClassCircleNewMessageResponse.DataBean.MsgsBean> msgs) {
+        mMsgsBeanList = msgs;
         notifyDataSetChanged();
     }
 

@@ -402,7 +402,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void getRedDotRequest() {
         RedDotRequest redDotRequest = new RedDotRequest();
         redDotRequest.clazsId = SpManager.getUserInfo().getClassId();
-        redDotRequest.bizIds = "taskNew,momentNew,resourceNew";
+        redDotRequest.bizIds = "taskNew,momentNew,resourceNew,momentMsgNew";
         mGetRedDotRequestUUID = redDotRequest.startRequest(RedDotResponse.class, new HttpCallback<RedDotResponse>() {
             @Override
             public void onSuccess(RequestBase request, RedDotResponse ret) {
@@ -425,6 +425,25 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                         } else {
                             showCommentRedDot = false;
                             mImgClassCircleRedCircle.setVisibility(View.GONE);
+                        }
+                    }
+
+                    //新的班级圈回复消息
+                    if (ret.getData().getMomentMsgNew() != null ) {
+                        if ( ret.getData().getMomentMsgNew().getPromptNum() > 0) {
+                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
+                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
+                                    mNaviFragmentFactory.getClassCircleFragment().showMomentMsg(ret.getData().getMomentMsgNew().getPromptNum());
+                                }
+                            }
+                        }else {
+                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
+                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
+                                    mNaviFragmentFactory.getClassCircleFragment().hideMomentMsg();
+                                }
+                            }
                         }
                     }
 
@@ -453,13 +472,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                             homeFragment.hideTaskRedDot();
                         }
                     }
+
+
                 }
-                handler.sendEmptyMessageDelayed(2, 30000);
+                handler.sendEmptyMessageDelayed(2, 10000);
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                handler.sendEmptyMessageDelayed(2, 30000);
+                handler.sendEmptyMessageDelayed(2, 10000);
 
             }
         });

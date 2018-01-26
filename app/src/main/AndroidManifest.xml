@@ -17,7 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <!-- 个推 -->
     <!-- iBeancon功能所需权限 -->
-    ;
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <!-- 个推3.0电子围栏功能所需权限 -->
@@ -236,7 +235,12 @@
         <activity
             android:name=".ninegrid.preview.ImagePreviewActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".webView.FaceShowWebActivity"></activity>
+        <activity
+            android:name=".webView.FaceShowWebActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".classcircle.activity.ClassCircleDetailActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

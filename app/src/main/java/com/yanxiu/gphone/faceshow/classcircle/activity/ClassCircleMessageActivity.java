@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.classcircle.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +16,11 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleMessageAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCancelLikeRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleNewMessageRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleNewMessageResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleCancelLikeResponse;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
@@ -47,6 +51,7 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
     private PublicLoadLayout mRootView;
     private ClassCircleMessageAdapter mClassCircleMessageAdapter;
     private List data;
+    private ClassCircleNewMessageResponse mData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,9 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
         ButterKnife.bind(this);
         initTitle();
         initRecyclerView();
-
+        initListener();
+        mRootView.showLoadingView();
+        getMessageList();
     }
 
     private void initTitle() {
@@ -92,7 +99,9 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
         mClassCircleMessageAdapter.setIRecyclerViewItemClick(new IRecyclerViewItemClick() {
             @Override
             public void onItemClick(View view, int postion) {
-
+                Intent intent = new Intent(ClassCircleMessageActivity.this, ClassCircleDetailActivity.class);
+                intent.putExtra("userId", String.valueOf(mData.getData().getMsgs().get(postion).getUserId()));
+                startActivity(intent);
             }
         });
 
@@ -104,26 +113,20 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
         this.finish();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mRootView.showLoadingView();
-        getMessageList();
-    }
-
     private void getMessageList() {
-        ClassCircleCancelLikeRequest classCircleCancelLikeRequest = new ClassCircleCancelLikeRequest();
-        classCircleCancelLikeRequest.startRequest(ClassCircleCancelLikeResponse.class, new HttpCallback<ClassCircleCancelLikeResponse>() {
+        ClassCircleNewMessageRequest classCircleNewMessageRequest = new ClassCircleNewMessageRequest();
+        classCircleNewMessageRequest.clazsId = SpManager.getUserInfo().getClassId();
+        classCircleNewMessageRequest.startRequest(ClassCircleNewMessageResponse.class, new HttpCallback<ClassCircleNewMessageResponse>() {
             @Override
-            public void onSuccess(RequestBase request, ClassCircleCancelLikeResponse ret) {
+            public void onSuccess(RequestBase request, ClassCircleNewMessageResponse ret) {
                 hideLoading();
                 if (ret != null && ret.getCode() == 0) {
+                    mData = ret;
                     if (data == null) {
                         data = new ArrayList();
                     }
                     data.clear();
-                    // TODO: 2018/1/18
-                    mClassCircleMessageAdapter.update();
+                    mClassCircleMessageAdapter.update(ret.getData().getMsgs());
                 } else {
                     showOnSuccessErrorStatue(mRootView, data, ret);
                 }

@@ -47,6 +47,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void showNewMessageNumber(int newMessageNumber) {
         mNewMessageNumber = newMessageNumber;
+        notifyItemChanged(0, SHOW_NEW_MESSAGE);
     }
 
     public interface onCommentClickListener {
@@ -133,7 +134,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void hideNewMessageButton() {
         mNewMessageNumber = 0;
-        notifyDataSetChanged();
+        notifyItemChanged(0, SHOW_NEW_MESSAGE);
     }
 
 
@@ -203,17 +204,24 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             onBindViewHolder(holder, position);
         } else {
             if ((int) payloads.get(0) == SHOW_NEW_MESSAGE) {
-                final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
-                titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
-                titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
-                titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (mNewMessageButtonClickListener != null) {
-                            mNewMessageButtonClickListener.newMessageButtonClick();
+                if (mNewMessageNumber > 0) {
+                    final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+                    titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
+                    titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
+                    titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mNewMessageButtonClickListener != null) {
+                                mNewMessageButtonClickListener.newMessageButtonClick();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+                    titleViewHolder.mRlNewMessage.setVisibility(View.GONE);
+                }
+
+
             } else {
                 final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
                 final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
@@ -307,7 +315,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 titleViewHolder.mRlNewMessage.setVisibility(View.GONE);
             } else {
                 titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
-                titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, 10));
+                titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
                 titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -329,7 +337,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                ((NineGridView)classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
+                ((NineGridView) classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
                     @Override
                     public void onViewTouch(MotionEvent event) {
                         if (animPosition != ANIM_POSITION_DEFAULT) {
@@ -347,8 +355,13 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                     for (int i = 0; i < moments.album.size(); i++) {
                         ImageInfo imageInfo = new ImageInfo();
-                        imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
-                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
+                        if (moments.album.size() > 1) {
+                            //使用七牛对获取宽为200px的缩略图
+                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb + "?imageView2/0/w/200");
+                        } else {
+                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb);
+                        }
+                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
                         imageInfos.add(imageInfo);
                     }
 

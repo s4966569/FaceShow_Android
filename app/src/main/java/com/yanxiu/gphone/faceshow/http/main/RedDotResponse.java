@@ -3,7 +3,7 @@ package com.yanxiu.gphone.faceshow.http.main;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 
 /**
- * @author  frc on 2017/12/20.
+ * @author frc on 2017/12/20.
  */
 
 public class RedDotResponse extends FaceShowBaseResponse {
@@ -31,6 +31,7 @@ public class RedDotResponse extends FaceShowBaseResponse {
         private NewBean taskNew;
         private NewBean resourceNew;
         private NewBean momentNew;
+        private NewBean momentMsgNew;
 
         public NewBean getTaskNew() {
             return taskNew;
@@ -56,8 +57,15 @@ public class RedDotResponse extends FaceShowBaseResponse {
             this.momentNew = momentNew;
         }
 
+        public NewBean getMomentMsgNew() {
+            return momentMsgNew;
+        }
 
+        public void setMomentMsgNew(NewBean momentMsgNew) {
+            this.momentMsgNew = momentMsgNew;
+        }
     }
+
     public static class NewBean {
 
         private int userId;

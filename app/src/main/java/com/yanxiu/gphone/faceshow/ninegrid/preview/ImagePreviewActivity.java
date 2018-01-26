@@ -42,12 +42,12 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview);
         // 隐藏标题
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // 设置全屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.activity_preview);
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         final TextView tv_pager = (TextView) findViewById(R.id.tv_pager);
         rootView = (RelativeLayout) findViewById(R.id.rootView);
@@ -100,7 +100,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
                 long duration = animation.getDuration();
                 long playTime = animation.getCurrentPlayTime();
                 float fraction = duration > 0 ? (float) playTime / duration : 1f;
-                if (fraction > 1) fraction = 1;
+                if (fraction > 1) {
+                    fraction = 1;
+                }
                 view.setTranslationX(evaluateInt(fraction, imageData.imageViewX + imageData.imageViewWidth / 2 - imageView.getWidth() / 2, 0));
                 view.setTranslationY(evaluateInt(fraction, imageData.imageViewY + imageData.imageViewHeight / 2 - imageView.getHeight() / 2, 0));
                 view.setScaleX(evaluateFloat(fraction, vx, 1));
@@ -133,7 +135,9 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
                 long duration = animation.getDuration();
                 long playTime = animation.getCurrentPlayTime();
                 float fraction = duration > 0 ? (float) playTime / duration : 1f;
-                if (fraction > 1) fraction = 1;
+                if (fraction > 1) {
+                    fraction = 1;
+                }
                 view.setTranslationX(evaluateInt(fraction, 0, imageData.imageViewX + imageData.imageViewWidth / 2 - imageView.getWidth() / 2));
                 view.setTranslationY(evaluateInt(fraction, 0, imageData.imageViewY + imageData.imageViewHeight / 2 - imageView.getHeight() / 2));
                 view.setScaleX(evaluateFloat(fraction, 1, vx));
@@ -159,8 +163,11 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
         // 计算出与屏幕的比例，用于比较以宽的比例为准还是高的比例为准，因为很多时候不是高度没充满，就是宽度没充满
         float h = screenHeight * 1.0f / intrinsicHeight;
         float w = screenWidth * 1.0f / intrinsicWidth;
-        if (h > w) h = w;
-        else w = h;
+        if (h > w) {
+            h = w;
+        } else {
+            w = h;
+        }
 
         // 得出当宽高至少有一个充满的时候图片对应的宽高
         imageHeight = (int) (intrinsicHeight * h);

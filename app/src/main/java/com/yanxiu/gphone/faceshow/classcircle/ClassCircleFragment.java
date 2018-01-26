@@ -26,6 +26,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.classcircle.activity.ClassCircleMessageActivity;
 import com.yanxiu.gphone.faceshow.classcircle.activity.PublishedMomentListActivity;
 import com.yanxiu.gphone.faceshow.classcircle.activity.SendClassCircleActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter;
@@ -136,6 +137,26 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             }
         });
         startRequest("0");
+    }
+
+    /**
+     * 显示新的评论消息
+     *
+     * @param promptNum 新消息数量
+     */
+    public void showMomentMsg(int promptNum) {
+        if (mClassCircleAdapter != null) {
+            mClassCircleAdapter.showNewMessageNumber(promptNum);
+        }
+    }
+
+    /**
+     * 隐藏评论数
+     */
+    public void hideMomentMsg() {
+        if (mClassCircleAdapter != null) {
+            mClassCircleAdapter.hideNewMessageButton();
+        }
     }
 
     @Override
@@ -762,11 +783,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void newMessageButtonClick() {
-        ToastUtil.showToast(getContext(), "test");
+        startActivity(new Intent(this.getActivity(), ClassCircleMessageActivity.class));
     }
 
-    private void showNewMessageButton(int number) {
-        mClassCircleAdapter.showNewMessageNumber(number);
-        mClassCircleAdapter.notifyItemChanged(0, ClassCircleAdapter.SHOW_NEW_MESSAGE);
-    }
 }
