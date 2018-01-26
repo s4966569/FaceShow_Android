@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -380,10 +382,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMAGE_PICKER:
-                createSelectedImagesList(data);
+                createSelectedImagesList(data, false);
                 break;
             case REQUEST_CODE_SELECT:
-                createSelectedImagesList(data);
+                createSelectedImagesList(data, true);
             default:
                 break;
         }
@@ -408,7 +410,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mCanPublish = bool;
     }
 
-    private void createSelectedImagesList(Intent data) {
+    private void createSelectedImagesList(Intent data, boolean isReSize) {
         ArrayList<ImageItem> images = null;
         try {
             images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
@@ -422,9 +424,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         if (mSelectedImageList != null && mSelectedImageList.size() > 0) {
             mSelectedImageList.remove(mSelectedImageList.size() - 1);
         }
-        for (int i = 0; i < images.size(); i++) {
-            reSizeBitmap(images.get(i).path);
-        }
+
         mSelectedImageList.addAll(images);
         mSelectedImageList.add(mAddPicItem);
         mSelectedImageListAdapter.update(mSelectedImageList);
@@ -473,66 +473,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         }
     }
 
-    private void uploadImg(final String content) {
-        File file = new File(mImagePaths.get(0));
-        final Map<String, String> map = new HashMap<>();
-        map.put("userId", UserInfo.getInstance().getInfo().getUserId() + "");
-        map.put("name", file.getName());
-        map.put("lastModifiedDate", String.valueOf(System.currentTimeMillis()));
-        map.put("size", String.valueOf(FileUtils.getFileSize(file.getPath())));
-        map.put("md5", FileUtil.MD5Helper(UserInfo.getInstance().getInfo().getUserId() +
-                file.getName() + "jpg" + String.valueOf(System.currentTimeMillis())
-                + String.valueOf(FileUtils.getFileSize(file.getPath()))));
-        map.put("type", "image/jpg");
-        map.put("chunkSize", String.valueOf(FileUtils.getFileSize(file.getPath())));
-
-        UploadFileByHttp uploadFileByHttp = new UploadFileByHttp();
-        try {
-            uploadFileByHttp.uploadForm(map, "file", file, file.getName(), "http://newupload.yanxiu.com/fileUpload", new UploadFileByHttp.UpLoadFileByHttpCallBack() {
-                @Override
-                public void onSuccess(String responseStr) {
-                    UploadResResponse resResponse = RequestBase.getGson().fromJson(responseStr, UploadResResponse.class);
-                    GetResId(resResponse.name, resResponse.md5, content);
-                }
-
-                @Override
-                public void onFail(String errorMessage) {
-                    ToastUtil.showToast(mContext, getString(R.string.send_class_circle_fail));
-                    rootView.hiddenLoadingView();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void GetResId(String fileName, String md5, final String content) {
-        HashMap<String, String> cookies = new HashMap<>();
-        cookies.put("client_type", "app");
-        cookies.put("passport", SpManager.getPassport());
-        GetResIdRequest getResIdRequest = new GetResIdRequest();
-        getResIdRequest.filename = fileName;
-        getResIdRequest.md5 = md5;
-        getResIdRequest.cookies = cookies;
-        GetResIdRequest.Reserve reserve = new GetResIdRequest.Reserve();
-        reserve.title = fileName;
-        getResIdRequest.reserve = RequestBase.getGson().toJson(reserve);
-        getResIdRequest.startRequest(GetResIdResponse.class, new HttpCallback<GetResIdResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, GetResIdResponse ret) {
-                mResourceIds = ret.result.resid;
-                mType = TYPE_TEXT;
-                uploadData(content, ret.result.resid);
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext, error.getMessage());
-            }
-        });
-
-    }
 
     private void uploadData(String content, String resourceIds) {
         SendClassCircleRequest sendClassCircleRequest = new SendClassCircleRequest();
@@ -610,6 +550,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mCancelPopupWindow.showAtLocation(context.getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
     }
 
+    private String mQiniuToken;
+
     /**
      * 获取七牛token
      */
@@ -622,7 +564,19 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
                 if (ret != null) {
                     if (ret.getCode() == 0) {
-                        uploadPicListByQiNiu(ret.getData().getToken(), mImagePaths);
+                        mQiniuToken = ret.getData().getToken();
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+//                                for (int i = 0; i < mImagePaths.size(); i++) {
+//                                    reSizeBitmap(mImagePaths.get(i));
+//                                }
+                                uploadPicListByQiNiu(mQiniuToken, mImagePaths);
+//                                mHandler.sendEmptyMessage(1);
+                            }
+                        });
+
+
                     } else {
                         rootView.hiddenLoadingView();
                         ToastUtil.showToast(getApplicationContext(), ret.getError() != null ? ret.getError().getMessage() : getString(R.string.get_qiniu_token_error));
@@ -641,6 +595,16 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             }
         });
     }
+
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 1) {
+                uploadPicListByQiNiu(mQiniuToken, mImagePaths);
+            }
+        }
+    };
 
     UploadManager uploadManager = null;
     Configuration config = new Configuration.Builder()
@@ -698,6 +662,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 public void complete(String key, ResponseInfo info, JSONObject res) {
                     //res包含hash、key等信息，具体字段取决于上传策略的设置
                     if (info.isOK()) {
+                        Log.e("qiniu",info.path);
                         try {
                             mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileType(filePathList.get(finalPosition));
                         } catch (JSONException e) {

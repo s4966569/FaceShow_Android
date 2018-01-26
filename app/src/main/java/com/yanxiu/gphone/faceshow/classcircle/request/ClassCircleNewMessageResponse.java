@@ -49,7 +49,7 @@ public class ClassCircleNewMessageResponse extends FaceShowBaseResponse {
             private int userId;
             private String userName;
             private String comment;
-            private Object like;
+            private int like;
             private String createTime;
             private MomentSimpleBean momentSimple;
 
@@ -101,11 +101,11 @@ public class ClassCircleNewMessageResponse extends FaceShowBaseResponse {
                 this.comment = comment;
             }
 
-            public Object getLike() {
+            public int getLike() {
                 return like;
             }
 
-            public void setLike(Object like) {
+            public void setLike(int like) {
                 this.like = like;
             }
 

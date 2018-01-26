@@ -1,6 +1,14 @@
 package com.yanxiu.gphone.faceshow.classcircle.adapter;
 
+import android.content.Context;
+import android.nfc.TagLostException;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +44,7 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        ClassCircleNewMessageResponse.DataBean.MsgsBean data = mMsgsBeanList.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,10 +54,36 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
             }
         });
 
-        holder.mTvPublisherName.setText(mMsgsBeanList.get(position).getUserName());
-        holder.mTvMessageContent.setText(mMsgsBeanList.get(position).getComment());
-        holder.mTvPublishTime.setText(mMsgsBeanList.get(position).getCreateTime());
-        Glide.with(holder.itemView.getContext()).load(mMsgsBeanList.get(position).getMomentSimple().getImage()).into(holder.mImgPic);
+        holder.mTvPublisherName.setText(data.getUserName());
+        holder.mTvPublishTime.setText(data.getCreateTime());
+
+        if (data.getMsgType() == 1) {
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+            for (int i = 0; i < data.getLike(); i++) {
+                builder.append(setImageSpan(holder.itemView.getContext()));
+            }
+            holder.mTvMessageContent.setText(builder, TextView.BufferType.SPANNABLE);
+        } else if (data.getMsgType() == 2) {
+            holder.mTvMessageContent.setText(data.getComment());
+        }
+
+        if (!TextUtils.isEmpty(data.getMomentSimple().getImage())) {
+            holder.mImgPic.setVisibility(View.VISIBLE);
+            holder.mTvPic.setVisibility(View.GONE);
+            Glide.with(holder.itemView.getContext()).load(data.getMomentSimple().getImage()).into(holder.mImgPic);
+        } else {
+            holder.mTvPic.setVisibility(View.VISIBLE);
+            holder.mImgPic.setVisibility(View.GONE);
+            holder.mTvPic.setText(data.getMomentSimple().getContent());
+        }
+    }
+
+    private SpannableString setImageSpan(Context context) {
+        String text = "  ";
+        SpannableString imgSpanText = new SpannableString(text);
+        imgSpanText.setSpan(new ImageSpan(context, R.drawable.classcircle_like, DynamicDrawableSpan.ALIGN_BASELINE),
+                0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return imgSpanText;
     }
 
     @Override
@@ -70,6 +105,8 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
         TextView mTvMessageContent;
         @BindView(R.id.tv_publish_time)
         TextView mTvPublishTime;
+        @BindView(R.id.tv_pic)
+        TextView mTvPic;
 
         public ViewHolder(View itemView) {
             super(itemView);
