@@ -100,7 +100,7 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
             @Override
             public void onItemClick(View view, int postion) {
                 Intent intent = new Intent(ClassCircleMessageActivity.this, ClassCircleDetailActivity.class);
-                intent.putExtra("userId", String.valueOf(mData.getData().getMsgs().get(postion).getUserId()));
+                intent.putExtra("momentId", String.valueOf(mData.getData().getMsgs().get(postion).getMomentId()));
                 startActivity(intent);
             }
         });

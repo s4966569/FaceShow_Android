@@ -235,9 +235,5 @@
         </LinearLayout>
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:layout_marginTop="15dp"
-        android:background="#d7dde0" />
+
 </LinearLayout>

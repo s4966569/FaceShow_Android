@@ -33,12 +33,14 @@ import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleCommentToUserRe
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleLikeRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.DiscardCommentRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.DiscardMomentRequest;
+import com.yanxiu.gphone.faceshow.classcircle.request.GetMomentDetailRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.GetUserMomentsRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleCancelLikeResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.CommentResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
 import com.yanxiu.gphone.faceshow.classcircle.response.DiscardMomentResponse;
+import com.yanxiu.gphone.faceshow.classcircle.response.GetMomentDetailResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.LikeResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
@@ -50,6 +52,7 @@ import com.yanxiu.gphone.faceshow.util.Logger;
 import com.yanxiu.gphone.faceshow.util.ScreenUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,7 +91,7 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
     private ImageView mBackView;
     private TextView mTvSureComment;
     private boolean isCommentLoading = false;
-    private String mUserId;
+    private String mMomentId;
 
     private UUID mClassCircleRequest;
     private UUID mClassCircleLikeRequest;
@@ -131,7 +134,7 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                 mRefreshView.setRefreshing(true);
             }
         });
-        mUserId = getIntent().getStringExtra("userId");
+        mMomentId = getIntent().getStringExtra("momentId");
     }
 
     private void initView(PublicLoadLayout rootView) {
@@ -346,12 +349,11 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
      * 班级圈
      */
     private void startRequest(final String offset) {
-        GetUserMomentsRequest circleRequest = new GetUserMomentsRequest();
-        circleRequest.offset = offset;
-        circleRequest.userId = mUserId;
-        mClassCircleRequest = circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+        GetMomentDetailRequest getMomentDetailRequest = new GetMomentDetailRequest();
+        getMomentDetailRequest.momentId = mMomentId;
+        mClassCircleRequest = getMomentDetailRequest.startRequest(GetMomentDetailResponse.class, new HttpCallback<GetMomentDetailResponse>() {
             @Override
-            public void onSuccess(RequestBase request, ClassCircleResponse ret) {
+            public void onSuccess(RequestBase request, GetMomentDetailResponse ret) {
                 firstEnter = false;
                 mClassCircleRequest = null;
                 mRefreshView.post(new Runnable() {
@@ -360,18 +362,20 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                         mRefreshView.setRefreshing(false);
                     }
                 });
-                if (ret != null && ret.data != null && ret.data.moments != null) {
+                if (ret != null && ret.getCode() == 0 && ret.getData() != null) {
+                    List<ClassCircleResponse.Data.Moments> moments = new ArrayList<>();
+                    moments.add(ret.getData());
                     if (offset.equals("0")) {
-                        mClassCircleAdapter.setData(ret.data.moments);
+                        mClassCircleAdapter.setData(moments);
                     } else {
-                        mClassCircleAdapter.addData(ret.data.moments);
+                        mClassCircleAdapter.addData(moments);
                     }
-                    if (ret.data.moments == null || ret.data.moments.size() == 0) {
+                    if (moments == null || moments.size() == 0) {
                         mDataEmptyView.setVisibility(View.VISIBLE);
                     } else {
                         mDataEmptyView.setVisibility(View.GONE);
                     }
-                    mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
+                    mClassCircleRecycleView.setLoadMoreEnable(false);
                 } else {
                     if (offset.equals("0")) {
                         rootView.showNetErrorView();

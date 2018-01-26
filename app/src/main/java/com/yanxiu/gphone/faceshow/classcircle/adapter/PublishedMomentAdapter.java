@@ -271,7 +271,7 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
-                ((NineGridView)classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
+                ((NineGridView) classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
                     @Override
                     public void onViewTouch(MotionEvent event) {
                         if (animPosition != ANIM_POSITION_DEFAULT) {
@@ -316,6 +316,7 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             classCircleViewHolder.mAnimLayout.setEnabled(false);
             classCircleViewHolder.mCircleThumbView.setData(moments.likes);
             classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
+
 
             setViewVisibly(classCircleViewHolder, moments);
 
