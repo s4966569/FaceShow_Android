@@ -67,7 +67,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private TextView mProject_tv;//项目名称
     private TextView mClass_tv;//班级
     private ImageView mCheckInEnterIMG;
-    private TextView mImgTools;
+    private ImageView mImgTools;
 
     private ImageView mImgResourceRedDot, mImgProjectTaskRedDot;
     private int lastIndex = 0;
@@ -95,7 +95,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             public void onSuccess(RequestBase request, final GetToolsResponse ret) {
                 if (ret != null && ret.getData() != null && ret.getData().getTools() != null && ret.getData().getTools().size() > 0) {
                     mImgTools.setVisibility(View.VISIBLE);
-                    mImgTools.setText(ret.getData().getTools().get(0).getName());
+//                    mImgTools.setText(ret.getData().getTools().get(0).getName());
                     mImgTools.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -184,7 +184,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
         mImgProjectTaskRedDot = (ImageView) mRootView.findViewById(R.id.img_project_task_red_dot);
         mImgResourceRedDot = (ImageView) mRootView.findViewById(R.id.img_resource_red_dot);
-        mImgTools = (TextView) mRootView.findViewById(R.id.img_tools);
+        mImgTools = (ImageView) mRootView.findViewById(R.id.img_tools);
 
         if (mMainBean != null && mMainBean.getClazsInfo() != null && mMainBean.getProjectInfo() != null) {
             mProject_tv.setText(mMainBean.getProjectInfo().getProjectName());
