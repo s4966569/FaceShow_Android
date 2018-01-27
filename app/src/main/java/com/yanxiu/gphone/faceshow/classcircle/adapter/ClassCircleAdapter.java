@@ -7,6 +7,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -93,7 +94,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int REFRESH_ANIM_VIEW = 0x0004;
     public static final int REFRESH_LIKE_DATA = 0x0005;
     public static final int REFRESH_COMMENT_DATA = 0x0006;
-    public static final int SHOW_NEW_MESSAGE = 0x0007;
+    private static final int SHOW_NEW_MESSAGE = 0x0007;
 
     private int mNewMessageNumber = 0;
     private Context mContext;
@@ -116,6 +117,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
         this.mData.clear();
         this.mData.addAll(list);
+        GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
+        NineGridView.setImageLoader(glideNineImageLoader);
         this.notifyDataSetChanged();
     }
 
@@ -276,26 +279,6 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private class ClassCircleImageTager extends BitmapImageViewTarget {
-
-        ClassCircleImageTager(ImageView view) {
-            super(view);
-        }
-
-        @Override
-        public void onLoadFailed(Exception e, Drawable errorDrawable) {
-            view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            view.setImageDrawable(errorDrawable);
-            view.setEnabled(false);
-        }
-
-        @Override
-        protected void setResource(Bitmap resource) {
-            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            view.setImageBitmap(resource);
-            view.setEnabled(true);
-        }
-    }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -350,8 +333,6 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 });
                 if (moments.album != null && moments.album.size() > 0) {
-                    GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
-                    NineGridView.setImageLoader(glideNineImageLoader);
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                     for (int i = 0; i < moments.album.size(); i++) {
                         ImageInfo imageInfo = new ImageInfo();

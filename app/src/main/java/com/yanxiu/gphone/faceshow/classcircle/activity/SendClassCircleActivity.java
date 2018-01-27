@@ -45,6 +45,7 @@ import com.yanxiu.gphone.faceshow.classcircle.response.GetQiNiuTokenResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
+import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
@@ -554,8 +555,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         });
     }
 
-    UploadManager uploadManager = null;
-    Configuration config = new Configuration.Builder()
+    private UploadManager uploadManager = null;
+    private Configuration config = new Configuration.Builder()
             .chunkSize(2 * 1024 * 1024)        // 分片上传时，每片的大小。 默认256K
             .putThreshhold(4 * 1024 * 1024)   // 启用分片上传阀值。默认512K
             .connectTimeout(10)           // 链接超时。默认10秒
@@ -588,7 +589,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 public void complete(String key, ResponseInfo info, JSONObject res) {
                     //res包含hash、key等信息，具体字段取决于上传策略的设置
                     if (info.isOK()) {
-                        Log.e("luban", info.path);
                         try {
                             mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileType(filePathList.get(finalPosition));
                         } catch (JSONException e) {

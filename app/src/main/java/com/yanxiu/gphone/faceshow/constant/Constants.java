@@ -40,6 +40,7 @@ public class Constants {
     public static final String DIR_IMAGE = "/image";
     public static final String DIR_PDF = DIR_ROOT + DIR_APP + "/pdf/";
     public static final String DIR_APK = DIR_ROOT + DIR_APP + "/apk/";
+    public static final String CLASS_CIRCLE="/storage/emulated/0/Android/data/com.yanxiu.gphone.faceshow/cache/luban_disk_cache/";
 
     //eventbus 传递hashcode
     public final static String HASHCODE = "hashCode";
