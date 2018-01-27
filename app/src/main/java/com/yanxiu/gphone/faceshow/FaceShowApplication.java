@@ -7,6 +7,8 @@ import android.os.StrictMode;
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.tendcloud.tenddata.TCAgent;
 import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.getui.FaceShowGeTuiIntentService;
@@ -17,6 +19,7 @@ import com.yanxiu.gphone.faceshow.http.envconfig.UrlBean;
 import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
 import com.yanxiu.gphone.faceshow.util.CrashHandler;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
+import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
 
 import org.litepal.LitePalApplication;
@@ -52,9 +55,11 @@ public class FaceShowApplication extends LitePalApplication {
         PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), FaceShowGeTuiIntentService.class);
         LBSManager.init(getApplicationContext());
 
-        TCAgent.LOG_ON=true;
+        TCAgent.LOG_ON = true;
         TCAgent.init(this, "37E19B68638D4FF5B7AF00360317BA71", "");
         TCAgent.setReportUncaughtExceptions(true);
+
+        FrcLogUtils.init();
     }
 
     private void initUrlServer() {

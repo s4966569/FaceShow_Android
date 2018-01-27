@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
+import com.orhanobut.logger.Logger;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCompletionHandler;
@@ -49,6 +50,7 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
+import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 
@@ -572,6 +574,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             uploadManager = new UploadManager(config);
         }
         if (fileList != null && fileList.size() > 0) {
+            Logger.d(fileList);
             uploadPicByQiNiu(fileList, -1, null, token);
         }
     }
@@ -590,7 +593,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     if (info.isOK()) {
                         try {
                             mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileSuffix(filePathList.get(finalPosition));
-                            Log.e("frc",mResourceIds);
+                            Logger.d(mResourceIds);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -29,6 +29,7 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
+import com.orhanobut.logger.Logger;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -332,7 +333,7 @@ public class LoginActivity extends FaceShowBaseActivity {
         mSignInRequestUUID = signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignInResponse ret) {
-
+                Logger.json(RequestBase.getGson().toJson(ret));
                 if (ret.getCode() == 0) {
                     token = ret.getToken();
                     passPort = ret.getPassport();
@@ -361,6 +362,8 @@ public class LoginActivity extends FaceShowBaseActivity {
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                Logger.e(RequestBase.getGson().toJson(ret));
+                Logger.json(RequestBase.getGson().toJson(ret));
                 rootView.finish();
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(token);
@@ -396,7 +399,7 @@ public class LoginActivity extends FaceShowBaseActivity {
         mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
             @Override
             public void onSuccess(RequestBase request, MainResponse ret) {
-
+                Logger.json(RequestBase.getGson().toJson(ret));
                 if (ret != null && ret.getCode() == 0) {
                     getUserInfo(activity, ret.getData());
                 } else {

@@ -49,7 +49,6 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
             url=url+ "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
         }
 
-
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
 
         mAgentWeb = AgentWeb.with(this)

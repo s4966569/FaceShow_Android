@@ -98,7 +98,6 @@ public abstract class RequestBase {
 
         }
         fullUrl = urlBuilder.build().toString();
-        Log.e("requestUrl", fullUrl.toString());
         return fullUrl;
     }
 
@@ -108,7 +107,6 @@ public abstract class RequestBase {
         try {
             request = generateRequest(uuid);
         } catch (Exception e) {
-            Log.e("request",e.getMessage());
         }
         if (request == null) {
             callback.onFail(RequestBase.this, new Error("request start error"));
@@ -116,7 +114,6 @@ public abstract class RequestBase {
         }
         client = setClient();
         call = client.newCall(request);
-        Log.d("cwq", request.url().toString());
         final long start = System.currentTimeMillis();
         call.enqueue(new Callback() {
             @Override
@@ -147,9 +144,7 @@ public abstract class RequestBase {
                 }
                 final String retStr = Html.fromHtml(bodyString).toString();
                 try {
-                    Log.e("http", retStr);
                 } catch (Exception e) {
-                    Log.e("Gson error: ", e.getMessage());
                     e.printStackTrace();
                 }
 

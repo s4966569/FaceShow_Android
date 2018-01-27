@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
+import com.orhanobut.logger.Logger;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -223,7 +224,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     }
 
     private void userSignIn(String stepId, String timestamps, @NonNull String position, @NonNull String site, final WelcomeActivity activity) {
-        UserSignInRequest userSignInRequest = new UserSignInRequest();
+        final UserSignInRequest userSignInRequest = new UserSignInRequest();
         userSignInRequest.position = position;
         userSignInRequest.site = site;
         userSignInRequest.stepId = stepId;
@@ -297,6 +298,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             getCurrentClassId.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, MainResponse ret) {
+                    Logger.json(RequestBase.getGson().toJson(ret));
                     if (ret != null && ret.getCode() == 0) {
                         getUserInfo(activity);
                     } else {
@@ -327,6 +329,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                Logger.json(RequestBase.getGson().toJson(ret));
                 if (ret.getCode() == 0) {
                     UserInfo.Info info = ret.getData();
                     info.setClassId(SpManager.getUserInfo().getClassId());

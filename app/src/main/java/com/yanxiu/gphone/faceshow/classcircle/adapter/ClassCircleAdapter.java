@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.orhanobut.logger.Logger;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -31,6 +32,7 @@ import com.yanxiu.gphone.faceshow.ninegrid.NineGridView;
 import com.yanxiu.gphone.faceshow.ninegrid.NineGridViewWrapper;
 import com.yanxiu.gphone.faceshow.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
+import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.nineGridView.GlideNineImageLoader;
 
 import java.util.ArrayList;
@@ -345,7 +347,6 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
                         imageInfos.add(imageInfo);
                     }
-
                     ((ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));
                 }
             } else {
