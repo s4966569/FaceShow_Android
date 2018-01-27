@@ -41,7 +41,14 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_face_show_web_layout);
         ButterKnife.bind(this);
         data = (GetToolsResponse) getIntent().getSerializableExtra("data");
-        String url = data.getData().getTools().get(0).getEventObj().getContent() + "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
+
+        String url = data.getData().getTools().get(0).getEventObj().getContent() ;
+        if (url.contains("?")){
+            url=url+ "&classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
+        }else {
+            url=url+ "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
+        }
+
 
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
 

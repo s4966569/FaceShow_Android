@@ -45,7 +45,6 @@ import com.yanxiu.gphone.faceshow.classcircle.response.GetQiNiuTokenResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
 import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
-import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
@@ -590,7 +589,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     //res包含hash、key等信息，具体字段取决于上传策略的设置
                     if (info.isOK()) {
                         try {
-                            mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileType(filePathList.get(finalPosition));
+                            mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileSuffix(filePathList.get(finalPosition));
+                            Log.e("frc",mResourceIds);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
