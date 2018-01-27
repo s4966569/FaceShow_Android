@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.webView;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -16,12 +15,15 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.main.GetToolsResponse;
 
-import java.security.SecurityPermission;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * 使用了三方架包 AgentWeb
+ * @author frc
+ */
 public class FaceShowWebActivity extends FaceShowBaseActivity {
 
     @BindView(R.id.title_layout_left_img)
@@ -39,7 +41,7 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_face_show_web_layout);
         ButterKnife.bind(this);
         data = (GetToolsResponse) getIntent().getSerializableExtra("data");
-        String url = data.getData().getTools().get(0).getEventObj().getContent() + "?" + SpManager.getUserInfo().getClassId() + "&" + SpManager.getToken();
+        String url = data.getData().getTools().get(0).getEventObj().getContent() + "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
 
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
 
@@ -75,7 +77,6 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
     @Override
     protected void onResume() {
         mAgentWeb.getWebLifeCycle().onResume();
-        ;
         super.onResume();
     }
 

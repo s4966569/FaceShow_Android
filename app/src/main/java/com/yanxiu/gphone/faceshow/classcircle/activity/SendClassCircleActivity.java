@@ -3,12 +3,8 @@ package com.yanxiu.gphone.faceshow.classcircle.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -19,11 +15,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -32,7 +26,6 @@ import android.widget.TextView;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
-import com.lzy.imagepicker.view.CropImageView;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCompletionHandler;
@@ -46,22 +39,15 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.adapter.SelectedImageListAdapter;
 import com.yanxiu.gphone.faceshow.classcircle.dialog.ClassCircleDialog;
 import com.yanxiu.gphone.faceshow.classcircle.request.GetQiNiuTokenRequest;
-import com.yanxiu.gphone.faceshow.classcircle.request.GetResIdRequest;
 import com.yanxiu.gphone.faceshow.classcircle.request.SendClassCircleRequest;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.GetQiNiuTokenResponse;
-import com.yanxiu.gphone.faceshow.classcircle.response.GetResIdResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.RefreshClassCircle;
-import com.yanxiu.gphone.faceshow.classcircle.response.UploadResResponse;
 import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.db.SpManager;
-import com.yanxiu.gphone.faceshow.http.base.UploadFileByHttp;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
-import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
-import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
@@ -69,19 +55,14 @@ import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import de.greenrobot.event.EventBus;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 /**
  * @author frc
@@ -112,15 +93,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private InputMethodManager imm;
     private ClassCircleDialog mClassCircleDialog;
     private PopupWindow mCancelPopupWindow;
-    private UUID mSendDataRequest;
     private ImageItem mAddPicItem;
 
-    private UUID mGetSendDataRequestUUID;
+    private UUID mGetQiNiuTokenUUID;
 
-    /**
-     * 用来展示已经选中的图片
-     */
-    private RecyclerView mImageSelectedRecyclerView;
     private SelectedImageListAdapter mSelectedImageListAdapter;
     private List<ImageItem> mSelectedImageList;
 
@@ -184,9 +160,9 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         super.onDestroy();
         UpLoadRequest.getInstense().cancle();
         EventBus.getDefault().unregister(mContext);
-        if (mSendDataRequest != null) {
-            RequestBase.cancelRequestWithUUID(mSendDataRequest);
-            mSendDataRequest = null;
+        if (mGetQiNiuTokenUUID != null) {
+            RequestBase.cancelRequestWithUUID(mGetQiNiuTokenUUID);
+            mGetQiNiuTokenUUID = null;
         }
     }
 
@@ -201,28 +177,21 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
-    private TextView.OnEditorActionListener mOnEditorActionListener = new TextView.OnEditorActionListener() {
-        @Override
-        public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-            if (actionId == EditorInfo.IME_ACTION_SEND) {
-
-                return true;
-            }
-            return false;
-        }
-    };
 
     private void initRecyclerView() {
-        mImageSelectedRecyclerView = (RecyclerView) findViewById(R.id.selected_images_recycler_view);
+        /*
+      用来展示已经选中的图片
+     */
+        RecyclerView imageSelectedRecyclerView = (RecyclerView) findViewById(R.id.selected_images_recycler_view);
         if (mSelectedImageList == null) {
             mSelectedImageList = new ArrayList<>();
         }
         mSelectedImageList.clear();
         mSelectedImageList.add(mAddPicItem);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
-        mImageSelectedRecyclerView.setLayoutManager(gridLayoutManager);
+        imageSelectedRecyclerView.setLayoutManager(gridLayoutManager);
         mSelectedImageListAdapter = new SelectedImageListAdapter((ArrayList<ImageItem>) mSelectedImageList);
-        mImageSelectedRecyclerView.setAdapter(mSelectedImageListAdapter);
+        imageSelectedRecyclerView.setAdapter(mSelectedImageListAdapter);
         mSelectedImageListAdapter.addPicClickListener(new SelectedImageListAdapter.PicClickListener() {
             @Override
             public void addPic() {
@@ -446,45 +415,18 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
-    /**
-     * 压缩下图片
-     *
-     * @param filePath
-     */
-    private void reSizeBitmap(String filePath) {
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 90;
-        while (baos.toByteArray().length / 1024 > 1024) { // 循环判断如果压缩后图片是否大于100kb,大于继续压缩
-            baos.reset(); // 重置baos即清空baos
-            bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;// 每次都减少10
-        }
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());// 把压缩后的数据baos存放到ByteArrayInputStream中
-
-
-        Bitmap mBitmap = BitmapFactory.decodeStream(isBm, null, null);// 把ByteArrayInputStream数据生成图片
-        try {
-            FileOutputStream out = new FileOutputStream(filePath);
-            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     private void uploadData(String content, String resourceIds) {
         SendClassCircleRequest sendClassCircleRequest = new SendClassCircleRequest();
         sendClassCircleRequest.content = content;
         sendClassCircleRequest.resourceIds = resourceIds;
-        mSendDataRequest = sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+        mGetQiNiuTokenUUID = sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
+                mGetQiNiuTokenUUID = null;
                 rootView.hiddenLoadingView();
                 if (ret.data != null) {
                     ToastUtil.showToast(mContext, R.string.send_success);
-                    mSendDataRequest = null;
                     EventBus.getDefault().post(new RefreshClassCircle());
                     SendClassCircleActivity.this.finish();
                 } else {
@@ -495,7 +437,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                mSendDataRequest = null;
+                mGetQiNiuTokenUUID = null;
                 ToastUtil.showToast(mContext, error.getMessage());
             }
         });
@@ -551,6 +493,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     }
 
     private String mQiniuToken;
+    private List<String> mReSizedPicPath = new ArrayList<>();
 
     /**
      * 获取七牛token
@@ -559,23 +502,38 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         GetQiNiuTokenRequest getQiNiuTokenRequest = new GetQiNiuTokenRequest();
         getQiNiuTokenRequest.from = "100";
         getQiNiuTokenRequest.dtype = "app";
-        mGetSendDataRequestUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
+        mGetQiNiuTokenUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
                 if (ret != null) {
                     if (ret.getCode() == 0) {
                         mQiniuToken = ret.getData().getToken();
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-//                                for (int i = 0; i < mImagePaths.size(); i++) {
-//                                    reSizeBitmap(mImagePaths.get(i));
-//                                }
-                                uploadPicListByQiNiu(mQiniuToken, mImagePaths);
-//                                mHandler.sendEmptyMessage(1);
-                            }
-                        });
+                        mReSizedPicPath.clear();
+                        /**
+                         * 使用鲁班对图片进行压缩
+                         */
+                        Luban.with(SendClassCircleActivity.this)
+                                .load(mImagePaths)
+                                .ignoreBy(100)
+                                .setCompressListener(new OnCompressListener() {
+                                    @Override
+                                    public void onStart() {
+                                    }
 
+                                    @Override
+                                    public void onSuccess(File file) {
+                                        mReSizedPicPath.add(file.getPath());
+                                        if (mReSizedPicPath.size() == mImagePaths.size()) {
+                                            uploadPicListByQiNiu(mQiniuToken, mReSizedPicPath);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        rootView.hiddenLoadingView();
+                                        ToastUtil.showToast(getApplicationContext(), "图片上传失败");
+                                    }
+                                }).launch();
 
                     } else {
                         rootView.hiddenLoadingView();
@@ -595,16 +553,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             }
         });
     }
-
-    Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1) {
-                uploadPicListByQiNiu(mQiniuToken, mImagePaths);
-            }
-        }
-    };
 
     UploadManager uploadManager = null;
     Configuration config = new Configuration.Builder()
@@ -628,28 +576,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         }
     }
 
-    public class QiNiuResponse {
-
-
-        private String hash;
-        private String key;
-
-        public String getHash() {
-            return hash;
-        }
-
-        public void setHash(String hash) {
-            this.hash = hash;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-    }
 
     private void uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
         position++;
@@ -662,7 +588,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 public void complete(String key, ResponseInfo info, JSONObject res) {
                     //res包含hash、key等信息，具体字段取决于上传策略的设置
                     if (info.isOK()) {
-                        Log.e("qiniu",info.path);
+                        Log.e("luban", info.path);
                         try {
                             mResourceIds = mResourceIds + (TextUtils.isEmpty(mResourceIds) ? "" : ",") + res.getString("key") + "|" + FileUtils.getFileType(filePathList.get(finalPosition));
                         } catch (JSONException e) {
