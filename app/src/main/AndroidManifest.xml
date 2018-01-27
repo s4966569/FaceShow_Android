@@ -241,6 +241,9 @@
         <activity
             android:name=".classcircle.activity.ClassCircleDetailActivity"
             android:screenOrientation="portrait" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="0dad9b5e85207600fb33bace77d6911add29ae2a" />
     </application>
 
 </manifest>

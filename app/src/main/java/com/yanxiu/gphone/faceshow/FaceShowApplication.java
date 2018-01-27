@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.StrictMode;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
@@ -22,6 +23,7 @@ import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
 
+import io.fabric.sdk.android.Fabric;
 import org.litepal.LitePalApplication;
 
 public class FaceShowApplication extends LitePalApplication {
@@ -36,6 +38,7 @@ public class FaceShowApplication extends LitePalApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         try {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
