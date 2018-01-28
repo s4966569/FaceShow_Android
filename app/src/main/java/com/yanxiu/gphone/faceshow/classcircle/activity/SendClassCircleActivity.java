@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +28,7 @@ import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.orhanobut.logger.Logger;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UpCancellationSignal;
 import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
@@ -76,16 +76,13 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     private static final int IMAGE_PICKER = 0x03;
     private static final int REQUEST_CODE_SELECT = 0x04;
-
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_IMAGE = "image";
-
     private static final String KEY_TYPE = "key_type";
     private static final String KEY_IMAGE = "key_image";
 
     private Context mContext;
     private PublicLoadLayout rootView;
-    private String mType;
     private ArrayList<String> mImagePaths;
     private EditText mContentView;
     private TextView mTitleView;
@@ -98,9 +95,19 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     private ImageItem mAddPicItem;
 
     private UUID mGetQiNiuTokenUUID;
+    private UUID mSendClassCircleDataUUID;
 
     private SelectedImageListAdapter mSelectedImageListAdapter;
     private List<ImageItem> mSelectedImageList;
+    /**
+     * 是否可以发布
+     */
+    private boolean mCanPublish;
+    private ImagePicker imagePicker;
+    /**
+     * 此参数设置为true时 则正在执行的七牛上传图片将被停止
+     */
+    private boolean mCancelQiNiuUploadPics = false;
 
     public static void LuanchActivity(Context context, String type, ArrayList<String> imgPaths) {
         Intent intent = new Intent(context, SendClassCircleActivity.class);
@@ -119,11 +126,9 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         rootView.setContentView(R.layout.activity_send_classcircle);
         setContentView(rootView);
         EventBus.getDefault().register(mContext);
-        mType = getIntent().getStringExtra(KEY_TYPE);
-        if (mType.equals(TYPE_IMAGE)) {
+        String type = getIntent().getStringExtra(KEY_TYPE);
+        if (type.equals(TYPE_IMAGE)) {
             mImagePaths = getIntent().getStringArrayListExtra(KEY_IMAGE);
-        } else {
-            mType = TYPE_TEXT;
         }
         initView();
         listener();
@@ -131,7 +136,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         setImagePicker();
     }
 
-    ImagePicker imagePicker;
 
     private void setImagePicker() {
         GlideImageLoader glideImageLoader = new GlideImageLoader();
@@ -141,32 +145,11 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         imagePicker.setShowCamera(true);
         //允许裁剪（单选才有效）
         imagePicker.setCrop(false);
-        //是否按矩形区域保存
-//        imagePicker.setSaveRectangle(true);
         //选中数量限制
         imagePicker.setSelectLimit(9);
         //裁剪框的形状
-//        imagePicker.setStyle(CropImageView.Style.RECTANGLE);
-        //裁剪框的宽度。单位像素（圆形自动取宽高最小值）
-//        imagePicker.setFocusWidth(800);
-        //裁剪框的高度。单位像素（圆形自动取宽高最小值）
-//        imagePicker.setFocusHeight(800);
-        //保存文件的宽度。单位像素
-//        imagePicker.setOutPutX(1000);
-        //保存文件的高度。单位像素
-//        imagePicker.setOutPutY(1000);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        UpLoadRequest.getInstense().cancle();
-        EventBus.getDefault().unregister(mContext);
-        if (mGetQiNiuTokenUUID != null) {
-            RequestBase.cancelRequestWithUUID(mGetQiNiuTokenUUID);
-            mGetQiNiuTokenUUID = null;
-        }
-    }
 
     private void initView() {
         mBackView = (TextView) findViewById(R.id.title_layout_left_txt);
@@ -179,11 +162,27 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
+    private void listener() {
+        mBackView.setOnClickListener(this);
+        mFunctionView.setOnClickListener(this);
+        mContentView.addTextChangedListener(this);
+    }
+
+    private void initData() {
+        mTitleView.setText(R.string.classcircle);
+        mBackView.setText(R.string.cancle);
+        mFunctionView.setText(R.string.send);
+        mFunctionView.setEnabled(false);
+        mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
+        mContentView.setText("");
+
+        //生成添加图片item的数据
+        mAddPicItem = new ImageItem();
+        mAddPicItem.path = String.valueOf(ContextCompat.getDrawable(this, R.drawable.class_circle_add_picture));
+        mAddPicItem.name = "添加图片";
+    }
 
     private void initRecyclerView() {
-        /*
-      用来展示已经选中的图片
-     */
         RecyclerView imageSelectedRecyclerView = (RecyclerView) findViewById(R.id.selected_images_recycler_view);
         if (mSelectedImageList == null) {
             mSelectedImageList = new ArrayList<>();
@@ -227,25 +226,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         });
     }
 
-    private void listener() {
-        mBackView.setOnClickListener(this);
-        mFunctionView.setOnClickListener(this);
-        mContentView.addTextChangedListener(this);
-    }
-
-    private void initData() {
-        mTitleView.setText(R.string.classcircle);
-        mBackView.setText(R.string.cancle);
-        mFunctionView.setText(R.string.send);
-        mFunctionView.setEnabled(false);
-        mFunctionView.setTextColor(ContextCompat.getColor(mContext, R.color.color_999999));
-        mContentView.setText("");
-
-        //生成添加图片item的数据
-        mAddPicItem = new ImageItem();
-        mAddPicItem.path = String.valueOf(ContextCompat.getDrawable(this, R.drawable.class_circle_add_picture));
-        mAddPicItem.name = "添加图片";
-    }
 
     @Override
     public void onClick(View v) {
@@ -275,6 +255,26 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             imm.hideSoftInputFromWindow(mTitleView.getWindowToken(), 0);
         }
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        UpLoadRequest.getInstense().cancle();
+        EventBus.getDefault().unregister(mContext);
+        if (mGetQiNiuTokenUUID != null) {
+            RequestBase.cancelRequestWithUUID(mGetQiNiuTokenUUID);
+            mGetQiNiuTokenUUID = null;
+        }
+        if (mSendClassCircleDataUUID != null) {
+            RequestBase.cancelRequestWithUUID(mSendClassCircleDataUUID);
+            mSendClassCircleDataUUID = null;
+        }
+        if (mCancelQiNiuUploadPics = false) {
+            mCancelQiNiuUploadPics = true;
+        }
+    }
+
 
     private void showDialog() {
         if (mClassCircleDialog == null) {
@@ -322,7 +322,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     /**
      * 删除图片回调
      *
-     * @param bean
+     * @param bean data
      */
     public void onEventMainThread(PhotoDeleteBean bean) {
 
@@ -363,7 +363,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
-    private boolean mCanPublish;
 
     /**
      * 开发发布按钮
@@ -422,10 +421,10 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         SendClassCircleRequest sendClassCircleRequest = new SendClassCircleRequest();
         sendClassCircleRequest.content = content;
         sendClassCircleRequest.resourceIds = resourceIds;
-        mGetQiNiuTokenUUID = sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
+        mSendClassCircleDataUUID = sendClassCircleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
-                mGetQiNiuTokenUUID = null;
+                mSendClassCircleDataUUID = null;
                 rootView.hiddenLoadingView();
                 if (ret.data != null) {
                     ToastUtil.showToast(mContext, R.string.send_success);
@@ -439,7 +438,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
             @Override
             public void onFail(RequestBase request, Error error) {
                 rootView.hiddenLoadingView();
-                mGetQiNiuTokenUUID = null;
+                mSendClassCircleDataUUID = null;
                 ToastUtil.showToast(mContext, error.getMessage());
             }
         });
@@ -507,6 +506,8 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         mGetQiNiuTokenUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
+                mGetQiNiuTokenUUID = null;
+                mCancelQiNiuUploadPics = false;
                 if (ret != null) {
                     if (ret.getCode() == 0) {
                         mQiniuToken = ret.getData().getToken();
@@ -550,6 +551,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
             @Override
             public void onFail(RequestBase request, Error error) {
+                mGetQiNiuTokenUUID = null;
                 rootView.hiddenLoadingView();
                 ToastUtil.showToast(getApplicationContext(), error.getMessage());
             }
@@ -558,10 +560,14 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     private UploadManager uploadManager = null;
     private Configuration config = new Configuration.Builder()
-            .chunkSize(2 * 1024 * 1024)        // 分片上传时，每片的大小。 默认256K
-            .putThreshhold(4 * 1024 * 1024)   // 启用分片上传阀值。默认512K
-            .connectTimeout(10)           // 链接超时。默认10秒
-            .responseTimeout(60)          // 服务器响应超时。默认60秒
+            // 分片上传时，每片的大小。 默认256K
+            .chunkSize(2 * 1024 * 1024)
+            // 启用分片上传阀值。默认512K
+            .putThreshhold(4 * 1024 * 1024)
+            // 链接超时。默认10秒
+            .connectTimeout(10)
+            // 服务器响应超时。默认60秒
+            .responseTimeout(60)
             .build();
 
     /**
@@ -609,7 +615,13 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 @Override
                 public void progress(String s, double v) {
                 }
-            }, null));
+
+            }, new UpCancellationSignal() {
+                @Override
+                public boolean isCancelled() {
+                    return mCancelQiNiuUploadPics;
+                }
+            }));
         }
     }
 
