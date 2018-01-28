@@ -557,6 +557,11 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
                 mDiscardMomentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
                     data.remove(mMomentPosition);
+                    if (data.size() >0) {
+                        mDataEmptyView.setVisibility(View.GONE);
+                    } else {
+                        mDataEmptyView.setVisibility(View.VISIBLE);
+                    }
                     mClassCircleAdapter.notifyItemRemoved(mMomentPosition);
                 } else {
                     ToastUtil.showToast(PublishedMomentListActivity.this, ret.getError().getMessage());

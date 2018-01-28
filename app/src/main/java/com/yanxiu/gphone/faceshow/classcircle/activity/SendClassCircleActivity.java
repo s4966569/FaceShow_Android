@@ -588,6 +588,15 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     private void uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
         position++;
+        /**
+         * 本段代码  预防
+         */
+        if (position > 9) {
+            mCancelQiNiuUploadPics = true;
+            rootView.hiddenLoadingView();
+            ToastUtil.showToast(getApplicationContext(), "一次最多发布9张图片");
+            return;
+        }
         if (filePathList.size() <= position) {
             uploadData(mContentView.getText().toString(), mResourceIds);
         } else {
