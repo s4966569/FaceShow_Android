@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -61,6 +62,8 @@ import java.util.UUID;
 
 import de.greenrobot.event.EventBus;
 
+import static com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter.REFRESH_ANIM_VIEW;
+
 /**
  * 我发布的班级圈列表
  *
@@ -94,6 +97,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     private TextView mTvSureComment;
     private boolean isCommentLoading = false;
     private String mUserId;
+    private View mOtherView;
 
     private UUID mClassCircleRequest;
     private UUID mClassCircleLikeRequest;
@@ -139,6 +143,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     }
 
     private void initView(PublicLoadLayout rootView) {
+        mOtherView =rootView.findViewById(R.id.view_other);
         mTopView = rootView.findViewById(R.id.il_title);
         mBackView = (ImageView) rootView.findViewById(R.id.title_layout_left_img);
         mBackView.setVisibility(View.VISIBLE);
@@ -168,6 +173,12 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         mClassCircleAdapter.setThumbClickListener(mOnLikeClickListener);
         mClassCircleAdapter.setContentLinesChangedlistener(mOnContentLinesChangedlistener);
         mClassCircleAdapter.setDeleteClickListener(mOnDeleteClickListener);
+        mOtherView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
+            }
+        });
     }
 
     public void onEventMainThread(RefreshClassCircle refreshClassCircle) {
@@ -204,8 +215,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
             mVisibility = View.INVISIBLE;
             mAdjustPanView.setViewSizeChangedCallback(null);
             mCommentLayout.setVisibility(View.GONE);
-            InputMethodManager imm = (InputMethodManager) PublishedMomentListActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+            hideSoftInputM();
             mMomentPosition = -1;
             mCommentPosition = -1;
         }
@@ -214,11 +224,18 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         public void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int commentPosition, Comments comment) {
             mMomentPosition = pos;
             mCommentPosition = commentPosition;
-            InputMethodManager imm = (InputMethodManager) PublishedMomentListActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(mCommentView, 0);
+            hideSoftInputM();
             showDiscardCommentPopupWindow(data);
         }
     };
+
+    private void hideSoftInputM() {
+        mCommentLayout.setVisibility(View.GONE);
+        mCommentView.setText("");
+        InputMethodManager imm = (InputMethodManager) PublishedMomentListActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+    }
+
     private PublishedMomentAdapter.onContentLinesChangedlistener mOnContentLinesChangedlistener = new PublishedMomentAdapter.onContentLinesChangedlistener() {
         @Override
         public void onContentLinesChanged(final int position, final boolean isShowAll) {
@@ -259,6 +276,11 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         @Override
         public void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response) {
             cancelLikeRequest(position, response);
+        }
+
+        @Override
+        public void momentPosition(int position) {
+            mMomentPosition=position;
         }
     };
 
@@ -559,7 +581,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
                 mDiscardMomentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
                     data.remove(mMomentPosition);
-                    if (data.size() >0) {
+                    if (data.size() > 0) {
                         mDataEmptyView.setVisibility(View.GONE);
                     } else {
                         mDataEmptyView.setVisibility(View.VISIBLE);
@@ -616,7 +638,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
 
 
     private void showDiscardCommentPopupWindow(final List<ClassCircleResponse.Data.Moments> data) {
-        mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
+        mClassCircleAdapter.notifyItemChanged(mMomentPosition, REFRESH_ANIM_VIEW);
         if (mDiscardCommentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this).inflate(R.layout.pop_ask_cancel_layout, null);
             TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);
@@ -643,7 +665,7 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
     }
 
     private void showDiscardMomentPopupWindow(final List<ClassCircleResponse.Data.Moments> data) {
-        mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
+        mClassCircleAdapter.notifyItemChanged(mMomentPosition, REFRESH_ANIM_VIEW);
         if (mDiscardMomentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this).inflate(R.layout.pop_ask_cancel_layout, null);
             TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);

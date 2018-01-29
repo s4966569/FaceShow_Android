@@ -624,6 +624,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     @Override
+    public void momentPosition(int position) {
+        mMomentPosition = position;
+    }
+
+    @Override
     public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
         mMomentPosition = position;
         showDiscardMomentPopupWindow(data);

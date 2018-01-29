@@ -60,6 +60,7 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         void likeClick(int position, ClassCircleResponse.Data.Moments response);
 
         void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response);
+        void momentPosition(int position);
     }
 
     public interface onContentLinesChangedlistener {
@@ -188,6 +189,7 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 case REFRESH_ANIM_VIEW:
                     classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
                     classCircleViewHolder.mAnimLayout.setEnabled(false);
+                    animPosition = ANIM_POSITION_DEFAULT;
                     break;
                 case REFRESH_COMMENT_DATA:
                     setViewVisibly(classCircleViewHolder, moments);
@@ -510,6 +512,9 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 }
             }
         }).start();
+        if (mLikeClickListener!=null){
+            mLikeClickListener.momentPosition(position);
+        }
     }
 
     @Override

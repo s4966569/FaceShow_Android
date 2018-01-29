@@ -58,10 +58,12 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         void commentFinish();
 
+
         void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int
                 commentPosition, Comments comment);
 
     }
+
 
     public interface onNewMessageButtonClickListener {
         void newMessageButtonClick();
@@ -71,6 +73,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void likeClick(int position, ClassCircleResponse.Data.Moments response);
 
         void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response);
+
+        void momentPosition(int position);
     }
 
     public interface onContentLinesChangedlistener {
@@ -562,6 +566,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
         }).start();
+        mLikeClickListener.momentPosition(position);
     }
 
     @Override

@@ -257,6 +257,11 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
         public void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response) {
             cancelLikeRequest(position, response);
         }
+
+        @Override
+        public void momentPosition(int position) {
+            mMomentPosition =position;
+        }
     };
 
 
