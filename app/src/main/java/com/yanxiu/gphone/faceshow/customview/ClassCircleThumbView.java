@@ -55,7 +55,7 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(setImageSpan());
         for (int i = 0; i < list.size(); i++) {
-            ClassCircleResponse.Data.Moments.Likes item = list.get(list.size()-1-i);
+            ClassCircleResponse.Data.Moments.Likes item = list.get(i);
             if (item.publisher != null&& !TextUtils.isEmpty(item.publisher.realName)) {
                 builder.append(setClickableSpan(item.publisher.realName, item));
                 if (i != list.size() - 1) {

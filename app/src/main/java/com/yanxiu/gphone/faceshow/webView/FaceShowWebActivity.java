@@ -44,9 +44,9 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
 
         String url = data.getData().getTools().get(0).getEventObj().getContent() ;
         if (url.contains("?")){
-            url=url+ "&classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
+            url=url+ "&classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken()+"&_="+System.currentTimeMillis();
         }else {
-            url=url+ "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken();
+            url=url+ "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken()+"&_="+System.currentTimeMillis();
         }
 
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
