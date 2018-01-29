@@ -63,6 +63,7 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
                 .createAgentWeb()
                 .ready()
                 .go(url);
+        mAgentWeb.getAgentWebSettings().getWebSettings().setMediaPlaybackRequiresUserGesture(false);
         ImageView backImage = new ImageView(this);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) ScreenUtils.dpToPx(this, 30),(int) ScreenUtils.dpToPx(this, 30));
         layoutParams.setMargins((int) ScreenUtils.dpToPx(this, 5), (int) ScreenUtils.dpToPx(this, 10), 0, 0);
