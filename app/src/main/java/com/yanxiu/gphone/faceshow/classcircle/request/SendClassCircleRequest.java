@@ -36,6 +36,11 @@ public class SendClassCircleRequest extends RequestBase {
     }
 
     @Override
+    protected HttpType httpType() {
+        return HttpType.POST;
+    }
+
+    @Override
     protected String urlPath() {
         return null;
     }
