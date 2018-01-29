@@ -537,6 +537,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     private void hideSoftInputM() {
         mCommentLayout.setVisibility(View.GONE);
+        mCommentView.setText("");
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
     }
