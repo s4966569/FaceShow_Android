@@ -214,6 +214,8 @@ public class PublishedMomentListActivity extends FaceShowBaseActivity {
         public void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int commentPosition, Comments comment) {
             mMomentPosition = pos;
             mCommentPosition = commentPosition;
+            InputMethodManager imm = (InputMethodManager) PublishedMomentListActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mCommentView, 0);
             showDiscardCommentPopupWindow(data);
         }
     };

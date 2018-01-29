@@ -116,7 +116,7 @@
     <string name="class_circle_comment_to_user">回复%1$s:</string>
     <string name="class_circle_comment_to_master">评论</string>
     <string name="send_class_circle_fail">发布失败，请重试！</string>
-    <string name="send_class_circle_hint">这一刻的想法...</string>
+    <string name="send_class_circle_hint">这一刻的想法...(最多200字)</string>
     <string name="class_circle_comment_hint">评论</string>
     <string name="class_circle_like">赞</string>
     <string name="class_circle_comment">评论</string>
