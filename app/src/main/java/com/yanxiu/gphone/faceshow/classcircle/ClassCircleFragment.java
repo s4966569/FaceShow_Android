@@ -789,6 +789,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void newMessageButtonClick() {
+        mClassCircleAdapter.hideNewMessageButton();
         startActivity(new Intent(this.getActivity(), ClassCircleMessageActivity.class));
     }
 
