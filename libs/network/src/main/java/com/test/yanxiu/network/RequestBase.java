@@ -112,7 +112,7 @@ public abstract class RequestBase {
             callback.onFail(RequestBase.this, new Error("request start error"));
             return null;
         }
-        client = setClient();
+         client = setClient();
         call = client.newCall(request);
         final long start = System.currentTimeMillis();
         call.enqueue(new Callback() {

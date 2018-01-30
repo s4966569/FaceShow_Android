@@ -23,7 +23,7 @@ public class SendClassCircleRequest extends RequestBase {
     /**
      * 通过七牛上传,写死
      */
-    private String resourceSource = "qiniu";
+    public String resourceSource = "qiniu";
 
     @Override
     protected boolean shouldLog() {
