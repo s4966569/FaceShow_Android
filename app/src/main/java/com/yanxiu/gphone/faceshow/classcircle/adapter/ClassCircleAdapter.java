@@ -380,6 +380,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onItemClick(Comments comments, int position) {
                     if (mCommentClickListener != null) {
+                        if (animPosition != ANIM_POSITION_DEFAULT) {
+                            setViewAnim(classCircleViewHolder.getAdapterPosition(), classCircleViewHolder.mAnimLayout);
+                        }
                         if (comments.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
                             mCommentClickListener.commentCancelClick(classCircleViewHolder.getAdapterPosition(), mData, position, comments);
                         } else {
