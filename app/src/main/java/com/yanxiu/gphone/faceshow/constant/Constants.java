@@ -12,7 +12,7 @@ import com.yanxiu.gphone.faceshow.util.SystemUtil;
 
 public class Constants {
     public static String SDCARD_ROOT_NAME = StoreUtils.getFilePath() + "/FaceShow";//路径;
-    public static final String TAG = "faceshow";
+    public static final String TAG = "fs";
     //server配置 开始
     public static final String URL_SERVER_FILE_NAME = "env_config.json"; //存放server配置的文件名
     public static final String MULTICONFIG = "multiConfig"; //多环境节点配置模式
