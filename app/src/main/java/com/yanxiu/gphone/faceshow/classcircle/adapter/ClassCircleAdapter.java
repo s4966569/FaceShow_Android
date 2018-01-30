@@ -58,10 +58,12 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         void commentFinish();
 
+
         void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int
                 commentPosition, Comments comment);
 
     }
+
 
     public interface onNewMessageButtonClickListener {
         void newMessageButtonClick();
@@ -71,6 +73,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void likeClick(int position, ClassCircleResponse.Data.Moments response);
 
         void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response);
+
+        void momentPosition(int position);
     }
 
     public interface onContentLinesChangedlistener {
@@ -376,6 +380,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onItemClick(Comments comments, int position) {
                     if (mCommentClickListener != null) {
+                        if (animPosition != ANIM_POSITION_DEFAULT) {
+                            setViewAnim(classCircleViewHolder.getAdapterPosition(), classCircleViewHolder.mAnimLayout);
+                        }
                         if (comments.publisher.userId.equals(String.valueOf(UserInfo.getInstance().getInfo().getUserId()))) {
                             mCommentClickListener.commentCancelClick(classCircleViewHolder.getAdapterPosition(), mData, position, comments);
                         } else {
@@ -562,6 +569,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
         }).start();
+        mLikeClickListener.momentPosition(position);
     }
 
     @Override

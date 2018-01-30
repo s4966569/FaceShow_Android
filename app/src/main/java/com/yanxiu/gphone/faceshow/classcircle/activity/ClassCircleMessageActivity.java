@@ -122,11 +122,15 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
                 hideLoading();
                 if (ret != null && ret.getCode() == 0) {
                     mData = ret;
-                    if (data == null) {
-                        data = new ArrayList();
+                    if (ret.getData()!=null&&ret.getData().getMsgs() != null && ret.getData().getMsgs().size() > 0) {
+                        if (data == null) {
+                            data = new ArrayList();
+                        }
+                        data.addAll(ret.getData().getMsgs());
+                        mClassCircleMessageAdapter.update(data);
+                    } else {
+                        mRootView.showOtherErrorView("无新消息");
                     }
-                    data.clear();
-                    mClassCircleMessageAdapter.update(ret.getData().getMsgs());
                 } else {
                     showOnSuccessErrorStatue(mRootView, data, ret);
                 }

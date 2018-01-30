@@ -468,6 +468,13 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
     }
 
+//    private boolean textIsNull(Editable s){
+//        if (TextUtils.isEmpty(s)){
+//            return false;
+//        }
+//        s.toString().contains("/n")
+//    }
+
 
     private void exitDialog() {
         if (imm == null) {

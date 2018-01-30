@@ -16,13 +16,13 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.customview.LoadMoreRecyclerView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.RecyclerViewCanLoadMore;
 import com.yanxiu.gphone.faceshow.homepage.CheckInSuccessEvent;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CheckInNotesAdapter;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesRequest;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
+import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -93,8 +93,8 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mRootView.setContentView(R.layout.activity_check_in_notes);
         setContentView(mRootView);
         ButterKnife.bind(this);
-        EventBus.getDefault().register(this);//用来接受签到成功发来的通知CheckInSuccessActivity
-
+        //用来接受签到成功发来的通知CheckInSuccessActivity
+        EventBus.getDefault().register(this);
         mRootView.setRetryButtonOnclickListener(retryClick);
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
         tvTitle.setText(R.string.check_in_notes);
@@ -116,7 +116,7 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {
-
+                FrcLogUtils.logJson(RequestBase.getGson().toJson(ret));
                 mRootView.hiddenLoadingView();
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);
@@ -143,8 +143,9 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
                     }
                     mCheckInNotesAdapter.update(mCheckInNotesList);
                 } else {
-                    if (mCheckInNotesList.size() <= 0)
+                    if (mCheckInNotesList.size() <= 0) {
                         mRootView.showOtherErrorView("数据异常");
+                    }
                 }
             }
 

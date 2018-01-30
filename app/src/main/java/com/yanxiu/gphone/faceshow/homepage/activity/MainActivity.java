@@ -412,10 +412,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
                             if (mNaviFragmentFactory.getCurrentItem() == 2) {
                                 //当前在班级圈页面
-                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
-                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
-                                    mNaviFragmentFactory.getClassCircleFragment().toRefresh();
-                                }
+//                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+//                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
+                                    //mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+//                                }
                             } else {
                                 //当前不在班级圈页面
                                 mImgClassCircleRedCircle.setVisibility(View.VISIBLE);

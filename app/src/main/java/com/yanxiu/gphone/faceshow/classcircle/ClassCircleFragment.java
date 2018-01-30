@@ -543,6 +543,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public void commentCancelClick(int pos, List<ClassCircleResponse.Data.Moments> data, int commentPosition, Comments comment) {
         mMomentPosition = pos;
         mCommentPosition = commentPosition;
+        hideSoftInputM();
         showDiscardCommentPopupWindow(data, comment);
     }
 
@@ -551,12 +552,17 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public void commentFinish() {
         mVisibility = View.INVISIBLE;
         mAdjustPanView.setViewSizeChangedCallback(null);
-        mCommentLayout.setVisibility(View.GONE);
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+        hideSoftInputM();
         ((MainActivity) getActivity()).setBottomVisibility(View.VISIBLE);
         mMomentPosition = -1;
         mCommentPosition = -1;
+    }
+
+    private void hideSoftInputM() {
+        mCommentLayout.setVisibility(View.GONE);
+        mCommentView.setText("");
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
     }
 
     @Override
@@ -638,6 +644,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void cancelLikeClick(int position, ClassCircleResponse.Data.Moments moments) {
         cancelLikeRequest(position, moments);
+    }
+
+    @Override
+    public void momentPosition(int position) {
+        mMomentPosition = position;
     }
 
     @Override
@@ -806,6 +817,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void newMessageButtonClick() {
+        mClassCircleAdapter.hideNewMessageButton();
         startActivity(new Intent(this.getActivity(), ClassCircleMessageActivity.class));
     }
 
