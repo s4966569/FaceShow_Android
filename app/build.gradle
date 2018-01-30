@@ -163,9 +163,9 @@ dependencies {
     implementation 'top.zibin:Luban:1.1.3'
     /*日志输出组合*/
     implementation 'com.orhanobut:logger:2.1.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
-        transitive = true;
-    }
+//    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+//        transitive = true;
+//    }
 
 
 }
