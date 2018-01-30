@@ -179,7 +179,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                         onClick(i, false);
                     }
                 } else {
-                    if (mData.getMaxSelectNum() >= mAnswerList.size() - 1) {
+                    if (mChooseType==TYPE_SINGLE){
                         setItemSelect(holder);
                         if (isCallBack) {
                             if (mChooseType == TYPE_SINGLE) {
@@ -191,9 +191,21 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                             }
                             onClick(i, true);
                         }
-                    } else {
-                        ToastUtil.showToast(getContext(), "该题最多可勾选" + mData.getMaxSelectNum() + "个答案");
+                    }else{
+                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
+                            setItemSelect(holder);
+                            if (isCallBack) {
+                                //没有，添加
+                                if (!mAnswerList.contains(String.valueOf(position))) {
+                                    mAnswerList.add(String.valueOf(position));
+                                }
+                                onClick(i, true);
+                            }
+                        } else {
+                            ToastUtil.showToast(getContext(), "该题最多可勾选" + mData.getMaxSelectNum() + "个答案");
+                        }
                     }
+
                 }
             } else {
                 if (mChooseType == TYPE_SINGLE) {

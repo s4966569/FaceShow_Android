@@ -89,7 +89,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
             case TYPE_SINGLE:
             case TYPE_MULTI:
                 ChooseViewHolder holder1 = (ChooseViewHolder) holder;
-                holder1.evaluation_title.setText(position + 1 + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
+                holder1.evaluation_title.setText(position + 1 + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")"+(data.getVoteInfo().getMaxSelectNum()>1 ? "(最多可选"+data.getVoteInfo().getMaxSelectNum()+"个答案)" :""));
                 holder1.chooseLayout.setChooseType(getItemViewType(position));
                 holder1.chooseLayout.setData(data.getVoteInfo());
                 holder1.chooseLayout.setSaveChooceResultList(data.getAnswerList());

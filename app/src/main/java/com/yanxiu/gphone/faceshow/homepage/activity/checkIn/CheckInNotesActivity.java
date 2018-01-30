@@ -116,7 +116,6 @@ public class CheckInNotesActivity extends FaceShowBaseActivity {
         mGetCheckInNotesRequestUUID = getCheckInNotesRequest.startRequest(GetCheckInNotesResponse.class, new HttpCallback<GetCheckInNotesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetCheckInNotesResponse ret) {
-                FrcLogUtils.logJson(RequestBase.getGson().toJson(ret));
                 mRootView.hiddenLoadingView();
                 if (swipeRefreshLayout.isRefreshing()) {
                     swipeRefreshLayout.setRefreshing(false);

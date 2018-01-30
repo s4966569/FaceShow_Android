@@ -49,6 +49,7 @@ import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
+import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
@@ -333,7 +334,6 @@ public class LoginActivity extends FaceShowBaseActivity {
         mSignInRequestUUID = signInRequest.startRequest(SignInResponse.class, new HttpCallback<SignInResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignInResponse ret) {
-                Logger.json(RequestBase.getGson().toJson(ret));
                 if (ret.getCode() == 0) {
                     token = ret.getToken();
                     passPort = ret.getPassport();
@@ -362,8 +362,6 @@ public class LoginActivity extends FaceShowBaseActivity {
         getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
-                Logger.e(RequestBase.getGson().toJson(ret));
-                Logger.json(RequestBase.getGson().toJson(ret));
                 rootView.finish();
                 if (ret.getCode() == 0) {
                     SpManager.saveToken(token);
