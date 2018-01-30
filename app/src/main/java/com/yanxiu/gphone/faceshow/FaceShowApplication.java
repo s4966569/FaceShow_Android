@@ -1,7 +1,9 @@
 package com.yanxiu.gphone.faceshow;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.StrictMode;
+import android.support.multidex.MultiDex;
 
 import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
@@ -27,6 +29,11 @@ public class FaceShowApplication extends LitePalApplication {
         return instance;
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @SuppressLint("NewApi")
     @Override

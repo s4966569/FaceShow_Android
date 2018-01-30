@@ -154,7 +154,7 @@ dependencies {
 //
 //    }
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
-    implementation 'com.just.agentweb:agentweb:3.1.0'
+    compile 'com.just.agentweb:agentweb:3.1.0'
 
     /*七牛*/
     compile files('libs/happy-dns-0.2.3.2.jar')
