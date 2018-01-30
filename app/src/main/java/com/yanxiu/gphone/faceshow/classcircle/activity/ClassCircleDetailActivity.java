@@ -58,6 +58,8 @@ import java.util.UUID;
 
 import de.greenrobot.event.EventBus;
 
+import static com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter.REFRESH_ANIM_VIEW;
+
 /**
  * 班级圈详情
  * 该页面显示效果跟我发布的班级圈一样,只是当前页面只显示一个发布的话题,而之前的是显示个列表  顾逻辑接口UI都可以复用
@@ -92,6 +94,7 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
     private TextView mTvSureComment;
     private boolean isCommentLoading = false;
     private String mMomentId;
+    private View mOtherView;
 
     private UUID mClassCircleRequest;
     private UUID mClassCircleLikeRequest;
@@ -138,6 +141,7 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
     }
 
     private void initView(PublicLoadLayout rootView) {
+        mOtherView = rootView.findViewById(R.id.view_other);
         mTopView = rootView.findViewById(R.id.il_title);
         mBackView = (ImageView) rootView.findViewById(R.id.title_layout_left_img);
         mBackView.setVisibility(View.VISIBLE);
@@ -167,6 +171,12 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
         mClassCircleAdapter.setThumbClickListener(mOnLikeClickListener);
         mClassCircleAdapter.setContentLinesChangedlistener(mOnContentLinesChangedlistener);
         mClassCircleAdapter.setDeleteClickListener(mOnDeleteClickListener);
+        mOtherView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClassCircleAdapter.notifyItemChanged(mMomentPosition, REFRESH_ANIM_VIEW);
+            }
+        });
     }
 
     public void onEventMainThread(RefreshClassCircle refreshClassCircle) {
@@ -260,7 +270,7 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
 
         @Override
         public void momentPosition(int position) {
-            mMomentPosition =position;
+            mMomentPosition = position;
         }
     };
 
