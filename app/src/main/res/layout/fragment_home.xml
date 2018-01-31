@@ -231,7 +231,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/ll_tab" />
 
-    <ImageView
+    <com.yanxiu.gphone.faceshow.customview.NianHuiEnterAnimaImageView
         android:id="@+id/img_tools"
         android:layout_width="130dp"
         android:layout_height="130dp"
@@ -240,7 +240,6 @@
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="15dp"
         android:gravity="center"
-        android:src="@drawable/selector_nianhui_enter"
         android:visibility="gone" />
 
 
