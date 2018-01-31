@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -29,7 +28,6 @@ import com.yanxiu.gphone.faceshow.http.main.GetToolsResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 import com.yanxiu.gphone.faceshow.webView.FaceShowWebActivity;
 
@@ -39,33 +37,39 @@ import com.yanxiu.gphone.faceshow.webView.FaceShowWebActivity;
  */
 public class HomeFragment extends FaceShowBaseFragment implements View.OnClickListener {
     private final static String TAG = HomeFragment.class.getSimpleName();
-
-    private MainActivity mActivity;
     public MainBean mMainBean;
-
     private PublicLoadLayout mRootView;
 
     public HomeFragmentFactory mFragmentFactory;
     public FragmentManager mFragmentManager;
-
-    private final int INDEX_HOME_TAB = 0;//首页tab
-    private final int INDEX_NOTICE_TAB = 1;//通知tab
-    private final int INDEX_CLASSCIRCLE_TAB = 2;//班级圈tab
-    private final int INDEX_MY = 3;//我的tab
+    //首页tab
+    private final int INDEX_HOME_TAB = 0;
+    //通知tab
+    private final int INDEX_NOTICE_TAB = 1;
+    //班级圈tab
+    private final int INDEX_CLASSCIRCLE_TAB = 2;
+    //我的tab
+    private final int INDEX_MY = 3;
     private int mLastSelectIndex = -1;
 
     private final int mNavBarViewsCount = 4;
     private View[] mNavBarViews = new View[mNavBarViewsCount];
-
-    private View mCourseArrange_tab;//课程安排tab
-    private View mResources_tab;//资源tab
-    private View mProjectTask_tab;//项目任务taba
-    private View mSchedule_tab;//日程计划tab
+    //课程安排tab
+    private View mCourseArrange_tab;
+    //资源tab
+    private View mResources_tab;
+    //项目任务taba
+    private View mProjectTask_tab;
+    //日程计划tab
+    private View mSchedule_tab;
 
     private TextView mTitle;
-    private TextView mCheckInEnterTV;//签到入口文字描述
-    private TextView mProject_tv;//项目名称
-    private TextView mClass_tv;//班级
+    //签到入口文字描述
+    private TextView mCheckInEnterTV;
+    //项目名称
+    private TextView mProject_tv;
+    //班级
+    private TextView mClass_tv;
     private ImageView mCheckInEnterIMG;
     private ImageView mImgTools;
 
@@ -76,7 +80,6 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getContext());
         mRootView.setContentView(R.layout.fragment_home);
-        mActivity = (MainActivity) getActivity();
         initData();
 //        initView();
         intListener();
@@ -88,21 +91,19 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
      * 目前仅年会信息
      */
     private void getToolsData() {
-        GetToolsRequest getToolsRequest = new GetToolsRequest();
+        final GetToolsRequest getToolsRequest = new GetToolsRequest();
         getToolsRequest.clazsId = SpManager.getUserInfo().getClassId();
         getToolsRequest.startRequest(GetToolsResponse.class, new HttpCallback<GetToolsResponse>() {
             @Override
             public void onSuccess(RequestBase request, final GetToolsResponse ret) {
                 if (ret != null && ret.getData() != null && ret.getData().getTools() != null && ret.getData().getTools().size() > 0) {
                     mImgTools.setVisibility(View.VISIBLE);
-//                    mImgTools.setText(ret.getData().getTools().get(0).getName());
                     mImgTools.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(), FaceShowWebActivity.class);
-                            intent.putExtra("data",ret);
+                            intent.putExtra("data", ret);
                             startActivity(intent);
-//                            ToastUtil.showToast(getContext(), ret.getData().getTools().get(0).getEventObj().getContent());
                         }
                     });
                 } else {
@@ -114,6 +115,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             @Override
             public void onFail(RequestBase request, Error error) {
                 mImgTools.setVisibility(View.GONE);
+                getToolsData();
             }
         });
     }
@@ -140,7 +142,6 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
                     info.setClassName(ret.getData().getClazsInfo().getClazsName());
                     info.setProjectName(ret.getData().getProjectInfo().getProjectName());
                     SpManager.saveUserInfo(info);
-
                     mMainBean = ret.getData();
                     initView();
                 } else {
@@ -156,7 +157,6 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     private void initData() {
-//        mMainBean = mActivity.mMainData;
         toRefresh();
     }
 
@@ -229,10 +229,8 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     }
 
     public void showResourceRedDot() {
-
         ResourcesFragment resourcesFragment = mFragmentFactory.getResourcesFragment();
         //如果当前页在资源页就不显示红点
-
         if (resourcesFragment != null) {
             if (mFragmentFactory.getCurrentItem() != 1) {
                 mImgResourceRedDot.setVisibility(View.VISIBLE);
