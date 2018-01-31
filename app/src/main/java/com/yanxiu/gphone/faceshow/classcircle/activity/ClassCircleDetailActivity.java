@@ -377,26 +377,38 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                         mRefreshView.setRefreshing(false);
                     }
                 });
-                if (ret != null && ret.getCode() == 0 && ret.getData() != null) {
-                    List<ClassCircleResponse.Data.Moments> moments = new ArrayList<>();
-                    moments.add(ret.getData());
-                    if (offset.equals("0")) {
-                        mClassCircleAdapter.setData(moments);
+
+                if (ret != null) {
+                    if (ret.getCode() == 0) {
+                        List<ClassCircleResponse.Data.Moments> moments = new ArrayList<>();
+                        moments.add(ret.getData());
+                        if (offset.equals("0")) {
+                            mClassCircleAdapter.setData(moments);
+                        } else {
+                            mClassCircleAdapter.addData(moments);
+                        }
+                        if (moments == null || moments.size() == 0) {
+                            mDataEmptyView.setVisibility(View.VISIBLE);
+                        } else {
+                            mDataEmptyView.setVisibility(View.GONE);
+                        }
+                        mClassCircleRecycleView.setLoadMoreEnable(false);
                     } else {
-                        mClassCircleAdapter.addData(moments);
+                        if (offset.equals("0")) {
+                            rootView.showOtherErrorView(ret.getError().getMessage());
+                        } else {
+                            ToastUtil.showToast(getApplicationContext(), ret.getError().getMessage());
+                        }
                     }
-                    if (moments == null || moments.size() == 0) {
-                        mDataEmptyView.setVisibility(View.VISIBLE);
-                    } else {
-                        mDataEmptyView.setVisibility(View.GONE);
-                    }
-                    mClassCircleRecycleView.setLoadMoreEnable(false);
+
                 } else {
                     if (offset.equals("0")) {
-                        rootView.showNetErrorView();
-                        mClassCircleAdapter.clear();
+                        rootView.showOtherErrorView();
+//                        mClassCircleAdapter.clear();
                     }
                 }
+
+               
             }
 
             @Override

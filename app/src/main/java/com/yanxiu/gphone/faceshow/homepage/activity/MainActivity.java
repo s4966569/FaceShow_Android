@@ -203,7 +203,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void getRedPointersRequest() {
         GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
-        getHasNotificationsNeedReadRequest.clazsId = UserInfo.getInstance().getInfo().getClassId();
+        getHasNotificationsNeedReadRequest.clazsId = SpManager.getUserInfo().getClassId();
         mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
@@ -414,7 +414,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                                 //当前在班级圈页面
 //                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
 //                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
-                                    //mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+                                //mNaviFragmentFactory.getClassCircleFragment().toRefresh();
 //                                }
                             } else {
                                 //当前不在班级圈页面
@@ -429,15 +429,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     }
 
                     //新的班级圈回复消息
-                    if (ret.getData().getMomentMsgNew() != null ) {
-                        if ( ret.getData().getMomentMsgNew().getPromptNum() > 0) {
+                    if (ret.getData().getMomentMsgNew() != null) {
+                        if (ret.getData().getMomentMsgNew().getPromptNum() > 0) {
                             if (mNaviFragmentFactory.getCurrentItem() == 2) {
                                 ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {
                                     mNaviFragmentFactory.getClassCircleFragment().showMomentMsg(ret.getData().getMomentMsgNew().getPromptNum());
                                 }
                             }
-                        }else {
+                        } else {
                             if (mNaviFragmentFactory.getCurrentItem() == 2) {
                                 ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {

@@ -243,9 +243,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(s.length()==0){
+                if (s.length() == 0) {
                     mTvSureComment.setEnabled(false);
-                }else {
+                } else {
                     mTvSureComment.setEnabled(true);
                 }
             }
@@ -287,24 +287,51 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                         mRefreshView.setRefreshing(false);
                     }
                 });
-                if (ret != null && ret.data != null && ret.data.moments != null) {
-                    if (offset.equals("0")) {
-                        mClassCircleAdapter.setData(ret.data.moments);
+                if (ret != null) {
+                    if (ret.getCode() == 0 && ret.data != null && ret.data.moments != null) {
+                        if (offset.equals("0")) {
+                            mClassCircleAdapter.setData(ret.data.moments);
+                        } else {
+                            mClassCircleAdapter.addData(ret.data.moments);
+                        }
+                        if (ret.data.moments == null || ret.data.moments.size() == 0) {
+                            mDataEmptyView.setVisibility(View.VISIBLE);
+                        } else {
+                            mDataEmptyView.setVisibility(View.GONE);
+                        }
+                        mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
                     } else {
-                        mClassCircleAdapter.addData(ret.data.moments);
+                        if (offset.equals("0")) {
+                            rootView.showOtherErrorView(ret.getError().getMessage());
+                        } else {
+                            ToastUtil.showToast(getContext(), ret.getError().getMessage());
+                        }
                     }
-                    if (ret.data.moments == null || ret.data.moments.size() == 0) {
-                        mDataEmptyView.setVisibility(View.VISIBLE);
-                    } else {
-                        mDataEmptyView.setVisibility(View.GONE);
-                    }
-                    mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
+
                 } else {
                     if (offset.equals("0")) {
-                        rootView.showNetErrorView();
-                        mClassCircleAdapter.clear();
+                        rootView.showOtherErrorView();
+//                        mClassCircleAdapter.clear();
                     }
                 }
+//                if (ret != null && ret.data != null && ret.data.moments != null) {
+//                    if (offset.equals("0")) {
+//                        mClassCircleAdapter.setData(ret.data.moments);
+//                    } else {
+//                        mClassCircleAdapter.addData(ret.data.moments);
+//                    }
+//                    if (ret.data.moments == null || ret.data.moments.size() == 0) {
+//                        mDataEmptyView.setVisibility(View.VISIBLE);
+//                    } else {
+//                        mDataEmptyView.setVisibility(View.GONE);
+//                    }
+//                    mClassCircleRecycleView.setLoadMoreEnable(ret.data.hasNextPage);
+//                } else {
+//                    if (offset.equals("0")) {
+//                        rootView.showNetErrorView();
+//                        mClassCircleAdapter.clear();
+//                    }
+//                }
             }
 
             @Override

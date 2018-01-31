@@ -158,8 +158,13 @@ public class ImagePreviewActivity extends Activity implements ViewTreeObserver.O
 
         // 获取真实大小
         Drawable drawable = imageView.getDrawable();
-        int intrinsicHeight = drawable.getIntrinsicHeight();
-        int intrinsicWidth = drawable.getIntrinsicWidth();
+
+        int intrinsicHeight = 0;
+        int intrinsicWidth = 0;
+        if (drawable != null) {
+            intrinsicHeight = drawable.getIntrinsicHeight();
+            intrinsicWidth = drawable.getIntrinsicWidth();
+        }
         // 计算出与屏幕的比例，用于比较以宽的比例为准还是高的比例为准，因为很多时候不是高度没充满，就是宽度没充满
         float h = screenHeight * 1.0f / intrinsicHeight;
         float w = screenWidth * 1.0f / intrinsicWidth;
