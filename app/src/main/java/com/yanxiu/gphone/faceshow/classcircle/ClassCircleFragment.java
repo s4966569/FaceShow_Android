@@ -784,7 +784,6 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     }
 
     private void showDiscardMomentPopupWindow(final List<ClassCircleResponse.Data.Moments> data) {
-        mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
         if (mDiscardMomentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
             TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);

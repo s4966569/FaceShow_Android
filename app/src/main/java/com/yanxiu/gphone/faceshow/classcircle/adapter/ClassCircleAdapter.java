@@ -283,6 +283,8 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             classCircleViewHolder.mCommentDel.setVisibility(View.GONE);
             classCircleViewHolder.mAnimLayout.setBackgroundResource(R.drawable.shape_class_circle_aime_normal2);
         }
+
+
     }
 
 
