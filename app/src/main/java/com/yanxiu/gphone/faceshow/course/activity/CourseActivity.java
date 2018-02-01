@@ -136,7 +136,7 @@ public class CourseActivity extends FaceShowBaseActivity implements View.OnClick
                     mAdapter.setData(ret.getCourseDetailData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
-                    mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
 
