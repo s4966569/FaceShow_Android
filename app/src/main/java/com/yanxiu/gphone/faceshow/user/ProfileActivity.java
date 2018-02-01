@@ -423,13 +423,13 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public void onUpLoadFailed(int position, Object tag, String failMsg) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext, failMsg);
+                ToastUtil.showToast(mContext, "头像上传失败");
             }
 
             @Override
             public void onError(String errorMsg) {
                 rootView.hiddenLoadingView();
-                ToastUtil.showToast(mContext, errorMsg);
+                ToastUtil.showToast(mContext, "头像上传失败");
             }
         });
 
