@@ -54,7 +54,6 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
-import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 
@@ -243,7 +242,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     rootView.showLoadingView();
                     getQiNiuToken();
                 } else {
-                    if (TextUtils.isEmpty(content)) {
+                    if (TextUtils.isEmpty(content.trim())) {
                         ToastUtil.showToast(getApplicationContext(), "请输入要发布的内容");
                     } else {
                         rootView.showLoadingView();
