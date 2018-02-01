@@ -45,8 +45,6 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
     TextView mTitleLayoutTitle;
     @BindView(R.id.recycler)
     RecyclerView mRecycler;
-    @BindView(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private PublicLoadLayout mRootView;
     private ClassCircleMessageAdapter mClassCircleMessageAdapter;
@@ -90,12 +88,6 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
                 getMessageList();
             }
         });
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getMessageList();
-            }
-        });
         mClassCircleMessageAdapter.setIRecyclerViewItemClick(new IRecyclerViewItemClick() {
             @Override
             public void onItemClick(View view, int postion) {
@@ -114,6 +106,7 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
     }
 
     private void getMessageList() {
+        mRootView.showLoadingView();
         ClassCircleNewMessageRequest classCircleNewMessageRequest = new ClassCircleNewMessageRequest();
         classCircleNewMessageRequest.clazsId = SpManager.getUserInfo().getClassId();
         classCircleNewMessageRequest.startRequest(ClassCircleNewMessageResponse.class, new HttpCallback<ClassCircleNewMessageResponse>() {
@@ -122,7 +115,7 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
                 hideLoading();
                 if (ret != null && ret.getCode() == 0) {
                     mData = ret;
-                    if (ret.getData()!=null&&ret.getData().getMsgs() != null && ret.getData().getMsgs().size() > 0) {
+                    if (ret.getData() != null && ret.getData().getMsgs() != null && ret.getData().getMsgs().size() > 0) {
                         if (data == null) {
                             data = new ArrayList();
                         }
@@ -146,9 +139,6 @@ public class ClassCircleMessageActivity extends FaceShowBaseActivity {
 
     private void hideLoading() {
         mRootView.finish();
-        if (mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
     }
 
     /**

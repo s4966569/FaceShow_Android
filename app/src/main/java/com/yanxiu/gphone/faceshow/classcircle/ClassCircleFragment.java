@@ -71,6 +71,7 @@ import java.util.UUID;
 import de.greenrobot.event.EventBus;
 
 import static android.app.Activity.RESULT_OK;
+import static com.yanxiu.gphone.faceshow.classcircle.adapter.ClassCircleAdapter.REFRESH_ANIM_VIEW;
 
 /**
  * 首页 “班级圈”Fragment
@@ -757,7 +758,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private PopupWindow mDiscardMomentCancelPopupWindow;
 
     private void showDiscardCommentPopupWindow(final List<ClassCircleResponse.Data.Moments> data, final Comments comment) {
-        mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_ANIM_VIEW);
+        mClassCircleAdapter.notifyItemChanged(mMomentPosition, REFRESH_ANIM_VIEW);
         if (mDiscardCommentCancelPopupWindow == null) {
             View pop = LayoutInflater.from(this.getContext()).inflate(R.layout.pop_ask_cancel_layout, null);
             TextView tvDel = (TextView) pop.findViewById(R.id.tv_pop_sure);
@@ -838,6 +839,14 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             if (resultCode == RESULT_OK) {
                 onRefresh();
             }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mClassCircleAdapter != null) {
+            mClassCircleAdapter.notifyItemChanged(mMomentPosition, REFRESH_ANIM_VIEW);
         }
     }
 
