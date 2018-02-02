@@ -156,7 +156,7 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                     mAdapter.setData(ret.getData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
-                    mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
 

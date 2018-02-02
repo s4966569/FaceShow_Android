@@ -103,7 +103,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                 if (ret.getCode() == 0) {
                     isLoadSuccess = true;
                     tvNotificationTitle.setText(ret.getData().getTitle());
-                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName() == null ? "专家:无 " : ret.getData().getAuthorName(), DateFormatUtil.translationBetweenTwoFormat(ret.getData().getCreateTime(),DateFormatUtil.FORMAT_ONE,DateFormatUtil.FORMAT_SIX)));
+                    tvNotificationCreatedPersonAndName.setText(getString(R.string.notificationCreatedPersonAndTime, ret.getData().getAuthorName() == null ? "专家:无 " : ret.getData().getAuthorName(), DateFormatUtil.translationBetweenTwoFormat(ret.getData().getCreateTime(), DateFormatUtil.FORMAT_ONE, DateFormatUtil.FORMAT_SIX)));
                     tvNotificationContent.setText(ret.getData().getContent());
                     imgNotification.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -121,7 +121,7 @@ public class NotificationDetailActivity extends FaceShowBaseActivity {
                     mRootView.hiddenNetErrorView();
                     mRootView.hiddenOtherErrorView();
                 } else {
-                    mRootView.showOtherErrorView("没有详情");
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
 
             }

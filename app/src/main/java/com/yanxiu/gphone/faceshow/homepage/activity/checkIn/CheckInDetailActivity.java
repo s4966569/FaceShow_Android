@@ -99,7 +99,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
                         publicLoadLayout.showOtherErrorView("没有详情");
                     }
                 } else {
-                    publicLoadLayout.showOtherErrorView(response.getMessage());
+                    publicLoadLayout.showOtherErrorView(response.getError().getMessage());
                 }
             }
 
@@ -123,7 +123,7 @@ public class CheckInDetailActivity extends FaceShowBaseActivity {
             tvCheckInTimeHere.setVisibility(View.VISIBLE);
             tvCheckInTime.setVisibility(View.VISIBLE);
             tvCheckInStatue.setText(R.string.you_have_check_in_success);
-            tvCheckInTime.setText(DateFormatUtil.translationBetweenTwoFormat(data.getUserSignIn().getSigninTime(),DateFormatUtil.FORMAT_ONE,DateFormatUtil.FORMAT_SIX));
+            tvCheckInTime.setText(DateFormatUtil.translationBetweenTwoFormat(data.getUserSignIn().getSigninTime(), DateFormatUtil.FORMAT_ONE, DateFormatUtil.FORMAT_SIX));
         } else {
             tvCheckIn.setVisibility(View.VISIBLE);
             tvCheckInHere.setVisibility(View.VISIBLE);

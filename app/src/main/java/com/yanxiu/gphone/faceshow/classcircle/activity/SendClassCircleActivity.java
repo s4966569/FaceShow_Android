@@ -1,13 +1,17 @@
 package com.yanxiu.gphone.faceshow.classcircle.activity;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -50,7 +54,6 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
-import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 
@@ -239,7 +242,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                     rootView.showLoadingView();
                     getQiNiuToken();
                 } else {
-                    if (TextUtils.isEmpty(content)) {
+                    if (TextUtils.isEmpty(content.trim())) {
                         ToastUtil.showToast(getApplicationContext(), "请输入要发布的内容");
                     } else {
                         rootView.showLoadingView();
@@ -477,13 +480,14 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
 
     private void exitDialog() {
+        showNewDialog();
         if (imm == null) {
             imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         }
         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                 .hideSoftInputFromWindow(mBackView.getWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
-        showCancelPopupWindow(this);
+//        showCancelPopupWindow(this);
 
     }
 
@@ -647,6 +651,28 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         }
     }
 
+    private AlertDialog.Builder mBuilder = null;
+
+    private void showNewDialog() {
+        if (mBuilder==null){
+            mBuilder =new AlertDialog.Builder(SendClassCircleActivity.this);
+            mBuilder.setMessage("退出编辑?")
+                    .setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            SendClassCircleActivity.this.finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancle, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+        }
+        mBuilder.show();
+    }
+
     View.OnClickListener popupWindowClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -665,4 +691,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
 
         }
     };
+
+
 }

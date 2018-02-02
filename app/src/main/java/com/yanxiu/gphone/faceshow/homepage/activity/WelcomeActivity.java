@@ -79,8 +79,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
             isAnimationEnd = true;
             if (isGetUserInfoEnd) {
                 whereToGoWithGetUserInfoEnd(WelcomeActivity.this);
-            }
-            if (isCanLogin) {
+            } else if (isCanLogin) {
                 LoginActivity.toThisAct(WelcomeActivity.this);
                 WelcomeActivity.this.finish();
             }

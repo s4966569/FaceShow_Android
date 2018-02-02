@@ -202,7 +202,9 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                                 onClick(i, true);
                             }
                         } else {
-                            ToastUtil.showToast(getContext(), "本题最多只能选择" + mData.getMaxSelectNum() + "项（如需修改先取消之前的选择)");
+                            if (isCallBack) {
+                                ToastUtil.showToast(getContext(), "本题最多只能选择" + mData.getMaxSelectNum() + "项（如需修改先取消之前的选择)");
+                            }
                         }
                     }
 

@@ -153,7 +153,7 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
                     mTitle.setText(getString(R.string.vote));
                     initAdapter(ret.getData());
                 } else {
-                    mRootView.showOtherErrorView();
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
 

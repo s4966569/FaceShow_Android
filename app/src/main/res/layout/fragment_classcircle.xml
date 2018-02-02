@@ -51,6 +51,7 @@
             android:layout_toStartOf="@+id/tv_sure"
             android:background="@drawable/shape_class_circle_edittext"
             android:hint="评论"
+            android:maxLength="200"
             android:maxLines="3"
             android:minHeight="35dp"
             android:paddingEnd="10dp"
