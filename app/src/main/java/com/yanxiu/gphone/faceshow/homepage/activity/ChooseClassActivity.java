@@ -85,7 +85,7 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
 
     private void initTitle() {
         mLeftImage.setVisibility(View.VISIBLE);
-        mTitleLayoutTitle.setText(R.string.choose_class);
+        mTitleLayoutTitle.setText("选择班级");
         mTitleLayoutTitle.setVisibility(View.VISIBLE);
         mTitleLayoutRightTxt.setText(R.string.sure);
         mTitleLayoutRightTxt.setVisibility(View.VISIBLE);

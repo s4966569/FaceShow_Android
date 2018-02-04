@@ -429,13 +429,17 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 rootView.hiddenLoadingView();
                 isCommentLoading = false;
                 mCommentToMasterRequest = null;
-                if (ret != null && ret.data != null) {
-                    moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
-                    commentFinish();
-                    mCommentView.setText("");
-                } else {
-                    ToastUtil.showToast(getContext(), R.string.error_tip);
+                if (ret!=null){
+                    if (ret.getCode()==0&&ret.data!=null){
+                        moments.comments.add(ret.data);
+                        mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                        commentFinish();
+                        mCommentView.setText("");
+                    }else {
+                        ToastUtil.showToast(getContext(), ret.getError().getMessage());
+                    }
+                }else {
+                    ToastUtil.showToast(getContext(),"发送失败");
                 }
             }
 
