@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -113,6 +115,26 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
 
             @Override
             public void onLoadmoreComplte() {
+            }
+        });
+        mEd_comment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    mTvSure.setEnabled(false);
+                } else {
+                    mTvSure.setEnabled(true);
+                }
             }
         });
     }
