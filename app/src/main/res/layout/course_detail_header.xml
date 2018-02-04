@@ -37,8 +37,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
-        android:ellipsize="end"
-        android:maxLines="2"
+        android:singleLine="true"
         tools:text="阿斯顿发放事发地点阿斯顿发放事阿斯顿发放事发地点阿斯顿发放事发地点阿斯顿发放事发地点发地点阿斯顿发放事发地点"
         android:textColor="@color/color_333333"
         android:textSize="20dp" />
