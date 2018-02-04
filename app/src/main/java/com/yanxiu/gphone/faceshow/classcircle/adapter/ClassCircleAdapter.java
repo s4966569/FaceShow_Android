@@ -217,7 +217,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
                     titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
                     titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
-                    titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    titleViewHolder.mRlNewMessage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (mNewMessageButtonClickListener != null) {
@@ -307,7 +307,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             } else {
                 titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
                 titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
-                titleViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                titleViewHolder.mRlNewMessage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (mNewMessageButtonClickListener != null) {
