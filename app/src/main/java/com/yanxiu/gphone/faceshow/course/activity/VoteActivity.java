@@ -172,13 +172,13 @@ public class VoteActivity extends FaceShowBaseActivity implements View.OnClickLi
             mSubmit.setVisibility(GONE);
             mVoteResultAdapter = new VoteResultAdapter(this);
             mVoteResultAdapter.setData(data);
-            mVoteResultAdapter.setTitle(data.getQuestionGroup().getTitle());
+            mVoteResultAdapter.setTitle(data.getQuestionGroup().getTitle()+"("+data.getQuestionGroup().getDescription()+")");
             mRecyclerView.setAdapter(mVoteResultAdapter);
             mSubmit.setVisibility(GONE);
         } else {
             mSubmit.setVisibility(View.VISIBLE);
             mVoteAdapter = new VoteAdapter(this, this);
-            mVoteAdapter.setTitle(data.getQuestionGroup().getTitle());
+            mVoteAdapter.setTitle(data.getQuestionGroup().getTitle()+"("+data.getQuestionGroup().getDescription()+")");
             mVoteAdapter.setData(data);
             mRecyclerView.setAdapter(mVoteAdapter);
             mSubmit.setVisibility(View.VISIBLE);
