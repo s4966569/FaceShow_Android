@@ -41,11 +41,19 @@ public class ToResourceDetailActivityBroadcastReceiver extends BroadcastReceiver
         resourceDetailRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
-                if (ret != null && ret.getCode() == 0) {
-                    setIntent(context, ret.getData());
-                } else {
+                if (ret!=null){
+                    if (ret.getCode()==0&&ret.getData()!=null){
+                        setIntent(context, ret.getData());
+                    }else if (ret.getError()!=null&&!TextUtils.isEmpty(ret.getError().getMessage())){
+                        ToastUtil.showToast(context,ret.getError().getMessage());
+                    }else {
+                        ToastUtil.showToast(context, "数据异常");
+                    }
+
+                }else {
                     ToastUtil.showToast(context, "数据异常");
                 }
+
             }
 
             @Override
