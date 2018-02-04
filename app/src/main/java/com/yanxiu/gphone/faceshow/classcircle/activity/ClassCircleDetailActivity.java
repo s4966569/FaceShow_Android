@@ -6,7 +6,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -177,6 +179,26 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                 mClassCircleAdapter.notifyItemChanged(mMomentPosition, REFRESH_ANIM_VIEW);
             }
         });
+        mCommentView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() == 0) {
+                    mTvSureComment.setEnabled(false);
+                } else {
+                    mTvSureComment.setEnabled(true);
+                }
+            }
+        });
     }
 
     public void onEventMainThread(RefreshClassCircle refreshClassCircle) {
@@ -253,18 +275,28 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
         @Override
         public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
             mMomentPosition = position;
+            mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
+            hideSoftInputM();
             showDiscardMomentPopupWindow(data);
         }
     };
 
+    private void hideSoftInputM() {
+        mCommentLayout.setVisibility(View.GONE);
+        mCommentView.setText("");
+        InputMethodManager imm = (InputMethodManager) ClassCircleDetailActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mAdjustPanView.getWindowToken(), 0);
+    }
     private PublishedMomentAdapter.onLikeClickListener mOnLikeClickListener = new PublishedMomentAdapter.onLikeClickListener() {
         @Override
         public void likeClick(int position, ClassCircleResponse.Data.Moments response) {
+            hideSoftInputM();
             startLikeRequest(position, response);
         }
 
         @Override
         public void cancelLikeClick(int position, ClassCircleResponse.Data.Moments response) {
+            hideSoftInputM();
             cancelLikeRequest(position, response);
         }
 

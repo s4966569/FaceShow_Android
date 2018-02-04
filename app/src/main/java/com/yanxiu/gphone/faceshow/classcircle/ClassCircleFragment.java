@@ -670,11 +670,13 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
     @Override
     public void likeClick(int position, ClassCircleResponse.Data.Moments moments) {
+        hideSoftInputM();
         startLikeRequest(position, moments);
     }
 
     @Override
     public void cancelLikeClick(int position, ClassCircleResponse.Data.Moments moments) {
+        hideSoftInputM();
         cancelLikeRequest(position, moments);
     }
 
@@ -686,6 +688,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
         mMomentPosition = position;
+        mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
+        hideSoftInputM();
         showDiscardMomentPopupWindow(data);
 
     }
