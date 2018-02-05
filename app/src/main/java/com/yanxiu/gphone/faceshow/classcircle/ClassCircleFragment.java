@@ -432,7 +432,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 if (ret!=null){
                     if (ret.getCode()==0&&ret.data!=null){
                         moments.comments.add(ret.data);
-                        mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+//                        mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                        mClassCircleAdapter.notifyDataSetChanged();
                         commentFinish();
                         mCommentView.setText("");
                     }else {
@@ -472,7 +473,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mCommentToUserRequest = null;
                 if (ret != null && ret.data != null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+//                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
                     commentFinish();
                     mCommentView.setText("");
                 } else {
