@@ -174,7 +174,7 @@ public abstract class RequestBase {
             }
         });
 
-        return uuid;g
+        return uuid;
     }
 
     protected OkHttpClient setClient() {
