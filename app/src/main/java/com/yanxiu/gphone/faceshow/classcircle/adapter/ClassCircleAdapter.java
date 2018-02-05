@@ -212,46 +212,46 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
-            if ((int) payloads.get(0) == SHOW_NEW_MESSAGE) {
-                if (mNewMessageNumber > 0) {
-                    final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
-                    titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
-                    titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
-                    titleViewHolder.mRlNewMessage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (mNewMessageButtonClickListener != null) {
-                                mNewMessageButtonClickListener.newMessageButtonClick();
+            final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
+            int refresh = (int) payloads.get(0);
+            switch (refresh) {
+                case REFRESH_ANIM_VIEW:
+                    ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
+                    classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
+                    classCircleViewHolder.mAnimLayout.setEnabled(false);
+                    break;
+                case REFRESH_COMMENT_DATA:
+                    ClassCircleViewHolder classCircleViewHolder1 = (ClassCircleViewHolder) holder;
+                    setViewVisibly(classCircleViewHolder1, moments);
+                    classCircleViewHolder1.mCircleCommentLayout.setData(moments.comments);
+                    break;
+                case REFRESH_LIKE_DATA:
+                    ClassCircleViewHolder classCircleViewHolder2 = (ClassCircleViewHolder) holder;
+                    setViewVisibly(classCircleViewHolder2, moments);
+                    classCircleViewHolder2.mCircleThumbView.setData(moments.likes);
+                    break;
+                case SHOW_NEW_MESSAGE:
+                    if (mNewMessageNumber > 0) {
+                        final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+                        titleViewHolder.mRlNewMessage.setVisibility(View.VISIBLE);
+                        titleViewHolder.mTvMessageNumber.setText(holder.itemView.getContext().getString(R.string.new_message, mNewMessageNumber));
+                        titleViewHolder.mRlNewMessage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mNewMessageButtonClickListener != null) {
+                                    mNewMessageButtonClickListener.newMessageButtonClick();
+                                }
                             }
-                        }
-                    });
-                } else {
-                    final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
-                    titleViewHolder.mRlNewMessage.setVisibility(View.GONE);
-                }
-
-
-            } else {
-                final ClassCircleViewHolder classCircleViewHolder = (ClassCircleViewHolder) holder;
-                final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
-                int refresh = (int) payloads.get(0);
-                switch (refresh) {
-                    case REFRESH_ANIM_VIEW:
-                        classCircleViewHolder.mAnimLayout.setVisibility(View.INVISIBLE);
-                        classCircleViewHolder.mAnimLayout.setEnabled(false);
-                        break;
-                    case REFRESH_COMMENT_DATA:
-                        setViewVisibly(classCircleViewHolder, moments);
-                        classCircleViewHolder.mCircleCommentLayout.setData(moments.comments);
-                        break;
-                    case REFRESH_LIKE_DATA:
-                        setViewVisibly(classCircleViewHolder, moments);
-                        classCircleViewHolder.mCircleThumbView.setData(moments.likes);
-                        break;
-                    default:
-                        break;
-                }
+                        });
+                    } else {
+                        final TitleViewHolder titleViewHolder = (TitleViewHolder) holder;
+                        titleViewHolder.mRlNewMessage.setVisibility(View.GONE);
+                    }
+                    break;
+                default:
+                    break;
             }
+
         }
     }
 

@@ -14,7 +14,7 @@ import android.util.AttributeSet;
  */
 public class MaxLineTextView extends android.support.v7.widget.AppCompatTextView {
 
-    public interface onLinesChangedListener{
+    public interface onLinesChangedListener {
         void onLinesChanged(int lines);
     }
 
@@ -40,31 +40,27 @@ public class MaxLineTextView extends android.support.v7.widget.AppCompatTextView
         super.onDraw(canvas);
     }
 
-    public void setOnLinesChangedListener(onLinesChangedListener linesChangedListener){
-        this.mLinesChangedListener=linesChangedListener;
+    public void setOnLinesChangedListener(onLinesChangedListener linesChangedListener) {
+        this.mLinesChangedListener = linesChangedListener;
     }
 
-    private void checkShouldLineNum(Paint paint){
-        String txt=mText;
-        int lines = 0;
-        while (!TextUtils.isEmpty(txt)) {
-            int count = paint.breakText(txt, true, getWidth(), null);
-            if (txt.length()>count) {
-                lines++;
-                txt=txt.substring(count,txt.length());
-            }else {
-                txt=null;
+    private void checkShouldLineNum(Paint paint) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                int lines = MaxLineTextView.this.getLineCount();
+                if (mLinesChangedListener != null && mLines != lines) {
+                    mLinesChangedListener.onLinesChanged(lines);
+                }
+                mLines = lines;
             }
-        }
-        if (mLinesChangedListener!=null&&mLines!=lines){
-            mLinesChangedListener.onLinesChanged(lines);
-        }
-        mLines=lines;
+        });
+
     }
 
     @Override
     public void setText(CharSequence text, BufferType type) {
-        this.mText=text.toString();
+        this.mText = text.toString();
         super.setText(text, type);
     }
 }
