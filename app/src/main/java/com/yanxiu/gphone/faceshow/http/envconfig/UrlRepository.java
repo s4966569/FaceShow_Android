@@ -12,6 +12,7 @@ public class UrlRepository {
 
     private static UrlRepository INSTANCE = null;
 
+
     public static UrlRepository getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new UrlRepository();
@@ -22,6 +23,14 @@ public class UrlRepository {
     public String getServer() {
         if (mUrlBean != null) {
             return mUrlBean.getServer();
+        } else {
+            return null;
+        }
+    }
+
+    public String getChooseClassServer() {
+        if (mUrlBean != null) {
+            return mUrlBean.getChooseClassServer();
         } else {
             return null;
         }

@@ -1,5 +1,5 @@
 {
-  "currentIndex": 1,
+  "currentIndex": 0,
   "multiConfig": true,
   "data": [
     {
@@ -7,6 +7,7 @@
       "loginServer": "http://pp.yanxiu.com/uc",
       "uploadServer": "http://b.yanxiu.com/easygo/multiUpload",
       "initializeUrl": "http://appadmin.yanxiu.com",
+      "chooseClassServer":"http://yxb.yanxiu.com/pxt/v1.1/platform/data.api",
       "qiNiuServer": "http://yxb.yanxiu.com/7up/platform/data.api",
       "mode": "release",
       "index": 0
@@ -16,6 +17,7 @@
       "loginServer": "http://orz.yanxiu.com/uc",
       "uploadServer": "http://orz.yanxiu.com/easygo/multiUpload",
       "initializeUrl": "http://test.hwk.yanxiu.com",
+      "chooseClassServer":"http://orz.yanxiu.com/pxt/v1.1/platform/data.api",
       "qiNiuServer": "http://orz.yanxiu.com/7up/platform/data.api",
       "mode": "test",
       "index": 1
@@ -25,6 +27,7 @@
       "loginServer": "http://orz.yanxiu.com/uc",
       "uploadServer": "http://orz.yanxiu.com/easygo/multiUpload",
       "initializeUrl": "http://dev.hwk.yanxiu.com",
+      "chooseClassServer":"http://orz.yanxiu.com/pxt/v1.1/platform/data.api",
       "qiNiuServer": "http://orz.yanxiu.com/7up/platform/data.api",
       "mode": "dev",
       "index": 2
