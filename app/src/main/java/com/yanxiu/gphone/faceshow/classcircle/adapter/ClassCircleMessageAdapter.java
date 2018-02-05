@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.request.ClassCircleNewMessageResponse;
+import com.yanxiu.gphone.faceshow.customview.EllipsizingTextView;
 import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
 
@@ -70,10 +71,12 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
         if (!TextUtils.isEmpty(data.getMomentSimple().getImage())) {
             holder.mImgPic.setVisibility(View.VISIBLE);
             holder.mTvPic.setVisibility(View.GONE);
+            holder.mTvPic.setMaxLines(3);
             Glide.with(holder.itemView.getContext()).load(data.getMomentSimple().getImage()).into(holder.mImgPic);
         } else {
             holder.mTvPic.setVisibility(View.VISIBLE);
             holder.mImgPic.setVisibility(View.GONE);
+            holder.mTvPic.setMaxLines(3);
             holder.mTvPic.setText(data.getMomentSimple().getContent());
         }
     }
@@ -106,7 +109,7 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
         @BindView(R.id.tv_publish_time)
         TextView mTvPublishTime;
         @BindView(R.id.tv_pic)
-        TextView mTvPic;
+        EllipsizingTextView mTvPic;
 
         public ViewHolder(View itemView) {
             super(itemView);

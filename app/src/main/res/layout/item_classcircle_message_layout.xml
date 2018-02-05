@@ -22,7 +22,7 @@
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
-        <TextView
+        <com.yanxiu.gphone.faceshow.customview.EllipsizingTextView
             android:id="@+id/tv_pic"
             android:layout_width="60dp"
             android:layout_height="60dp"
