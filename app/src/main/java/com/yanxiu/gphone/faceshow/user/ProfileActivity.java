@@ -442,7 +442,10 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {
                 rootView.hiddenLoadingView();
-                UserInfo.getInstance().getInfo().setAvatar(url);
+                UserInfo.getInstance().getInfo().setAvatar(url);//保留次行代 兼容之前人写的代码
+                UserInfo.Info info = SpManager.getUserInfo();
+                info.setAvatar(url);
+                SpManager.saveUserInfo(info);
                 setHeadimg();
             }
 

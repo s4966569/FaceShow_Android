@@ -212,7 +212,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
-            final ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
+
             int refresh = (int) payloads.get(0);
             switch (refresh) {
                 case REFRESH_ANIM_VIEW:
@@ -222,13 +222,15 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
                 case REFRESH_COMMENT_DATA:
                     ClassCircleViewHolder classCircleViewHolder1 = (ClassCircleViewHolder) holder;
+                     ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
                     setViewVisibly(classCircleViewHolder1, moments);
                     classCircleViewHolder1.mCircleCommentLayout.setData(moments.comments);
                     break;
                 case REFRESH_LIKE_DATA:
                     ClassCircleViewHolder classCircleViewHolder2 = (ClassCircleViewHolder) holder;
-                    setViewVisibly(classCircleViewHolder2, moments);
-                    classCircleViewHolder2.mCircleThumbView.setData(moments.likes);
+                    ClassCircleResponse.Data.Moments moments2 = mData.get(position - 1);
+                    setViewVisibly(classCircleViewHolder2, moments2);
+                    classCircleViewHolder2.mCircleThumbView.setData(moments2.likes);
                     break;
                 case SHOW_NEW_MESSAGE:
                     if (mNewMessageNumber > 0) {
