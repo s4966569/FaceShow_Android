@@ -33,6 +33,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private VoteBean mVoteBean;
     private ArrayList<QusetionBean> mList;
     private String mTitle;
+    private String mDescription;
 
     public VoteResultAdapter(Context context) {
         mContext = context;
@@ -46,7 +47,9 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void setTitle(String title) {
         mTitle = title;
     }
-
+    public void setDescription(String description) {
+        mDescription = description;
+    }
     @Override
     public int getItemViewType(int position) {
         QusetionBean bean = mList.get(position);
@@ -87,6 +90,12 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (position == 0 && !TextUtils.isEmpty(mTitle)) {
                     holder1.all_title_layout.setVisibility(View.VISIBLE);
                     holder1.all_title.setText(mTitle);
+                    if (!TextUtils.isEmpty(mDescription)) {
+                        holder1.all_title_description.setVisibility(View.VISIBLE);
+                        holder1.all_title_description.setText(mDescription);
+                    }else {
+                        holder1.all_title_description.setVisibility(View.GONE);
+                    }
                 } else {
                     holder1.all_title_layout.setVisibility(View.GONE);
                 }
@@ -109,6 +118,12 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 if (position == 0 && !TextUtils.isEmpty(mTitle)) {
                     holder2.all_title_layout.setVisibility(View.VISIBLE);
                     holder2.all_title.setText(mTitle);
+                    if(! TextUtils.isEmpty(mDescription)) {
+                        holder2.all_title_description.setVisibility(View.VISIBLE);
+                        holder2.all_title_description.setText(mDescription);
+                    }else {
+                        holder2.all_title_description.setVisibility(View.GONE);
+                    }
                 } else {
                     holder2.all_title_layout.setVisibility(View.GONE);
                 }
@@ -148,7 +163,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private View line;
         private View all_title_layout;
         private TextView all_title;
-
+        private TextView all_title_description;
 
         public ChooseViewHolder(View itemView) {
             super(itemView);
@@ -157,6 +172,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             line = itemView.findViewById(R.id.vote_result_layout_line);
             all_title_layout = itemView.findViewById(R.id.all_title_layout);
             all_title = (TextView) itemView.findViewById(R.id.all_title);
+            all_title_description = (TextView) itemView.findViewById(R.id.all_title_description);
         }
     }
 
@@ -171,6 +187,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private View line;
         private View all_title_layout;
         private TextView all_title;
+        private TextView all_title_description;
 
         public TextViewHolder(View itemView) {
             super(itemView);
@@ -181,6 +198,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             line = itemView.findViewById(R.id.vote_text_layout_line);
             all_title_layout = itemView.findViewById(R.id.all_title_layout);
             all_title = (TextView) itemView.findViewById(R.id.all_title);
+            all_title_description = (TextView) itemView.findViewById(R.id.all_title_description);
         }
     }
 

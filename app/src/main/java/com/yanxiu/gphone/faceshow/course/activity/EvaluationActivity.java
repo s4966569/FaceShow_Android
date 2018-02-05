@@ -152,7 +152,8 @@ public class EvaluationActivity extends FaceShowBaseActivity implements View.OnC
                         mSubmit.setVisibility(View.VISIBLE);
                     }
                     mTitle.setText(getString(R.string.evaluation));
-                    mAdapter.setTitle(ret.getData().getQuestionGroup().getTitle()+"（"+ret.getData().getQuestionGroup().getDescription()+"）");
+                    mAdapter.setTitle(ret.getData().getQuestionGroup().getTitle());
+                    mAdapter.setDescription(ret.getData().getQuestionGroup().getDescription());
                     mAdapter.setData(ret.getData());
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
