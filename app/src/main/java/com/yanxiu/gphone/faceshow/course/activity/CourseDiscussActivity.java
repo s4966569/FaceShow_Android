@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -274,12 +275,11 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
     /**
      * 提交讨论数据
      */
-    private void submitData(String content) {
+    private void submitData(final String content) {
         mRootView.showLoadingView();
         DiscussSaveRequest discussSaveRequest = new DiscussSaveRequest();
         discussSaveRequest.content = content;
         discussSaveRequest.stepId = stepsBean.getStepId();
-        ;
         discussSaveRequest.startRequest(FaceShowBaseResponse.class, new HttpCallback<FaceShowBaseResponse>() {
             @Override
             public void onSuccess(RequestBase request, FaceShowBaseResponse ret) {

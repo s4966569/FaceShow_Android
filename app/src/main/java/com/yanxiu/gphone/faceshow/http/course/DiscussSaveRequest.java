@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.http.course;
 
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
 
 /**
@@ -16,4 +17,8 @@ public class DiscussSaveRequest extends FaceShowBaseRequest {
         return null;
     }
 
+    @Override
+    protected HttpType httpType() {
+        return HttpType.POST;
+    }
 }
