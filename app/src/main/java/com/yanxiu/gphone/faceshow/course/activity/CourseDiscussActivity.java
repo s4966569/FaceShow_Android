@@ -157,7 +157,7 @@ public class CourseDiscussActivity extends FaceShowBaseActivity implements View.
                 break;
             case R.id.tv_sure:
                 String comment = mEd_comment.getText().toString();
-                if (!TextUtils.isEmpty(comment)) {
+                if (!TextUtils.isEmpty(comment.trim())) {
                     submitData(comment);
                 } else {
                     ToastUtil.showToast(getApplicationContext(), "提交内容不能为空");
