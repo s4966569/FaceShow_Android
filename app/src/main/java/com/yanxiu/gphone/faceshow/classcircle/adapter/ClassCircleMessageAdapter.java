@@ -71,12 +71,12 @@ public class ClassCircleMessageAdapter extends RecyclerView.Adapter<ClassCircleM
         if (!TextUtils.isEmpty(data.getMomentSimple().getImage())) {
             holder.mImgPic.setVisibility(View.VISIBLE);
             holder.mTvPic.setVisibility(View.GONE);
-            holder.mTvPic.setMaxLines(3);
+            holder.mTvPic.setMaxLines(4);
             Glide.with(holder.itemView.getContext()).load(data.getMomentSimple().getImage()).into(holder.mImgPic);
         } else {
             holder.mTvPic.setVisibility(View.VISIBLE);
             holder.mImgPic.setVisibility(View.GONE);
-            holder.mTvPic.setMaxLines(3);
+            holder.mTvPic.setMaxLines(4);
             holder.mTvPic.setText(data.getMomentSimple().getContent());
         }
     }
