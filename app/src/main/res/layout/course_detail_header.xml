@@ -148,7 +148,6 @@
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
         android:layout_marginTop="@dimen/course_marginleft"
-        android:ellipsize="end"
         android:lineSpacingExtra="5dp"
         android:maxLines="5"
         android:textColor="@color/color_333333"
