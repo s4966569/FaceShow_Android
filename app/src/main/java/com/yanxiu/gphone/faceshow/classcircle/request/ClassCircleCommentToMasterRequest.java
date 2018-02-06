@@ -25,6 +25,11 @@ public class ClassCircleCommentToMasterRequest extends RequestBase {
     }
 
     @Override
+    protected HttpType httpType() {
+        return HttpType.POST;
+    }
+
+    @Override
     protected String urlServer() {
         return UrlRepository.getInstance().getServer();
     }
