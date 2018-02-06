@@ -16,7 +16,6 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
-import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
@@ -30,6 +29,7 @@ import com.yanxiu.gphone.faceshow.http.resource.ResourceListRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceListResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.webView.WebViewForResourceActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,7 +172,7 @@ public class ResourcesFragment extends HomePageBaseFragment implements OnRecycle
 
     public void setIntent(ResourceDetailResponse.ResourceDetailBean data) {
         if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
-            WebViewActivity.loadThisAct(getActivity(), data.getUrl(), data.getResName());
+            WebViewForResourceActivity.lunch(getContext(),data.getUrl());
         } else if (TextUtils.equals(data.getType(), "0")) {
             AttachmentInfosBean attachmentInfosBean = data.getAi();
             if (attachmentInfosBean != null && attachmentInfosBean.getResType() != null) {
