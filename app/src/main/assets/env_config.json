@@ -8,7 +8,7 @@
       "uploadServer": "http://b.yanxiu.com/easygo/multiUpload",
       "initializeUrl": "http://appadmin.yanxiu.com",
       "chooseClassServer":"http://yxb.yanxiu.com/pxt/v1.1/platform/data.api",
-      "qiNiuServer": "http://yxb.yanxiu.com/7up/platform/data.api",
+      "qiNiuServer": "http://niuugcupload.yanxiu.com/7up/platform/data.api",
       "mode": "release",
       "index": 0
     },
