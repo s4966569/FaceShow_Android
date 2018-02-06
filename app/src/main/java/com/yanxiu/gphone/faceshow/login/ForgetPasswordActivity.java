@@ -208,15 +208,24 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
             @Override
             protected void onResponse(RequestBase request, ModifyPasswordResponse response) {
                 publicLoadLayout.hiddenLoadingView();
-                if (response.getCode() == 0) {
-                    ToastUtil.showToast(getApplicationContext(), "密码重置成功");
-                    Intent intent = new Intent();
-                    intent.putExtra("password", edtInputNewPassword.getText().toString());
-                    intent.putExtra("phoneNumber", modifyPasswordRequest.mobile);
-                    ForgetPasswordActivity.this.setResult(RESULT_OK, intent);
-                    ForgetPasswordActivity.this.finish();
+                if (response != null) {
+                    if (response.getCode() == 0) {
+                        ToastUtil.showToast(getApplicationContext(), response.getMessage());
+                        Intent intent = new Intent();
+                        intent.putExtra("password", edtInputNewPassword.getText().toString());
+                        intent.putExtra("phoneNumber", modifyPasswordRequest.mobile);
+                        ForgetPasswordActivity.this.setResult(RESULT_OK, intent);
+                        ForgetPasswordActivity.this.finish();
+                    } else {
+                        if (response.getError() != null) {
+                            ToastUtil.showToast(getApplicationContext(), response.getError().getMessage());
+                        } else {
+                            ToastUtil.showToast(getApplicationContext(), "密码重置失败");
+                        }
+                    }
+
                 } else {
-                    ToastUtil.showToast(getApplicationContext(), response.getMessage());
+                    ToastUtil.showToast(getApplicationContext(), "密码重置失败");
                 }
 
             }
@@ -239,14 +248,22 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
             @Override
             protected void onResponse(RequestBase request, GetVerificationCodeResponse response) {
                 publicLoadLayout.hiddenLoadingView();
-                if (response.getCode() == 0) {
-                    handler.sendEmptyMessage(1);
-                    tvGetVerificationCode.setBackground(null);
-                    ToastUtil.showToast(getApplicationContext(), response.getMessage());
-                } else {
-                    ToastUtil.showToast(getApplicationContext(), response.getMessage());
-                }
+                if (response != null) {
+                    if (response.getCode() == 0) {
+                        handler.sendEmptyMessage(1);
+                        tvGetVerificationCode.setBackground(null);
+                        ToastUtil.showToast(getApplicationContext(), response.getMessage());
+                    } else {
+                        if (response.getError() != null) {
+                            ToastUtil.showToast(getApplicationContext(), response.getError().getMessage());
+                        } else {
+                            ToastUtil.showToast(getApplicationContext(), "密码重置失败");
+                        }
+                    }
 
+                } else {
+                    ToastUtil.showToast(getApplicationContext(), "密码重置失败");
+                }
             }
 
             @Override

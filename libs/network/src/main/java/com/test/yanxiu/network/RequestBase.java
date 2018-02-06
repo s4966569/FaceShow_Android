@@ -11,8 +11,10 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -98,6 +100,7 @@ public abstract class RequestBase {
 
         }
         fullUrl = urlBuilder.build().toString();
+
         return fullUrl;
     }
 
@@ -107,6 +110,7 @@ public abstract class RequestBase {
         try {
             request = generateRequest(uuid);
         } catch (Exception e) {
+            Log.e("request",e.getMessage());
         }
         if (request == null) {
             callback.onFail(RequestBase.this, new Error("request start error"));

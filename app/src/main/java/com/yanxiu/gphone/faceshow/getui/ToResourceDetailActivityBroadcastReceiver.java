@@ -12,13 +12,13 @@ import android.widget.Toast;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
-import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
 import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.webView.WebViewForResourceActivity;
 
 /**
  * 跳转到资源详情页面的广播接收者
@@ -67,9 +67,9 @@ public class ToResourceDetailActivityBroadcastReceiver extends BroadcastReceiver
     public void setIntent(Context context, ResourceDetailResponse.ResourceDetailBean data) {
         if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
 //            WebViewActivity.loadThisAct(context, data.getUrl(), data.getResName());
-            Intent resourceDetailIntent = new Intent(context, WebViewActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent resourceDetailIntent = new Intent(context, WebViewForResourceActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             resourceDetailIntent.putExtra("url", data.getUrl());
-            resourceDetailIntent.putExtra("title", data.getResName());
+//            resourceDetailIntent.putExtra("title", data.getResName());
             context.startActivity(resourceDetailIntent);
         } else if (TextUtils.equals(data.getType(), "0")) {
             AttachmentInfosBean attachmentInfosBean = data.getAi();
