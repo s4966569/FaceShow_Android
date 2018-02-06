@@ -410,17 +410,16 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     //有新的班级圈消息
                     if (ret.getData().getMomentNew() != null) {
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
-                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
-                                //当前在班级圈页面
+//                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
+                            //当前在班级圈页面
 //                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
 //                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
-                                //mNaviFragmentFactory.getClassCircleFragment().toRefresh();
+                            //mNaviFragmentFactory.getClassCircleFragment().toRefresh();
 //                                }
-                            } else {
-                                //当前不在班级圈页面
-                                mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
-                                showCommentRedDot = true;
-                            }
+//                            } else {
+                            //当前不在班级圈页面
+                            mImgClassCircleRedCircle.setVisibility(View.VISIBLE);
+                            showCommentRedDot = true;
 
                         } else {
                             showCommentRedDot = false;
