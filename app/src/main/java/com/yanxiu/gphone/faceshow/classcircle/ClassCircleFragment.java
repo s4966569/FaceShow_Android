@@ -373,7 +373,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                     likes.momentId = ret.data.momentId;
                     likes.publisher = ret.data.publisher;
                     moments.likes.add(likes);
-                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_LIKE_DATA);
+//                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_LIKE_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -401,7 +402,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                             moments.likes.remove(i);
                         }
                     }
-                    mClassCircleAdapter.notifyItemChanged(postion, ClassCircleAdapter.REFRESH_LIKE_DATA);
+//                    mClassCircleAdapter.notifyItemChanged(postion, ClassCircleAdapter.REFRESH_LIKE_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -744,7 +746,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mDiscardCommentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
                     data.get(mMomentPosition - 1).comments.remove(mCommentPosition);
-                    mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+//                    mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
                     commentFinish();
                 } else {
                     ToastUtil.showToast(ClassCircleFragment.this.getContext(), ret.getError().getMessage());
