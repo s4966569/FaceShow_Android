@@ -692,7 +692,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
         mMomentPosition = position;
-        mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
+        mClassCircleAdapter.notifyDataSetChanged();
+//        mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
         hideSoftInputM();
         showDiscardMomentPopupWindow(data);
 
