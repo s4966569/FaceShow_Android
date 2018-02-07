@@ -176,8 +176,10 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_get_verification_code:
-                if (isPhoneNumber) {
-                    getVerificationCode();
+                if (isPhoneNumber ) {
+                    if (time==60){
+                        getVerificationCode();
+                    }
                 } else {
                     ToastUtil.showToast(getApplicationContext(), "请填入正确的手机号");
                 }
