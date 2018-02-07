@@ -364,7 +364,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
             @Override
             public String findUpdataUrl() {
                 String token = SpManager.getToken();
-                return UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=110&height=110";
+                return UrlRepository.getInstance().getUploadServer() + "?token=" + token + "&width=300&height=300";
             }
 
             @Override
