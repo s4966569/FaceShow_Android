@@ -5,6 +5,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,7 +56,6 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
             url = url + "?classId=" + SpManager.getUserInfo().getClassId() + "&token=" + SpManager.getToken() + "&_=" + System.currentTimeMillis();
         }
 
-
         mAgentWeb = AgentWeb.with(this)
                 .setAgentWebParent(mLlRoot, new RelativeLayout.LayoutParams(-1, -1))
                 .useDefaultIndicator()
@@ -63,9 +63,24 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
                 .createAgentWeb()
                 .ready()
                 .go(url);
-        mAgentWeb.getAgentWebSettings().getWebSettings().setMediaPlaybackRequiresUserGesture(false);
+
+
+        WebSettings webSettings = mAgentWeb.getAgentWebSettings().getWebSettings();
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setAppCacheEnabled(false);
+        webSettings.setDomStorageEnabled(true);
+
+// 缓存白屏
+        String appCachePath = getApplicationContext().getCacheDir()
+                .getAbsolutePath() + "/webcache";
+// 设置 Application Caches 缓存目录
+        webSettings.setAppCachePath(appCachePath);
+        webSettings.setDatabasePath(appCachePath);
+
+
         ImageView backImage = new ImageView(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) ScreenUtils.dpToPx(this, 30),(int) ScreenUtils.dpToPx(this, 30));
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int) ScreenUtils.dpToPx(this, 30), (int) ScreenUtils.dpToPx(this, 30));
         layoutParams.setMargins((int) ScreenUtils.dpToPx(this, 5), (int) ScreenUtils.dpToPx(this, 10), 0, 0);
         backImage.setLayoutParams(layoutParams);
         backImage.setBackgroundResource(R.drawable.selector_back);
@@ -104,6 +119,8 @@ public class FaceShowWebActivity extends FaceShowBaseActivity {
 
     @Override
     protected void onDestroy() {
+        mAgentWeb.clearWebCache();
+        mAgentWeb.destroyAndKill();
         mAgentWeb.getWebLifeCycle().onDestroy();
         super.onDestroy();
     }

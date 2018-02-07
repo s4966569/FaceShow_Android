@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -62,7 +63,18 @@ public class WebViewForResourceActivity extends FaceShowBaseActivity {
                 .createAgentWeb()
                 .ready()
                 .go(url);
-        mAgentWeb.getAgentWebSettings().getWebSettings().setMediaPlaybackRequiresUserGesture(false);
+        WebSettings webSettings = mAgentWeb.getAgentWebSettings().getWebSettings();
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setAppCacheEnabled(false);
+        webSettings.setDomStorageEnabled(true);
+
+// 缓存白屏
+        String appCachePath = getApplicationContext().getCacheDir()
+                .getAbsolutePath() + "/webcache";
+// 设置 Application Caches 缓存目录
+        webSettings.setAppCachePath(appCachePath);
+        webSettings.setDatabasePath(appCachePath);
     }
 
 //    @OnClick(R.id.title_layout_left_img)
@@ -94,6 +106,9 @@ public class WebViewForResourceActivity extends FaceShowBaseActivity {
 
     @Override
     protected void onDestroy() {
+        mAgentWeb.clearWebCache();
+        mAgentWeb.destroyAndKill();
+        mAgentWeb.getWebLifeCycle().onDestroy();
         mAgentWeb.getWebLifeCycle().onDestroy();
         super.onDestroy();
     }
