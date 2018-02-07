@@ -77,10 +77,6 @@ public class WebViewForResourceActivity extends FaceShowBaseActivity {
         webSettings.setDatabasePath(appCachePath);
     }
 
-//    @OnClick(R.id.title_layout_left_img)
-//    public void onViewClicked() {
-//
-//    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

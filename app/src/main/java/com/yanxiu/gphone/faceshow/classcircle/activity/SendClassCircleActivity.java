@@ -129,10 +129,6 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
         rootView.setContentView(R.layout.activity_send_classcircle);
         setContentView(rootView);
         EventBus.getDefault().register(mContext);
-        String type = getIntent().getStringExtra(KEY_TYPE);
-        if (type.equals(TYPE_IMAGE)) {
-            mImagePaths = getIntent().getStringArrayListExtra(KEY_IMAGE);
-        }
         initView();
         listener();
         initData();
@@ -432,6 +428,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
                 if (ret.data != null) {
                     ToastUtil.showToast(mContext, R.string.send_success);
                     EventBus.getDefault().post(new RefreshClassCircle());
+                    setResult(RESULT_OK);
                     SendClassCircleActivity.this.finish();
                 } else {
                     ToastUtil.showToast(mContext, ret.getError().getMessage());

@@ -3,14 +3,18 @@ package com.yanxiu.gphone.faceshow.classcircle;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -83,6 +87,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         , ClassCircleAdapter.onNewMessageButtonClickListener {
 
     private static final int REQUEST_CODE_MY_PUBLISHED_MOMENTS = 0x000;
+    private static final int REQUEST_CODE_PUBLISH_MOMENT = 0x001;
     public boolean firstEnter = true;
 
     private LoadMoreRecyclerView mClassCircleRecycleView;
@@ -104,7 +109,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private PublicLoadLayout rootView;
     private View mDataEmptyView;
     private TextView mTvSureComment;
-
+    private FastScrollLinearLayoutManager mLinearLayoutManager;
     private boolean isCommentLoading = false;
 
     private UUID mClassCircleRequest;
@@ -210,7 +215,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
         mCommentView = (EditText) rootView.findViewById(R.id.ed_comment);
         mAdjustPanView = (SizeChangeCallbackView) rootView.findViewById(R.id.sc_adjustpan);
         mClassCircleRecycleView = (LoadMoreRecyclerView) rootView.findViewById(R.id.lm_class_circle);
-        mClassCircleRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mLinearLayoutManager = new FastScrollLinearLayoutManager(getContext());
+        mClassCircleRecycleView.setLayoutManager(mLinearLayoutManager);
         mClassCircleAdapter = new ClassCircleAdapter(getContext());
         mClassCircleRecycleView.setAdapter(mClassCircleAdapter);
 
@@ -431,18 +437,18 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 rootView.hiddenLoadingView();
                 isCommentLoading = false;
                 mCommentToMasterRequest = null;
-                if (ret!=null){
-                    if (ret.getCode()==0&&ret.data!=null){
+                if (ret != null) {
+                    if (ret.getCode() == 0 && ret.data != null) {
                         moments.comments.add(ret.data);
 //                        mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                         mClassCircleAdapter.notifyDataSetChanged();
                         commentFinish();
                         mCommentView.setText("");
-                    }else {
+                    } else {
                         ToastUtil.showToast(getContext(), ret.getError().getMessage());
                     }
-                }else {
-                    ToastUtil.showToast(getContext(),"发送失败");
+                } else {
+                    ToastUtil.showToast(getContext(), "发送失败");
                 }
             }
 
@@ -513,7 +519,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.title_layout_right_txt:
-                SendClassCircleActivity.LuanchActivity(getContext(), SendClassCircleActivity.TYPE_IMAGE, null);
+                Intent intent = new Intent(getContext(), SendClassCircleActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_PUBLISH_MOMENT);
                 break;
             case R.id.retry_button:
                 mRefreshView.setRefreshing(true);
@@ -849,10 +856,14 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_MY_PUBLISHED_MOMENTS) {
-            if (resultCode == RESULT_OK) {
-                onRefresh();
-            }
+        switch (requestCode) {
+            case REQUEST_CODE_MY_PUBLISHED_MOMENTS:
+            case REQUEST_CODE_PUBLISH_MOMENT:
+                if (resultCode == RESULT_OK) {
+                    mLinearLayoutManager.smoothScrollToPosition(mClassCircleRecycleView,null,0);
+                    toRefresh();
+                }
+                break;
         }
     }
 
@@ -868,6 +879,66 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     public void newMessageButtonClick() {
         mClassCircleAdapter.hideNewMessageButton();
         startActivity(new Intent(this.getActivity(), ClassCircleMessageActivity.class));
+    }
+
+    public class FastScrollLinearLayoutManager extends LinearLayoutManager {
+        public FastScrollLinearLayoutManager(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+            LinearSmoothScroller linearSmoothScroller = new LinearSmoothScroller(recyclerView.getContext()) {
+
+                @Override
+                public PointF computeScrollVectorForPosition(int targetPosition) {
+                    return  FastScrollLinearLayoutManager.this.computeScrollVectorForPosition(targetPosition);
+                }
+
+                //该方法控制速度。
+                //if returned value is 2 ms, it means scrolling 1000 pixels with LinearInterpolation should take 2 seconds.
+                @Override
+                protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                /*
+                     控制单位速度,  毫秒/像素, 滑动1像素需要多少毫秒.
+
+                     默认为 (25F/densityDpi) 毫秒/像素
+
+                     mdpi上, 1英寸有160个像素点, 25/160,
+                     xxhdpi,1英寸有480个像素点, 25/480,
+                  */
+
+                    //return 10F / displayMetrics.densityDpi;//可以减少时间，默认25F
+                    return super.calculateSpeedPerPixel(displayMetrics);
+                }
+
+                //该方法计算滑动所需时间。在此处间接控制速度。
+                //Calculates the time it should take to scroll the given distance (in pixels)
+                @Override
+                protected int calculateTimeForScrolling(int dx) {
+               /*
+                   控制距离, 然后根据上面那个方(calculateSpeedPerPixel())提供的速度算出时间,
+
+                   默认一次 滚动 TARGET_SEEK_SCROLL_DISTANCE_PX = 10000个像素,
+
+                   在此处可以减少该值来达到减少滚动时间的目的.
+                */
+
+                    //间接计算时提高速度，也可以直接在calculateSpeedPerPixel提高
+                    if (dx > 3000) {
+                        dx = 3000;
+                    }
+
+                    int time = super.calculateTimeForScrolling(dx);
+//                    LogUtil.LogUtild(time);//打印时间看下
+
+                    return time;
+                }
+            };
+
+            linearSmoothScroller.setTargetPosition(position);
+            startSmoothScroll(linearSmoothScroller);
+        }
     }
 
 }
