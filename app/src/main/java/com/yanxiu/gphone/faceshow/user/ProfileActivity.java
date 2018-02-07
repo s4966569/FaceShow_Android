@@ -342,8 +342,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         intent.putExtra("crop", "true");
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 400);
-        intent.putExtra("outputY", 400);
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
         intent.putExtra("return-data", false);
         //输出图片格式
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
