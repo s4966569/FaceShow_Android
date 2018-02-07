@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -38,9 +38,9 @@
         android:layout_marginLeft="@dimen/course_marginleft"
         android:layout_marginRight="@dimen/course_marginleft"
         android:singleLine="true"
-        tools:text="阿斯顿发放事发地点阿斯顿发放事阿斯顿发放事发地点阿斯顿发放事发地点阿斯顿发放事发地点发地点阿斯顿发放事发地点"
         android:textColor="@color/color_333333"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        tools:text="阿斯顿发放事发地点阿斯顿发放事阿斯顿发放事发地点阿斯顿发放事发地点阿斯顿发放事发地点发地点阿斯顿发放事发地点" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -64,9 +64,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/course_text_marginLeft"
             android:gravity="center_vertical"
-            tools:text="上午 08:30"
             android:textColor="@color/color_666666"
-            android:textSize="@dimen/course_text_textsize" />
+            android:textSize="@dimen/course_text_textsize"
+            tools:text="上午 08:30" />
 
     </LinearLayout>
 
@@ -92,10 +92,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/course_text_marginLeft"
+            android:ellipsize="end"
             android:gravity="center_vertical"
-            tools:text="李小冉"
+            android:singleLine="true"
             android:textColor="@color/color_666666"
-            android:textSize="@dimen/course_text_textsize" />
+            android:textSize="@dimen/course_text_textsize"
+            tools:text="李小冉" />
 
     </LinearLayout>
 
@@ -123,9 +125,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/course_text_marginLeft"
             android:gravity="center_vertical"
-            tools:text="西城区北广大厦"
             android:textColor="@color/color_666666"
-            android:textSize="@dimen/course_text_textsize" />
+            android:textSize="@dimen/course_text_textsize"
+            tools:text="西城区北广大厦" />
     </LinearLayout>
 
     <include layout="@layout/big_line" />
