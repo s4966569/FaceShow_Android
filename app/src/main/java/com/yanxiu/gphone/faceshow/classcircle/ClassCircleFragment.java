@@ -699,7 +699,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     @Override
     public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
         mMomentPosition = position;
-        mClassCircleAdapter.notifyDataSetChanged();
+//        mClassCircleAdapter.notifyDataSetChanged();
 //        mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
         hideSoftInputM();
         showDiscardMomentPopupWindow(data);
@@ -722,7 +722,8 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 mDiscardMomentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
                     data.remove(mMomentPosition - 1);
-                    mClassCircleAdapter.notifyItemRemoved(mMomentPosition);
+                    mClassCircleAdapter.notifyDataSetChanged();
+//                    mClassCircleAdapter.notifyItemRemoved(mMomentPosition);
                 } else {
                     ToastUtil.showToast(ClassCircleFragment.this.getContext(), ret.getError().getMessage());
                 }
