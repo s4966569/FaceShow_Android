@@ -275,7 +275,8 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
         @Override
         public void delete(int position, List<ClassCircleResponse.Data.Moments> data) {
             mMomentPosition = position;
-            mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
+            mClassCircleAdapter.notifyDataSetChanged();
+//            mClassCircleAdapter.notifyItemChanged(mMomentPosition,REFRESH_ANIM_VIEW);
             hideSoftInputM();
             showDiscardMomentPopupWindow(data);
         }
@@ -481,7 +482,8 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                     likes.momentId = ret.data.momentId;
                     likes.publisher = ret.data.publisher;
                     moments.likes.add(likes);
-                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_LIKE_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
+//                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_LIKE_DATA);
                 }
             }
 
@@ -515,7 +517,8 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                             moments.likes.remove(i);
                         }
                     }
-                    mClassCircleAdapter.notifyItemChanged(postion, ClassCircleAdapter.REFRESH_LIKE_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
+//                    mClassCircleAdapter.notifyItemChanged(postion, ClassCircleAdapter.REFRESH_LIKE_DATA);
                 }
             }
 
@@ -545,7 +548,8 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                 mCommentToMasterRequest = null;
                 if (ret != null && ret.data != null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
+//                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     mOnCommentClickListener.commentFinish();
                     mCommentView.setText("");
                 } else {
@@ -582,7 +586,8 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                 mCommentToUserRequest = null;
                 if (ret != null && ret.data != null) {
                     moments.comments.add(ret.data);
-                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
+//                    mClassCircleAdapter.notifyItemChanged(position, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     mOnCommentClickListener.commentFinish();
                     mCommentView.setText("");
                 } else {
@@ -652,7 +657,8 @@ public class ClassCircleDetailActivity extends FaceShowBaseActivity {
                 mDiscardCommentRequest = null;
                 if (ret != null && ret.getCode() == 0) {
                     data.get(mMomentPosition).comments.remove(mCommentPosition);
-                    mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_COMMENT_DATA);
+                    mClassCircleAdapter.notifyDataSetChanged();
+//                    mClassCircleAdapter.notifyItemChanged(mMomentPosition, ClassCircleAdapter.REFRESH_COMMENT_DATA);
                     mOnCommentClickListener.commentFinish();
                 } else {
                     ToastUtil.showToast(ClassCircleDetailActivity.this, ret.getError().getMessage());

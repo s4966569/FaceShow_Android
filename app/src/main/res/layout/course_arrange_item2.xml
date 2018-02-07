@@ -12,8 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:singleLine="true"
         android:gravity="center_vertical"
+        android:singleLine="true"
         android:textColor="@color/color_333333"
         android:textSize="16dp"
         android:textStyle="bold" />
@@ -66,7 +66,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/tag_marginleft"
+            android:ellipsize="end"
             android:gravity="center"
+            android:singleLine="true"
             android:text="李老师"
             android:textColor="@color/color_666666"
             android:textSize="@dimen/text_textsize" />
