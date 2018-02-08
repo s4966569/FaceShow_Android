@@ -36,6 +36,15 @@ public class DownloadThread extends Thread {
     public void run() {
         HttpURLConnection connection = null;
         try {
+            //开始下载之前
+            if (mListener != null) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mListener.onDownloadStart();
+                    }
+                });
+            }
             File file = new File(mSavePath);
             if(file.exists()){
                 file.delete();
@@ -50,15 +59,6 @@ public class DownloadThread extends Thread {
             // 部分文件是206，全部OK是200
             if (code == 200) {
                 int length=connection.getContentLength();
-                //开始下载之前
-                if (mListener != null) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mListener.onDownloadStart();
-                        }
-                    });
-                }
                 // 已经设置了请求的位置，返回的是设置的位置对应的文件的输入流
                 InputStream is = connection.getInputStream();
                 BufferedInputStream bis  = new BufferedInputStream(is);
