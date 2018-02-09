@@ -283,6 +283,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void startRequest(final String offset) {
         ClassCircleRequest circleRequest = new ClassCircleRequest();
         circleRequest.offset = offset;
+        ((MainActivity)getActivity()).hideClassCircleRedDot();
         mClassCircleRequest = circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
