@@ -151,7 +151,7 @@ public class Utils {
         if (mobiles == null) {
             return false;
         }
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2-9]))\\d{8}$");
+        Pattern p = Pattern.compile("^((13[0-9])|(17[0-8])|(147)|(15[^4,\\D])|(18[0,2-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
     }
@@ -162,7 +162,7 @@ public class Utils {
         if (mobiles == null) {
             return false;
         }
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2-9]))\\d{8}$");
+        Pattern p = Pattern.compile("^((13[0-9])|(17[0-8])|(147)|(15[^4,\\D])|(18[0,2-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
     }
