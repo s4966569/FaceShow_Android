@@ -201,7 +201,9 @@ public class UpdateUtil {
     }
 
     private static void downloadApk(final Context context, String fileURL, final OnUpgradeCallBack callBack) {
-        DownLoadRequest.getInstense().download(fileURL, FileUtil.getExternalStorageAbsolutePath("faceshow.apk"), new DownLoadRequest.OnDownloadListener() {
+
+        DownloadThread downloadThread = new DownloadThread(fileURL, FileUtil.getExternalStorageAbsolutePath("faceshow.apk"), new DownLoadRequest.OnDownloadListener() {
+            private long preMillis = System.currentTimeMillis();
             @Override
             public void onDownloadSuccess(String saveDir) {
                 mNotificationManager.cancel(NOTIFICATION_ID);
@@ -247,11 +249,16 @@ public class UpdateUtil {
 
             @Override
             public void onDownloading(int progress) {
-                Logger.d(TAG, "Download" + progress);
-                mUpdateDialog.setProgress((int) progress);
+                if(System.currentTimeMillis() - preMillis < 500 && progress != 100){
+                    return;
+                }
+                if(mNotification == null || mNotification.contentView == null)
+                    return;
+                mUpdateDialog.setProgress(progress);
                 mNotification.contentView.setProgressBar(R.id.progress_value, 100, (int) progress, false);
                 mNotification.contentView.setTextViewText(R.id.progress_text, (int) progress + "%");
                 mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+                preMillis = System.currentTimeMillis();
             }
 
             @Override
@@ -265,6 +272,8 @@ public class UpdateUtil {
                 }
             }
         });
+
+        downloadThread.start();
     }
 
     private static void installApk(Context context, String filePath) {
