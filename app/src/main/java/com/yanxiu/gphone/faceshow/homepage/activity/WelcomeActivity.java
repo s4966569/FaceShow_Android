@@ -299,7 +299,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
                 public void onSuccess(RequestBase request, MainResponse ret) {
                     Logger.json(RequestBase.getGson().toJson(ret));
                     if (ret != null && ret.getCode() == 0) {
-                        getUserInfo(activity);
+                        getUserInfoWithClassId(activity,ret);
                     } else {
                         toNoClassPage(activity);
                     }
@@ -357,6 +357,39 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         });
     }
 
+    private static void getUserInfoWithClassId(final WelcomeActivity activity, final MainResponse mainResponse) {
+        GetUserInfoRequest getUserInfoRequest = new GetUserInfoRequest();
+        getUserInfoRequest.startRequest(GetUserInfoResponse.class, new HttpCallback<GetUserInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetUserInfoResponse ret) {
+                Logger.json(RequestBase.getGson().toJson(ret));
+                if (ret.getCode() == 0) {
+                    UserInfo.Info info = ret.getData();
+                    info.setClassId(mainResponse.getData().getClazsInfo().getId());
+                    info.setClassName(mainResponse.getData().getClazsInfo().getClazsName());
+                    info.setProjectName(mainResponse.getData().getProjectInfo().getProjectName());
+                    SpManager.saveUserInfo(info);
+                } else {
+
+                }
+                if (isAnimationEnd) {
+                    activity.whereToGoWithGetUserInfoEnd(activity);
+                }
+                isGetUserInfoEnd = true;
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                UserInfo.getInstance().setInfo(SpManager.getUserInfo());
+                if (isAnimationEnd) {
+                    MainActivity.invoke(activity);
+                    activity.finish();
+                }
+                isGetUserInfoEnd = true;
+
+            }
+        });
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
