@@ -77,6 +77,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     //学员端增加 侧滑菜单  左侧
     private DrawerLayout mDrawerLayout;
     private RecyclerView mLeftDrawerList;
+    private View mLeftDrawerLayout;
     private LeftDrawerListAdapter mLeftDrawerListAdapter;
     private DrawerLayout.DrawerListener mDrawerToggle = new DrawerLayout.DrawerListener() {
         @Override
@@ -138,7 +139,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mLeftDrawerList= (RecyclerView) mRootView.findViewById(R.id.left_drawer_list);
 //        Logger.i(getClass().getSimpleName(),""+(mDrawerLayout==null));
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-
+        mLeftDrawerLayout=mRootView.findViewById(R.id.left_drawer);
         setLeftDrawer();
     }
     /***
@@ -158,6 +159,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 //                LeftDrawerListItemToOtherAct(position);
             }
         });
+    }
+    public void openLeftDrawer() {
+        mDrawerLayout.openDrawer(mLeftDrawerLayout);
     }
 
     private void initView() {

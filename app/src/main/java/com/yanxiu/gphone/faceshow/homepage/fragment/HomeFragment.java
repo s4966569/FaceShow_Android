@@ -76,6 +76,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private ImageView mImgResourceRedDot, mImgProjectTaskRedDot;
     private int lastIndex = 0;
 
+
+    //titleimage
+    private ImageView mTitleLeftImage;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getContext());
@@ -165,21 +169,30 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private void initView() {
         mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
         mTitle.setText("研修宝");
+        mTitleLeftImage= (ImageView) mRootView.findViewById(R.id.title_layout_left_img);
+        mTitleLeftImage.setVisibility(View.VISIBLE);
+        mTitleLeftImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).openLeftDrawer();
+            }
+        });
+
         mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
         mCheckInEnterTV.setVisibility(View.VISIBLE);
         mCheckInEnterIMG = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
         mCheckInEnterIMG.setImageResource(R.drawable.scan_selector);
         mCheckInEnterIMG.setVisibility(View.VISIBLE);
-        TextView textView = (TextView) mRootView.findViewById(R.id.title_layout_left_txt);
-        textView.setText(R.string.choose_class);
-        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.color_1da1f2));
-        textView.setVisibility(View.VISIBLE);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().startActivityForResult(new Intent(HomeFragment.this.getActivity(), ChooseClassActivity.class), CHOOSE_CLASS);
-            }
-        });
+//        TextView textView = (TextView) mRootView.findViewById(R.id.title_layout_left_txt);
+//        textView.setText(R.string.choose_class);
+//        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.color_1da1f2));
+//        textView.setVisibility(View.VISIBLE);
+//        textView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                getActivity().startActivityForResult(new Intent(HomeFragment.this.getActivity(), ChooseClassActivity.class), CHOOSE_CLASS);
+//            }
+//        });
         mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
         mImgProjectTaskRedDot = (ImageView) mRootView.findViewById(R.id.img_project_task_red_dot);
