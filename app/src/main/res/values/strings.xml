@@ -160,4 +160,15 @@
     <string name="choose_class">切换班级</string>
     <string name="get_qiniu_token_error">获取七牛上传凭证失败</string>
     <string name="select">%1$s/%2$s</string>
+
+
+    <!-- leftDrawerLayout-->
+    <string-array name="left_drawer_item_names">
+        <item>班级首页</item>
+        <item>我的资料</item>
+        <!--<item>投诉建议</item>-->
+        <!--<item>设置</item>-->
+        <!--<item>退出</item>-->
+    </string-array>
+    <string name="change_class">切换班级</string>
 </resources>

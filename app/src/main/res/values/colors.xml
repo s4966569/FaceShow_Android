@@ -60,6 +60,10 @@
     <color name="color_e6ffffff">#e6ffffff</color>
     <color name="color_fdfdfe">#fdfdfe</color>
     <color name="color_dadde0">#dadde0</color>
+
+    <color name="color_0068bd">#0068bd</color>
+
+
     !--qr code-->
     <color name="viewfinder_mask">#33000000</color>
     <color name="result_view">#b0000000</color>

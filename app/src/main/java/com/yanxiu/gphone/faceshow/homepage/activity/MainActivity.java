@@ -6,7 +6,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +24,8 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.customview.recyclerview.LeftDrawerListAdapter;
+import com.yanxiu.gphone.faceshow.customview.recyclerview.RecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.getui.ToMainActivityBroadcastReceiver;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
@@ -34,6 +40,7 @@ import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRe
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
+import com.yanxiu.gphone.faceshow.util.Logger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.UpdateUtil;
 
@@ -66,6 +73,30 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     //推送过来的消息需要定位到第一页
     private boolean isToFirstFragment = false;
 
+    //by zhuxiaolong
+    //学员端增加 侧滑菜单  左侧
+    private DrawerLayout mDrawerLayout;
+    private RecyclerView mLeftDrawerList;
+    private LeftDrawerListAdapter mLeftDrawerListAdapter;
+    private DrawerLayout.DrawerListener mDrawerToggle = new DrawerLayout.DrawerListener() {
+        @Override
+        public void onDrawerSlide(View drawerView, float slideOffset) {
+        }
+
+        @Override
+        public void onDrawerOpened(View drawerView) {
+        }
+
+        @Override
+        public void onDrawerClosed(View drawerView) {
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+        }
+    };
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +104,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mRootView.setContentView(R.layout.activity_main);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
+        mContext=this;
         initView();
         initListener();
         getData();
@@ -101,9 +133,38 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setIntent(intent);
     }
 
+    private void drawerInit(){
+        mDrawerLayout= (DrawerLayout) mRootView.findViewById(R.id.drawer_layout);
+        mLeftDrawerList= (RecyclerView) mRootView.findViewById(R.id.left_drawer_list);
+//        Logger.i(getClass().getSimpleName(),""+(mDrawerLayout==null));
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        setLeftDrawer();
+    }
+    /***
+     * 对左侧抽屉菜单进行布局初始化以及内容填充
+     *
+     */
+    public void setLeftDrawer() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mLeftDrawerList.setLayoutManager(linearLayoutManager);
+//        mLeftDrawerListAdapter = new LeftDrawerListAdapter(mContext, mMainFragment.getmData());
+        mLeftDrawerListAdapter = new LeftDrawerListAdapter(mContext);
+        mLeftDrawerList.setAdapter(mLeftDrawerListAdapter);
+        mLeftDrawerListAdapter.addItemClickListener(new RecyclerViewItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+//                LeftDrawerListItemToOtherAct(position);
+            }
+        });
+    }
+
     private void initView() {
         mBottomView = findViewById(R.id.navi_switcher);
         initBottomBar();
+        /*初始化左侧抽屉菜单*/
+        drawerInit();
     }
 
     private void initFragment() {
