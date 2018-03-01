@@ -4,7 +4,14 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
+    <!--由于每个界面都需要可以开启抽屉菜单 所以引入 标题布局-->
+    <include
+        android:id="@+id/title_bar"
+        layout="@layout/common_title_layout" />
+
+    <!--添加 抽屉功能之前的 标题栏 现将其 设置为gone-->
     <RelativeLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="44dp">
 

@@ -74,11 +74,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private boolean isToFirstFragment = false;
 
     //by zhuxiaolong
-    //学员端增加 侧滑菜单  左侧
-    private DrawerLayout mDrawerLayout;
-    private RecyclerView mLeftDrawerList;
-    private View mLeftDrawerLayout;
-    private LeftDrawerListAdapter mLeftDrawerListAdapter;
+    /*学员端增加 侧滑菜单  左侧*/
+    private DrawerLayout mDrawerLayout;//  google 抽屉布局
+    private RecyclerView mLeftDrawerList;// 左侧抽屉View内的RecyclerView 菜单列表部分
+    private View mLeftDrawerView;//左侧抽屉View 包含 顶部的头布局  还有菜单列表布局（由recyclerview 实现）
+    private LeftDrawerListAdapter mLeftDrawerListAdapter;//左侧抽屉内 RecyclerView 的adapter 用于填充生成 菜单内容
     private DrawerLayout.DrawerListener mDrawerToggle = new DrawerLayout.DrawerListener() {
         @Override
         public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -134,19 +134,19 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setIntent(intent);
     }
 
-    private void drawerInit(){
+    private void drawerLayoutInit(){
         mDrawerLayout= (DrawerLayout) mRootView.findViewById(R.id.drawer_layout);
         mLeftDrawerList= (RecyclerView) mRootView.findViewById(R.id.left_drawer_list);
 //        Logger.i(getClass().getSimpleName(),""+(mDrawerLayout==null));
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mLeftDrawerLayout=mRootView.findViewById(R.id.left_drawer);
-        setLeftDrawer();
+        mLeftDrawerView=mRootView.findViewById(R.id.left_drawer);
+        setLeftDrawerContent();
     }
     /***
      * 对左侧抽屉菜单进行布局初始化以及内容填充
      *
      */
-    public void setLeftDrawer() {
+    public void setLeftDrawerContent() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mLeftDrawerList.setLayoutManager(linearLayoutManager);
@@ -161,14 +161,14 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         });
     }
     public void openLeftDrawer() {
-        mDrawerLayout.openDrawer(mLeftDrawerLayout);
+        mDrawerLayout.openDrawer(mLeftDrawerView);
     }
 
     private void initView() {
         mBottomView = findViewById(R.id.navi_switcher);
         initBottomBar();
         /*初始化左侧抽屉菜单*/
-        drawerInit();
+        drawerLayoutInit();
     }
 
     private void initFragment() {

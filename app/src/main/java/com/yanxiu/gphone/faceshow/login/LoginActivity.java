@@ -48,6 +48,8 @@ import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+import com.yanxiu.gphone.faceshow.qrsignup.activity.QRCodeSignUpActivity;
+import com.yanxiu.gphone.faceshow.qrsignup.activity.SignUpActivity;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
@@ -77,6 +79,7 @@ import cn.magicwindow.MagicWindowSDK;
 public class LoginActivity extends FaceShowBaseActivity {
 
     private static final int TO_FORGET_PASSWORD_REQUEST_CODE = 0X01;
+    private static final int TO_QRCODE_SIGNUP_REQUEST_CODE = 0X02;
 
     private Unbinder unbinder;
     private Context mContext;
@@ -292,8 +295,10 @@ public class LoginActivity extends FaceShowBaseActivity {
             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
         }
     }
-
-    @OnClick({R.id.img_show_password, R.id.tv_sign_in, R.id.tv_forget_password})
+    /**
+     * 点击监听 增加 一个 扫码注册的textview
+     * */
+    @OnClick({R.id.img_show_password, R.id.tv_sign_in, R.id.tv_forget_password,R.id.tv_qrcode_signup})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_show_password:
@@ -319,6 +324,12 @@ public class LoginActivity extends FaceShowBaseActivity {
                 break;
             case R.id.tv_forget_password:
                 startActivityForResult(new Intent(LoginActivity.this, ForgetPasswordActivity.class), TO_FORGET_PASSWORD_REQUEST_CODE);
+                break;
+
+            case R.id.tv_qrcode_signup:
+               /*跳转到扫码界面 并对扫描的二维码进行验证*/
+                startActivityForResult(new Intent(LoginActivity.this, QRCodeSignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
+
                 break;
             default:
                 break;
@@ -428,6 +439,8 @@ public class LoginActivity extends FaceShowBaseActivity {
                     edt_account_password.setText(data.getStringExtra("password"));
                 }
             }
+        }else if (requestCode==TO_QRCODE_SIGNUP_REQUEST_CODE){
+            // TODO: 2018/3/1  执行登录操作
         }
     }
 

@@ -171,6 +171,7 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         mTitle.setText("研修宝");
         mTitleLeftImage= (ImageView) mRootView.findViewById(R.id.title_layout_left_img);
         mTitleLeftImage.setVisibility(View.VISIBLE);
+        mTitleLeftImage.setImageResource(R.drawable.selector_main_leftdrawer);
         mTitleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

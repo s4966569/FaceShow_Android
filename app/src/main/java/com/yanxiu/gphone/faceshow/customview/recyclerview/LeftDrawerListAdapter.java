@@ -26,15 +26,18 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
     private final int TYPE_HEAD = 0X01;
     private final int TYPE_NORMAL = 0X02;
 
-    private int[] itemIconArray = new int[]{R.drawable.selector_left_drawer_image_main,
-            R.drawable.selector_left_drawer_image_user};
+    private int[] itemIconArray = new int[]{
+            R.drawable.selector_left_drawer_image_main,
+            R.drawable.selector_left_drawer_image_user,
+            R.drawable.selector_left_drawer_image_main,//这里是 签到图标
+            R.drawable.selector_left_drawer_image_main};//这里是 意见反馈图标
     //            R.drawable.ic_person_black,
 //            R.drawable.ic_settings_black, R.drawable.ic_exit_to_app_black};
     private String[] itemNameArray = null;
 
 //    private CourseArrangeBean mCourseData;
 
-//    public LeftDrawerListAdapter(Context context, CourseArrangeBean courseData) {
+    //    public LeftDrawerListAdapter(Context context, CourseArrangeBean courseData) {
 //        mContext = context;
 //        mCourseData = courseData;
 //        itemNameArray = context.getResources().getStringArray(R.array.left_drawer_item_names);
@@ -61,7 +64,7 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
         if (getItemViewType(position) == TYPE_HEAD) {
             HeadViewHolder headViewHolder = (HeadViewHolder) holder;
             if (UserInfo.getInstance().getInfo() != null) {
-                if (UserInfo.getInstance().getInfo().getAvatar() != null ) {
+                if (UserInfo.getInstance().getInfo().getAvatar() != null) {
                     YXPictureManager.getInstance().showRoundPic(mContext, UserInfo.getInstance().getInfo().getAvatar(), headViewHolder.user_icon, 6, R.drawable.discuss_user_default_icon);
                 }
                 if (UserInfo.getInstance().getInfo().getRealName() != null) {
@@ -91,7 +94,7 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
 
         } else {
             ((NormalViewHolder) holder).itemName.setText(itemNameArray[position - 1]);
-            ((NormalViewHolder) holder).itemIcon.setImageDrawable(ContextCompat.getDrawable(mContext,itemIconArray[position-1]));
+            ((NormalViewHolder) holder).itemIcon.setImageDrawable(ContextCompat.getDrawable(mContext, itemIconArray[position - 1]));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
