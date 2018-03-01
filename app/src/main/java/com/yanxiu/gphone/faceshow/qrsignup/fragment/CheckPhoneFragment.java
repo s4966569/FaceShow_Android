@@ -17,6 +17,7 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.qrsignup.PhoneNumCheckResponse;
 import com.yanxiu.gphone.faceshow.http.qrsignup.PhoneNumberCheckRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.UUID;
 
@@ -138,6 +139,8 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, PhoneNumCheckResponse ret) {
                 mRootView.hiddenLoadingView();
+                titleRightText.setEnabled(true);
+                ToastUtil.showToast(getActivity(),"手机号验证成功");
                 // TODO: 2018/3/1  验证成功 还要判断 是那种类型
             }
 

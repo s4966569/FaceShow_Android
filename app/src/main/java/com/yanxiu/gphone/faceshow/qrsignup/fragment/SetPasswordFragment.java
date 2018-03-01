@@ -22,7 +22,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 public class SetPasswordFragment extends FaceShowBaseFragment {
     private View rootView;
     private ImageView titleLeftImage;
-    private ImageView titleRightImage;
+    private TextView titleRightText;
     private TextView titleTextView;
 
     private ToolbarActionCallback toolbarActionCallback;
@@ -39,22 +39,26 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        TextView textView = new TextView(getActivity());
-        textView.setText(R.string.hello_blank_fragment);
-        return textView;
+        if (rootView == null) {
+            rootView=inflater.inflate(R.layout.fragment_setpassword_layout,null);
+        }
+        toolbarInit(rootView);
+        return rootView;
     }
 
     /**
      * 对当前界面进行toolbar 设置
      * */
     private void toolbarInit(View root){
-        titleLeftImage= (ImageView) root.findViewById(R.id.title_layout_left_img);
-        titleRightImage= (ImageView) root.findViewById(R.id.title_layout_right_img);
-        titleTextView= (TextView) root.findViewById(R.id.title_layout_title);
+        View toolbar=root.findViewById(R.id.setpassword_titlebar);
+        titleLeftImage= (ImageView) toolbar.findViewById(R.id.title_layout_left_img);
+        titleRightText= (TextView) toolbar.findViewById(R.id.title_layout_right_txt);
+        titleTextView= (TextView) toolbar.findViewById(R.id.title_layout_title);
 
-        titleRightImage.setVisibility(View.VISIBLE);
+        titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
         titleTextView.setText("设置密码");
+        titleRightText.setText("下一步");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,7 +67,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 }
             }
         });
-        titleRightImage.setOnClickListener(new View.OnClickListener() {
+        titleRightText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (toolbarActionCallback != null) {

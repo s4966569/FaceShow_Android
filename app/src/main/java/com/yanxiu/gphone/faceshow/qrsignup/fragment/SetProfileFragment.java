@@ -3,6 +3,8 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,9 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
+import com.yanxiu.gphone.faceshow.qrsignup.recycleradapter.ProfileRecyclerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,12 +23,18 @@ import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
  */
 public class SetProfileFragment extends FaceShowBaseFragment {
 
-    private View rootView;
+    private View fragmentRootView;
+    private PublicLoadLayout mRootView;
     private ImageView titleLeftImage;
-    private ImageView titleRightImage;
+    private TextView titleRightText;
     private TextView titleTextView;
-
     private ToolbarActionCallback toolbarActionCallback;
+
+
+    private ProfileRecyclerAdapter profileRecyclerAdapter;
+    private RecyclerView profileRecyclerView;
+
+
 
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
         this.toolbarActionCallback = toolbarActionCallback;
@@ -38,10 +48,23 @@ public class SetProfileFragment extends FaceShowBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (rootView == null) {
-
+        if (mRootView == null) {
+            mRootView=new PublicLoadLayout(getActivity());
+//            mRootView.setContentView(R.layout.fragment_checkphone_layout);
+            fragmentRootView=inflater.inflate(R.layout.fragment_setprofile_layout,null);
+            mRootView.setContentView(fragmentRootView);
         }
-        return rootView;
+        profileRecyclerAdapter=new ProfileRecyclerAdapter(getActivity());
+        toolbarInit(fragmentRootView.findViewById(R.id.setprofile_titelbar));
+        viewInit(fragmentRootView);
+        return mRootView;
+    }
+
+    private void viewInit(View root){
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        profileRecyclerView= (RecyclerView) root.findViewById(R.id.profile_recyclerview);
+        profileRecyclerView.setLayoutManager(layoutManager);
+        profileRecyclerView.setAdapter(profileRecyclerAdapter);
     }
 
     /**
@@ -49,12 +72,13 @@ public class SetProfileFragment extends FaceShowBaseFragment {
      * */
     private void toolbarInit(View root){
         titleLeftImage= (ImageView) root.findViewById(R.id.title_layout_left_img);
-        titleRightImage= (ImageView) root.findViewById(R.id.title_layout_right_img);
+        titleRightText= (TextView) root.findViewById(R.id.title_layout_right_txt);
         titleTextView= (TextView) root.findViewById(R.id.title_layout_title);
 
-        titleRightImage.setVisibility(View.VISIBLE);
+        titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
-        titleTextView.setText("完善资料");
+        titleTextView.setText("设置密码");
+        titleRightText.setText("保存");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,7 +87,7 @@ public class SetProfileFragment extends FaceShowBaseFragment {
                 }
             }
         });
-        titleRightImage.setOnClickListener(new View.OnClickListener() {
+        titleRightText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (toolbarActionCallback != null) {

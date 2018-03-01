@@ -175,7 +175,15 @@
         <!--<item>退出</item>-->
     </string-array>
     <string name="change_class">切换班级</string>
+    <!--扫码注册  完善资料-->
+    <string-array name="qrsignup_profile_title">
+        <item>姓名</item>
+        <item>联系电话</item>
+        <item>性别</item>
+        <item>学段</item>
+        <item>学科</item>
 
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
