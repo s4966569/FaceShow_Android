@@ -13,7 +13,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
@@ -22,7 +22,6 @@ import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListene
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 
 /**

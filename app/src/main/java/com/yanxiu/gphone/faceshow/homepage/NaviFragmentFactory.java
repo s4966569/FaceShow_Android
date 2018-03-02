@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
 import com.yanxiu.gphone.faceshow.user.MyFragment;
