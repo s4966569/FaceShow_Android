@@ -1,10 +1,7 @@
 package com.yanxiu.gphone.faceshow.http.course;
 
-import com.test.yanxiu.network.RequestBase;
-import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
-import com.yanxiu.gphone.faceshow.http.base.FaceShowMockRequest;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;
 
 /**
  * 讨论

@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -17,31 +15,18 @@ import com.baidu.location.LocationClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.test.yanxiu.network.HttpCallback;
-import com.test.yanxiu.network.OkHttpClientManager;
 import com.test.yanxiu.network.RequestBase;
-import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
-import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.UserSignInRequest;
-import com.yanxiu.gphone.faceshow.http.checkin.UserSignInResponse;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
-import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * @Class: CheckInByQRActivity

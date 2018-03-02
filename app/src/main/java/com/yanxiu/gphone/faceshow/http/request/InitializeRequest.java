@@ -2,7 +2,7 @@ package com.yanxiu.gphone.faceshow.http.request;
 
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.constant.Constants;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.NetWorkUtils;
 

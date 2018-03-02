@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.http.envconfig;
+package com.test.yanxiu.common_base.utils;
 
 import java.io.Serializable;
 
@@ -16,6 +16,7 @@ public class UrlBean implements Serializable {
     private String loginServer;//登陆接口
     private String uploadServer;
     private String initializeUrl;
+    private String imServer;
     private String qiNiuServer;
     private String mode;
     private String chooseClassServer;
@@ -26,6 +27,14 @@ public class UrlBean implements Serializable {
 
     public void setChooseClassServer(String chooseClassServer) {
         this.chooseClassServer = chooseClassServer;
+    }
+
+    public String getImServer() {
+        return imServer;
+    }
+
+    public void setImServer(String imServer) {
+        this.imServer = imServer;
     }
 
     public String getServer() {

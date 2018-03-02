@@ -2,7 +2,7 @@ package com.yanxiu.gphone.faceshow.classcircle.request;
 
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.db.SpManager;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 
 /**

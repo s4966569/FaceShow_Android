@@ -1,8 +1,8 @@
 package com.yanxiu.gphone.faceshow.classcircle.request;
 
-import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;
+
 
 /**
  * @author frc on 2018/1/22.

@@ -1,7 +1,7 @@
 package com.yanxiu.gphone.faceshow.http.login;
 
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;
 
 /**
  * 登录请求
