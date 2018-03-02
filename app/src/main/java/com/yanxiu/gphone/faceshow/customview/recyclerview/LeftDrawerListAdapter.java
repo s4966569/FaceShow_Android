@@ -76,7 +76,9 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
                     headViewHolder.user_name.setText(UserInfo.getInstance().getInfo().getRealName());
                 }
             }
-            /**
+
+
+            /*
              * 这里对 用户当前所在的项目 和班级 进行文字设置
              * */
             try {

@@ -8,7 +8,7 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
  */
 
 public class PhoneNumberCheckRequest extends FaceShowBaseRequest {
-
+    String phone;
 
 
 

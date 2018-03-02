@@ -46,8 +46,10 @@ import com.yanxiu.gphone.faceshow.user.FeedBackActivity;
 import com.yanxiu.gphone.faceshow.user.ProfileActivity;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.Logger;
+import com.yanxiu.gphone.faceshow.util.SystemUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.UpdateUtil;
+import com.yanxiu.gphone.faceshow.util.Utils;
 import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.util.UUID;
@@ -191,7 +193,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 startActivityForResult(new Intent(MainActivity.this, ChooseClassActivity.class), CHOOSE_CLASS);
             }
         });
+        /*设置版本号显示*/
+        TextView appVersionTv=mRootView.findViewById(R.id.app_version_textview);
+        appVersionTv.setText("版本号：v"+ SystemUtil.getVersionName());
     }
+    /**
+     * 抽屉菜单 跳转逻辑
+    * */
     private void LeftDrawerListItemToOtherAct(int position) {
         Log.i(TAG, "LeftDrawerListItemToOtherAct: :"+position);
         switch (position) {

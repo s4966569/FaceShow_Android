@@ -20,6 +20,7 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.ChooseClassActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.main.GetToolsRequest;

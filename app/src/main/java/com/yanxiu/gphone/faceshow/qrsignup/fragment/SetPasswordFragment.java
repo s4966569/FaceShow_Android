@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 
 /**

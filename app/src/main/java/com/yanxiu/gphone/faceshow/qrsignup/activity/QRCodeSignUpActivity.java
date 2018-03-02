@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,7 +53,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                     //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
 //                    if (result.startsWith(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn")) {
                     if (checkQRCode(result)) {
-                        /*正确的班级二维码*/
+                        /*检查得到的是正确的班级二维码*/
                         Intent currectIntent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
                         startActivityForResult(currectIntent,REQUEST_CODE_TO_CHECK_PHONE);
 
@@ -134,6 +135,15 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         mBarcodeView = (DecoratedBarcodeView) findViewById(R.id.zxing_barcode_scanner);
         mCaptureManager = new CheckInCaptureManager(this, mBarcodeView);
         mCaptureManager.initializeFromIntent(getIntent(), savedInstanceState);
+        mBarcodeView.setStatusText("请扫描二维码完成注册");
+
+
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         mCaptureManager.decode();
         mCaptureManager.setCodeCallBack(codeCallBack);
     }
@@ -141,6 +151,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+
     }
 
     /**
@@ -159,6 +170,16 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
      */
     private void initToolbar() {
         tvTitle.setText("扫码注册");
+        View titleView=findViewById(R.id.checkup_titlebar);
+        ImageView backImg=titleView.findViewById(R.id.img_left);
+        backImg.setVisibility(View.VISIBLE);
+        backImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                QRCodeSignUpActivity.this.finish();
+            }
+        });
+
     }
 
     @Override

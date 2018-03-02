@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.SignUpManager;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
@@ -24,10 +24,10 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 public class SignUpActivity extends FaceShowBaseActivity{
     private PublicLoadLayout mRootView;
     
-//    各种操作的网络请求集中在这个类中
+    /*各种操作的网络请求集中在这个类中*/
     private SignUpManager mSignUpManager;
   
-//    各个步骤的fragment
+    /*各个步骤的fragment*/
     private CheckPhoneFragment checkPhoneFragment;
     private SetPasswordFragment setPasswordFragment;
     private SetProfileFragment setProfileFragment;
@@ -46,12 +46,12 @@ public class SignUpActivity extends FaceShowBaseActivity{
         checkPhoneFragment=new CheckPhoneFragment();
         setPasswordFragment=new SetPasswordFragment();
         setProfileFragment=new SetProfileFragment();
-        /*第一步 验证手机号的注册情况*/
+        /*第一步 验证手机号的注册情况  这些回调主要是来控制步骤流程 */
         checkPhoneFragment.setToolbarActionCallback(new ToolbarActionCallback() {
             @Override
             public void onLeftComponentClick() {
                 // TODO: 2018/3/1  在验证手机号部分点击返回  取消所有请求 并返回到登录界面？还是 扫码界面
-                /*此时点击 返回按钮 */
+                /*此时点击 返回按钮 退回到扫码页面 */
                 SignUpActivity.this.finish();
             }
 
