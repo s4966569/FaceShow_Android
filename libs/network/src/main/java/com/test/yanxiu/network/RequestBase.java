@@ -161,7 +161,7 @@ public abstract class RequestBase {
                         }
                         T ret;
                         try {
-                            ret = RequestBase.gson.fromJson(jsonString(retStr), clazz);
+                            ret = RequestBase.gson.fromJson(retStr, clazz);
                         } catch (Exception e) {
                             e.printStackTrace();
                             callback.onFail(RequestBase.this, new Error("服务器返回格式错误"));
