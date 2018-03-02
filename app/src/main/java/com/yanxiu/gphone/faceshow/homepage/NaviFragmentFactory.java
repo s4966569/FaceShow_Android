@@ -4,44 +4,57 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.test.yanxiu.im_ui.TopicFragment;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
 import com.yanxiu.gphone.faceshow.user.MyFragment;
 import com.yanxiu.gphone.faceshow.notification.fragment.NoticeFragment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * HomeActivity的fragment控制类
  */
 public class NaviFragmentFactory {
-    private int mCurrItem = 0;
-    private HomeFragment mHomeFragment;//首页
-    private NoticeFragment mNoticeFragment;//通知
-    private ClassCircleFragment mClassCircleFragment;//班级圈
-    private MyFragment mMyFragment;//我
+    private int mCurrItemIndex = 0;
+    private HomeFragment mHomeFragment = new HomeFragment();//首页
+    private NoticeFragment mNoticeFragment = new NoticeFragment();//通知
+    private ClassCircleFragment mClassCircleFragment = new ClassCircleFragment();//班级圈
+    private MyFragment mMyFragment = new MyFragment();//我
+    private TopicFragment mTopicFragment = new TopicFragment(); //IM相关
+    private List<FaceShowBaseFragment> fragments = new ArrayList<FaceShowBaseFragment>(
+            Arrays.asList(
+                    mHomeFragment,
+                    mNoticeFragment,
+                    mClassCircleFragment,
+                    //mMyFragment,
+                    mTopicFragment
+                    )
+    );
 
-    public NaviFragmentFactory() {
+    public NaviFragmentFactory(FragmentManager fm) {
+        FragmentTransaction transaction = fm.beginTransaction();
+        for (FaceShowBaseFragment fragment : fragments) {
+            transaction.add(R.id.content_main, fragment);
+            transaction.hide(fragment);
+        }
+        transaction.commit();
     }
 
-    public int getCurrentItem() {
-        return mCurrItem;
+    public int getCurrentItemIndex() {
+        return mCurrItemIndex;
     }
 
     public int getCount() {
-        return 4;
+        return fragments.size();
     }
 
     public Fragment getItem(int item) {
-        if (item == 0) {
-            return mHomeFragment;
-        } else if (item == 1) {
-            return mNoticeFragment;
-        } else if (item == 2) {
-            return mClassCircleFragment;
-        } else {
-            return mMyFragment;
-        }
+        return fragments.get(item);
     }
 
     public HomeFragment getHomeFragment() {
@@ -57,78 +70,22 @@ public class NaviFragmentFactory {
         return mClassCircleFragment;
     }
 
-
-    private void hideFragment(FragmentTransaction transaction) {
-
-        if (mCurrItem == 0 && mHomeFragment != null) {
-            transaction.hide(mHomeFragment);
-        }
-        if (mCurrItem == 1 && mNoticeFragment != null) {
-            transaction.hide(mNoticeFragment);
-        }
-        if (mCurrItem == 2 && mClassCircleFragment != null) {
-            transaction.hide(mClassCircleFragment);
-        }
-        if (mCurrItem == 3 && mMyFragment != null) {
-            transaction.hide(mMyFragment);
-        }
+    public MyFragment getMyFragment() {
+        return mMyFragment;
     }
 
+    public TopicFragment getTopicFragment() {
+        return mTopicFragment;
+    }
 
     public FaceShowBaseFragment hideAndShowFragment(FragmentManager fragmentManager, int index) {
         FaceShowBaseFragment fragment = null;
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if (mCurrItem == 0 && mHomeFragment != null) {
-            transaction.hide(mHomeFragment);
+        for (FaceShowBaseFragment f : fragments) {
+            transaction.hide(f);
         }
-        if (mCurrItem == 1 && mNoticeFragment != null) {
-            transaction.hide(mNoticeFragment);
-        }
-        if (mCurrItem == 2 && mClassCircleFragment != null) {
-            transaction.hide(mClassCircleFragment);
-        }
-        if (mCurrItem == 3 && mMyFragment != null) {
-            transaction.hide(mMyFragment);
-        }
-        mCurrItem = index;
-        switch (mCurrItem) {
-            case 0:
-                if (mHomeFragment == null) {
-                    mHomeFragment = new HomeFragment();
-                    transaction.add(R.id.content_main, mHomeFragment);
-                } else {
-                    transaction.show(mHomeFragment);
-                }
-                fragment = mHomeFragment;
-                break;
-            case 1:
-                if (mNoticeFragment == null) {
-                    mNoticeFragment = new NoticeFragment();
-                    transaction.add(R.id.content_main, mNoticeFragment);
-                } else {
-                    transaction.show(mNoticeFragment);
-                }
-                fragment = mNoticeFragment;
-                break;
-            case 2:
-                if (mClassCircleFragment == null) {
-                    mClassCircleFragment = new ClassCircleFragment();
-                    transaction.add(R.id.content_main, mClassCircleFragment);
-                } else {
-                    transaction.show(mClassCircleFragment);
-                }
-                fragment = mClassCircleFragment;
-                break;
-            case 3:
-                if (mMyFragment == null) {
-                    mMyFragment = new MyFragment();
-                    transaction.add(R.id.content_main, mMyFragment);
-                } else {
-                    transaction.show(mMyFragment);
-                }
-                fragment = mMyFragment;
-                break;
-        }
+        mCurrItemIndex = index;
+        transaction.show(fragments.get(mCurrItemIndex));
         transaction.commit();
         return fragment;
     }

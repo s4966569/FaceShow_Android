@@ -167,4 +167,6 @@ dependencies {
     //        transitive = true;
     //    }
     implementation project(':imagepicker')
+    compile project(path: ':faceshow_ui_base')
+    compile project(path: ':im_ui')
 }

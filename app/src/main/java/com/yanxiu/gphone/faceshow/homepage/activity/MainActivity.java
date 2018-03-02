@@ -23,7 +23,7 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseFragment;
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.recyclerview.LeftDrawerListAdapter;
@@ -34,7 +34,6 @@ import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
-import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.http.main.RedDotRequest;
@@ -236,7 +235,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void initFragment() {
         mFragmentManager = getSupportFragmentManager();
-        mNaviFragmentFactory = new NaviFragmentFactory();
+        mNaviFragmentFactory = new NaviFragmentFactory(mFragmentManager);
         showCurrentFragment(0);
 
     }
@@ -425,7 +424,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
     private void showTargetFragment(int curItem) {
-        if (mNaviFragmentFactory != null && mNaviFragmentFactory.getCurrentItem() != curItem) {
+
+        if (mNaviFragmentFactory != null && mNaviFragmentFactory.getCurrentItemIndex() != curItem) {
+
             showCurrentFragment(curItem);
         }
     }
@@ -483,7 +484,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mLastSelectIndex = index;
         checkBottomBar(index);
         if (mNaviFragmentFactory == null) {
-            mNaviFragmentFactory = new NaviFragmentFactory();
+            mNaviFragmentFactory = new NaviFragmentFactory(mFragmentManager);
         }
         if (mFragmentManager == null) {
             mFragmentManager = getSupportFragmentManager();
@@ -581,7 +582,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     //有新的班级圈消息
                     if (ret.getData().getMomentNew() != null) {
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
-//                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
+//                            if (mNaviFragmentFactory.getCurrentItemIndex() == 2) {
                             //当前在班级圈页面
 //                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
 //                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
@@ -601,14 +602,14 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     //新的班级圈回复消息
                     if (ret.getData().getMomentMsgNew() != null) {
                         if (ret.getData().getMomentMsgNew().getPromptNum() > 0) {
-                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
+                            if (mNaviFragmentFactory.getCurrentItemIndex() == 2) {
                                 ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {
                                     mNaviFragmentFactory.getClassCircleFragment().showMomentMsg(ret.getData().getMomentMsgNew().getPromptNum());
                                 }
                             }
                         } else {
-                            if (mNaviFragmentFactory.getCurrentItem() == 2) {
+                            if (mNaviFragmentFactory.getCurrentItemIndex() == 2) {
                                 ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {
                                     mNaviFragmentFactory.getClassCircleFragment().hideMomentMsg();
