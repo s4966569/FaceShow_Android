@@ -59,7 +59,10 @@ import butterknife.Unbinder;
 /**
  * Created by lufengqing on 2017/9/15.
  */
-
+/**
+ * 增加内容  由于增加了 由左侧抽屉导航进入我的资料界面的入口 需要对修改的 头像和名称等信息进行刷新
+ * 需要在 确定上传了新的头像 更改了新的用户名称的信息后 通知抽屉进行数据刷新
+ * */
 public class ProfileActivity extends FaceShowBaseActivity implements OnPermissionCallback {
     @BindView(R.id.rl_name)
     RelativeLayout rlName;
@@ -486,5 +489,14 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         unbinder.unbind();
     }
 
+
+    /**
+     * 确定更改了某些在抽屉菜单上展示的数据
+     * */
+    private void doUpdateUserInfo(){
+
+        setResult(RESULT_OK);
+
+    }
 
 }

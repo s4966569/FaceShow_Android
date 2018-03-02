@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -29,6 +31,7 @@ import com.yanxiu.gphone.faceshow.customview.recyclerview.RecyclerViewItemClickL
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.getui.ToMainActivityBroadcastReceiver;
 import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
 import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
@@ -38,17 +41,27 @@ import com.yanxiu.gphone.faceshow.http.main.RedDotRequest;
 import com.yanxiu.gphone.faceshow.http.main.RedDotResponse;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadRequest;
 import com.yanxiu.gphone.faceshow.http.notificaion.GetHasNotificationsNeedReadResponse;
+import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.user.FeedBackActivity;
+import com.yanxiu.gphone.faceshow.user.ProfileActivity;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.Logger;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.UpdateUtil;
+import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.util.UUID;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {
-
+    private final String TAG=getClass().getSimpleName();
     private PublicLoadLayout mRootView;
+
+    /*跳转到 切换班级界面的requestcode*/
+    private final int CHOOSE_CLASS=0X01;
+    /*跳转到 用户信息设置界面*/
+    private final int REQUEST_CODE_SET_PROFILE=0X02;
+
 
     private final int mNavBarViewsCount = 4;
     private View[] mNavBarViews = new View[mNavBarViewsCount];
@@ -105,7 +118,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mRootView.setContentView(R.layout.activity_main);
         mRootView.setRetryButtonOnclickListener(this);
         setContentView(mRootView);
-        mContext=this;
+        mContext = this;
         initView();
         initListener();
         getData();
@@ -134,14 +147,18 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         setIntent(intent);
     }
 
-    private void drawerLayoutInit(){
-        mDrawerLayout= (DrawerLayout) mRootView.findViewById(R.id.drawer_layout);
-        mLeftDrawerList= (RecyclerView) mRootView.findViewById(R.id.left_drawer_list);
-//        Logger.i(getClass().getSimpleName(),""+(mDrawerLayout==null));
+    private void drawerLayoutInit() {
+        mDrawerLayout = (DrawerLayout) mRootView.findViewById(R.id.drawer_layout);
+        mLeftDrawerList = (RecyclerView) mRootView.findViewById(R.id.left_drawer_list);
+        // TODO: 2018/3/2  将recyclerview 的overscroll 动画去除
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mLeftDrawerView=mRootView.findViewById(R.id.left_drawer);
+        mLeftDrawerView = mRootView.findViewById(R.id.left_drawer);
         setLeftDrawerContent();
+        /*退出按钮*/
+        TextView exitTextView = (TextView) mRootView.findViewById(R.id.exit);
+        exitTextView.setOnClickListener(this);
     }
+
     /***
      * 对左侧抽屉菜单进行布局初始化以及内容填充
      *
@@ -150,16 +167,62 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mLeftDrawerList.setLayoutManager(linearLayoutManager);
+        /*设置*/
 //        mLeftDrawerListAdapter = new LeftDrawerListAdapter(mContext, mMainFragment.getmData());
         mLeftDrawerListAdapter = new LeftDrawerListAdapter(mContext);
         mLeftDrawerList.setAdapter(mLeftDrawerListAdapter);
+        /*左侧抽屉 recyclerview item点击监听*/
         mLeftDrawerListAdapter.addItemClickListener(new RecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-//                LeftDrawerListItemToOtherAct(position);
+                Log.i(getClass().getSimpleName(), "onItemClick: "+position);
+                LeftDrawerListItemToOtherAct(position);
+            }
+        });
+
+        mLeftDrawerListAdapter.setHeaderViewClickListener(new LeftDrawerListAdapter.HeaderViewClickListener() {
+            @Override
+            public void onHeaderImgClicked() {
+                // TODO: 2018/3/2  点击用户头像
+            }
+
+            @Override
+            public void onHeaderButtonClicked() {
+                /*点击 切换班级按钮*/
+                startActivityForResult(new Intent(MainActivity.this, ChooseClassActivity.class), CHOOSE_CLASS);
             }
         });
     }
+    private void LeftDrawerListItemToOtherAct(int position) {
+        Log.i(TAG, "LeftDrawerListItemToOtherAct: :"+position);
+        switch (position) {
+            case 0:/*跳转班级首页*/
+                toClassHomePage();
+                mDrawerLayout.closeDrawer(mLeftDrawerView);
+                break;
+            case 1:/*跳转我的资料*/
+               toMyProfile();
+                break;
+            case 2:/*跳转签到记录*/
+                CheckInNotesActivity.toThisAct(MainActivity.this);
+                break;
+            case 3:/*跳转意见反馈*/
+                startActivity(new Intent(MainActivity.this,FeedBackActivity.class));
+                break;
+            default:
+        }
+
+    }
+
+    private void toMyProfile() {
+        Intent i = new Intent(MainActivity.this, ProfileActivity.class);
+        startActivityForResult(i,REQUEST_CODE_SET_PROFILE);
+    }
+
+    private void toClassHomePage() {
+        showCurrentFragment(setHomeFragment());
+    }
+
     public void openLeftDrawer() {
         mDrawerLayout.openDrawer(mLeftDrawerView);
     }
@@ -309,14 +372,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         int curItem = INDEX_HOME_TAB;
         switch (view.getId()) {
             case R.id.navi_1:
-                curItem = INDEX_HOME_TAB;
-                mNavIconViews[0].setEnabled(false);
-                mNavIconViews[1].setEnabled(true);
-                mNavIconViews[2].setEnabled(true);
-                mNavIconViews[3].setEnabled(true);
-                if (mNaviFragmentFactory.getHomeFragment() != null) {
-                    mNaviFragmentFactory.getHomeFragment().toRefresh();
-                }
+                curItem = setHomeFragment();
                 break;
             case R.id.navi_2:
                 curItem = INDEX_NOTICE_TAB;
@@ -356,12 +412,54 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             case R.id.retry_button:
                 getData();
                 break;
+
+            case R.id.exit:
+            /*左侧抽屉 退出登录按钮  从MyFragment 的退出登录复制*/
+                logout();
+                return;
+
             default:
                 break;
         }
+        showTargetFragment(curItem);
+    }
+
+    private void showTargetFragment(int curItem) {
         if (mNaviFragmentFactory != null && mNaviFragmentFactory.getCurrentItem() != curItem) {
             showCurrentFragment(curItem);
         }
+    }
+
+    private int setHomeFragment() {
+        int curItem;
+        curItem = INDEX_HOME_TAB;
+        mNavIconViews[0].setEnabled(false);
+        mNavIconViews[1].setEnabled(true);
+        mNavIconViews[2].setEnabled(true);
+        mNavIconViews[3].setEnabled(true);
+        if (mNaviFragmentFactory.getHomeFragment() != null) {
+            mNaviFragmentFactory.getHomeFragment().toRefresh();
+        }
+        return curItem;
+    }
+
+    private void logout() {
+        LoginActivity.toThisAct(MainActivity.this);
+        UserInfo.getInstance().setInfo(null);
+        SpManager.saveToken("");
+        clearGTPushSettings();
+        SpManager.loginOut();//设置为登出状态
+        MainActivity.this.finish();
+    }
+
+    /**
+     * 去除 通知以及推送  从MyFragment 复制过来的
+     * */
+    private void clearGTPushSettings() {
+        NotificationManager notificationManager = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+        PushManager.getInstance().unBindAlias( MainActivity.this, String.valueOf(SpManager.getUserInfo().getUserId()), true, "2000");//只对当前cid做解绑
+        PushManager.getInstance().turnOffPush( MainActivity.this);
     }
 
     private void checkBottomBar(int index) {
@@ -438,12 +536,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == HomeFragment.CHOOSE_CLASS) {
+        if (requestCode == CHOOSE_CLASS) {
             if (resultCode == RESULT_OK) {
 //                getData();
                 reFreshFragment();
                 pollingRedPointer();
+                /*对 抽屉内的展示信息进行更新   */
+                mLeftDrawerListAdapter.notifyItemChanged(0);
             }
+        }else  if (requestCode==REQUEST_CODE_SET_PROFILE){
+            /*由我得信息界面返回 用户可能对信息进行了设置 由于入口有两个暂时不对 设置结果进行判断 暂时强制更新抽屉信息*/
+            if (resultCode==RESULT_OK) {
+                mLeftDrawerListAdapter.notifyItemChanged(0);
+            }
+
         }
     }
 
