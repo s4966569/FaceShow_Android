@@ -1,1 +1,1 @@
-include ':app', 'libs:network', 'zxing-android-embedded','imagepicker'
+include ':app', ':im_core', 'libs:network', 'zxing-android-embedded','imagepicker'
