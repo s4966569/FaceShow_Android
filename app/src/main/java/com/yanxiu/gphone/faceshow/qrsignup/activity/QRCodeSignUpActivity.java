@@ -11,9 +11,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baidu.location.BDAbstractLocationListener;
-import com.baidu.location.BDLocation;
-import com.baidu.location.LocationClient;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.yanxiu.gphone.faceshow.R;
@@ -22,8 +19,6 @@ import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInCaptureManager;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInErrorActivity;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
-import com.yanxiu.gphone.faceshow.util.LBSManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,31 +77,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             }
         }
     };
-//    private LocationClient getLocation(final String stepId, final String timestamp) {
-//        if (mLoadingDialogView == null) {
-//            mLoadingDialogView = new LoadingDialogView(this);
-//        }
-//        mLoadingDialogView.show();
-//        final LocationClient locationClient = LBSManager.getLocationClient();
-//        locationClient.registerLocationListener(new BDAbstractLocationListener() {
-//            @Override
-//            public void onReceiveLocation(BDLocation bdLocation) {
-//                //不解除监听下次再进来会注册多重监听
-//                locationClient.unRegisterLocationListener(this);
-//                locationClient.stop();
-//                double latitude = bdLocation.getLatitude();
-//                double longitude = bdLocation.getLongitude();
-//                if (TextUtils.isEmpty(bdLocation.getLocationDescribe())){
-//                    userSignIn(stepId, timestamp, "", "");
-//                }else {
-//                    userSignIn(stepId, timestamp, longitude + "," + latitude, bdLocation.getLocationDescribe());
-//                }
-//            }
-//
-//        });
-//        locationClient.start();
-//        return locationClient;
-//    }
+
     /**
      * 条形码扫描视图
      */

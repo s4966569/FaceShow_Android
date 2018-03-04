@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include android:id="@+id/setprofile_titelbar"
-        layout="@layout/common_title_layout"/>
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/profile_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <include
+        android:id="@+id/setprofile_titelbar"
+        layout="@layout/common_title_layout" />
+
+    <include
+        android:id="@+id/profile_layout"
+        layout="@layout/profile_info_layout" />
 </LinearLayout>

@@ -19,11 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.recyclerview.LeftDrawerListAdapter;
@@ -45,12 +45,9 @@ import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.user.FeedBackActivity;
 import com.yanxiu.gphone.faceshow.user.ProfileActivity;
 import com.yanxiu.gphone.faceshow.util.ActivityManger;
-import com.yanxiu.gphone.faceshow.util.Logger;
 import com.yanxiu.gphone.faceshow.util.SystemUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.UpdateUtil;
-import com.yanxiu.gphone.faceshow.util.Utils;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.util.UUID;
 
@@ -144,7 +141,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        isToFirstFragment = intent.getBooleanExtra(ToMainActivityBroadcastReceiver.IS_TO_FIRST_FRAGMENT, false);
+        isToFirstFragment = intent.getBooleanExtra(ToMainActivityBroadcastReceiver.IS_TO_FIRST_FRAGMENT,
+                false);
         setIntent(intent);
     }
 
@@ -190,7 +188,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             @Override
             public void onHeaderButtonClicked() {
                 /*点击 切换班级按钮*/
-                startActivityForResult(new Intent(MainActivity.this, ChooseClassActivity.class), CHOOSE_CLASS);
+                startActivityForResult(new Intent(MainActivity.this,
+                        ChooseClassActivity.class), CHOOSE_CLASS);
             }
         });
         /*设置版本号显示*/
@@ -337,9 +336,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     };
 
     private void getRedPointersRequest() {
-        GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest = new GetHasNotificationsNeedReadRequest();
+        GetHasNotificationsNeedReadRequest getHasNotificationsNeedReadRequest
+                = new GetHasNotificationsNeedReadRequest();
         getHasNotificationsNeedReadRequest.clazsId = SpManager.getUserInfo().getClassId();
-        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest.startRequest(GetHasNotificationsNeedReadResponse.class, new HttpCallback<GetHasNotificationsNeedReadResponse>() {
+        mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest
+                        .startRequest(GetHasNotificationsNeedReadResponse.class,
+                                new HttpCallback<GetHasNotificationsNeedReadResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
                 if (ret.getCode() == 0) {
@@ -465,9 +467,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
      * 去除 通知以及推送  从MyFragment 复制过来的
      * */
     private void clearGTPushSettings() {
-        NotificationManager notificationManager = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) MainActivity.this
+                .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
-        PushManager.getInstance().unBindAlias( MainActivity.this, String.valueOf(SpManager.getUserInfo().getUserId()), true, "2000");//只对当前cid做解绑
+        PushManager.getInstance()
+                .unBindAlias( MainActivity.this,
+                        String.valueOf(SpManager.getUserInfo().getUserId()),
+                        true, "2000");//只对当前cid做解绑
         PushManager.getInstance().turnOffPush( MainActivity.this);
     }
 
@@ -592,7 +598,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                         if (ret.getData().getMomentNew().getPromptNum() >= 0) {
 //                            if (mNaviFragmentFactory.getCurrentItemIndex() == 2) {
                             //当前在班级圈页面
-//                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+//                                ClassCircleFragment classCircleFragment =
+// mNaviFragmentFactory.getClassCircleFragment();
 //                                if (classCircleFragment != null && !classCircleFragment.firstEnter) {
                             //mNaviFragmentFactory.getClassCircleFragment().toRefresh();
 //                                }
@@ -611,16 +618,24 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     if (ret.getData().getMomentMsgNew() != null) {
                         if (ret.getData().getMomentMsgNew().getPromptNum() > 0) {
                             if (mNaviFragmentFactory.getCurrentItemIndex() == 2) {
-                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+                                ClassCircleFragment classCircleFragment =
+                                        mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {
-                                    mNaviFragmentFactory.getClassCircleFragment().showMomentMsg(ret.getData().getMomentMsgNew().getPromptNum());
+                                    mNaviFragmentFactory
+                                            .getClassCircleFragment()
+                                            .showMomentMsg(ret.getData()
+                                                    .getMomentMsgNew()
+                                                    .getPromptNum());
                                 }
                             }
                         } else {
                             if (mNaviFragmentFactory.getCurrentItemIndex() == 2) {
-                                ClassCircleFragment classCircleFragment = mNaviFragmentFactory.getClassCircleFragment();
+                                ClassCircleFragment classCircleFragment =
+                                        mNaviFragmentFactory.getClassCircleFragment();
                                 if (classCircleFragment != null && !classCircleFragment.firstEnter) {
-                                    mNaviFragmentFactory.getClassCircleFragment().hideMomentMsg();
+                                    mNaviFragmentFactory.
+                                            getClassCircleFragment()
+                                            .hideMomentMsg();
                                 }
                             }
                         }
