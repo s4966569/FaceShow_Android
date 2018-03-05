@@ -88,6 +88,13 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
         mCourseid = getIntent().getStringExtra("courseId");
         requestData();
 
+
+
+    }
+    private void toCourseMessage() {
+        Intent intent = new Intent(this, CourseMessageActivity.class);
+        intent.putExtra("data", courseDetailBean!=null?courseDetailBean.getCourse():null);
+        startActivity(intent);
     }
     /**
      * 课程详情页 底部 任务列表和资源列表初始化
@@ -134,7 +141,6 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
         mTabLayout.setupWithViewPager(mViewPager);
         setUpIndicatorWidth(mTabLayout, 20, 20);
     }
-
     private List<Fragment> list = new ArrayList<>();
 
 
@@ -177,15 +183,6 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
         mCourseTime.setText(StringUtils.getCourseTime(courseBean.getStartTime())
                 + " 至 " + StringUtils.getCourseTime(courseBean.getEndTime()));
     }
-
-    /**
-     * 设置 coursetitle 信息
-     */
-
-    private void setCourseInfo() {
-
-    }
-
 
     private void getCourse() {
         mPublicLoadLayout.showLoadingView();
@@ -260,9 +257,10 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.tv_see_course:
-                Intent intent = new Intent(CourseDetailActivity.this, CourseMessageActivity.class);
-                intent.putExtra("data", data.getCourse());
-                startActivity(intent);
+//                Intent intent = new Intent(CourseDetailActivity.this, CourseMessageActivity.class);
+//                intent.putExtra("data", data.getCourse());
+//                startActivity(intent);
+                toCourseMessage();
                 break;
             default:
         }

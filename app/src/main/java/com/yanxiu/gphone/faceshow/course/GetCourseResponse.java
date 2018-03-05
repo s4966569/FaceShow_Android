@@ -53,8 +53,6 @@ public class GetCourseResponse extends FaceShowBaseResponse {
         public void setInteractSteps(List<InteractStepsBean> interactSteps) {
             this.interactSteps = interactSteps;
         }
-
-
     }
 
     public static class CourseBean implements Serializable {

@@ -14,11 +14,10 @@ import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.course.GetCourseResponse;
+import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.course.fragment.CourseBriefIntroductionFragment;
 import com.yanxiu.gphone.faceshow.course.fragment.LectureInfoListFragment;
 import com.yanxiu.gphone.faceshow.util.ScreenUtils;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -51,14 +50,19 @@ public class CourseMessageActivity extends FaceShowBaseActivity {
         mTitleLayoutTitle.setText(R.string.course_message);
         mTitleLayoutTitle.setVisibility(View.VISIBLE);
         mTitleLayoutLeftImg.setVisibility(View.VISIBLE);
-
-        GetCourseResponse.CourseBean course = (GetCourseResponse.CourseBean) getIntent().getSerializableExtra("data");
+//
+        CourseBean course= (CourseBean) getIntent().getSerializableExtra("data");
+//        GetCourseResponse.CourseBean course = (GetCourseResponse.CourseBean) getIntent().getSerializableExtra("data");
         Bundle bundle = new Bundle();
         bundle.putSerializable("data", course);
+
+         /*教师 信息fragment*/
         LectureInfoListFragment lectureInfoListFragment = new LectureInfoListFragment();
         lectureInfoListFragment.setArguments(bundle);
+        /*课程简介 fragment*/
         CourseBriefIntroductionFragment courseBriefIntroductionFragment = new CourseBriefIntroductionFragment();
         courseBriefIntroductionFragment.setArguments(bundle);
+
         mFragmentList.add(lectureInfoListFragment);
         mFragmentList.add(courseBriefIntroductionFragment);
         mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
@@ -90,7 +94,7 @@ public class CourseMessageActivity extends FaceShowBaseActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 1) {
 //                    EventUpdate.onCourseDetailButton(CourseMessageActivity.this);
-                    EventUpdate.onSeeCourseProfile(CourseMessageActivity.this);
+//                    EventUpdate.onSeeCourseProfile(CourseMessageActivity.this);
                 }
             }
 
@@ -106,7 +110,7 @@ public class CourseMessageActivity extends FaceShowBaseActivity {
         });
         mTabLayout.setupWithViewPager(mViewPager);
         setUpIndicatorWidth(mTabLayout, 20, 20);
-
+//
     }
 
     private void setUpIndicatorWidth(TabLayout tabLayout, int marginLeft, int marginRight) {

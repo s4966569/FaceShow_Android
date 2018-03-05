@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.GetCourseResponse;
+import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 
 import butterknife.BindView;
@@ -36,7 +36,8 @@ public class CourseBriefIntroductionFragment extends FaceShowBaseFragment {
         mPublicLoadLayout.setContentView(R.layout.fragment_brief_introduction_layout);
         mPublicLoadLayout.setErrorLayoutFullScreen();
         unbinder = ButterKnife.bind(this, mPublicLoadLayout);
-        GetCourseResponse.CourseBean course = getArguments() != null ? (GetCourseResponse.CourseBean) getArguments().get("data") : null;
+//        GetCourseResponse.CourseBean course = getArguments() != null ? (GetCourseResponse.CourseBean) getArguments().get("data") : null;
+        CourseBean course = getArguments() != null ? (CourseBean) getArguments().get("data") : null;
         if (course != null && !TextUtils.isEmpty(Html.fromHtml(course.getBriefing()))) {
             mTvContent.setText(course.getBriefing());
         } else {

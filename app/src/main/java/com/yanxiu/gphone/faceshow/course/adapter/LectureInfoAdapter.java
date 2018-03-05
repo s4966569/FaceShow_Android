@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.GetCourseResponse;
+import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.recyclerview.BaseRecyclerViewAdapter;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 
@@ -25,9 +25,9 @@ import butterknife.ButterKnife;
  */
 
 public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
-    private List<GetCourseResponse.CourseBean.LecturerInfosBean> data = new ArrayList<>();
+    private List<LecturerInfosBean> data = new ArrayList<>();
 
-    public LectureInfoAdapter(List<GetCourseResponse.CourseBean.LecturerInfosBean> lecturerInfos) {
+    public LectureInfoAdapter(List<LecturerInfosBean> lecturerInfos) {
         this.data = lecturerInfos;
     }
 
@@ -67,10 +67,13 @@ public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
             ButterKnife.bind(this, itemView);
         }
 
-        void setData(GetCourseResponse.CourseBean.LecturerInfosBean lecturerInfosBean) {
+        void setData(LecturerInfosBean lecturerInfosBean) {
             mTvName.setText(lecturerInfosBean.getLecturerName());
             mRvLectureBrief.setText(Html.fromHtml(lecturerInfosBean.getLecturerBriefing()));
-            Glide.with(itemView.getContext()).load(lecturerInfosBean.getLecturerAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).centerCrop().into(new CornersImageTarget(itemView.getContext(), mImgHead, 10));
+            Glide.with(itemView.getContext()).load(lecturerInfosBean.getLecturerAvatar())
+                    .asBitmap().placeholder(R.drawable.classcircle_headimg)
+                    .centerCrop()
+                    .into(new CornersImageTarget(itemView.getContext(), mImgHead, 10));
         }
     }
 }
