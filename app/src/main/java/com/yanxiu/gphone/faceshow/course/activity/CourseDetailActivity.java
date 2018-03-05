@@ -89,16 +89,22 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
         requestData();
 
     }
-
+    /**
+     * 课程详情页 底部 任务列表和资源列表初始化
+     * 需要在 获取 网络请求结果后进行
+     * */
     private void viewPagerInit(CourseDetailBean courseDetailBean) {
-        /*任务列表 和 资源列表*/
+        /*任务列表*/
         final CourseTaskFragment taskFragment=new CourseTaskFragment();
-        final CourseResourceFragment resourceFragment=new CourseResourceFragment();
-
         Bundle bundle = new Bundle();
         bundle.putSerializable("data",courseDetailBean);
         taskFragment.setArguments(bundle);
-
+        /*资源列表*/
+        final CourseResourceFragment resourceFragment=new CourseResourceFragment();
+        Bundle bundle1 = new Bundle();
+        bundle1.putSerializable("data", courseDetailBean.getCourse());
+        resourceFragment.setArguments(bundle1);
+        /*viewpager*/
         FragmentPagerAdapter fragmentPagerAdapter=new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -127,7 +133,6 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
         mViewPager.setAdapter(fragmentPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         setUpIndicatorWidth(mTabLayout, 20, 20);
-
     }
 
     private List<Fragment> list = new ArrayList<>();
@@ -148,11 +153,8 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
                     courseBean = ret.getData().getCourse();
                     /*这里获取 课程标题*/
                     setCourseTitleInfo(courseBean);
-                    /*设置 课程任务列表*/
                      /*对 viewpager 以及 课程任务 和 课程资源列表进行初始化*/
                     viewPagerInit(courseDetailBean);
-
-                    /*设置 课程资源列表*/
                 } else {
                     mPublicLoadLayout.showOtherErrorView();
                 }

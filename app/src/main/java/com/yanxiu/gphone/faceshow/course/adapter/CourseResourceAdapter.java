@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.GetCourseResourcesResponse;
+import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
 import com.yanxiu.gphone.faceshow.customview.recyclerview.BaseRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ import butterknife.ButterKnife;
  */
 
 public class CourseResourceAdapter extends BaseRecyclerViewAdapter {
-    private List<GetCourseResourcesResponse.ElementsBean> data = new ArrayList<>();
+    private List<AttachmentInfosBean> data = new ArrayList<>();
 
-    public CourseResourceAdapter(List<GetCourseResourcesResponse.ElementsBean> elements) {
+    public CourseResourceAdapter(List<AttachmentInfosBean> elements) {
         this.data = elements;
     }
 
@@ -66,10 +66,12 @@ public class CourseResourceAdapter extends BaseRecyclerViewAdapter {
             ButterKnife.bind(this, itemView);
         }
 
-        void setData(GetCourseResourcesResponse.ElementsBean element) {
+        void setData(AttachmentInfosBean element) {
             mTvTaskName.setText(element.getResName());
-            mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_read_person_number, element.getViewClazsStudentNum(), element.getTotalClazsStudentNum())));
-            switch (element.getSuffix()) {
+            mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_read_person_number,
+                   /*资源使用情况 阅读数量等 */
+                    0, 0)));
+            switch (element.getResType()) {
                 case "word":
                 case "doc":
                 case "docx":
@@ -107,13 +109,16 @@ public class CourseResourceAdapter extends BaseRecyclerViewAdapter {
                 case "png":
                     mImgTaskIcon.setImageResource(R.drawable.jpg);
                     break;
+                case "html":
+                    mImgTaskIcon.setImageResource(R.drawable.html);
+                    break;
                 default:
                     mImgTaskIcon.setImageResource(R.drawable.weizhi);
                     break;
             }
-            if ("1".equals(element.getType())) {
-                mImgTaskIcon.setImageResource(R.drawable.html);
-            }
+//            if ("1".equals(element.getResType())) {
+//                mImgTaskIcon.setImageResource(R.drawable.html);
+//            }
         }
     }
 }

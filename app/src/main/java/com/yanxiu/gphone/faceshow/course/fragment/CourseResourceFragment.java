@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,12 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
-import com.yanxiu.gphone.faceshow.course.GetCourseResourcesRequest;
 import com.yanxiu.gphone.faceshow.course.GetCourseResourcesResponse;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseResourceAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
+import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.recyclerview.RecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
@@ -44,6 +44,8 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
     Unbinder unbinder;
     private UUID mGetCourseResourcesRequestUUID;
 
+    private CourseBean data;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,56 +53,74 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
         mPublicLoadLayout.setErrorLayoutFullScreen();
         mPublicLoadLayout.setContentView(inflater.inflate(R.layout.fragment_course_task_layout, container, false));
         unbinder = ButterKnife.bind(this, mPublicLoadLayout);
-        getCourseResources();
+
+        data= (CourseBean) getArguments().get("data");
+        if (data == null) {
+            Log.i(TAG, "onCreateView: data is null");
+            mPublicLoadLayout.showOtherErrorView("暂无课程资源");
+        }else {
+            Log.i(TAG, "onCreateView: data not null ");
+            if ( data.getAttachmentInfos().size() > 0) {
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                mRecyclerView.setLayoutManager(linearLayoutManager);
+                CourseResourceAdapter courseResourceAdapter = new CourseResourceAdapter(data.getAttachmentInfos());
+                mRecyclerView.setAdapter(courseResourceAdapter);
+                courseResourceAdapter.addItemClickListener(mRecyclerViewItemClickListener);
+            } else {
+                mPublicLoadLayout.showOtherErrorView("暂无课程资源");
+            }
+        }
+//        getCourseResources();
         return mPublicLoadLayout;
     }
 
     GetCourseResourcesResponse.DataBean mDataBean;
 
-    private void getCourseResources() {
-        String courseId = (getArguments() != null ? (String) getArguments().get("courseId") : null);
-        if (courseId != null) {
-            mPublicLoadLayout.showLoadingView();
-            GetCourseResourcesRequest getCourseResourcesRequest = new GetCourseResourcesRequest();
-            getCourseResourcesRequest.courseId = courseId;
-            mGetCourseResourcesRequestUUID = getCourseResourcesRequest.startRequest(GetCourseResourcesResponse.class, new HttpCallback<GetCourseResourcesResponse>() {
-                @Override
-                public void onSuccess(RequestBase request, final GetCourseResourcesResponse ret) {
-                    mPublicLoadLayout.finish();
-                    if (ResponseConfig.INT_SUCCESS == ret.getCode()) {
-                        if (ret.getData() != null && ret.getData().getResources() != null && ret.getData().getResources().getElements() != null && ret.getData().getResources().getElements().size() > 0) {
-                            mDataBean = ret.getData();
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-                            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                            mRecyclerView.setLayoutManager(linearLayoutManager);
-                            CourseResourceAdapter courseResourceAdapter = new CourseResourceAdapter(ret.getData().getResources().getElements());
-                            mRecyclerView.setAdapter(courseResourceAdapter);
-                            courseResourceAdapter.addItemClickListener(mRecyclerViewItemClickListener);
-                        } else {
-                            mPublicLoadLayout.showOtherErrorView("暂无课程资源");
-                        }
-
-                    } else
-
-                    {
-                        mPublicLoadLayout.showOtherErrorView(ret.getError().getMessage());
-                    }
-                }
-
-                @Override
-                public void onFail(RequestBase request, Error error) {
-                    mPublicLoadLayout.finish();
-                    mPublicLoadLayout.showOtherErrorView(error.getMessage());
-                }
-            });
-
-        } else
-
-        {
-            mPublicLoadLayout.showOtherErrorView("暂无课程资源");
-        }
-
-    }
+//    private void getCourseResources() {
+//        String courseId = (getArguments() != null ? (String) getArguments().get("courseId") : null);
+//        if (courseId != null) {
+//            mPublicLoadLayout.showLoadingView();
+//            GetCourseResourcesRequest getCourseResourcesRequest = new GetCourseResourcesRequest();
+//            getCourseResourcesRequest.courseId = courseId;
+//            mGetCourseResourcesRequestUUID = getCourseResourcesRequest.startRequest(GetCourseResourcesResponse.class, new HttpCallback<GetCourseResourcesResponse>() {
+//                @Override
+//                public void onSuccess(RequestBase request, final GetCourseResourcesResponse ret) {
+//                    mPublicLoadLayout.finish();
+//                    if (ResponseConfig.INT_SUCCESS == ret.getCode()) {
+//                        if (ret.getData() != null && ret.getData().getResources() != null && ret.getData().getResources().getElements() != null && ret.getData().getResources().getElements().size() > 0) {
+//                            mDataBean = ret.getData();
+//                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+//                            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//                            mRecyclerView.setLayoutManager(linearLayoutManager);
+//                            CourseResourceAdapter courseResourceAdapter = new CourseResourceAdapter(ret.getData().getResources().getElements());
+//                            mRecyclerView.setAdapter(courseResourceAdapter);
+//                            courseResourceAdapter.addItemClickListener(mRecyclerViewItemClickListener);
+//                        } else {
+//                            mPublicLoadLayout.showOtherErrorView("暂无课程资源");
+//                        }
+//
+//                    } else
+//
+//                    {
+//                        mPublicLoadLayout.showOtherErrorView(ret.getError().getMessage());
+//                    }
+//                }
+//
+//                @Override
+//                public void onFail(RequestBase request, Error error) {
+//                    mPublicLoadLayout.finish();
+//                    mPublicLoadLayout.showOtherErrorView(error.getMessage());
+//                }
+//            });
+//
+//        } else
+//
+//        {
+//            mPublicLoadLayout.showOtherErrorView("暂无课程资源");
+//        }
+//
+//    }
 
     private RecyclerViewItemClickListener mRecyclerViewItemClickListener = new RecyclerViewItemClickListener() {
         @Override
