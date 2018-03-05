@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
+import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.http.ImRequestBase;
 import com.test.yanxiu.im_core.http.ImResponseBase;
 import com.test.yanxiu.im_core.http.LoginAppRequest;
@@ -39,7 +40,8 @@ public class TopicFragment extends FaceShowBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        test();
+        // test();
+        test01();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_topic, container, false);
     }
@@ -110,6 +112,42 @@ public class TopicFragment extends FaceShowBaseFragment {
         r4.startRequest(OnlineHeartbeatResponse.class, new HttpCallback<OnlineHeartbeatResponse>() {
             @Override
             public void onSuccess(RequestBase request, OnlineHeartbeatResponse ret) {
+                Log.e("Tag", ret.toString());
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+    }
+
+    private void test01() {
+        final RequestQueueHelper q = new RequestQueueHelper();
+
+        MemberGetMembersRequest r1 = new MemberGetMembersRequest();
+        r1.imToken = "755f55fdf917fc7c61e62946ca7acbd1";
+        r1.imMemberIds = "7";
+
+        LoginAppRequest r2 = new LoginAppRequest();
+        r2.bizToken = "ce0d56d0d8a214fb157be3850476ecb5";
+
+        q.addRequest(r1, MemberGetMembersResponse.class, new HttpCallback<MemberGetMembersResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, MemberGetMembersResponse ret) {
+                Log.e("Tag", ret.toString());
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+
+
+        q.addRequest(r2, LoginAppResponse.class, new HttpCallback<LoginAppResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, LoginAppResponse ret) {
                 Log.e("Tag", ret.toString());
             }
 
