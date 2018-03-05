@@ -24,6 +24,8 @@ import com.test.yanxiu.im_core.http.PolicyMqttServerRequest;
 import com.test.yanxiu.im_core.http.PolicyMqttServerResponse;
 import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
+import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
+import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -143,10 +145,26 @@ public class TopicFragment extends FaceShowBaseFragment {
 
         // 1.5 获取多个主题
         TopicGetTopicsRequest r7 = new TopicGetTopicsRequest();
+        r7.imToken = "fb1a05461324976e55786c2c519a8ccc";
         r7.topicIds = "16";
         r7.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
             @Override
             public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                Log.e("Tag", ret.toString());
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+
+        // 1.6 获取当前用户的主题列表
+        TopicGetMemberTopicsRequest r8 = new TopicGetMemberTopicsRequest();
+        r8.imToken = "fb1a05461324976e55786c2c519a8ccc";
+        r8.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 Log.e("Tag", ret.toString());
             }
 

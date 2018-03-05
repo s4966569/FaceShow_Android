@@ -4,6 +4,7 @@ package com.test.yanxiu.im_core.http;
  * Created by cailei on 02/03/2018.
  */
 
+// 2.3 im当前用户心跳
 // 心跳接口需要进入im界面后定期请求，以保持在线状态
 public class OnlineHeartbeatRequest extends ImRequestBase {
     private String method="online.heartbeat";

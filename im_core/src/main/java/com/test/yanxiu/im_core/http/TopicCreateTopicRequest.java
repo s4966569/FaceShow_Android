@@ -4,6 +4,7 @@ package com.test.yanxiu.im_core.http;
  * Created by cailei on 05/03/2018.
  */
 
+// 1.1 创建主题
 public class TopicCreateTopicRequest extends ImRequestBase {
     private String method="topic.createTopic";
 
