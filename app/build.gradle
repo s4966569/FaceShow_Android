@@ -102,8 +102,7 @@ android {
 
     dependencies {
         compile fileTree(include: ['*.jar'], dir: 'libs')
-        compile files('libs/litepal_db_1.1.1.jar')
-        compile files('libs/eventbus-2.4.0.jar')
+        //compile files('libs/litepal_db_1.1.1.jar')
         compile 'pub.devrel:easypermissions:0.4.2'
 //        releaseCompile project(path: ':libs:network', configuration: 'release')
 //        debugCompile project(path: ':libs:network', configuration: 'debug')
@@ -169,4 +168,5 @@ dependencies {
     implementation project(':imagepicker')
     compile project(path: ':faceshow_ui_base')
     compile project(path: ':im_ui')
+    compile project(path: ':common_base')
 }

@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.http.envconfig;
+package com.test.yanxiu.common_base.utils;
 
 
 /**
@@ -55,6 +55,13 @@ public class UrlRepository {
     public String getInitializeServer() {
         if (mUrlBean != null) {
             return mUrlBean.getInitializeUrl();
+        } else {
+            return null;
+        }
+    }
+    public String getImServer(){
+        if (mUrlBean != null) {
+            return mUrlBean.getImServer();
         } else {
             return null;
         }

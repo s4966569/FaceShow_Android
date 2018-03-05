@@ -1,1 +1,1 @@
-include ':app', ':im_core', ':faceshow_ui_base', ':im_ui', 'libs:network', 'zxing-android-embedded','imagepicker'
+include ':app', ':im_core', ':faceshow_ui_base', ':im_ui', ':common_base', 'libs:network', 'zxing-android-embedded','imagepicker'

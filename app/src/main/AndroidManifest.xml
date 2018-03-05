@@ -246,6 +246,7 @@
             android:name="io.fabric.ApiKey"
             android:value="0dad9b5e85207600fb33bace77d6911add29ae2a" />
 
+
         <activity
             android:name=".webView.WebViewForResourceActivity"
             android:screenOrientation="portrait" />
@@ -258,6 +259,11 @@
         <activity android:name=".course.activity.CourseMessageActivity"/>
         <activity android:name=".course.activity.CourseDetailActivity"/>
         <activity android:name=".course.activity.CourseCommentActivity"/>
+
+
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name="com.test.yanxiu.im_core.mqtt.MqttService" />
+
     </application>
 
 </manifest>
