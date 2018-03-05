@@ -70,7 +70,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 View item3 = inflater.inflate(R.layout.vote_text_layout, parent, false);
                 viewHolder = new TextViewHolder(item3);
                 break;
-
+            default:break;
         }
 
         return viewHolder;
@@ -128,6 +128,7 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     holder2.all_title_layout.setVisibility(View.GONE);
                 }
                 break;
+                default:break;
         }
 
     }

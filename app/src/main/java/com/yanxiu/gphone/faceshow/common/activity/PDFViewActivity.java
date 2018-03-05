@@ -19,8 +19,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -410,6 +410,18 @@ public class PDFViewActivity extends Activity implements OnPageChangeListener, V
 
                 break;
         }
+    }
+    public static void invoke(Activity activity, String resName, String resUrl) {
+        PdfBean pdfbean = new PdfBean();
+        pdfbean.setName(resName);
+        pdfbean.setUrl(resUrl);
+        pdfbean.setRecord(0);
+        Intent intent;
+        intent = new Intent(activity, PDFViewActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("pdfbean", pdfbean);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
     }
 
     @Override

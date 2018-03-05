@@ -10,4 +10,6 @@ package com.yanxiu.gphone.faceshow.http.base;
 public class ResponseConfig {
     public static final String SUCCESS = "0";
     public static final String NET_ERROR = "当前无网络";
+//    public static final int SUCCESS=0;
+    public static final int INT_SUCCESS=0;
 }
