@@ -2,7 +2,8 @@ package com.yanxiu.gphone.faceshow.qrsignup;
 
 import android.text.TextUtils;
 
-import com.yanxiu.gphone.faceshow.http.envconfig.UrlRepository;
+import com.test.yanxiu.common_base.utils.UrlRepository;
+
 
 /**
  * Created by srt on 2018/3/5.

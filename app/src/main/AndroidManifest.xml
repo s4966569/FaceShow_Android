@@ -251,7 +251,7 @@
             android:name=".webView.WebViewForResourceActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".qrsignup.activity.SignUpActivity" />
-        <activity android:name=".qrsignup.activity.PublicQRScanActivity" />
+
         <activity android:name=".qrsignup.activity.QRCodeSignUpActivity"></activity>
 
 
