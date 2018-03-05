@@ -7,9 +7,10 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 
+
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.SignUpManager;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
@@ -52,6 +53,7 @@ public class SignUpActivity extends FaceShowBaseActivity{
         checkPhoneFragment=new CheckPhoneFragment();
         setPasswordFragment=new SetPasswordFragment();
         setProfileFragment=new SetProfileFragment();
+
         /*第一步 验证手机号的注册情况  这些回调主要是来控制步骤流程 */
         checkPhoneFragment.setToolbarActionCallback(new ToolbarActionCallback() {
             @Override
@@ -64,7 +66,7 @@ public class SignUpActivity extends FaceShowBaseActivity{
             @Override
             public void onRightComponentClick() {
                 // TODO: 2018/3/1 点击下一步 需要验证通过 并且为非注册用户 才有下一步 验证成功以后 才是可点击的
-                getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container,setPasswordFragment).commit();
+                setFragment(setPasswordFragment);
             }
         });
         
@@ -72,13 +74,13 @@ public class SignUpActivity extends FaceShowBaseActivity{
             @Override
             public void onLeftComponentClick() {
                 // TODO: 2018/3/1  进入下一步的界面 setProfileFragment
-                getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container,checkPhoneFragment).commit();
+                setFragment(checkPhoneFragment);
             }
 
             @Override
             public void onRightComponentClick() {
                 // TODO: 2018/3/1 返回到上一步？返回到上一界面
-                getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container,setProfileFragment).commit();
+                setFragment(setProfileFragment);
             }
         });
 
@@ -86,7 +88,7 @@ public class SignUpActivity extends FaceShowBaseActivity{
             @Override
             public void onLeftComponentClick() {
                 // TODO: 2018/3/1 返回上一步？上一界面
-                getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container,setPasswordFragment).commit();
+                setFragment(setPasswordFragment);
             }
 
             @Override
@@ -98,6 +100,9 @@ public class SignUpActivity extends FaceShowBaseActivity{
         });
     }
 
+    private void setFragment(FaceShowBaseFragment fragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container,fragment).commit();
+    }
 
 
     private void viewInit(){
