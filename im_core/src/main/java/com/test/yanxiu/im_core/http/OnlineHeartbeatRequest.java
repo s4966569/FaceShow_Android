@@ -9,5 +9,5 @@ public class OnlineHeartbeatRequest extends ImRequestBase {
     private String method="online.heartbeat";
 
     public String type = "app";        // 来源,移动端为app
-    public long onlineSeconds;         // 在线有效时长，单位：秒
+    public String onlineSeconds;         // long型，在线有效时长，单位：秒
 }

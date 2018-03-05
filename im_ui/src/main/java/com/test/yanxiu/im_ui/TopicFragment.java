@@ -22,6 +22,9 @@ import com.test.yanxiu.im_core.http.PolicyConfigRequest;
 import com.test.yanxiu.im_core.http.PolicyConfigResponse;
 import com.test.yanxiu.im_core.http.PolicyMqttServerRequest;
 import com.test.yanxiu.im_core.http.PolicyMqttServerResponse;
+import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
+import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
+import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
@@ -40,8 +43,8 @@ public class TopicFragment extends FaceShowBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // test();
-        test01();
+        test();
+        //test01();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_topic, container, false);
     }
@@ -108,10 +111,42 @@ public class TopicFragment extends FaceShowBaseFragment {
 
         // 2.3 im当前用户心跳
         OnlineHeartbeatRequest r4 = new OnlineHeartbeatRequest();
-        r4.onlineSeconds = 600;
+        r4.onlineSeconds = "600";
         r4.startRequest(OnlineHeartbeatResponse.class, new HttpCallback<OnlineHeartbeatResponse>() {
             @Override
             public void onSuccess(RequestBase request, OnlineHeartbeatResponse ret) {
+                Log.e("Tag", ret.toString());
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+
+        // 1.1 创建主题
+        TopicCreateTopicRequest r6 = new TopicCreateTopicRequest();
+        r6.topicType = "1";
+        r6.imToken = "fb1a05461324976e55786c2c519a8ccc";
+        r6.imMemberIds = "9,29";
+        r6.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                Log.e("Tag", ret.toString());
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+
+        // 1.5 获取多个主题
+        TopicGetTopicsRequest r7 = new TopicGetTopicsRequest();
+        r7.topicIds = "16";
+        r7.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
                 Log.e("Tag", ret.toString());
             }
 
