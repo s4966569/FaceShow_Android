@@ -1,7 +1,10 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +23,12 @@ import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.http.qrsignup.PhoneNumCheckResponse;
 import com.yanxiu.gphone.faceshow.http.qrsignup.PhoneNumberCheckRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
+import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -36,6 +41,8 @@ import java.util.UUID;
  */
 public class CheckPhoneFragment extends FaceShowBaseFragment {
     private final String TAG = getClass().getSimpleName();
+    /*dialog*/
+    private SignUpDialogFragment dialogFragment;
 
     private View fragmentRootView;
     private PublicLoadLayout mRootView;
@@ -67,8 +74,8 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 //            mRootView.setContentView(R.layout.fragment_checkphone_layout);
             fragmentRootView = inflater.inflate(R.layout.fragment_checkphone_layout, null);
             mRootView.setContentView(fragmentRootView);
+            dialogFragment=new SignUpDialogFragment();
         }
-
         /*初始化toolbar*/
         toolbarInit(fragmentRootView);
         /*初始化 view*/
@@ -90,16 +97,17 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 /*检查手机号格式*/
                 if (isPhoneNumber(phoneEditText.getText().toString())) {
                     /*发起网络请求*/
-                    phoneCheckRequest(phoneEditText.getText().toString());
+                    fadeRequest();
+//                    phoneCheckRequest(phoneEditText.getText().toString());
                 } else {
                     // TODO: 2018/3/1 提示手机号格式不正确
                     mRootView.hiddenLoadingView();
                 }
             }
         });
+
+        dialogInit();
     }
-
-
     /**
      * 对当前界面进行toolbar 设置
      */
@@ -112,7 +120,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         titleLeftImage.setVisibility(View.VISIBLE);
 //        验证成功之前 不能进入下一步
         disableNextStepBtn();
-
         titleTextView.setText("验证手机号");
         titleRightText.setText("下一步");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
@@ -149,14 +156,40 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             return false;
         }
     }
+    /**
+     * fade request
+     * */
+    private void fadeRequest(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Random random=new Random();
+                int n=random.nextInt(3);
+                if (n==0) {
+                    /*账号没有注册过 开始请求验证码 */
+                    enableNextStepBtn();
 
+                }else if (n==1){
+                    /*重复添加注册 提示重复 跳转登录*/
+                    disableNextStepBtn();
+                    alertDialog.setMessage("已经添加了该课程 请登录查看");
+                    alertDialog.show();
+                }else if (n==2){
+                    /*账号存在未添加课程 后台执行添加课程操作 成功后提示跳转登录*/
+                    disableNextStepBtn();
+                    alertDialog.setMessage("正在添加课程 添加课程成功 返回登录");
+                    alertDialog.show();
+                }
+                mRootView.hiddenLoadingView();
+            }
+        },1000);
+    }
     /**
      * 网络请求 检查手机号
      */
     private void phoneCheckRequest(String number) {
         /*创建 请求对象*/
         PhoneNumberCheckRequest request = new PhoneNumberCheckRequest();
-
         checkPhoneNumRequestUUID = request.startRequest(PhoneNumCheckResponse.class, new HttpCallback<PhoneNumCheckResponse>() {
             @Override
             public void onSuccess(RequestBase request, PhoneNumCheckResponse ret) {
@@ -176,12 +209,12 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         });
     }
 
-
+    /**开启下一步*/
     public void enableNextStepBtn() {
         titleRightText.setEnabled(true);
         titleRightText.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
     }
-
+    /**关闭下一步*/
     public void disableNextStepBtn() {
         titleRightText.setEnabled(false);
         titleRightText.setTextColor(getActivity().getResources().getColor(R.color.color_333333));
@@ -197,5 +230,15 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         void onRequestGetVerifyCode(String phone);
     }
 
-
+    private AlertDialog alertDialog;
+    private void dialogInit(){
+        AlertDialog.Builder builder=new  AlertDialog.Builder(getActivity());
+        builder.setMessage("dialog").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog=builder.create();
+    }
 }

@@ -1,7 +1,9 @@
 package com.yanxiu.gphone.faceshow.qrsignup.activity;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,6 +13,7 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.SignUpManager;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
+import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.CheckPhoneFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetPasswordFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetProfileFragment;
@@ -31,6 +34,9 @@ public class SignUpActivity extends FaceShowBaseActivity{
     private CheckPhoneFragment checkPhoneFragment;
     private SetPasswordFragment setPasswordFragment;
     private SetProfileFragment setProfileFragment;
+    /*dialog Fragment*/
+    private SignUpDialogFragment dialogFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,10 +101,12 @@ public class SignUpActivity extends FaceShowBaseActivity{
 
 
     private void viewInit(){
+        dialogFragment=new SignUpDialogFragment();
         fragmentInit();
         getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container,checkPhoneFragment).commit();
         mRootView.hiddenLoadingView();
     }
 
-   
+
+
 }
