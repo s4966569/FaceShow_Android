@@ -36,6 +36,7 @@ dependencies {
     compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     compile 'org.litepal.android:core:1.6.1'
+    compile 'org.greenrobot:eventbus:3.1.1'
     compile project(path: ':libs:network')
     compile project(path: ':common_base')
 }

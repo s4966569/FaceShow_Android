@@ -248,6 +248,9 @@
 
         <activity android:name=".webView.WebViewForResourceActivity"
             android:screenOrientation="portrait"/>
+
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name="com.test.yanxiu.im_core.mqtt.MqttService" />
     </application>
 
 </manifest>

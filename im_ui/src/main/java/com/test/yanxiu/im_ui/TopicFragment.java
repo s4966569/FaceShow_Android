@@ -1,7 +1,11 @@
 package com.test.yanxiu.im_ui;
 
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,8 +31,16 @@ import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
+import com.test.yanxiu.im_core.http.common.ImMsg;
+import com.test.yanxiu.im_core.mqtt.MqttProtobufDealer;
+import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import static android.content.Context.BIND_AUTO_CREATE;
 
 
 /**
@@ -45,8 +57,9 @@ public class TopicFragment extends FaceShowBaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        test();
+        //test();
         //test01();
+        testMqtt();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_topic, container, false);
     }
@@ -210,4 +223,37 @@ public class TopicFragment extends FaceShowBaseFragment {
             }
         });
     }
+
+    private MqttService.MqttBinder binder = null;
+    private void testMqtt() {
+        Intent intent = new Intent(getActivity(), MqttService.class);
+        getActivity().bindService(intent, new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                Log.d("Tag", "MqttService connected");
+                binder = (MqttService.MqttBinder) iBinder;
+
+                binder.init();
+                binder.connect();
+                //binder.subscribe("16");
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                Log.d("Tag", "MqttService disconnected");
+            }
+        }, BIND_AUTO_CREATE);
+
+        // TBD:cailei 什么时候unbind service
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe
+    public void onNewMsg(MqttProtobufDealer.NewMsgEvent event) {
+        ImMsg msg = event.msg;
+    }
+
 }
+
+

@@ -15,7 +15,7 @@ public class ImMsg {
     public long sendTime;
     public ContentData contentData;
 
-    public class ContentData {
+    public static class ContentData {
         public String msg;
         public String thumbnail;
         public String viewUrl;
