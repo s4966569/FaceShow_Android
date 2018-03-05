@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,8 +16,8 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInCaptureManager;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInErrorActivity;
-import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
+import com.yanxiu.gphone.faceshow.qrsignup.QRCodeChecker;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,45 +32,55 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     ImageView imgLeft;
     @BindView(R.id.tv_title)
     TextView tvTitle;
-    /**
-     * 条形码扫描管理器
-     */
+    /* 条形码格式检查*/
+    QRCodeChecker qrCodeChecker;
 
     private CheckInCaptureManager mCaptureManager;
     CheckInCaptureManager.CodeCallBack codeCallBack = new CheckInCaptureManager.CodeCallBack() {
         @Override
         public void callBack(String result) {
             if (result != null) {
-                if (TextUtils.isEmpty(result)) {
-                    QRCodeSignUpActivity.this.finish();
-                } else {
-                    //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
-//                    if (result.startsWith(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn")) {
-                    if (checkQRCode(result)) {
-                        /*检查得到的是正确的班级二维码*/
-                        Intent currectIntent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
-                        startActivityForResult(currectIntent,REQUEST_CODE_TO_CHECK_PHONE);
-
-                        String[] values = result.split("&");
-                        if (values.length > 2) {
-                            //包含timestamp的为动态二维码
-//                            getLocation((values[1].split("="))[1], (values[2].split("="))[1]);
-                        } else {
-//                            getLocation((values[1].split("="))[1], "");
-                        }
-
-                    } else {
-                        // TODO: 2018/3/1 弹出对话框提示 二维码错误  必须是班级码才能正确通过并跳转
-
-                        Intent intent = new Intent(QRCodeSignUpActivity.this, CheckInErrorActivity.class);
-                        CheckInResponse.Error error = new CheckInResponse.Error();
-                        error.setCode(CheckInErrorActivity.QR_NO_USE);
-                        intent.putExtra(CheckInErrorActivity.QR_STATUE, error);
-                        startActivity(intent);
-                        QRCodeSignUpActivity.this.finish();
-                    }
-
+                /*检查是否符合 班级二维码格式 */
+                if (qrCodeChecker.isClazzCode(result)) {
+                    /*符合班级二维码格式 进行跳转，进入 号码检查界面*/
+                    Intent currectIntent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
+                    startActivityForResult(currectIntent,REQUEST_CODE_TO_CHECK_PHONE);
+                }else {
+                    /*不符合 班级二维码格式 显示提示*/
+                    ToastUtil.showToast(QRCodeSignUpActivity.this,"无效二维码！");
+                    /*重新开启 扫描*/
+                    restartScan();
                 }
+//                if (TextUtils.isEmpty(result)) {
+//                    QRCodeSignUpActivity.this.finish();
+//                } else {
+//                    //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
+////                    if (result.startsWith(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn")) {
+//                    if (checkQRCode(result)) {
+//                        /*检查得到的是正确的班级二维码*/
+//                        Intent currectIntent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
+//                        startActivityForResult(currectIntent,REQUEST_CODE_TO_CHECK_PHONE);
+//
+//                        String[] values = result.split("&");
+//                        if (values.length > 2) {
+//                            //包含timestamp的为动态二维码
+////                            getLocation((values[1].split("="))[1], (values[2].split("="))[1]);
+//                        } else {
+////                            getLocation((values[1].split("="))[1], "");
+//                        }
+//
+//                    } else {
+//                        // TODO: 2018/3/1 弹出对话框提示 二维码错误  必须是班级码才能正确通过并跳转
+//
+//                        Intent intent = new Intent(QRCodeSignUpActivity.this, CheckInErrorActivity.class);
+//                        CheckInResponse.Error error = new CheckInResponse.Error();
+//                        error.setCode(CheckInErrorActivity.QR_NO_USE);
+//                        intent.putExtra(CheckInErrorActivity.QR_STATUE, error);
+//                        startActivity(intent);
+//                        QRCodeSignUpActivity.this.finish();
+//                    }
+//
+//                }
             } else {
                 QRCodeSignUpActivity.this.finish();
             }
@@ -107,16 +116,22 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         mCaptureManager = new CheckInCaptureManager(this, mBarcodeView);
         mCaptureManager.initializeFromIntent(getIntent(), savedInstanceState);
         mBarcodeView.setStatusText("请扫描二维码完成注册");
+        /*二维码格式检查工具*/
+        qrCodeChecker=new QRCodeChecker();
 
 
     }
+    private void restartScan(){
+        mCaptureManager.decode();
+        mCaptureManager.setCodeCallBack(codeCallBack);
+        mCaptureManager.onResume();
 
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mCaptureManager.decode();
-        mCaptureManager.setCodeCallBack(codeCallBack);
+       restartScan();
     }
 
     @Override

@@ -14,7 +14,12 @@ import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
-import com.yanxiu.gphone.faceshow.user.ProfileActivity;
+import com.yanxiu.gphone.faceshow.user.ModifyUserNameActivity;
+import com.yanxiu.gphone.faceshow.user.ModifyUserSexActivity;
+import com.yanxiu.gphone.faceshow.user.ModifyUserStageActivity;
+import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,6 +47,10 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
     private View sexItem;
     private View stageItem;
 
+    /*request code*/
+    private final int MODIFY_NAME = 0X01;
+    private final int MODIFY_SEX = 0X02;
+    private final int MODIFY_STAGE_SUBJECT = 0X03;
 
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
         this.toolbarActionCallback = toolbarActionCallback;
@@ -125,20 +134,38 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         switch (v.getId()) {
             case R.id.rl_name:
-                /*进入 姓名设置 activity*/
-                intent=new Intent(getActivity(), ProfileActivity.class);
-//                getActivity().startActivityForResult(new Intent(getActivity(),));
-                break;
-            case R.id.rl_phone:
+                //修改用户名
+                startActivityForResult(new Intent(getActivity(), ModifyUserNameActivity.class), MODIFY_NAME);
                 break;
             case R.id.rl_sex:
+                //修改用户性别
+                startActivityForResult(new Intent(getActivity(), ModifyUserSexActivity.class), MODIFY_SEX);
                 break;
             case R.id.rl_stage_subject:
+                //修改用户学段学科
+                EventUpdate.onChooseStageSubjectButton(getActivity());
+                startActivityForResult(new Intent(getActivity(), ModifyUserStageActivity.class), MODIFY_STAGE_SUBJECT);
                 break;
             default:
                 break;
-
         }
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case MODIFY_NAME:
+                    break;
+                case MODIFY_SEX:
+                    break;
+                case MODIFY_STAGE_SUBJECT:
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
