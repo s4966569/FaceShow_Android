@@ -66,8 +66,9 @@ public class SignUpActivity extends FaceShowBaseActivity {
                     setPasswordFragment.setPhoneNumber(checkPhoneFragment.getPhoneNumber());
                 }else if(checkPhoneFragment.getUserType()==1){
                     /*研修网用户 进入用户信息设置*/
-                    setProfileFragment.showNotice();
+                   ;
                     setFragment(setProfileFragment);
+                    setProfileFragment.showNotice();
                 }else if (checkPhoneFragment.getUserType()==2){
                     /*研修宝APP 用户 提示返回登录*/
                 }
@@ -83,9 +84,9 @@ public class SignUpActivity extends FaceShowBaseActivity {
             @Override
             public void onRightComponentClick() {
                 /*正常注册新用户 不显示研修网账号提示*/
-                setProfileFragment.hideNotice();
-                setFragment(setProfileFragment);
 
+                setFragment(setProfileFragment);
+                setProfileFragment.hideNotice();
             }
         });
         /*第三步 在信息设置界面 点击返回与保存*/

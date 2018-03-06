@@ -47,6 +47,9 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
     private View sexItem;
     private View stageItem;
 
+    /*控制notice显示*/
+    private boolean showNotice=false;
+
     /*request code*/
     private final int MODIFY_NAME = 0X01;
     private final int MODIFY_SEX = 0X02;
@@ -66,7 +69,6 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                              Bundle savedInstanceState) {
         if (mRootView == null) {
             mRootView = new PublicLoadLayout(getActivity());
-//            mRootView.setContentView(R.layout.fragment_checkphone_layout);
             fragmentRootView = inflater.inflate(R.layout.fragment_setprofile_layout, null);
             mRootView.setContentView(fragmentRootView);
         }
@@ -77,11 +79,11 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
 
     public void showNotice(){
-        mRootView.findViewById(R.id.notice_tv).setVisibility(View.VISIBLE);
+        showNotice=true;
     }
 
     public void hideNotice(){
-        mRootView.findViewById(R.id.notice_tv).setVisibility(View.GONE);
+        showNotice=false;
     }
 
 
@@ -105,6 +107,8 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         sexItem.setOnClickListener(this);
         stageItem.setOnClickListener(this);
         phoneItem.setOnClickListener(this);
+
+        root.findViewById(R.id.notice_tv).setVisibility(!showNotice?View.VISIBLE:View.GONE);
     }
 
     /**
