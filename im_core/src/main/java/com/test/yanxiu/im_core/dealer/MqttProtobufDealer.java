@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_core.mqtt;
+package com.test.yanxiu.im_core.dealer;
 
 import android.os.Looper;
 import android.util.Log;

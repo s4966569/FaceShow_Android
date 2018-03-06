@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;

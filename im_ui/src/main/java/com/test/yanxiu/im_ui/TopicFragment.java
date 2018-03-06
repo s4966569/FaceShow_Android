@@ -15,8 +15,6 @@ import android.widget.Button;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
-import com.test.yanxiu.im_core.http.ImRequestBase;
-import com.test.yanxiu.im_core.http.ImResponseBase;
 import com.test.yanxiu.im_core.http.LoginAppRequest;
 import com.test.yanxiu.im_core.http.LoginAppResponse;
 import com.test.yanxiu.im_core.http.MemberGetMembersRequest;
@@ -35,7 +33,7 @@ import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
 import com.test.yanxiu.im_core.http.common.ImMsg;
-import com.test.yanxiu.im_core.mqtt.MqttProtobufDealer;
+import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
