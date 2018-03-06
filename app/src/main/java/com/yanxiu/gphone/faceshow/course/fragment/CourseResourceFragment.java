@@ -60,7 +60,7 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
             mPublicLoadLayout.showOtherErrorView("暂无课程资源");
         }else {
             Log.i(TAG, "onCreateView: data not null ");
-            if ( data.getAttachmentInfos().size() > 0) {
+            if ( data.getAttachmentInfos()!=null&&data.getAttachmentInfos().size() > 0) {
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                 linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 mRecyclerView.setLayoutManager(linearLayoutManager);

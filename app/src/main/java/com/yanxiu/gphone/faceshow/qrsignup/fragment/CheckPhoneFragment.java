@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ import com.yanxiu.gphone.faceshow.http.qrsignup.PhoneNumCheckResponse;
 import com.yanxiu.gphone.faceshow.http.qrsignup.PhoneNumberCheckRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
+import com.yanxiu.gphone.faceshow.qrsignup.request.VerifyCodeConfirmRequest;
+import com.yanxiu.gphone.faceshow.qrsignup.response.VerifyCodeConfirmResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
@@ -67,6 +70,20 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
     private TimerTask timerTask;
     /*读秒*/
     private short remainSec = 60;
+    /*用户类型 0 非注册用户> 1 研修网用户> 2 研修宝用户*/
+    private int userType=0;
+
+    public int getUserType(){
+        return userType;
+    }
+
+
+
+    /*手机号*/
+    private String phoneNumber;
+    public String getPhoneNumber(){
+        return phoneNumber;
+    }
 
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
         this.toolbarActionCallback = toolbarActionCallback;
@@ -77,7 +94,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                              Bundle savedInstanceState) {
         if (mRootView == null) {
             mRootView = new PublicLoadLayout(getActivity());
-//            mRootView.setContentView(R.layout.fragment_checkphone_layout);
             fragmentRootView = inflater.inflate(R.layout.fragment_checkphone_layout, null);
             mRootView.setContentView(fragmentRootView);
             dialogFragment = new SignUpDialogFragment();
@@ -116,23 +132,27 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 
         dialogInit();
     }
+
     /**
      * 取消计时器  退出界面 以及超时时使用
-     * */
-    private void cancelTimer(){
+     */
+    private void cancelTimer() {
         timerTask.cancel();
         verifyTimer.cancel();
         verifyTimer.purge();
         getVerifyCodeTextView.setEnabled(true);
-
+         /*更改 倒计时颜色*/
+        getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
         getVerifyCodeTextView.setText("获取验证码");
     }
+
     /**
      * 开始计时
-     * */
+     */
     private void startTimer() {
         getVerifyCodeTextView.setEnabled(false);
-        remainSec=60;
+        remainSec = 60;
+
         verifyTimer = new Timer("verifyTimer");
         timerTask = new TimerTask() {
             @Override
@@ -140,10 +160,10 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 getVerifyCodeTextView.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (0 <= remainSec--) {
+                        if (0 <= remainSec) {
                             /*60秒倒计时过程中 不允许再次点击*/
-                            getVerifyCodeTextView.setText(remainSec + "s");
-                        }else {
+                            getVerifyCodeTextView.setText(remainSec-- + "s");
+                        } else {
                             /*获取验证码超时*/
                             cancelTimer();
                         }
@@ -151,7 +171,9 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 });
             }
         };
-        verifyTimer.schedule(timerTask, 1000, 1000);
+        verifyTimer.schedule(timerTask, 0, 1000);
+        /*更改 倒计时颜色*/
+        getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
     }
 
     /**
@@ -181,7 +203,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             @Override
             public void onClick(View view) {
                  /*首先验证 验证码的有效性  因为有网络请求 需要延迟处理回调*/
-                 checkVerifyCode(verifyCodeEditText.getText().toString());
+                checkVerifyCode(verifyCodeEditText.getText().toString());
 //                 在网络 结果中调用
 //                if (toolbarActionCallback != null) {
 //                    toolbarActionCallback.onRightComponentClick();
@@ -239,8 +261,39 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         }, 2800);
     }
 
+
+    /**
+     * 网络请求 验证 手机号与验证码
+     * 验证成功 则可以进入下一步
+     * 需要对手机号进行保存
+     *
+     * */
+    private void verifyCodeConfirmRequest(final String phone, String verifycode){
+        VerifyCodeConfirmRequest confirmRequest=new VerifyCodeConfirmRequest();
+        confirmRequest.startRequest(VerifyCodeConfirmResponse.class, new HttpCallback<VerifyCodeConfirmResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, VerifyCodeConfirmResponse ret) {
+                // TODO: 2018/3/6  手机号与验证码 验证成功
+
+                /*保存 手机号*/
+                phoneNumber=phone;
+//                使能下一步
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                // TODO: 2018/3/6 验证失败 弹出提示
+
+            }
+        });
+    }
+
     /**
      * 网络请求 检查手机号
+     * 请求结果将返回 手机号是否已经注册以及是否已经添加课程
+     * 只有当手机号未注册时才能进入下一步操作
+     * 手机号注册未添加当前课程 验证后自动添加课程 并提示用户返回登录、
+     * 手机号用户已经添加当前课程 直接提示用户返回的登录
      */
     private void phoneCheckRequest(String number) {
         /*创建 请求对象*/
@@ -256,7 +309,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 alertDialog.setMessage("您已经在此班级中，请直接登录");
 //                 TODO: 2018/3/5 如果为非注册用户 验证成功后 需要禁止编辑电话号
 //                phoneEditText.setEnabled(false);
-
             }
 
             @Override
@@ -275,10 +327,15 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 
     /**
      * 验证用户填写的二维码 有效性 有效 进行下一步的回调 通知activity进行界面跳转
-     * */
-    private boolean checkVerifyCode(String verifyCode){
-        // TODO: 2018/3/5  判断 验证码 格式 并执行网络请求
+     */
+    private boolean checkVerifyCode(String verifyCode) {
+
         /*首先验证基本格式 空 4位数字等等*/
+        if (TextUtils.isEmpty(verifyCode)) {
+            ToastUtil.showToast(getActivity(),"验证码不能为空");
+            return false;
+        }
+        // TODO: 2018/3/5  判断 验证码 格式 数字格式  4位或6位
         if (toolbarActionCallback != null) {
             toolbarActionCallback.onRightComponentClick();
         }

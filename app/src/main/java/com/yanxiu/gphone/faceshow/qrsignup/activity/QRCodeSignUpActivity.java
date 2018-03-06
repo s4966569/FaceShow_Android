@@ -51,36 +51,6 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                     /*重新开启 扫描*/
                     restartScan();
                 }
-//                if (TextUtils.isEmpty(result)) {
-//                    QRCodeSignUpActivity.this.finish();
-//                } else {
-//                    //判断是否为当前app返回的字段  二维码内容应该为:http://orz.yanxiu.com/pxt/platform/data.api?method=interact.userSignIn&stepId=xxx&timestamp=xxxxxxx
-////                    if (result.startsWith(UrlRepository.getInstance().getServer() + "?method=interact.userSignIn")) {
-//                    if (checkQRCode(result)) {
-//                        /*检查得到的是正确的班级二维码*/
-//                        Intent currectIntent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
-//                        startActivityForResult(currectIntent,REQUEST_CODE_TO_CHECK_PHONE);
-//
-//                        String[] values = result.split("&");
-//                        if (values.length > 2) {
-//                            //包含timestamp的为动态二维码
-////                            getLocation((values[1].split("="))[1], (values[2].split("="))[1]);
-//                        } else {
-////                            getLocation((values[1].split("="))[1], "");
-//                        }
-//
-//                    } else {
-//                        // TODO: 2018/3/1 弹出对话框提示 二维码错误  必须是班级码才能正确通过并跳转
-//
-//                        Intent intent = new Intent(QRCodeSignUpActivity.this, CheckInErrorActivity.class);
-//                        CheckInResponse.Error error = new CheckInResponse.Error();
-//                        error.setCode(CheckInErrorActivity.QR_NO_USE);
-//                        intent.putExtra(CheckInErrorActivity.QR_STATUE, error);
-//                        startActivity(intent);
-//                        QRCodeSignUpActivity.this.finish();
-//                    }
-//
-//                }
             } else {
                 QRCodeSignUpActivity.this.finish();
             }
@@ -118,8 +88,6 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         mBarcodeView.setStatusText("请扫描二维码完成注册");
         /*二维码格式检查工具*/
         qrCodeChecker=new QRCodeChecker();
-
-
     }
     private void restartScan(){
         mCaptureManager.decode();

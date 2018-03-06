@@ -52,13 +52,13 @@ import com.yanxiu.gphone.faceshow.util.UpdateUtil;
 import java.util.UUID;
 
 public class MainActivity extends FaceShowBaseActivity implements View.OnClickListener {
-    private final String TAG=getClass().getSimpleName();
+    private final String TAG = getClass().getSimpleName();
     private PublicLoadLayout mRootView;
 
     /*跳转到 切换班级界面的requestcode*/
-    private final int CHOOSE_CLASS=0X01;
+    private final int CHOOSE_CLASS = 0X01;
     /*跳转到 用户信息设置界面*/
-    private final int REQUEST_CODE_SET_PROFILE=0X02;
+    private final int REQUEST_CODE_SET_PROFILE = 0X02;
 
 
     private final int mNavBarViewsCount = 4;
@@ -167,18 +167,17 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mLeftDrawerList.setLayoutManager(linearLayoutManager);
         /*设置*/
-//        mLeftDrawerListAdapter = new LeftDrawerListAdapter(mContext, mMainFragment.getmData());
         mLeftDrawerListAdapter = new LeftDrawerListAdapter(mContext);
         mLeftDrawerList.setAdapter(mLeftDrawerListAdapter);
         /*左侧抽屉 recyclerview item点击监听*/
         mLeftDrawerListAdapter.addItemClickListener(new RecyclerViewItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
-                Log.i(getClass().getSimpleName(), "onItemClick: "+position);
+                Log.i(getClass().getSimpleName(), "onItemClick: " + position);
                 LeftDrawerListItemToOtherAct(position);
             }
         });
-
+        /*抽屉顶部信息部分的点击监听 用户头像 和 切换班级按钮*/
         mLeftDrawerListAdapter.setHeaderViewClickListener(new LeftDrawerListAdapter.HeaderViewClickListener() {
             @Override
             public void onHeaderImgClicked() {
@@ -187,33 +186,40 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
             @Override
             public void onHeaderButtonClicked() {
-                /*点击 切换班级按钮*/
+                /*点击 切换班级按钮 在onactivityresult 回调中重置 抽屉的数据*/
                 startActivityForResult(new Intent(MainActivity.this,
                         ChooseClassActivity.class), CHOOSE_CLASS);
             }
         });
         /*设置版本号显示*/
-        TextView appVersionTv=mRootView.findViewById(R.id.app_version_textview);
-        appVersionTv.setText("版本号：v"+ SystemUtil.getVersionName());
+        TextView appVersionTv = mRootView.findViewById(R.id.app_version_textview);
+        appVersionTv.setText("版本号：v" + SystemUtil.getVersionName());
     }
+
     /**
      * 抽屉菜单 跳转逻辑
-    * */
+     * 菜单由一个 recyclerview 生成 顶部信息部分 为head layout
+     * 由于内容较多 所以不在 listitem 中设置点击监听 使用
+     * {@link com.yanxiu.gphone.faceshow.customview.recyclerview.LeftDrawerListAdapter.HeaderViewClickListener}
+     */
     private void LeftDrawerListItemToOtherAct(int position) {
-        Log.i(TAG, "LeftDrawerListItemToOtherAct: :"+position);
         switch (position) {
-            case 0:/*跳转班级首页*/
+            case 0:
+                /*跳转班级首页*/
                 toClassHomePage();
                 mDrawerLayout.closeDrawer(mLeftDrawerView);
                 break;
-            case 1:/*跳转我的资料*/
-               toMyProfile();
+            case 1:
+                /*跳转我的资料*/
+                toMyProfile();
                 break;
-            case 2:/*跳转签到记录*/
+            case 2:
+                /*跳转签到记录*/
                 CheckInNotesActivity.toThisAct(MainActivity.this);
                 break;
-            case 3:/*跳转意见反馈*/
-                startActivity(new Intent(MainActivity.this,FeedBackActivity.class));
+            case 3:
+                /*跳转意见反馈*/
+                startActivity(new Intent(MainActivity.this, FeedBackActivity.class));
                 break;
             default:
         }
@@ -222,7 +228,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void toMyProfile() {
         Intent i = new Intent(MainActivity.this, ProfileActivity.class);
-        startActivityForResult(i,REQUEST_CODE_SET_PROFILE);
+        startActivityForResult(i, REQUEST_CODE_SET_PROFILE);
     }
 
     private void toClassHomePage() {
@@ -340,28 +346,28 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 = new GetHasNotificationsNeedReadRequest();
         getHasNotificationsNeedReadRequest.clazsId = SpManager.getUserInfo().getClassId();
         mGetHasNotificationsNeedReadRequestUUID = getHasNotificationsNeedReadRequest
-                        .startRequest(GetHasNotificationsNeedReadResponse.class,
-                                new HttpCallback<GetHasNotificationsNeedReadResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
-                if (ret.getCode() == 0) {
-                    if (ret.getData().isHasUnView()) {
-                        if (mRedCircle.getVisibility() == View.INVISIBLE) {
-                            mRedCircle.setVisibility(View.VISIBLE);
-                        }
-                    } else {
-                        hideNoticeRedDot();
-                    }
-                } else {
-                }
-                handler.sendEmptyMessageDelayed(1, 30000);
-            }
+                .startRequest(GetHasNotificationsNeedReadResponse.class,
+                        new HttpCallback<GetHasNotificationsNeedReadResponse>() {
+                            @Override
+                            public void onSuccess(RequestBase request, GetHasNotificationsNeedReadResponse ret) {
+                                if (ret.getCode() == 0) {
+                                    if (ret.getData().isHasUnView()) {
+                                        if (mRedCircle.getVisibility() == View.INVISIBLE) {
+                                            mRedCircle.setVisibility(View.VISIBLE);
+                                        }
+                                    } else {
+                                        hideNoticeRedDot();
+                                    }
+                                } else {
+                                }
+                                handler.sendEmptyMessageDelayed(1, 30000);
+                            }
 
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                handler.sendEmptyMessageDelayed(1, 30000);
-            }
-        });
+                            @Override
+                            public void onFail(RequestBase request, Error error) {
+                                handler.sendEmptyMessageDelayed(1, 30000);
+                            }
+                        });
     }
 
     public void hideNoticeRedDot() {
@@ -465,16 +471,16 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     /**
      * 去除 通知以及推送  从MyFragment 复制过来的
-     * */
+     */
     private void clearGTPushSettings() {
         NotificationManager notificationManager = (NotificationManager) MainActivity.this
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         PushManager.getInstance()
-                .unBindAlias( MainActivity.this,
+                .unBindAlias(MainActivity.this,
                         String.valueOf(SpManager.getUserInfo().getUserId()),
                         true, "2000");//只对当前cid做解绑
-        PushManager.getInstance().turnOffPush( MainActivity.this);
+        PushManager.getInstance().turnOffPush(MainActivity.this);
     }
 
     private void checkBottomBar(int index) {
@@ -552,16 +558,18 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CHOOSE_CLASS) {
+            /*由切换班级界面返回 */
             if (resultCode == RESULT_OK) {
 //                getData();
                 reFreshFragment();
                 pollingRedPointer();
-                /*对 抽屉内的展示信息进行更新   */
+                /*对 抽屉内的headerview展示信息进行更新   */
                 mLeftDrawerListAdapter.notifyItemChanged(0);
             }
-        }else  if (requestCode==REQUEST_CODE_SET_PROFILE){
-            /*由我得信息界面返回 用户可能对信息进行了设置 由于入口有两个暂时不对 设置结果进行判断 暂时强制更新抽屉信息*/
-            if (resultCode==RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_SET_PROFILE) {
+            /*由用户信息界面返回 用户可能对信息进行了设置
+              更新抽屉信息*/
+            if (resultCode == RESULT_OK) {
                 mLeftDrawerListAdapter.notifyItemChanged(0);
             }
 

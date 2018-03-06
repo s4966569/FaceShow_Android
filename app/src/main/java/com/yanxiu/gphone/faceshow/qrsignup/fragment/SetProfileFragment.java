@@ -75,6 +75,16 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         return mRootView;
     }
 
+
+    public void showNotice(){
+        mRootView.findViewById(R.id.notice_tv).setVisibility(View.VISIBLE);
+    }
+
+    public void hideNotice(){
+        mRootView.findViewById(R.id.notice_tv).setVisibility(View.GONE);
+    }
+
+
     /**
      * profile 设置相关的各个控件初始化
      */

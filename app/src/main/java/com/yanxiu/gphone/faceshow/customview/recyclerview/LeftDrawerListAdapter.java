@@ -1,8 +1,6 @@
 package com.yanxiu.gphone.faceshow.customview.recyclerview;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,14 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.bean.CourseArrangeBean;
 import com.yanxiu.gphone.faceshow.db.SpManager;
-import com.yanxiu.gphone.faceshow.homepage.activity.ChooseClassActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.YXPictureManager;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
 
 /**
  * adapter for LeftDrawerRecyclerView in MainActivity
@@ -34,8 +29,8 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
     private int[] itemIconArray = new int[]{
             R.drawable.selector_left_drawer_image_main,
             R.drawable.selector_left_drawer_image_user,
-            R.drawable.selector_left_drawer_image_main,//这里是 签到图标
-            R.drawable.selector_left_drawer_image_main};//这里是 意见反馈图标
+            R.drawable.selector_left_drawer_image_sign};//这里是 签到图标
+//            R.drawable.selector_left_drawer_image_main};//这里是 意见反馈图标
     //            R.drawable.ic_person_black,
 //            R.drawable.ic_settings_black, R.drawable.ic_exit_to_app_black};
     private String[] itemNameArray = null;
@@ -170,7 +165,7 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
             itemName = (TextView) itemView.findViewById(R.id.list_item_name);
         }
     }
-    /*抽屉 顶部布局的点击监听*/
+    /**抽屉 顶部布局的点击监听 包括 用户头像 与 一个切换班级按钮*/
     private HeaderViewClickListener headerViewClickListener;
 
     public void setHeaderViewClickListener(HeaderViewClickListener headerViewClickListener) {

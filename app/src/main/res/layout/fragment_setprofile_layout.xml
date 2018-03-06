@@ -7,7 +7,19 @@
     <include
         android:id="@+id/setprofile_titelbar"
         layout="@layout/common_title_layout" />
-
+    <TextView
+        android:visibility="gone"
+        android:textColor="@color/color_ffffff"
+        android:textSize="13sp"
+        android:gravity="center|left"
+        android:padding="10dp"
+        android:text="你的手机号为研修网账号，可直接使用对应的密码登录，如果不记得了，可使用忘记密码功能重新设置。"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/notice_tv"
+        android:layout_width="match_parent"
+        android:background="@color/color_1da1f2"
+        android:layout_height="60dp" />
     <include
         android:id="@+id/profile_layout"
         layout="@layout/profile_info_layout" />

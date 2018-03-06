@@ -18,8 +18,8 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
-import com.yanxiu.gphone.faceshow.qrsignup.request.SetPasswordRequest;
-import com.yanxiu.gphone.faceshow.qrsignup.response.SetpasswordResponse;
+import com.yanxiu.gphone.faceshow.qrsignup.request.SignUpRequest;
+import com.yanxiu.gphone.faceshow.qrsignup.response.SignUpResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
@@ -27,6 +27,9 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
  * 设置用户密码界面
  * 当前 为 扫描注册的流程中一步
  * 后期可以复用
+ *
+ * 设置完用户密码 后 用户账号已经生成 注册完成，下一步中为 正常的用户信息修改操作
+ * 修改信息操作 可 复用已有的功能界面
  */
 public class SetPasswordFragment extends FaceShowBaseFragment {
     private View rootView;
@@ -37,6 +40,10 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
     private ToolbarActionCallback toolbarActionCallback;
 
+    private String phoneNumber;
+    public void setPhoneNumber(String phone){
+        phoneNumber=phone;
+    }
 
     /*密码编辑框*/
     private ClearEditText passwordEditText;
@@ -107,7 +114,6 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
      */
     public void enableNextStepBtn() {
         /*禁止再次编辑电话号*/
-//        phoneEditText.setEnabled(false);
         titleRightText.setEnabled(true);
         titleRightText.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
     }
@@ -147,12 +153,15 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
     /**
      * 网络请求 设置密码
+     * 实际执行的是用户的注册操作
+     * 传递参数 为 手机号 密码MD5 可能还有 验证码
+     *
      * */
-    private void setPasswordRequest(){
-        SetPasswordRequest setPasswordRequest=new SetPasswordRequest();
-        setPasswordRequest.startRequest(SetpasswordResponse.class, new HttpCallback<SetpasswordResponse>() {
+    private void signUpRequest(String phone,String md5Psw){
+        SignUpRequest signUpRequest=new SignUpRequest();
+        signUpRequest.startRequest(SignUpResponse.class, new HttpCallback<SignUpResponse>() {
             @Override
-            public void onSuccess(RequestBase request, SetpasswordResponse ret) {
+            public void onSuccess(RequestBase request, SignUpResponse ret) {
 
             }
 
@@ -162,7 +171,6 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             }
         });
     }
-
 
     /**
      * 对 用户输入的密码进行格式验证
