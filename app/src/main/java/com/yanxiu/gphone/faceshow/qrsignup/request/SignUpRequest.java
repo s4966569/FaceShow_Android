@@ -7,6 +7,13 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
  */
 
 public class SignUpRequest extends FaceShowBaseRequest {
+    public String method="app.clazs.registUnenterAndYxb";
+    public String clazsId;
+    public String mobile;
+    public String name;
+    public String password;
+
+
     @Override
     protected String urlPath() {
         return null;

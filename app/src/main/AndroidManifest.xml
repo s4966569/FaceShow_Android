@@ -246,24 +246,21 @@
             android:name="io.fabric.ApiKey"
             android:value="0dad9b5e85207600fb33bace77d6911add29ae2a" />
 
-
         <activity
             android:name=".webView.WebViewForResourceActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".qrsignup.activity.SignUpActivity" />
+        <activity android:name=".qrsignup.activity.QRCodeSignUpActivity" />
 
-        <activity android:name=".qrsignup.activity.QRCodeSignUpActivity"></activity>
-
-
-        <!--修改 课程详情界面  从管理端复制过来的activity-->
-        <activity android:name=".course.activity.CourseMessageActivity"/>
-        <activity android:name=".course.activity.CourseDetailActivity"/>
-        <activity android:name=".course.activity.CourseCommentActivity"/>
-
+        <!-- 修改 课程详情界面  从管理端复制过来的activity -->
+        <activity android:name=".course.activity.CourseMessageActivity" />
+        <activity android:name=".course.activity.CourseDetailActivity" />
+        <activity android:name=".course.activity.CourseCommentActivity" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service android:name="com.test.yanxiu.im_core.mqtt.MqttService" />
 
+        <activity android:name=".qrsignup.activity.ModifySysUserActivity"></activity>
     </application>
 
 </manifest>

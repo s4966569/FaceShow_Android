@@ -6,7 +6,7 @@ import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.qrsignup.SignUpManager;
+import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.CheckPhoneFragment;
@@ -18,12 +18,12 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
 * 1、由扫码界面获取结果
 * 2、进入当前activity 并加载验证手机号fragment
 * 3、点击获取验证码后 发送验证请求 得到下一步需要显示的结果
+* 这里只处理跳转逻辑 以及 必要的数据保存
 * */
 public class SignUpActivity extends FaceShowBaseActivity {
     private PublicLoadLayout mRootView;
 
-    /*各种操作的网络请求集中在这个类中*/
-    private SignUpManager mSignUpManager;
+    private SysUserBean sysUserBean;
 
     /*各个步骤的fragment*/
     private CheckPhoneFragment checkPhoneFragment;
@@ -39,7 +39,6 @@ public class SignUpActivity extends FaceShowBaseActivity {
         mRootView.setContentView(R.layout.activity_sign_up);
         setContentView(mRootView);
         mRootView.showLoadingView();
-        mSignUpManager = new SignUpManager();
         viewInit();
     }
 
@@ -59,18 +58,25 @@ public class SignUpActivity extends FaceShowBaseActivity {
             @Override
             public void onRightComponentClick() {
                 /*点击下一步 */
-                if (checkPhoneFragment.getUserType()==0) {
-                    /*非注册用户 进入密码设置 进行注册*/
-                    setFragment(setPasswordFragment);
-                /*传递电话号码*/
-                    setPasswordFragment.setPhoneNumber(checkPhoneFragment.getPhoneNumber());
-                }else if(checkPhoneFragment.getUserType()==1){
-                    /*研修网用户 进入用户信息设置*/
-                   ;
-                    setFragment(setProfileFragment);
-                    setProfileFragment.showNotice();
-                }else if (checkPhoneFragment.getUserType()==2){
-                    /*研修宝APP 用户 提示返回登录*/
+                switch (checkPhoneFragment.getUserType()) {
+                    case CheckPhoneFragment.UNRIGISTED_USER:
+                         /*非注册用户 进入密码设置 进行注册*/
+                        setFragment(setPasswordFragment);
+                     /*传递电话号码 到 setpasswordFragment 生成sysuser*/
+                        setPasswordFragment.setPhoneNumber(checkPhoneFragment.getPhoneNumber());
+                        break;
+                    case CheckPhoneFragment.SERVER_USER:
+                          /*研修网用户 进入用户信息设置 直接获取了 sysuser */
+                        sysUserBean = checkPhoneFragment.getSysUserBean();
+                        setProfileFragment.setSysUserBean(sysUserBean);
+                        setFragment(setProfileFragment);
+                        setProfileFragment.showNotice();
+                        break;
+                    case CheckPhoneFragment.APP_USER:
+                        /*不需要操作等待用户返回*/
+                        break;
+                    default:
+                        break;
                 }
             }
         });
@@ -78,13 +84,15 @@ public class SignUpActivity extends FaceShowBaseActivity {
         setPasswordFragment.setToolbarActionCallback(new ToolbarActionCallback() {
             @Override
             public void onLeftComponentClick() {
+                /*进入密码设置页面 只有一种情况 不需要进行判断*/
                 setFragment(checkPhoneFragment);
             }
 
             @Override
             public void onRightComponentClick() {
-                /*正常注册新用户 不显示研修网账号提示*/
-
+                /*正常注册新用户 不显示研修网账号提示 获取注册后返回的sysuser*/
+                sysUserBean = setPasswordFragment.getSysUserBean();
+                setProfileFragment.setSysUserBean(sysUserBean);
                 setFragment(setProfileFragment);
                 setProfileFragment.hideNotice();
             }
@@ -93,7 +101,12 @@ public class SignUpActivity extends FaceShowBaseActivity {
         setProfileFragment.setToolbarActionCallback(new ToolbarActionCallback() {
             @Override
             public void onLeftComponentClick() {
-                setFragment(setPasswordFragment);
+                /*判断一下 跳转的用户类型*/
+                if (checkPhoneFragment.getUserType() == 0) {
+                    setFragment(setPasswordFragment);
+                } else {
+                    setFragment(checkPhoneFragment);
+                }
             }
 
             @Override

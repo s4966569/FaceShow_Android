@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.user.ModifyUserNameActivity;
 import com.yanxiu.gphone.faceshow.user.ModifyUserSexActivity;
@@ -30,6 +31,9 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
     private View fragmentRootView;
     private PublicLoadLayout mRootView;
+    /*用户信息  新注册用户信息内容 大部分为空  已有信息用户 有信息内容*/
+    private SysUserBean sysUserBean;
+
     /*toolbar 控件*/
     private ImageView titleLeftImage;
     private TextView titleRightText;
@@ -63,6 +67,9 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         // Required empty public constructor
     }
 
+    public void setSysUserBean(SysUserBean userBean){
+        this.sysUserBean=userBean;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

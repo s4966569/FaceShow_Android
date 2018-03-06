@@ -8,8 +8,9 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
 
 public class PhoneNumCheckRequest extends FaceShowBaseRequest {
 
-    private String method;
-    private String phone;
+    private String method = "app.clazs.getCheckCode";
+    public String mobile;
+    public String clazsId;
 
 
     @Override

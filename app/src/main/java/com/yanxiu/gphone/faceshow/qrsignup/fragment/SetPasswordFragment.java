@@ -1,8 +1,10 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,6 +19,8 @@ import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.request.SignUpRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.response.SignUpResponse;
@@ -33,6 +37,11 @@ import com.yanxiu.gphone.faceshow.util.ToastUtil;
  */
 public class SetPasswordFragment extends FaceShowBaseFragment {
     private View rootView;
+
+    private SysUserBean sysUserBean;
+
+    /*基本的view  包含一些 异常的显示*/
+    private PublicLoadLayout mRootView;
     /*toolbar*/
     private ImageView titleLeftImage;
     private TextView titleRightText;
@@ -55,19 +64,24 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         // Required empty public constructor
     }
 
+    public SysUserBean getSysUserBean() {
+        return sysUserBean;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
+            mRootView=new PublicLoadLayout(getActivity());
             rootView=inflater.inflate(R.layout.fragment_setpassword_layout,null);
             passwordEditText=rootView.findViewById(R.id.setpassword_edit);
             passwordEditText.addTextChangedListener(pswEditWatcher);
-
+            mRootView.setContentView(rootView);
+            dialogInit();
         }
         toolbarInit(rootView);
         disableNextStepBtn();
-        return rootView;
+        return mRootView;
     }
 
 
@@ -99,11 +113,11 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 /*点击下一步 首先要对 输入的密码进行格式验证*/
                 if (pswFormateCheck(passwordEditText.getText().toString())) {
                     /*这里应该有网络请求 如果有 在请求回调里 调用 点击监听*/
-                    if (toolbarActionCallback != null) {
-                        toolbarActionCallback.onRightComponentClick();
-                    }
+                    signUpRequest(phoneNumber,passwordEditText.getText().toString(),"10");
+//                    if (toolbarActionCallback != null) {
+//                        toolbarActionCallback.onRightComponentClick();
+//                    }
                 }
-
             }
         });
     }
@@ -157,17 +171,38 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
      * 传递参数 为 手机号 密码MD5 可能还有 验证码
      *
      * */
-    private void signUpRequest(String phone,String md5Psw){
+    private void signUpRequest(final String phone, final String md5Psw, final String clazsId){
         SignUpRequest signUpRequest=new SignUpRequest();
+        signUpRequest.mobile=phone;
+        signUpRequest.password=md5Psw;
+        signUpRequest.name=phone;
+        signUpRequest.clazsId=clazsId;
         signUpRequest.startRequest(SignUpResponse.class, new HttpCallback<SignUpResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignUpResponse ret) {
-
+                /*注册请求成功*/
+                if (ret.getCode()==0) {
+                    /*注册成功*/
+                    sysUserBean=ret.getSysUser();
+                    if (toolbarActionCallback != null) {
+                        toolbarActionCallback.onRightComponentClick();
+                    }
+                }else {
+                    /*注册失败*/
+                    alertDialog.setMessage(ret.getError().getTitle());
+                    alertDialog.show();
+                }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-
+                mRootView.showNetErrorView();
+                mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        signUpRequest(phone, md5Psw, clazsId);
+                    }
+                });
             }
         });
     }
@@ -190,4 +225,16 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         return true;
     }
 
+    private AlertDialog alertDialog;
+
+    private void dialogInit() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("dialog").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog = builder.create();
+    }
 }

@@ -8,6 +8,13 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
  */
 
 public class VerifyCodeConfirmRequest extends FaceShowBaseRequest {
+    public String method="app.clazs.registYxb";
+    public String mobile;
+    public String clazsId;
+    public String code;
+
+
+
     @Override
     protected String urlPath() {
         return null;
