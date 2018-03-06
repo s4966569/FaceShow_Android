@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
@@ -26,6 +27,8 @@ import com.test.yanxiu.im_core.http.PolicyConfigRequest;
 import com.test.yanxiu.im_core.http.PolicyConfigResponse;
 import com.test.yanxiu.im_core.http.PolicyMqttServerRequest;
 import com.test.yanxiu.im_core.http.PolicyMqttServerResponse;
+import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
+import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
 import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
@@ -47,7 +50,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
  * A simple {@link Fragment} subclass.
  */
 public class TopicFragment extends FaceShowBaseFragment {
-
+    Button btn;
 
     public TopicFragment() {
         // Required empty public constructor
@@ -61,7 +64,29 @@ public class TopicFragment extends FaceShowBaseFragment {
         //test01();
         testMqtt();
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_topic, container, false);
+        View v = inflater.inflate(R.layout.fragment_topic, container, false);
+        btn = v.findViewById(R.id.send_btn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SaveTextMsgRequest r = new SaveTextMsgRequest();
+                r.imToken = "fb1a05461324976e55786c2c519a8ccc";
+                r.topicId = "16";
+                r.msg = "from android";
+                r.startRequest(SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
+                    @Override
+                    public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                        Log.d("Tag", "success");
+                    }
+
+                    @Override
+                    public void onFail(RequestBase request, Error error) {
+                        Log.d("Tag", "fail");
+                    }
+                });
+            }
+        });
+        return v;
     }
 
     private void test() {
@@ -253,7 +278,6 @@ public class TopicFragment extends FaceShowBaseFragment {
     public void onNewMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
     }
-
 }
 
 

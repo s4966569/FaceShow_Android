@@ -1,5 +1,8 @@
 package com.test.yanxiu.im_core.mqtt;
 
+import android.os.Looper;
+import android.util.Log;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.test.yanxiu.im_core.http.common.ImMsg;
@@ -66,6 +69,12 @@ public class MqttProtobufDealer {
     }
 
     public static void onNewMsg(ImMsg msg) {
+        if (Looper.myLooper() == Looper.getMainLooper()) { // UI主线程
+            Log.d("Tag", "main thread");
+        } else { // 非UI主线程
+            Log.d("Tag", "other thread");
+        }
+
         NewMsgEvent event = new NewMsgEvent();
         event.msg = msg;
         EventBus.getDefault().post(event);

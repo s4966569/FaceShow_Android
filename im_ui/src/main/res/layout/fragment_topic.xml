@@ -10,4 +10,10 @@
         android:layout_height="match_parent"
         android:text="@string/hello_blank_fragment" />
 
+    <Button
+        android:id="@+id/send_btn"
+        android:layout_width="60dp"
+        android:layout_height="44dp"
+        android:text="send" />
+
 </FrameLayout>
