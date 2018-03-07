@@ -1,8 +1,8 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
-import com.yanxiu.gphone.faceshow.user.ModifyUserNameActivity;
-import com.yanxiu.gphone.faceshow.user.ModifyUserSexActivity;
-import com.yanxiu.gphone.faceshow.user.ModifyUserStageActivity;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
-
-import static android.app.Activity.RESULT_OK;
+import com.yanxiu.gphone.faceshow.qrsignup.request.UpdateProfileRequest;
+import com.yanxiu.gphone.faceshow.qrsignup.response.UpdateProfileResponse;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,33 +30,36 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
     private View fragmentRootView;
     private PublicLoadLayout mRootView;
-    /*用户信息  新注册用户信息内容 大部分为空  已有信息用户 有信息内容*/
+    /**
+     * 用户信息  新注册用户信息内容 大部分为空  已有信息用户 有信息内容
+     */
     private SysUserBean sysUserBean;
 
-    /*toolbar 控件*/
+    /**
+     * toolbar 控件
+     */
     private ImageView titleLeftImage;
     private TextView titleRightText;
     private TextView titleTextView;
-    /*自定义的 toolbar 点击监听 包含 左侧 控件 点击与右侧控件点击 事件回调*/
+    /**
+     * 自定义的 toolbar 点击监听 包含 左侧 控件 点击与右侧控件点击 事件回调
+     */
     private ToolbarActionCallback toolbarActionCallback;
-    /*界面内的主要控件*/
-    /*用户信息 头像等*/
+    /**界面内的主要控件*/
+    /**
+     * 用户信息 头像等
+     */
     private View personalView;
-    /*课程信息*/
-
 
     private View nameItem;
     private View phoneItem;
     private View sexItem;
     private View stageItem;
 
-    /*控制notice显示*/
-    private boolean showNotice=false;
-
-    /*request code*/
-    private final int MODIFY_NAME = 0X01;
-    private final int MODIFY_SEX = 0X02;
-    private final int MODIFY_STAGE_SUBJECT = 0X03;
+    /**
+     * 控制notice显示
+     */
+    private boolean showNotice = false;
 
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
         this.toolbarActionCallback = toolbarActionCallback;
@@ -67,8 +69,11 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         // Required empty public constructor
     }
 
-    public void setSysUserBean(SysUserBean userBean){
-        this.sysUserBean=userBean;
+    /**
+     * 设置显示信息
+     */
+    public void setSysUserBean(SysUserBean userBean) {
+        this.sysUserBean = userBean;
     }
 
     @Override
@@ -81,16 +86,22 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         }
         toolbarInit(fragmentRootView.findViewById(R.id.setprofile_titelbar));
         viewInit(fragmentRootView);
+        setUserData(sysUserBean);
         return mRootView;
     }
 
-
-    public void showNotice(){
-        showNotice=true;
+    /**
+     * 显示 用户中心账号 提示
+     */
+    public void showNotice() {
+        showNotice = true;
     }
 
-    public void hideNotice(){
-        showNotice=false;
+    /**
+     * 隐藏 用户中心账号提示
+     */
+    public void hideNotice() {
+        showNotice = false;
     }
 
 
@@ -114,8 +125,31 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         sexItem.setOnClickListener(this);
         stageItem.setOnClickListener(this);
         phoneItem.setOnClickListener(this);
+        phoneItem.setOnClickListener(this);
 
-        root.findViewById(R.id.notice_tv).setVisibility(!showNotice?View.VISIBLE:View.GONE);
+        root.findViewById(R.id.notice_tv).setVisibility(showNotice ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * 设置 用户信息到UI
+     */
+    private void setUserData(SysUserBean userData) {
+
+        TextView nameTv = mRootView.findViewById(R.id.profile_layout)
+                .findViewById(R.id.tv_name);
+        nameTv.setText(String.format("%s", userData.getRealName()));
+
+        TextView phoneTv = mRootView.findViewById(R.id.profile_layout)
+                .findViewById(R.id.tv_phone);
+        phoneTv.setText(String.format("%s", userData.getMobilePhone()));
+
+        TextView sexTv = mRootView.findViewById(R.id.profile_layout)
+                .findViewById(R.id.tv_gender);
+        sexTv.setText(String.format("%s", userData.getSexName()));
+
+        TextView stagetSunjectTv = mRootView.findViewById(R.id.profile_layout)
+                .findViewById(R.id.tv_stage_subject);
+        stagetSunjectTv.setText(String.format("%s", userData.getStageName() + "、" + userData.getSubjectName()));
     }
 
     /**
@@ -138,55 +172,90 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 }
             }
         });
+        /*点击保存*/
         titleRightText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (toolbarActionCallback != null) {
-                    toolbarActionCallback.onRightComponentClick();
-                }
+                fadeUpdataProfileRequest();
+//                updateSysUserInfoRequest(sysUserBean);
             }
         });
     }
 
-    @Override
-    public void onClick(View v) {
-
-        Intent intent;
-
-        switch (v.getId()) {
-            case R.id.rl_name:
-                //修改用户名
-                startActivityForResult(new Intent(getActivity(), ModifyUserNameActivity.class), MODIFY_NAME);
-                break;
-            case R.id.rl_sex:
-                //修改用户性别
-                startActivityForResult(new Intent(getActivity(), ModifyUserSexActivity.class), MODIFY_SEX);
-                break;
-            case R.id.rl_stage_subject:
-                //修改用户学段学科
-                EventUpdate.onChooseStageSubjectButton(getActivity());
-                startActivityForResult(new Intent(getActivity(), ModifyUserStageActivity.class), MODIFY_STAGE_SUBJECT);
-                break;
-            default:
-                break;
-        }
+    /**
+     * 模拟上传用户信息 网络请求
+     * */
+    private void fadeUpdataProfileRequest() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ToastUtil.showToast(getActivity(), "用户信息已经上传！");
+            }
+        }, 400);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    /**
+     * 上传 用户信息到服务器
+     */
+    private void updateSysUserInfoRequest(SysUserBean userBean) {
+        UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
 
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case MODIFY_NAME:
+        updateProfileRequest.realName = userBean.getRealName();
+        updateProfileRequest.sex = userBean.getSex();
+        updateProfileRequest.stage = userBean.getStage();
+        updateProfileRequest.schoolNmae = userBean.getRealName();
+        updateProfileRequest.url = userBean.getRealName();
+        updateProfileRequest.subject = userBean.getSubject();
+
+        updateProfileRequest.startRequest(UpdateProfileResponse.class, new HttpCallback<UpdateProfileResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, UpdateProfileResponse ret) {
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        if (itemClickListener != null) {
+            switch (v.getId()) {
+                case R.id.rl_name:
+                    itemClickListener.onNameItemClicked();
                     break;
-                case MODIFY_SEX:
+                case R.id.rl_sex:
+                    itemClickListener.onSexItemClicked();
                     break;
-                case MODIFY_STAGE_SUBJECT:
+                case R.id.rl_stage_subject:
+                    itemClickListener.onStageItemClicked();
+                    break;
+                case R.id.rl_phone:
+                    itemClickListener.onPhoneItemClicked();
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    private ProfileItemClickListener itemClickListener;
+
+    public void setItemClickListener(ProfileItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
+    public interface ProfileItemClickListener {
+        void onNameItemClicked();
+
+        void onPhoneItemClicked();
+
+        void onSexItemClicked();
+
+        void onStageItemClicked();
     }
 }

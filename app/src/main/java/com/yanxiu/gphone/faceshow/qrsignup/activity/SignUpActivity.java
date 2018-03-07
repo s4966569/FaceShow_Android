@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.qrsignup.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
@@ -8,18 +9,17 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
-import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.CheckPhoneFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetPasswordFragment;
-import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetProfileFragment;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
-/*用户进行注册时 的activity 主要包含 验证手机号 设置密码 完善资料 三个主要功能 功能界面由不同的fragment实现
-* 1、由扫码界面获取结果
-* 2、进入当前activity 并加载验证手机号fragment
-* 3、点击获取验证码后 发送验证请求 得到下一步需要显示的结果
-* 这里只处理跳转逻辑 以及 必要的数据保存
-* */
+/**
+ * 注册Activity 负责 扫码过程中的新用户注册
+ * 主要 包含两个Fragment {@link CheckPhoneFragment} 与 {@link SetPasswordFragment}
+ * 分别对 手机号码进行检查 用户类型进行区分 与 设置用户密码并进行用户注册
+ * 对应两种个情况  新用户 会要求设置密码
+ * 用户中心已有用户 会直接进入信息设置{@link ModifySysUserActivity}
+ *
+ * */
 public class SignUpActivity extends FaceShowBaseActivity {
     private PublicLoadLayout mRootView;
 
@@ -28,9 +28,6 @@ public class SignUpActivity extends FaceShowBaseActivity {
     /*各个步骤的fragment*/
     private CheckPhoneFragment checkPhoneFragment;
     private SetPasswordFragment setPasswordFragment;
-    private SetProfileFragment setProfileFragment;
-    /*dialog Fragment*/
-    private SignUpDialogFragment dialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +42,6 @@ public class SignUpActivity extends FaceShowBaseActivity {
     private void fragmentInit() {
         checkPhoneFragment = new CheckPhoneFragment();
         setPasswordFragment = new SetPasswordFragment();
-        setProfileFragment = new SetProfileFragment();
 
         /*第一步 在验证手机号码以及验证码页面 点击返回与下一步 */
         checkPhoneFragment.setToolbarActionCallback(new ToolbarActionCallback() {
@@ -68,9 +64,7 @@ public class SignUpActivity extends FaceShowBaseActivity {
                     case CheckPhoneFragment.SERVER_USER:
                           /*研修网用户 进入用户信息设置 直接获取了 sysuser */
                         sysUserBean = checkPhoneFragment.getSysUserBean();
-                        setProfileFragment.setSysUserBean(sysUserBean);
-                        setFragment(setProfileFragment);
-                        setProfileFragment.showNotice();
+                        toProfileActivity(CheckPhoneFragment.SERVER_USER);
                         break;
                     case CheckPhoneFragment.APP_USER:
                         /*不需要操作等待用户返回*/
@@ -92,30 +86,22 @@ public class SignUpActivity extends FaceShowBaseActivity {
             public void onRightComponentClick() {
                 /*正常注册新用户 不显示研修网账号提示 获取注册后返回的sysuser*/
                 sysUserBean = setPasswordFragment.getSysUserBean();
-                setProfileFragment.setSysUserBean(sysUserBean);
-                setFragment(setProfileFragment);
-                setProfileFragment.hideNotice();
-            }
-        });
-        /*第三步 在信息设置界面 点击返回与保存*/
-        setProfileFragment.setToolbarActionCallback(new ToolbarActionCallback() {
-            @Override
-            public void onLeftComponentClick() {
-                /*判断一下 跳转的用户类型*/
-                if (checkPhoneFragment.getUserType() == 0) {
-                    setFragment(setPasswordFragment);
-                } else {
-                    setFragment(checkPhoneFragment);
-                }
-            }
 
-            @Override
-            public void onRightComponentClick() {
-                ToastUtil.showToast(SignUpActivity.this, "保存");
-            }
+                toProfileActivity(CheckPhoneFragment.UNRIGISTED_USER);
 
+            }
         });
     }
+    /*将已经通过注册 或 用户中心获取的 信息传递到 信息设置界面*/
+    private void toProfileActivity(int userType){
+        Intent intent=new Intent(SignUpActivity.this,ModifySysUserActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putSerializable("user",sysUserBean);
+        bundle.putInt("type",userType);
+        intent.putExtra("data",bundle);
+        startActivity(intent);
+    }
+
 
     private void setFragment(FaceShowBaseFragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container, fragment).commit();
@@ -123,7 +109,6 @@ public class SignUpActivity extends FaceShowBaseActivity {
 
 
     private void viewInit() {
-        dialogFragment = new SignUpDialogFragment();
         fragmentInit();
         getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container, checkPhoneFragment).commit();
         mRootView.hiddenLoadingView();

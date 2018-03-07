@@ -22,7 +22,6 @@ import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 
 /**
@@ -67,7 +66,7 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
-        ToastUtil.showToast(getActivity(),"点击 item");
+//        ToastUtil.showToast(getActivity(),"点击 item");
         // TODO: 2018/3/5  这里 学员版的 数据处理 跳转方式与管理端相同
         CourseBean bean = (CourseBean) baseBean;
         Gson gson=new Gson();

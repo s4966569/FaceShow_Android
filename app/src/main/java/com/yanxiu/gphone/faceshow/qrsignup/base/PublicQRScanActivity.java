@@ -1,7 +1,5 @@
-package com.yanxiu.gphone.faceshow.qrsignup.activity;
+package com.yanxiu.gphone.faceshow.qrsignup.base;
 
-import android.app.Activity;
-import android.media.FaceDetector;
 import android.os.Bundle;
 
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;

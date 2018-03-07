@@ -4,6 +4,7 @@ package com.yanxiu.gphone.faceshow.qrsignup.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
@@ -12,12 +13,20 @@ import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInCaptureManager;
 import com.yanxiu.gphone.faceshow.qrsignup.QRCodeChecker;
+import com.yanxiu.gphone.faceshow.qrsignup.base.PublicQRScanActivity;
+import com.yanxiu.gphone.faceshow.qrsignup.request.QrClazsInfoRequest;
+import com.yanxiu.gphone.faceshow.qrsignup.response.QrClazsInfoResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +36,7 @@ import butterknife.ButterKnife;
  * 继承PublicQRScanActivity
  */
 public class QRCodeSignUpActivity extends PublicQRScanActivity {
-    private final int REQUEST_CODE_TO_CHECK_PHONE=0X01;
+    private final int REQUEST_CODE_TO_CHECK_PHONE = 0X01;
     @BindView(R.id.img_left)
     ImageView imgLeft;
     @BindView(R.id.tv_title)
@@ -35,27 +44,125 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     /* 条形码格式检查*/
     QRCodeChecker qrCodeChecker;
 
+    /**
+     *
+     * */
+    private PublicLoadLayout publicLoadLayout;
     private CheckInCaptureManager mCaptureManager;
     CheckInCaptureManager.CodeCallBack codeCallBack = new CheckInCaptureManager.CodeCallBack() {
         @Override
         public void callBack(String result) {
-            if (result != null) {
-                /*检查是否符合 班级二维码格式 */
-                if (qrCodeChecker.isClazzCode(result)) {
-                    /*符合班级二维码格式 进行跳转，进入 号码检查界面*/
-                    Intent currectIntent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
-                    startActivityForResult(currectIntent,REQUEST_CODE_TO_CHECK_PHONE);
-                }else {
-                    /*不符合 班级二维码格式 显示提示*/
-                    ToastUtil.showToast(QRCodeSignUpActivity.this,"无效二维码！");
-                    /*重新开启 扫描*/
-                    restartScan();
-                }
-            } else {
-                QRCodeSignUpActivity.this.finish();
-            }
+//            fadeScanResult();
+            processScanResult(result);
         }
     };
+    /**
+     * 对扫描二维码的结果进行处理
+     * 分析是 哪一种二维码
+     * 然后执行哪种后续操作
+     * */
+    private void processScanResult(String result) {
+        if (result != null) {
+            /*检查是否符合 班级二维码格式 */
+            if (qrCodeChecker.isClazzCode(result)) {
+                /*符合班级二维码格式 进行跳转，进入 号码检查界面 进行一个网络请求 获取班级详细信息*/
+                // TODO: 2018/3/7 拆分 二维码内容 获取classId
+                    clazsInfoRequest("10");
+            } else {
+                /*判断是否是 签到二维码*/
+                if (qrCodeChecker.isCheckInCode(result)) {
+                    QRCodeSignUpActivity.this.finish();
+                } else {
+                    ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
+                    restartScan();
+                }
+            }
+        } else {
+            QRCodeSignUpActivity.this.finish();
+        }
+    }
+
+    private void toSignUpActivity(int clazsId) {
+        Intent intent = new Intent(QRCodeSignUpActivity.this, SignUpActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putInt("clazsId",clazsId);
+        intent.putExtra("data",bundle);
+        startActivityForResult(intent, REQUEST_CODE_TO_CHECK_PHONE);
+    }
+    /**
+     * 模拟扫描二维码处理结果
+     * */
+    private void fadeScanResult() {
+        Random random = new Random();
+        int resultType = random.nextInt(3);
+        switch (resultType) {
+            case 0:
+                /*无效二维码 弹出提示*/
+                ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
+                restartScan();
+                break;
+            case 1:
+                /*非班级二维码 返回登录页*/
+                QRCodeSignUpActivity.this.finish();
+                break;
+            case 2:
+                /*班级二维码 请求班级信息*/
+                fadeClazsInfoRequest();
+                break;
+            default:
+                break;
+        }
+    }
+    /**
+     * 模拟 班级信息网络请求
+     * */
+    private void fadeClazsInfoRequest() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                publicLoadLayout.hiddenLoadingView();
+                Intent intent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putInt("clazsId",1);
+                intent.putExtra("data",bundle);
+                startActivity(intent);
+//                toSignUpActivity();
+            }
+        }, 200);
+    }
+
+    private void clazsInfoRequest(final String clazsId) {
+        QrClazsInfoRequest clazsInfoRequest = new QrClazsInfoRequest();
+        clazsInfoRequest.clazsId = clazsId;
+        clazsInfoRequest.startRequest(QrClazsInfoResponse.class, new HttpCallback<QrClazsInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, QrClazsInfoResponse ret) {
+                /*网络请求成功*/
+                publicLoadLayout.hiddenLoadingView();
+                if (ret.getCode() == 0) {
+                    /*请求成功*/
+                    ret.getClazsId();
+                    // TODO: 2018/3/7  跳转界面
+                    toSignUpActivity(ret.getClazsId());
+                } else {
+                    publicLoadLayout.showOtherErrorView(ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                publicLoadLayout.hiddenLoadingView();
+                publicLoadLayout.showNetErrorView();
+                publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clazsInfoRequest(clazsId);
+                    }
+                });
+            }
+        });
+    }
+
 
     /**
      * 条形码扫描视图
@@ -74,12 +181,15 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         intentIntegrator.setBeepEnabled(true);
         intentIntegrator.initiateScan();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_qrcode_sign_up);
         initWindow();
-        setContentView(R.layout.activity_zxing_layout);
+        publicLoadLayout = new PublicLoadLayout(this);
+        publicLoadLayout.setContentView(R.layout.activity_zxing_layout);
+//        setContentView(R.layout.activity_zxing_layout);
         ButterKnife.bind(this);
         initToolbar();
         mBarcodeView = (DecoratedBarcodeView) findViewById(R.id.zxing_barcode_scanner);
@@ -87,9 +197,10 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         mCaptureManager.initializeFromIntent(getIntent(), savedInstanceState);
         mBarcodeView.setStatusText("请扫描二维码完成注册");
         /*二维码格式检查工具*/
-        qrCodeChecker=new QRCodeChecker();
+        qrCodeChecker = new QRCodeChecker();
     }
-    private void restartScan(){
+
+    private void restartScan() {
         mCaptureManager.decode();
         mCaptureManager.setCodeCallBack(codeCallBack);
         mCaptureManager.onResume();
@@ -99,7 +210,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     @Override
     protected void onStart() {
         super.onStart();
-       restartScan();
+        restartScan();
     }
 
     @Override
@@ -124,8 +235,8 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
      */
     private void initToolbar() {
         tvTitle.setText("扫码注册");
-        View titleView=findViewById(R.id.checkup_titlebar);
-        ImageView backImg=titleView.findViewById(R.id.img_left);
+        View titleView = findViewById(R.id.checkup_titlebar);
+        ImageView backImg = titleView.findViewById(R.id.img_left);
         backImg.setVisibility(View.VISIBLE);
         backImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,7 +290,8 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
 
     @Override
     protected boolean checkQRCode(String code) {
-        return true;
+        /*检查是否是 班级二维码规则*/
+        return qrCodeChecker.isClazzCode(code);
     }
 
     @Override
@@ -191,8 +303,8 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode==REQUEST_CODE_TO_CHECK_PHONE){
-            if (resultCode==RESULT_OK) {
+        if (requestCode == REQUEST_CODE_TO_CHECK_PHONE) {
+            if (resultCode == RESULT_OK) {
                 QRCodeSignUpActivity.this.finish();
             }
         }

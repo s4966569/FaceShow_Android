@@ -30,6 +30,7 @@ public class QRCodeChecker {
 
     /**
      * 检查是否是 HTML5 宣传界面
+     * APP 不存在 HTML5 二维码使用
      *
      * */
     public boolean isHTML5Page(String codeStr) {
@@ -41,6 +42,7 @@ public class QRCodeChecker {
     }
     /**
      * 检查 是否是 APP 下载二维码
+     * APP 不存在 下载二维码的使用
      *
      * */
     public boolean isDownloadCode(String codeStr) {
@@ -56,9 +58,8 @@ public class QRCodeChecker {
     public boolean isClazzCode(String codeStr) {
         if (strBaseCheck(codeStr)) {
             /*为了测试流程的顺畅 没有 检查逻辑*/
-            return true;
-//            return codeStr.startsWith(
-//                    UrlRepository.getInstance().getServer()+"?method=interact.userSignIn");
+            return codeStr.startsWith(
+                    UrlRepository.getInstance().getServer()+"?method=clazs.scanClazsCode");
         }
         return false;
     }

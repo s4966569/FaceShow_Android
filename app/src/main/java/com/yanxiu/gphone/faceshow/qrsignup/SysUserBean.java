@@ -1,10 +1,12 @@
 package com.yanxiu.gphone.faceshow.qrsignup;
 
+import java.io.Serializable;
+
 /**
  * Created by srt on 2018/3/6.
  */
 
-public class SysUserBean {
+public class SysUserBean implements Serializable{
 
     /**
      * id : 667
@@ -29,18 +31,18 @@ public class SysUserBean {
     private int userId;
     private String realName;
     private String mobilePhone;
-    private Object email;
+    private String email;
     private int stage;
     private int subject;
     private int userStatus;
-    private Object ucnterId;
+    private String ucnterId;
     private int sex;
     private String school;
     private String avatar;
-    private Object stageName;
-    private Object imTokenInfo;
-    private Object subjectName;
-    private Object sexName;
+    private String stageName;
+    private String imTokenInfo;
+    private String subjectName;
+    private String sexName;
 
     public int getId() {
         return id;
@@ -74,11 +76,11 @@ public class SysUserBean {
         this.mobilePhone = mobilePhone;
     }
 
-    public Object getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(Object email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -106,11 +108,11 @@ public class SysUserBean {
         this.userStatus = userStatus;
     }
 
-    public Object getUcnterId() {
+    public String getUcnterId() {
         return ucnterId;
     }
 
-    public void setUcnterId(Object ucnterId) {
+    public void setUcnterId(String ucnterId) {
         this.ucnterId = ucnterId;
     }
 
@@ -138,35 +140,35 @@ public class SysUserBean {
         this.avatar = avatar;
     }
 
-    public Object getStageName() {
+    public String getStageName() {
         return stageName;
     }
 
-    public void setStageName(Object stageName) {
+    public void setStageName(String stageName) {
         this.stageName = stageName;
     }
 
-    public Object getImTokenInfo() {
+    public String getImTokenInfo() {
         return imTokenInfo;
     }
 
-    public void setImTokenInfo(Object imTokenInfo) {
+    public void setImTokenInfo(String imTokenInfo) {
         this.imTokenInfo = imTokenInfo;
     }
 
-    public Object getSubjectName() {
+    public String getSubjectName() {
         return subjectName;
     }
 
-    public void setSubjectName(Object subjectName) {
+    public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
     }
 
-    public Object getSexName() {
+    public String getSexName() {
         return sexName;
     }
 
-    public void setSexName(Object sexName) {
+    public void setSexName(String sexName) {
         this.sexName = sexName;
     }
 }

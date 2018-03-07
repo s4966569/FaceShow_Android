@@ -29,8 +29,8 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
     private int[] itemIconArray = new int[]{
             R.drawable.selector_left_drawer_image_main,
             R.drawable.selector_left_drawer_image_user,
-            R.drawable.selector_left_drawer_image_sign};//这里是 签到图标
-//            R.drawable.selector_left_drawer_image_main};//这里是 意见反馈图标
+            R.drawable.selector_left_drawer_image_sign,//这里是 签到图标
+            R.drawable.selector_left_drawer_iamge_feedback};//这里是 意见反馈图标
     //            R.drawable.ic_person_black,
 //            R.drawable.ic_settings_black, R.drawable.ic_exit_to_app_black};
     private String[] itemNameArray = null;

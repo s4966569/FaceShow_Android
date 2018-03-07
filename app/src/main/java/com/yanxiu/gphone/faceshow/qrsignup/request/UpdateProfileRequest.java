@@ -1,0 +1,24 @@
+package com.yanxiu.gphone.faceshow.qrsignup.request;
+
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseRequest;
+
+/**
+ * Created by srt on 2018/3/7.
+ * 扫码注册 保存用户信息请求
+ */
+
+public class UpdateProfileRequest extends FaceShowBaseRequest {
+    public String method = "app.sysUser.updateUserInfo";
+    public String userId;
+    public String realName;
+    public int sex;
+    public int subject;
+    public int stage;
+    public String schoolNmae;
+    public String url;
+
+    @Override
+    protected String urlPath() {
+        return null;
+    }
+}

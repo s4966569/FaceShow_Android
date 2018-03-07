@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -113,10 +114,8 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 /*点击下一步 首先要对 输入的密码进行格式验证*/
                 if (pswFormateCheck(passwordEditText.getText().toString())) {
                     /*这里应该有网络请求 如果有 在请求回调里 调用 点击监听*/
-                    signUpRequest(phoneNumber,passwordEditText.getText().toString(),"10");
-//                    if (toolbarActionCallback != null) {
-//                        toolbarActionCallback.onRightComponentClick();
-//                    }
+                    fadeSignUpRequest(phoneNumber,passwordEditText.getText().toString(),"10");
+//                    signUpRequest(phoneNumber,passwordEditText.getText().toString(),"10");
                 }
             }
         });
@@ -166,9 +165,27 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
 
     /**
+     * 模拟请求 成功
+     * */
+    private void fadeSignUpRequest(final String phone, String psw, String clazsId){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sysUserBean=new SysUserBean();
+                sysUserBean.setRealName("新用户");
+                sysUserBean.setMobilePhone(phone);
+                if (toolbarActionCallback != null) {
+                    toolbarActionCallback.onRightComponentClick();
+                }
+            }
+        },500);
+    }
+
+
+    /**
      * 网络请求 设置密码
      * 实际执行的是用户的注册操作
-     * 传递参数 为 手机号 密码MD5 可能还有 验证码
+     * 传递参数 为 手机号 密码MD5  验证码
      *
      * */
     private void signUpRequest(final String phone, final String md5Psw, final String clazsId){
