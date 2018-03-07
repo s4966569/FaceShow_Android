@@ -19,10 +19,8 @@ public class DbTopic extends DataSupport {
     private List<DbMember> members = new ArrayList<>();
 
     // 只为UI显示用，不做数据库存储用
-    @Column(unique = true)
-    public List<DbMsg> otherMsgs = new ArrayList<>();
-    @Column(unique = true)
-    public List<DbMyMsg> myMsgs = new ArrayList<>();
+    @Column(ignore = true)
+    public List<DbMsg> mergedMsgs;
 
     //region getter setter
     public long getTopicId() {

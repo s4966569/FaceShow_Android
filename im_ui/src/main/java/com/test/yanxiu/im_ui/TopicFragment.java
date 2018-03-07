@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.orhanobut.logger.Logger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.http.LoginAppRequest;
@@ -285,7 +287,17 @@ public class TopicFragment extends FaceShowBaseFragment {
     private void testDb() {
         DatabaseDealer.useDbForUser("cailei");
         DatabaseDealer.genMockData();
+
+        // 验证msgs合并
+        List<DbMsg> msgs1 = DatabaseDealer.getTopicMsgs(1, 1, 10);
+        List<DbMsg> msgs2 = DatabaseDealer.getTopicMsgs(1, 4, 10);
+        List<DbMsg> msgs3 = DatabaseDealer.getTopicMsgs(1, 4, 1);
+
+
+        // 验证topics最近更新，顺序正确
         List<DbTopic> topics = DatabaseDealer.topicsFromDb();
+
+        Logger.d("done");
     }
 }
 
