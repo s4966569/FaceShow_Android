@@ -31,8 +31,8 @@ public class NaviFragmentFactory {
                     mHomeFragment,
                     mNoticeFragment,
                     mClassCircleFragment,
-                    //mMyFragment,
-                    mTopicFragment
+                    mMyFragment
+//                    mTopicFragment
                     )
     );
 
