@@ -3,6 +3,7 @@ package com.test.yanxiu.im_core.db;
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,13 +11,50 @@ import java.util.List;
  */
 
 public class DbTopic extends DataSupport {
-    @Column(unique = true, defaultValue = "unknown")
+    @Column(unique = true, defaultValue = "unknown", nullable = false)
     private long topicId;
     private String name;
     private String type;
 
-    private DbMsg lastMsg;          // 最后一条消息
-    private List<DbMsg> msgs;       // 属于此Topic的所有Msg，分页
+    private List<DbMember> members = new ArrayList<>();
 
-    public List<DbMember> members;  // 加入此Topic的所有Member，不分页
+    // 只为UI显示用，不做数据库存储用
+    @Column(unique = true)
+    public List<DbMsg> otherMsgs = new ArrayList<>();
+    @Column(unique = true)
+    public List<DbMyMsg> myMsgs = new ArrayList<>();
+
+    //region getter setter
+    public long getTopicId() {
+        return topicId;
+    }
+
+    public void setTopicId(long topicId) {
+        this.topicId = topicId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<DbMember> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<DbMember> members) {
+        this.members = members;
+    }
+    //endregion
 }

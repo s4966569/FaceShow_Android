@@ -13,6 +13,7 @@ public class ImMsg {
     public long senderId;
     public int contentType;
     public long sendTime;
+    public String reqId;
     public ContentData contentData;
 
     public static class ContentData {

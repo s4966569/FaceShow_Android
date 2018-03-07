@@ -4,16 +4,29 @@ import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
 /**
- * Created by cailei on 06/03/2018.
+ * Created by cailei on 07/03/2018.
  */
 
-public class DbMsg extends DataSupport {
+public class DbMyMsg extends DbMsg {
+    private int state;
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+}
+
+/*
+public class DbMyMsg extends DataSupport {
     @Column(unique = true, defaultValue = "unknown", nullable = false)
     protected String reqId;        // 客户端生成的唯一id
 
     protected long msgId;          // 由于client发送可能失败，所以msgId不作为主键
     protected long topicId;       // 此msg所属的topic
-    protected long senderId;     // 此msg的owner
+    protected long senderId;       // 此msg的owner
     protected long sendTime;       // msg的发送时间
 
     protected int contentType;     // 目前为txt，未来支持pic
@@ -21,7 +34,10 @@ public class DbMsg extends DataSupport {
     protected String thumbnail;
     protected String viewUrl;
 
+    private int state;  // 0-正在发送，1-已经发送，2-发送失败
+
     //region getter setter
+
     public String getReqId() {
         return reqId;
     }
@@ -38,12 +54,12 @@ public class DbMsg extends DataSupport {
         this.msgId = msgId;
     }
 
-    public long getTopicId() {
-        return topicId;
+    public DbTopic getTopic() {
+        return topic;
     }
 
-    public void setTopicId(long topicId) {
-        this.topicId = topicId;
+    public void setTopic(DbTopic topic) {
+        this.topic = topic;
     }
 
     public long getSenderId() {
@@ -93,5 +109,14 @@ public class DbMsg extends DataSupport {
     public void setViewUrl(String viewUrl) {
         this.viewUrl = viewUrl;
     }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     //endregion
-}
+}*/

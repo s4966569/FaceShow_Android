@@ -15,6 +15,8 @@ import android.widget.Button;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbTopic;
+import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.http.LoginAppRequest;
 import com.test.yanxiu.im_core.http.LoginAppResponse;
 import com.test.yanxiu.im_core.http.MemberGetMembersRequest;
@@ -41,6 +43,8 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.List;
+
 import static android.content.Context.BIND_AUTO_CREATE;
 
 
@@ -60,7 +64,8 @@ public class TopicFragment extends FaceShowBaseFragment {
                              Bundle savedInstanceState) {
         //test();
         //test01();
-        testMqtt();
+        //testMqtt();
+        testDb();
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_topic, container, false);
         btn = v.findViewById(R.id.send_btn);
@@ -275,6 +280,12 @@ public class TopicFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onNewMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
+    }
+
+    private void testDb() {
+        DatabaseDealer.useDbForUser("cailei");
+        DatabaseDealer.genMockData();
+        List<DbTopic> topics = DatabaseDealer.topicsFromDb();
     }
 }
 
