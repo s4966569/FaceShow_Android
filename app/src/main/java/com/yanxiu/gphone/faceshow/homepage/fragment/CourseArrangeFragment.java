@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +15,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.course.activity.CourseDetailActivity;
+import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
@@ -74,11 +73,12 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
         Gson gson=new Gson();
 
         Log.i(getClass().getSimpleName(),gson.toJson(bean));
-//        CourseActivity.invoke(getActivity(), bean.getId());
-        Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
-        intent.putExtra("courseId",bean.getId());
+        /*这里 两个课程详情的入口 */
+        CourseActivity.invoke(getActivity(), bean.getId());
+//        Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
+//        intent.putExtra("courseId",bean.getId());
 //        intent.putExtra("courseId", String.valueOf(bean.getCourses().get(groupItem).getCoursesList().get(childItem).getId()));
-        startActivity(intent);
+//        startActivity(intent);
     }
 
     @Override
