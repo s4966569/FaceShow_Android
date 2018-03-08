@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.qrsignup.dialog;
 
 import android.content.Context;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 /**

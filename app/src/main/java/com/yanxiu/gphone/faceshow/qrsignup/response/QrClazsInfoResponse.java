@@ -74,7 +74,7 @@ public class QrClazsInfoResponse extends FaceShowBaseResponse {
         private Object manager;
         private Object master;
         private Object clazsStatusName;
-        private Object projectName;
+        private String projectName;
 
         public int getId() {
             return id;
@@ -180,11 +180,11 @@ public class QrClazsInfoResponse extends FaceShowBaseResponse {
             this.clazsStatusName = clazsStatusName;
         }
 
-        public Object getProjectName() {
+        public String getProjectName() {
             return projectName;
         }
 
-        public void setProjectName(Object projectName) {
+        public void setProjectName(String projectName) {
             this.projectName = projectName;
         }
     }
