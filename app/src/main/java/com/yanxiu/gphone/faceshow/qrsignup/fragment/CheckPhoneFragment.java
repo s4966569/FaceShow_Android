@@ -21,13 +21,12 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.request.PhoneNumCheckRequest;
-import com.yanxiu.gphone.faceshow.qrsignup.request.VerifyCodeConfirmRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.response.CheckPhoneNumResponse;
-import com.yanxiu.gphone.faceshow.qrsignup.response.VerifyCodeConfirmResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
@@ -75,8 +74,8 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 
     /**
      * classId
-     * */
-    private int scannedClassId=0;
+     */
+    private int scannedClassId = 0;
 
     public void setScannedClassId(int scannedClassId) {
         this.scannedClassId = scannedClassId;
@@ -151,10 +150,11 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         });
         dialogInit();
     }
+
     /**
      * 手机号输入 检查 控制 获取验证码 按钮
-     * */
-    private TextWatcher phoneInputWatcher=new TextWatcher() {
+     */
+    private TextWatcher phoneInputWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -162,9 +162,9 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            if (charSequence.length()>10) {
+            if (charSequence.length() > 10) {
                 enableVerifyCodeBtn();
-            }else {
+            } else {
                 disableVerifyCodeBtn();
             }
         }
@@ -173,15 +173,16 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         public void afterTextChanged(Editable editable) {
         }
     };
+
     /**
      * 开启 获取验证的点击功能 以及UI 变化
-     * */
-    private void enableVerifyCodeBtn(){
+     */
+    private void enableVerifyCodeBtn() {
         getVerifyCodeTextView.setEnabled(true);
         getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
     }
 
-    private void disableVerifyCodeBtn(){
+    private void disableVerifyCodeBtn() {
         getVerifyCodeTextView.setEnabled(false);
         getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
     }
@@ -358,42 +359,31 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
      */
     private void userTypeCheckRequest(final String phone, final String verifycode, final int clazsID) {
 
-        VerifyCodeConfirmRequest confirmRequest = new VerifyCodeConfirmRequest();
-        confirmRequest.clazsId = clazsID+"";
+        PhoneNumCheckRequest confirmRequest = new PhoneNumCheckRequest();
+        confirmRequest.clazsId = clazsID + "";
         confirmRequest.mobile = phone;
         confirmRequest.code = verifycode;
         /*验证验证码与手机号  结果只有两种情况 通过和未通过，不需要对UI进行使能更改
         * 只进行必要的信息提示即可*/
-        confirmRequest.startRequest(VerifyCodeConfirmResponse.class, new HttpCallback<VerifyCodeConfirmResponse>() {
+        confirmRequest.startRequest(CheckPhoneNumResponse.class, new HttpCallback<CheckPhoneNumResponse>() {
             @Override
-            public void onSuccess(RequestBase request, VerifyCodeConfirmResponse ret) {
+            public void onSuccess(RequestBase request, CheckPhoneNumResponse ret) {
                 Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
                 mRootView.hiddenLoadingView();
-                if (ret.getCode() == 0) {
-                    userType = ret.getHasRegistUser();
-                    switch (userType) {
-                        case UNRIGISTED_USER:
-                            /*未注册用户 保存电话号码 准备进行注册操作*/
-                            phoneNumber = phone;
-                            break;
-                        case SERVER_USER:
-                            /*用户中心用户 保存 sysuserbean 等待 用户信息设置后进行 保存*/
-                            sysUserBean=ret.getSysUser();
-                        case APP_USER:
-                            /*注册用户 保存 后台会自动对未添加班级的用户进行添加操作  不需要跳转*/
-                            alertDialog.setMessage(ret.getError().getMessage());
-                            alertDialog.show();
-                            break;
-                        default:
-                            break;
-                    }
-                    /*回调 给signupactivity 验证成功 执行UI 回调*/
-                    if (toolbarActionCallback != null) {
-                        toolbarActionCallback.onRightComponentClick();
+                /*判断 服务器请求成功*/
+                if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
+                    /*获取 data信息 */
+                    if (ret.getData() != null) {
+                        checkUserType(ret, phone);
+                    } else {
+                        /*没有返回 data 信息 是一种异常返回 可以尝试通过 error 弹出提示*/
+                        setErrorMsg(ret);
+                        alertDialog.show();
                     }
                 } else {
-                    /*验证失败 提示失败信息*/
-                    alertDialog.setMessage(ret.getError().getTitle());
+                    /*验证失败 服务器 提示失败信息*/
+                    setErrorMsg(ret);
+//                    alertDialog.setMessage(ret.getError().getTitle()); 这里没有检查 getError 空情况
                     alertDialog.show();
                 }
             }
@@ -415,24 +405,59 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
     }
 
     /**
+     * 获取返回结果中的用户类型信息 并给出相应的提示
+     */
+    private void checkUserType(CheckPhoneNumResponse ret, String phone) {
+         /*检查返回之中 返回的用户类型标志0 未注册 1 用户中心用户 2 app用户*/
+        userType = ret.getData().getHasRegistUser();
+        switch (userType) {
+            case UNRIGISTED_USER:
+                /*未注册用户 保存电话号码 准备进行注册操作*/
+                phoneNumber = phone;
+                break;
+            case SERVER_USER:
+                /*用户中心用户 保存 sysuserbean 等待 用户信息设置后进行 保存*/
+                if (ret.getData().getSysUser() != null) {
+                    sysUserBean = ret.getData().getSysUser();
+                } else {
+                    // TODO: 2018/3/8  sysuser 字段为空 的处理 应该弹出提示 并禁止跳转
+                    setErrorMsg(ret);
+                    alertDialog.show();
+                }
+            case APP_USER:
+                /*APP 用户 后台会进行 添加班级的操作 这里只弹出 提示即可 信息在message中 不在error*/
+                alertDialog.setMessage(ret.getMessage());
+                alertDialog.show();
+                break;
+            default:
+                break;
+        }
+        /*回调 给signupactivity 验证成功 执行UI 回调*/
+        if (toolbarActionCallback != null) {
+            toolbarActionCallback.onRightComponentClick();
+        }
+    }
+
+    /**
      * 请求获取验证码
      */
     private void verfifyCodeRequest(final String number, final int clazsId) {
         PhoneNumCheckRequest request = new PhoneNumCheckRequest();
-        request.clazsId = clazsId+"";
+        request.clazsId = clazsId + "";
         request.mobile = number;
         request.startRequest(CheckPhoneNumResponse.class, new HttpCallback<CheckPhoneNumResponse>() {
             @Override
             public void onSuccess(RequestBase request, CheckPhoneNumResponse ret) {
-                if (ret.getCode() == 0) {
+                if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*成功下发了 验证码 开启下一步使能*/
                     enableNextStepBtn();
                     ToastUtil.showToast(getActivity(), "验证码已经发送到您的手机！");
                 } else {
                     /*发送验证码失败 关闭 下一步使能*/
+                    setErrorMsg(ret);
+                    alertDialog.show();
                     disableNextStepBtn();
                     mRootView.showOtherErrorView(ret.getError().getMessage());
-//                    alertDialog.setMessage(ret.getError().getMessage());
                 }
             }
 
@@ -451,20 +476,35 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             }
         });
     }
+    /**
+     * 根据返回值 获取错误信息
+     * */
+    private void setErrorMsg(CheckPhoneNumResponse ret) {
+        if (ret.getError() != null) {
+            /*首先检查 是否携带错误信息*/
+            alertDialog.setMessage(ret.getError().getMessage());
+        }else {
+            /*没有包含错误信息*/
+            if (!TextUtils.isEmpty(ret.getMessage())) {
+                alertDialog.setMessage(ret.getMessage());
+            }else {
+                alertDialog.setMessage("请求失败！");
+            }
+        }
+    }
 
     /**
      * 验证用户填写的二维码 有效性 有效 进行下一步的回调 通知activity进行界面跳转
      */
     private boolean checkVerifyCode(String verifyCode) {
-
         /*首先验证基本格式 空 4位数字等等*/
         if (TextUtils.isEmpty(verifyCode)) {
             ToastUtil.showToast(getActivity(), "验证码不能为空");
             return false;
         }
         /*验证码在4~6位*/
-        if (verifyCode.length()<4||verifyCode.length()>7){
-            ToastUtil.showToast(getActivity(),"验证码格式不正确");
+        if (verifyCode.length() < 4 || verifyCode.length() > 7) {
+            ToastUtil.showToast(getActivity(), "验证码格式不正确");
             return false;
         }
         return true;

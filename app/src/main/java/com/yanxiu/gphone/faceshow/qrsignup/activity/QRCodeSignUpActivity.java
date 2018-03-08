@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInCaptureManager;
+import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.qrsignup.QRCodeChecker;
 import com.yanxiu.gphone.faceshow.qrsignup.base.PublicQRScanActivity;
 import com.yanxiu.gphone.faceshow.qrsignup.request.QrClazsInfoRequest;
@@ -40,6 +42,11 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     TextView tvTitle;
     /* 条形码格式检查*/
     QRCodeChecker qrCodeChecker;
+
+    /**
+     * 异常code
+     * */
+
 
     /**
      *
@@ -149,7 +156,10 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
 //            }
 //        }, 200);
 //    }
-
+    /**
+     * 扫码后获取的 url 进行请求
+     *
+     * */
     private void clazsInfoRequest(final String clazsId) {
         QrClazsInfoRequest clazsInfoRequest = new QrClazsInfoRequest();
         clazsInfoRequest.clazsId = clazsId;
@@ -157,15 +167,20 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             @Override
             public void onSuccess(RequestBase request, QrClazsInfoResponse ret) {
                 /*网络请求成功*/
-                publicLoadLayout.hiddenLoadingView();
                 mLoadingDialogView.dismiss();
-                if (ret.getCode() == 0) {
-                    /*请求成功*/
-                    ret.getClazsId();
-                    // TODO: 2018/3/7  跳转界面
-                    toSignUpActivity(ret.getClazsId());
+                if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
+                    /*服务器请求成功*/
+                    if (ret.getClazsInfo() != null||ret.getClazsId()!=0) {
+                        /*可以获取到 classId*/
+                        toSignUpActivity(ret.getClazsId()!=0?
+                                ret.getClazsId():ret.getClazsInfo().getId());
+                    }else {
+                        /*没有获取到有效的classId*/
+                        ToastUtil.showToast(QRCodeSignUpActivity.this,"班级信息获取失败！");
+                    }
                 } else {
-                    publicLoadLayout.showOtherErrorView(ret.getError().getMessage());
+                    /*code!=0 是 服务器返回了 异常情况 可以判断是否是 班级二维码 或者 是其他二维码 */
+                    setErrorMsg(ret);
                 }
             }
 
@@ -181,6 +196,23 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                 });
             }
         });
+    }
+    /**
+     * 根据返回值 获取错误信息
+     * */
+    private void setErrorMsg(QrClazsInfoResponse ret) {
+        if (ret.getError() != null) {
+            /*首先检查 是否携带错误信息*/
+            ToastUtil.showToast(QRCodeSignUpActivity.this,ret.getError().getMessage());
+//            alertDialog.setMessage();
+        }else {
+            /*没有包含错误信息*/
+            if (!TextUtils.isEmpty(ret.getMessage())) {
+                ToastUtil.showToast(QRCodeSignUpActivity.this,ret.getMessage());
+            }else {
+                ToastUtil.showToast(QRCodeSignUpActivity.this,"请求失败");
+            }
+        }
     }
 
 

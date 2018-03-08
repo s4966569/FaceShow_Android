@@ -20,6 +20,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.request.SignUpRequest;
@@ -227,15 +228,27 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, SignUpResponse ret) {
                 /*注册请求成功*/
-                if (ret.getCode()==0) {
+                if (ret.getCode()== ResponseConfig.INT_SUCCESS) {
                     /*注册成功*/
-                    sysUserBean=ret.getSysUser();
-                    if (toolbarActionCallback != null) {
-                        toolbarActionCallback.onRightComponentClick();
+                    if (ret.getData() != null) {
+                        if (ret.getData().getSysUser() != null) {
+                            sysUserBean=ret.getData().getSysUser();
+                            if (toolbarActionCallback != null) {
+                                toolbarActionCallback.onRightComponentClick();
+                            }
+                        }else {
+                            /*没有返回 用信息的处理*/
+                            setErrorMsg(ret);
+                            alertDialog.show();
+                        }
+                    }else {
+                        /*没有返回 data  检查error 字段 以及message 字段*/
+                        setErrorMsg(ret);
+                        alertDialog.show();
                     }
                 }else {
-                    /*注册失败*/
-                    alertDialog.setMessage(ret.getError().getTitle());
+                    /*注册失败 */
+                    setErrorMsg(ret);
                     alertDialog.show();
                 }
             }
@@ -251,6 +264,23 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 });
             }
         });
+    }
+
+    /**
+     * 根据返回值 获取错误信息
+     * */
+    private void setErrorMsg(SignUpResponse ret) {
+        if (ret.getError() != null) {
+            /*首先检查 是否携带错误信息*/
+            alertDialog.setMessage(ret.getError().getMessage());
+        }else {
+            /*没有包含错误信息*/
+            if (!TextUtils.isEmpty(ret.getMessage())) {
+                alertDialog.setMessage(ret.getMessage());
+            }else {
+                alertDialog.setMessage("请求失败！");
+            }
+        }
     }
 
     /**

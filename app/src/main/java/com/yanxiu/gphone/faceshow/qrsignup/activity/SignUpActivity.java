@@ -97,7 +97,6 @@ public class SignUpActivity extends FaceShowBaseActivity {
             public void onRightComponentClick() {
                 /*正常注册新用户 不显示研修网账号提示 获取注册后返回的sysuser*/
                 sysUserBean = setPasswordFragment.getSysUserBean();
-
                 toProfileActivity(CheckPhoneFragment.UNRIGISTED_USER);
 
             }

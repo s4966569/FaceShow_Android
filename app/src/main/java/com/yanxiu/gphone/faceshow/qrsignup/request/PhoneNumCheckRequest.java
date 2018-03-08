@@ -11,6 +11,7 @@ public class PhoneNumCheckRequest extends FaceShowBaseRequest {
     private String method = "app.clazs.getCheckCode";
     public String mobile;
     public String clazsId;
+    public String code;
 
 
     @Override

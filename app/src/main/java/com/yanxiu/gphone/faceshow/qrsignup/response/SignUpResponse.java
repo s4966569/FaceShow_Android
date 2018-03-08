@@ -10,19 +10,51 @@ import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 
 public class SignUpResponse extends FaceShowBaseResponse {
 
+
     /**
-     * sysUser : {"id":1351,"userId":24368269,"realName":"蜗蜗牛","mobilePhone":"15810319555","email":null,"stage":0,"subject":0,"userStatus":1,"ucnterId":24368269,"sex":null,"school":null,"avatar":null}
+     * data : {"sysUser":{"id":1351,"userId":24368269,"realName":"蜗蜗牛","mobilePhone":"15810319555","email":null,"stage":0,"subject":0,"userStatus":1,"ucnterId":24368269,"sex":null,"school":null,"avatar":null}}
+     * currentUser :
+     * currentTime : 1519960134357
+     * error : null
      */
 
-    private SysUserBean sysUser;
+    private DataBean data;
 
-    public SysUserBean getSysUser() {
-        return sysUser;
+    private long currentTime;
+
+
+    public DataBean getData() {
+        return data;
     }
 
-    public void setSysUser(SysUserBean sysUser) {
-        this.sysUser = sysUser;
+    public void setData(DataBean data) {
+        this.data = data;
     }
 
 
+
+    public long getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime(long currentTime) {
+        this.currentTime = currentTime;
+    }
+
+    public static class DataBean {
+        /**
+         * sysUser : {"id":1351,"userId":24368269,"realName":"蜗蜗牛","mobilePhone":"15810319555","email":null,"stage":0,"subject":0,"userStatus":1,"ucnterId":24368269,"sex":null,"school":null,"avatar":null}
+         */
+
+        private SysUserBean sysUser;
+
+        public SysUserBean getSysUser() {
+            return sysUser;
+        }
+
+        public void setSysUser(SysUserBean sysUser) {
+            this.sysUser = sysUser;
+        }
+
+    }
 }

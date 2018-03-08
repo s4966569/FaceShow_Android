@@ -219,7 +219,8 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 if (ret.getCode()==0) {
                     ToastUtil.showToast(getActivity(),"用户信息已经保存！");
                 }else {
-                    mRootView.showOtherErrorView(ret.getError().getMessage());
+                    setErrorMsg(ret);
+//                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
 
@@ -235,6 +236,23 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 });
             }
         });
+    }
+    /**
+     * 根据返回值 获取错误信息
+     * */
+    private void setErrorMsg(UpdateProfileResponse ret) {
+        if (ret.getError() != null) {
+            /*首先检查 是否携带错误信息*/
+            ToastUtil.showToast(getActivity(),ret.getError().getMessage());
+//            alertDialog.setMessage();
+        }else {
+            /*没有包含错误信息*/
+            if (!TextUtils.isEmpty(ret.getMessage())) {
+                ToastUtil.showToast(getActivity(),ret.getMessage());
+            }else {
+                ToastUtil.showToast(getActivity(),"请求失败");
+            }
+        }
     }
 
 
