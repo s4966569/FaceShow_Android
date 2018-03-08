@@ -5,6 +5,9 @@ import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
+import com.test.yanxiu.im_core.http.common.ImMember;
+import com.test.yanxiu.im_core.http.common.ImMsg;
+import com.test.yanxiu.im_core.http.common.ImTopic;
 
 import org.litepal.LitePal;
 import org.litepal.LitePalDB;
@@ -23,6 +26,8 @@ import java.util.List;
 // 2, ClusterQuery中每种类型的只能有一次，连续.where两次，则覆盖
 
 public class DatabaseDealer {
+    public final static int pagesize = 20;
+
     // 每个用户用自己不同的数据库，db_<userId>作为数据库名
     public static void useDbForUser(String userId) {
         if (userId == null) {
@@ -91,6 +96,8 @@ public class DatabaseDealer {
         DbTopic t2 = new DbTopic();
         t2.setTopicId(2);
 
+        t2.getMembers().add(memberB);
+
         DbMsg m21 = new DbMsg();
         m21.setReqId("m21");
         m21.setTopicId(t2.getTopicId());
@@ -101,6 +108,11 @@ public class DatabaseDealer {
         // 设置 topic 3
         DbTopic t3 = new DbTopic();
         t3.setTopicId(3);
+
+        t3.getMembers().add(memberA);
+        t3.getMembers().add(memberB);
+        t3.getMembers().add(memberM);
+        t3.getMembers().add(memberC);
 
         DbMsg m31 = new DbMsg();
         m31.setReqId("m31");
@@ -217,30 +229,94 @@ public class DatabaseDealer {
     }
 
     /**
-     * 从数据库重建Topic List，每条topic带最新一页10条msgs，且topic list按照topic里最新的msg排序
+     * 从数据库重建Topic List，每条topic带最新一页pagesize条msgs，且topic list按照topic里最新的msg排序
      */
     public static List<DbTopic> topicsFromDb() {
         List<DbTopic> topics = DataSupport.findAll(DbTopic.class, true);
         for (DbTopic topic : topics) {
-            List<DbMsg> msgs = getTopicMsgs(topic.getTopicId(), -1, 10);
+            List<DbMsg> msgs = getTopicMsgs(topic.getTopicId(), -1, pagesize);
+            // 理论上讲应该每个topic的msgs里至少有一条消息
+            topic.latestMsgId = -1;
+            if ((msgs != null) && (msgs.size() > 0)) {
+                topic.latestMsgId = msgs.get(0).getMsgId();
+            }
             topic.mergedMsgs = msgs;
         }
 
-        Collections.sort(topics, new Comparator<DbTopic>() {
-            @Override
-            public int compare(DbTopic t1, DbTopic t2) {
-                long t1Time = t1.mergedMsgs.get(0).getSendTime();
-                long t2Time = t2.mergedMsgs.get(0).getSendTime();
-                if (t1Time < t2Time) {
-                    return 1;
-                }
-                if (t1Time > t2Time) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
+        Collections.sort(topics, topicComparator);
 
         return topics;
+    }
+
+    public static Comparator<DbTopic> topicComparator = new Comparator<DbTopic>() {
+        @Override
+        public int compare(DbTopic t1, DbTopic t2) {
+            long t1Time = t1.mergedMsgs.get(0).getSendTime();
+            long t2Time = t2.mergedMsgs.get(0).getSendTime();
+            if (t1Time < t2Time) {
+                return 1;
+            }
+            if (t1Time > t2Time) {
+                return -1;
+            }
+            return 0;
+        }
+    };
+
+    public static Comparator<DbMsg> msgComparator = new Comparator<DbMsg>() {
+        @Override
+        public int compare(DbMsg m1, DbMsg m2) {
+            if (m1.getMsgId() < m2.getMsgId()) {
+                return 1;
+            }
+            if (m1.getMsgId() > m2.getMsgId()) {
+                return -1;
+            }
+            return 0;
+        }
+    };
+
+    public static DbTopic updateDbTopicWithImTopic(ImTopic topic) {
+        DbTopic dbTopic = new DbTopic();
+        dbTopic.setTopicId(topic.topicId);
+        dbTopic.setName(topic.topicName);
+        dbTopic.setType(topic.topicType);
+        for (ImTopic.Member member : topic.members) {
+            ImMember imMember = member.memberInfo;
+            DbMember dbMember = updateDbMemberWithImMember(imMember);
+            dbTopic.getMembers().add(dbMember);
+        }
+
+        dbTopic.save();
+        return dbTopic;
+    }
+
+    public static DbMember updateDbMemberWithImMember(ImMember member) {
+        DbMember dbMember = new DbMember();
+        dbMember.setImId(member.imId);
+        dbMember.setName(member.memberName);
+        dbMember.setAvatar(member.avatar);
+        dbMember.save();
+        return dbMember;
+    }
+
+    private static long imId = 9;
+    public static DbMsg updateDbMsgWithImMsg(ImMsg msg) {
+        if (msg.senderId == imId) {
+            // 我发的消息不入库，以后有删除后，重拉消息列表时，应该入DbMyMsg库
+            return null;
+        }
+        DbMsg dbMsg = new DbMsg();
+        dbMsg.setReqId(msg.reqId);
+        dbMsg.setMsgId(msg.msgId);
+        dbMsg.setTopicId(msg.topicId);
+        dbMsg.setSenderId(msg.senderId);
+        dbMsg.setSendTime(msg.sendTime);
+        dbMsg.setContentType(msg.contentType);
+        dbMsg.setMsg(msg.contentData.msg);
+        dbMsg.setThumbnail(msg.contentData.thumbnail);
+        dbMsg.setViewUrl(msg.contentData.viewUrl);
+        dbMsg.save();
+        return dbMsg;
     }
 }

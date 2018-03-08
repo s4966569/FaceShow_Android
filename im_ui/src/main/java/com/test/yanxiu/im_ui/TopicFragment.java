@@ -16,9 +16,12 @@ import android.widget.Button;
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
+import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
+import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.LoginAppRequest;
 import com.test.yanxiu.im_core.http.LoginAppResponse;
 import com.test.yanxiu.im_core.http.MemberGetMembersRequest;
@@ -36,8 +39,11 @@ import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
+import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
+import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -45,10 +51,11 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,13 +67,14 @@ public class TopicFragment extends FaceShowBaseFragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //test();
         //test01();
         //testMqtt();
+        testRequestRety();
+
         testDb();
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_topic, container, false);
@@ -280,8 +288,21 @@ public class TopicFragment extends FaceShowBaseFragment {
     }
 
     @Subscribe
-    public void onNewMsg(MqttProtobufDealer.NewMsgEvent event) {
+    public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg);
+        // 找出对应的topic，加入并更新UI
+        for (DbTopic topic : topics) {
+            if (topic.getTopicId() == msg.topicId) {
+                topic.mergedMsgs.add(dbMsg);
+            }
+
+            if (dbMsg.getMsgId() > topic.latestMsgId) {
+                topic.latestMsgId = dbMsg.getMsgId();
+            }
+        }
+
+        // TBD:cailei 更新topic对应列的UI
     }
 
     private void testDb() {
@@ -297,7 +318,147 @@ public class TopicFragment extends FaceShowBaseFragment {
         // 验证topics最近更新，顺序正确
         List<DbTopic> topics = DatabaseDealer.topicsFromDb();
 
+
+        List<String> arr = new ArrayList<>();
+
         Logger.d("done");
+    }
+
+    private String imToken = "fb1a05461324976e55786c2c519a8ccc";
+    private long imId = 9;
+    private List<DbTopic> topics;       // UI根据此数据结构显示
+    private void updateTopicList() {
+        // 1, db : 从数据库重建topic list
+        topics = DatabaseDealer.topicsFromDb();
+
+        // 2, http : 获取当前用户的topic列表
+        TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
+        getMemberTopicsRequest.imToken = imToken;
+        getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
+                // 只请求DB中没有的
+                List<String> ids = new ArrayList<>();
+                for (ImTopic topic : ret.data.topic) {
+                    ids.add(Long.toString(topic.topicId));
+                }
+                for (DbTopic topic : topics) {
+                    ids.remove(Long.toString(topic.getTopicId()));
+                }
+
+                // 3, http : 获取topics中的members信息
+                updateTopicsList_updateTopicsMembers(ids);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+    }
+
+    // 3, http : 获取topics中的members信息
+    private void updateTopicsList_updateTopicsMembers(List<String> topicIds) {
+        if ((topicIds == null) || (topicIds.size() <=0)) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        String sep = ",";
+        for(String topicId : topicIds){
+            sb.append(topicId);
+            sb.append(",");
+        }
+        String strTopicIds = sb.toString();
+        strTopicIds = strTopicIds.substring(0, strTopicIds.length() - sep.length());
+
+        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
+        getTopicsRequest.imToken = imToken;
+        getTopicsRequest.topicIds = strTopicIds;
+        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
+                // 4, 更新数据库topic下的members
+                for (ImTopic topic : ret.data.topic) {
+                    updateTopicMembersDb(topic);
+                }
+
+
+
+                // 5, 依次请求更新topic的msgs
+
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+    }
+
+    // 4, 更新数据库topic下的members
+    private void updateTopicMembersDb(ImTopic topic) {
+        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(topic);
+        // 顺便加入topic列表
+        topics.add(dbTopic);
+    }
+
+    private int totalRetryTimes;
+    private RequestQueueHelper rqHelper = new RequestQueueHelper();
+
+    // 5, 依次请求更新topic的msgs
+    private void updateTopicMsgsForAllTopics() {
+        totalRetryTimes = 10;
+        for (final DbTopic dbTopic : topics) {
+            doRequest(dbTopic);
+        }
+    }
+
+    private void doRequest(final DbTopic dbTopic) {
+        GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
+        getTopicMsgsRequest.imToken = imToken;
+        getTopicMsgsRequest.topicId = Long.toString(dbTopic.getTopicId());
+        getTopicMsgsRequest.startId = Long.toString(dbTopic.latestMsgId);
+        rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
+                // 更新DB，然后通知更新UI
+                for (ImMsg msg : ret.data.topicMsg) {
+                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg);
+                    if (dbMsg == null) continue;    // 我发的消息
+                    dbTopic.mergedMsgs.add(dbMsg);
+                    if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
+                        dbTopic.latestMsgId = dbMsg.getMsgId();
+                    }
+                }
+
+                // 还是不能排序，会打乱之前的顺序导致跳动，在逻辑完善前，先到先显示吧
+                // Collections.sort(dbTopic.mergedMsgs, DatabaseDealer.msgComparator);
+
+                // TBD:cailei 通知UI刷新
+
+                // 如果还有更多页，请求更多
+                if (ret.data.topicMsg.size() >= DatabaseDealer.pagesize)
+                doRequest(dbTopic);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                if (totalRetryTimes-- <= 0) {
+                    return;
+                }
+                doRequest(dbTopic);
+            }
+        });
+    }
+
+    private void testRequestRety() {
+        DbTopic dbTopic = new DbTopic();
+        dbTopic.setTopicId(16);
+        dbTopic.latestMsgId = 0;
+        totalRetryTimes = 10;
+
+        doRequest(dbTopic);
     }
 }
 

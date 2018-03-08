@@ -20,6 +20,8 @@ public class DbTopic extends DataSupport {
 
     // 只为UI显示用，不做数据库存储用
     @Column(ignore = true)
+    public long latestMsgId;
+    @Column(ignore = true)
     public List<DbMsg> mergedMsgs;
 
     //region getter setter
