@@ -22,6 +22,8 @@ import com.yanxiu.gphone.faceshow.user.StageSubjectModel;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
 
+import java.util.List;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -65,11 +67,21 @@ public class ModifySubjectFragment extends Fragment {
         mStageSubjectModel = RequestBase.getGson().fromJson(FileUtil.getDataFromAssets(getActivity(), "stageSubject.json"), StageSubjectModel.class);
         ModifyUserSubjectAdapter modifyUserSubjectAdapter = new ModifyUserSubjectAdapter(mStageSubjectModel.getData().get(mSelectedPosition).getSub(),mIRecyclerViewItemClick);
         mRecyclerViewChooseStage.setAdapter(modifyUserSubjectAdapter);
+
+         /*初始化 选择的显示*/
+        List<StageSubjectModel.DataBean> subList= mStageSubjectModel.getData().get(mSelectedPosition).getSub();
+        for (StageSubjectModel.DataBean dataBean :subList) {
+            if (dataBean.getId().equals(userBean.getSubject()+"")) {
+                modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
+                break;
+            }
+        }
     }
     private IRecyclerViewItemClick mIRecyclerViewItemClick= new IRecyclerViewItemClick() {
         @Override
         public void onItemClick(View view, int postion) {
-            userBean.setSubject(postion);
+            String subjectId=mStageSubjectModel.getData().get(postion).getId();
+            userBean.setSubject(Integer.valueOf(subjectId));
             userBean.setSubjectName(mStageSubjectModel.getData().get(mSelectedPosition).getSub().get(postion).getName());
         }
     };

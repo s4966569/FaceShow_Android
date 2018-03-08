@@ -4,7 +4,6 @@ package com.yanxiu.gphone.faceshow.qrsignup.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,8 +24,6 @@ import com.yanxiu.gphone.faceshow.qrsignup.base.PublicQRScanActivity;
 import com.yanxiu.gphone.faceshow.qrsignup.request.QrClazsInfoRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.response.QrClazsInfoResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,22 +49,23 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     CheckInCaptureManager.CodeCallBack codeCallBack = new CheckInCaptureManager.CodeCallBack() {
         @Override
         public void callBack(String result) {
-//            fadeScanResult();
+//            fadeScanResult(); 本地模拟请求
             processScanResult(result);
         }
     };
+
     /**
      * 对扫描二维码的结果进行处理
      * 分析是 哪一种二维码
      * 然后执行哪种后续操作
-     * */
+     */
     private void processScanResult(String result) {
         if (result != null) {
             /*检查是否符合 班级二维码格式 */
             if (qrCodeChecker.isClazzCode(result)) {
                 /*符合班级二维码格式 进行跳转，进入 号码检查界面 进行一个网络请求 获取班级详细信息*/
                 // TODO: 2018/3/7 拆分 二维码内容 获取classId
-                    clazsInfoRequest("10");
+                clazsInfoRequest(qrCodeChecker.getClazsIdFromQR(result)+"");
             } else {
                 /*判断是否是 签到二维码*/
                 if (qrCodeChecker.isCheckInCode(result)) {
@@ -84,52 +82,73 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
 
     private void toSignUpActivity(int clazsId) {
         Intent intent = new Intent(QRCodeSignUpActivity.this, SignUpActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putInt("clazsId",clazsId);
-        intent.putExtra("data",bundle);
+        Bundle bundle = new Bundle();
+        bundle.putInt("clazsId", clazsId);
+        intent.putExtra("data", bundle);
         startActivityForResult(intent, REQUEST_CODE_TO_CHECK_PHONE);
     }
+
     /**
      * 模拟扫描二维码处理结果
-     * */
-    private void fadeScanResult() {
-        Random random = new Random();
-        int resultType = random.nextInt(3);
-        switch (resultType) {
-            case 0:
-                /*无效二维码 弹出提示*/
-                ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
-                restartScan();
-                break;
-            case 1:
-                /*非班级二维码 返回登录页*/
-                QRCodeSignUpActivity.this.finish();
-                break;
-            case 2:
-                /*班级二维码 请求班级信息*/
-                fadeClazsInfoRequest();
-                break;
-            default:
-                break;
-        }
-    }
+     */
+//    private void fadeScanResult() {
+//        Random random = new Random();
+//        int resultType = random.nextInt(3);
+//        resultType=2;
+//        switch (resultType) {
+//            case 0:
+//                /*无效二维码 弹出提示*/
+//                ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
+//                restartScan();
+//                break;
+//            case 1:
+//                /*非班级二维码 返回登录页*/
+//                ToastUtil.showToast(QRCodeSignUpActivity.this,"签到二维码 提示 请先登录后再签到");
+//                QRCodeSignUpActivity.this.finish();
+//                break;
+//            case 2:
+//                /*班级二维码 请求班级信息*/
+////                ToastUtil.showToast(QRCodeSignUpActivity.this,"是班级二维码 获取班级ID 并请求网络");
+////                publicLoadLayout.showLoadingView();
+//                mLoadingDialogView.show();
+//                fadeClazsInfoRequest();
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+
     /**
      * 模拟 班级信息网络请求
-     * */
-    private void fadeClazsInfoRequest() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                publicLoadLayout.hiddenLoadingView();
-                Intent intent=new Intent(QRCodeSignUpActivity.this,SignUpActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putInt("clazsId",1);
-                intent.putExtra("data",bundle);
-                startActivity(intent);
-//                toSignUpActivity();
-            }
-        }, 200);
-    }
+     */
+//    private void fadeClazsInfoRequest() {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                /*请求失败*/
+////                mLoadingDialogView.dismiss();
+//////                publicLoadLayout.showNetErrorView();
+////                ToastUtil.showToast(QRCodeSignUpActivity.this,"网络问题 获取 扫码请求 返回结果错误 重新开启 扫码过程");
+////
+////                publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
+////                    @Override
+////                    public void onClick(View view) {
+////
+////                    }
+////                });
+//////                publicLoadLayout.hiddenNetErrorView();
+////                restartScan();
+////                publicLoadLayout.hiddenLoadingView();
+//                mLoadingDialogView.dismiss();
+//                Intent intent = new Intent(QRCodeSignUpActivity.this, SignUpActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putInt("clazsId", 1);
+//                intent.putExtra("data", bundle);
+//                startActivity(intent);
+//            }
+//        }, 200);
+//    }
 
     private void clazsInfoRequest(final String clazsId) {
         QrClazsInfoRequest clazsInfoRequest = new QrClazsInfoRequest();
@@ -139,6 +158,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             public void onSuccess(RequestBase request, QrClazsInfoResponse ret) {
                 /*网络请求成功*/
                 publicLoadLayout.hiddenLoadingView();
+                mLoadingDialogView.dismiss();
                 if (ret.getCode() == 0) {
                     /*请求成功*/
                     ret.getClazsId();
@@ -151,7 +171,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                publicLoadLayout.hiddenLoadingView();
+                mLoadingDialogView.dismiss();
                 publicLoadLayout.showNetErrorView();
                 publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
@@ -198,6 +218,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         mBarcodeView.setStatusText("请扫描二维码完成注册");
         /*二维码格式检查工具*/
         qrCodeChecker = new QRCodeChecker();
+        mLoadingDialogView=new LoadingDialogView(this);
     }
 
     private void restartScan() {

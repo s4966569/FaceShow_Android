@@ -3,7 +3,6 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -40,16 +39,21 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     private View rootView;
 
     private SysUserBean sysUserBean;
-
     /*基本的view  包含一些 异常的显示*/
     private PublicLoadLayout mRootView;
     /*toolbar*/
     private ImageView titleLeftImage;
     private TextView titleRightText;
     private TextView titleTextView;
-
     private ToolbarActionCallback toolbarActionCallback;
+    /**
+     * classId
+     * */
+    private int scannedClassId=0;
 
+    public void setScannedClassId(int scannedClassId) {
+        this.scannedClassId = scannedClassId;
+    }
     private String phoneNumber;
     public void setPhoneNumber(String phone){
         phoneNumber=phone;
@@ -103,6 +107,9 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*如果 有 提示 界面 需要隐藏*/
+                mRootView.hiddenNetErrorView();
+                mRootView.hiddenOtherErrorView();
                 if (toolbarActionCallback != null) {
                     toolbarActionCallback.onLeftComponentClick();
                 }
@@ -114,8 +121,8 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 /*点击下一步 首先要对 输入的密码进行格式验证*/
                 if (pswFormateCheck(passwordEditText.getText().toString())) {
                     /*这里应该有网络请求 如果有 在请求回调里 调用 点击监听*/
-                    fadeSignUpRequest(phoneNumber,passwordEditText.getText().toString(),"10");
-//                    signUpRequest(phoneNumber,passwordEditText.getText().toString(),"10");
+//                    fadeSignUpRequest(phoneNumber,passwordEditText.getText().toString(),scannedClassId);
+                    signUpRequest(phoneNumber,passwordEditText.getText().toString(),scannedClassId);
                 }
             }
         });
@@ -167,19 +174,41 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     /**
      * 模拟请求 成功
      * */
-    private void fadeSignUpRequest(final String phone, String psw, String clazsId){
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sysUserBean=new SysUserBean();
-                sysUserBean.setRealName("新用户");
-                sysUserBean.setMobilePhone(phone);
-                if (toolbarActionCallback != null) {
-                    toolbarActionCallback.onRightComponentClick();
-                }
-            }
-        },500);
-    }
+//    private void fadeSignUpRequest(final String phone, final String psw, final int clazsId){
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                /*模拟请求成功*/
+//                sysUserBean=new SysUserBean();
+//                sysUserBean.setRealName("新用户");
+//                sysUserBean.setMobilePhone(phone);
+//                if (toolbarActionCallback != null) {
+//                    toolbarActionCallback.onRightComponentClick();
+//                }
+//
+//
+////                if (new Random().nextBoolean()) {
+////                /*模拟请求失败*/
+////                    disableNextStepBtn();
+////                    mRootView.showOtherErrorView("请求失败");
+////
+////                }else {
+////                /*模拟网络问题*/
+////                    disableNextStepBtn();
+////                    mRootView.showNetErrorView();
+////                    mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
+////                        @Override
+////                        public void onClick(View view) {
+////                            fadeSignUpRequest(phone, psw, clazsId);
+////                        }
+////                    });
+////
+////                }
+//
+//            }
+//        },500);
+//    }
 
 
     /**
@@ -188,12 +217,12 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
      * 传递参数 为 手机号 密码MD5  验证码
      *
      * */
-    private void signUpRequest(final String phone, final String md5Psw, final String clazsId){
+    private void signUpRequest(final String phone, final String md5Psw, final int clazsId){
         SignUpRequest signUpRequest=new SignUpRequest();
         signUpRequest.mobile=phone;
         signUpRequest.password=md5Psw;
         signUpRequest.name=phone;
-        signUpRequest.clazsId=clazsId;
+        signUpRequest.clazsId=clazsId+"";
         signUpRequest.startRequest(SignUpResponse.class, new HttpCallback<SignUpResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignUpResponse ret) {

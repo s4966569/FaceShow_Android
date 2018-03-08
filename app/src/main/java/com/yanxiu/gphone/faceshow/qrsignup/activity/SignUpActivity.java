@@ -18,12 +18,20 @@ import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetPasswordFragment;
  * 分别对 手机号码进行检查 用户类型进行区分 与 设置用户密码并进行用户注册
  * 对应两种个情况  新用户 会要求设置密码
  * 用户中心已有用户 会直接进入信息设置{@link ModifySysUserActivity}
- *
- * */
+ */
 public class SignUpActivity extends FaceShowBaseActivity {
     private PublicLoadLayout mRootView;
 
     private SysUserBean sysUserBean;
+
+    /**
+     * classId
+     */
+    private int scannedClassId = 0;
+
+    public void setScannedClassId(int scannedClassId) {
+        this.scannedClassId = scannedClassId;
+    }
 
     /*各个步骤的fragment*/
     private CheckPhoneFragment checkPhoneFragment;
@@ -42,7 +50,10 @@ public class SignUpActivity extends FaceShowBaseActivity {
     private void fragmentInit() {
         checkPhoneFragment = new CheckPhoneFragment();
         setPasswordFragment = new SetPasswordFragment();
-
+        /*记录 扫描的clazsId*/
+        scannedClassId = getIntent().getBundleExtra("data").getInt("clazsId");
+        checkPhoneFragment.setScannedClassId(scannedClassId);
+        setPasswordFragment.setScannedClassId(scannedClassId);
         /*第一步 在验证手机号码以及验证码页面 点击返回与下一步 */
         checkPhoneFragment.setToolbarActionCallback(new ToolbarActionCallback() {
             @Override
@@ -92,13 +103,14 @@ public class SignUpActivity extends FaceShowBaseActivity {
             }
         });
     }
+
     /*将已经通过注册 或 用户中心获取的 信息传递到 信息设置界面*/
-    private void toProfileActivity(int userType){
-        Intent intent=new Intent(SignUpActivity.this,ModifySysUserActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putSerializable("user",sysUserBean);
-        bundle.putInt("type",userType);
-        intent.putExtra("data",bundle);
+    private void toProfileActivity(int userType) {
+        Intent intent = new Intent(SignUpActivity.this, ModifySysUserActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", sysUserBean);
+        bundle.putInt("type", userType);
+        intent.putExtra("data", bundle);
         startActivity(intent);
     }
 

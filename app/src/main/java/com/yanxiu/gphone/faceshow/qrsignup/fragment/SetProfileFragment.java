@@ -2,8 +2,8 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,11 +145,16 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         TextView sexTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_gender);
-        sexTv.setText(String.format("%s", userData.getSexName()));
+        sexTv.setText(String.format("%s", TextUtils.isEmpty(userData.getSexName())?"":userData.getSexName()));
 
         TextView stagetSunjectTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_stage_subject);
-        stagetSunjectTv.setText(String.format("%s", userData.getStageName() + "、" + userData.getSubjectName()));
+
+        StringBuilder stageSubject= new StringBuilder();
+        /*拼接 学段*/
+        stageSubject.append(!TextUtils.isEmpty(userData.getStageName())?userData.getStageName():"");
+        stageSubject.append(TextUtils.isEmpty(userData.getSubjectName())?"":"、"+userData.getSubjectName());
+        stagetSunjectTv.setText(String.format("%s",stageSubject.toString()));
     }
 
     /**
@@ -176,30 +181,30 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         titleRightText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fadeUpdataProfileRequest();
-//                updateSysUserInfoRequest(sysUserBean);
+//                fadeUpdataProfileRequest();
+                updateSysUserInfoRequest(sysUserBean);
             }
         });
     }
 
-    /**
+ /*   *//**
      * 模拟上传用户信息 网络请求
-     * */
-    private void fadeUpdataProfileRequest() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ToastUtil.showToast(getActivity(), "用户信息已经上传！");
-            }
-        }, 400);
-    }
+     * *//*
+//    private void fadeUpdataProfileRequest() {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                ToastUtil.showToast(getActivity(), "用户信息已经上传！");
+//            }
+//        }, 400);
+//    }*/
 
     /**
      * 上传 用户信息到服务器
      */
-    private void updateSysUserInfoRequest(SysUserBean userBean) {
-        UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
-
+    private void updateSysUserInfoRequest(final SysUserBean userBean) {
+        final UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
+        updateProfileRequest.userId=userBean.getUserId()+"";
         updateProfileRequest.realName = userBean.getRealName();
         updateProfileRequest.sex = userBean.getSex();
         updateProfileRequest.stage = userBean.getStage();
@@ -210,12 +215,24 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         updateProfileRequest.startRequest(UpdateProfileResponse.class, new HttpCallback<UpdateProfileResponse>() {
             @Override
             public void onSuccess(RequestBase request, UpdateProfileResponse ret) {
-
+                mRootView.hiddenLoadingView();
+                if (ret.getCode()==0) {
+                    ToastUtil.showToast(getActivity(),"用户信息已经保存！");
+                }else {
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
+                }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-
+                mRootView.hiddenLoadingView();
+                mRootView.showNetErrorView();
+                mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        updateSysUserInfoRequest(userBean);
+                    }
+                });
             }
         });
     }

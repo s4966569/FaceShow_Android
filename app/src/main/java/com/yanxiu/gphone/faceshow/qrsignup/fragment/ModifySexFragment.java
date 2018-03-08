@@ -76,6 +76,13 @@ public class ModifySexFragment extends Fragment implements View.OnClickListener 
         });
         root.findViewById(R.id.rl_boy).setOnClickListener(this);
         root.findViewById(R.id.rl_girl).setOnClickListener(this);
+
+        /*根据已有信息显示 性别*/
+        if (userBean.getSex()==0) {
+            setMan();
+        }else {
+            setGirl();
+        }
     }
 
     private ToolbarActionCallback toolbarActionCallback;
@@ -88,19 +95,27 @@ public class ModifySexFragment extends Fragment implements View.OnClickListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_boy:
-                root.findViewById(R.id.boy_click).setVisibility(View.VISIBLE);
-                root.findViewById(R.id.girl_click).setVisibility(View.INVISIBLE);
-                userBean.setSex(0);
-                userBean.setSexName("男");
+                setMan();
                 break;
             case R.id.rl_girl:
-                root.findViewById(R.id.boy_click).setVisibility(View.INVISIBLE);
-                root.findViewById(R.id.girl_click).setVisibility(View.VISIBLE);
-                userBean.setSex(1);
-                userBean.setSexName("女");
+                setGirl();
                 break;
             default:
                 break;
         }
+    }
+
+    private void setGirl() {
+        root.findViewById(R.id.boy_click).setVisibility(View.INVISIBLE);
+        root.findViewById(R.id.girl_click).setVisibility(View.VISIBLE);
+        userBean.setSex(1);
+        userBean.setSexName("女");
+    }
+
+    private void setMan() {
+        root.findViewById(R.id.boy_click).setVisibility(View.VISIBLE);
+        root.findViewById(R.id.girl_click).setVisibility(View.INVISIBLE);
+        userBean.setSex(0);
+        userBean.setSexName("男");
     }
 }

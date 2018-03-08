@@ -3,9 +3,10 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,6 @@ import com.yanxiu.gphone.faceshow.qrsignup.response.VerifyCodeConfirmResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -73,6 +73,14 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 
     private ToolbarActionCallback toolbarActionCallback;
 
+    /**
+     * classId
+     * */
+    private int scannedClassId=0;
+
+    public void setScannedClassId(int scannedClassId) {
+        this.scannedClassId = scannedClassId;
+    }
 
     /*计时器*/
     private Timer verifyTimer;
@@ -122,7 +130,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         phoneEditText = (ClearEditText) checkPhoneView.findViewById(R.id.edt_phone_number);
         verifyCodeEditText = (ClearEditText) checkPhoneView.findViewById(R.id.edt_verification_code);
         getVerifyCodeTextView = (TextView) checkPhoneView.findViewById(R.id.tv_get_verification_code);
-
+        phoneEditText.addTextChangedListener(phoneInputWatcher);
         getVerifyCodeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,17 +141,51 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                     /*启动计时器*/
                     startTimer();
                     /*发起网络请求*/
-                    fadeVerifyCodeRequest();
-//                    verfifyCodeRequest(phoneEditText.getText().toString(), "10");
+//                    fadeVerifyCodeRequest(); 本地模拟请求
+                    verfifyCodeRequest(phoneEditText.getText().toString(), scannedClassId);
                 } else {
                     // TODO: 2018/3/1 提示手机号格式不正确
                     mRootView.hiddenLoadingView();
                 }
             }
         });
-
         dialogInit();
     }
+    /**
+     * 手机号输入 检查 控制 获取验证码 按钮
+     * */
+    private TextWatcher phoneInputWatcher=new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            if (charSequence.length()>10) {
+                enableVerifyCodeBtn();
+            }else {
+                disableVerifyCodeBtn();
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+        }
+    };
+    /**
+     * 开启 获取验证的点击功能 以及UI 变化
+     * */
+    private void enableVerifyCodeBtn(){
+        getVerifyCodeTextView.setEnabled(true);
+        getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
+    }
+
+    private void disableVerifyCodeBtn(){
+        getVerifyCodeTextView.setEnabled(false);
+        getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
+    }
+
 
     /**
      * 取消计时器  退出界面 以及超时时使用
@@ -219,11 +261,11 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                     mRootView.showLoadingView();
 
                     /*模拟网络请求*/
-                    fadeUserTypeCheckRequest(phoneEditText.getText().toString(),
-                            verifyCodeEditText.getText().toString(), "10");
+//                    fadeUserTypeCheckRequest(phoneEditText.getText().toString(),
+//                            verifyCodeEditText.getText().toString(), scannedClassId); 本地模拟请求
 
-//                    userTypeCheckRequest(phoneEditText.getText().toString(),
-//                            verifyCodeEditText.getText().toString(), "10");
+                    userTypeCheckRequest(phoneEditText.getText().toString(),
+                            verifyCodeEditText.getText().toString(), scannedClassId);
                 }
             }
         });
@@ -249,47 +291,64 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
     /**
      * 模拟的 验证码请求
      * */
-    private void fadeVerifyCodeRequest(){
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                alertDialog.setMessage("验证码已经发送");
-                alertDialog.show();
-                enableNextStepBtn();
-                mRootView.hiddenLoadingView();
-            }
-        },300);
-    }
+//    private void fadeVerifyCodeRequest(){
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                /*请求成功的情况*/
+//                alertDialog.setMessage("验证码已经发送");
+//                alertDialog.show();
+//                enableNextStepBtn();
+//                mRootView.hiddenLoadingView();
+//
+////                if (new Random().nextBoolean()) {
+////                /*请求失败的情况 */
+////                    mRootView.showOtherErrorView("请求失败 提示retry");
+////                }else {
+////                /*网络失败的额情况*/
+////                    mRootView.showNetErrorView();
+////                }
+////                mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
+////                    @Override
+////                    public void onClick(View view) {
+////                        fadeVerifyCodeRequest();
+////                    }
+////                });
+//
+//            }
+//        },300);
+//    }
 
 
     /**
      * 模拟的 账号验证请求
      */
-    private void fadeUserTypeCheckRequest(final String phone, final String verifycode, final String clazsID) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Random random = new Random();
-                int n = random.nextInt(2);
-                if (n == 0) {
-                    /*账号没有注册过 */
-                    phoneNumber=phone;
-                    userType=UNRIGISTED_USER;
-                } else if (n == 1) {
-                    /*重复添加注册 提示重复 跳转登录*/
-                    sysUserBean=new SysUserBean();
-                    sysUserBean.setRealName("中心用户");
-                    sysUserBean.setMobilePhone(phone);
-                    userType=SERVER_USER;
-                }
-                /*隐藏 loading*/
-                mRootView.hiddenLoadingView();
-                if (toolbarActionCallback != null) {
-                    toolbarActionCallback.onRightComponentClick();
-                }
-            }
-        }, 500);
-    }
+//    private void fadeUserTypeCheckRequest(final String phone, final String verifycode, final int clazsID) {
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Random random = new Random();
+//                int n = random.nextInt(2);
+//                if (n == 0) {
+//                    /*账号没有注册过 */
+//                    phoneNumber=phone;
+//                    userType=UNRIGISTED_USER;
+//                } else if (n == 1) {
+//                    /*重复添加注册 提示重复 跳转登录*/
+//                    sysUserBean=new SysUserBean();
+//                    sysUserBean.setRealName("中心用户");
+//                    sysUserBean.setMobilePhone(phone);
+//                    userType=SERVER_USER;
+//                }
+//                /*隐藏 loading*/
+//                mRootView.hiddenLoadingView();
+//                if (toolbarActionCallback != null) {
+//                    toolbarActionCallback.onRightComponentClick();
+//                }
+//            }
+//        }, 500);
+//    }
 
 
     /**
@@ -297,10 +356,10 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
      * 验证成功 则可以进入下一步
      * 需要对手机号进行保存
      */
-    private void userTypeCheckRequest(final String phone, final String verifycode, final String clazsID) {
+    private void userTypeCheckRequest(final String phone, final String verifycode, final int clazsID) {
 
         VerifyCodeConfirmRequest confirmRequest = new VerifyCodeConfirmRequest();
-        confirmRequest.clazsId = clazsID;
+        confirmRequest.clazsId = clazsID+"";
         confirmRequest.mobile = phone;
         confirmRequest.code = verifycode;
         /*验证验证码与手机号  结果只有两种情况 通过和未通过，不需要对UI进行使能更改
@@ -318,10 +377,12 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                             phoneNumber = phone;
                             break;
                         case SERVER_USER:
-                            /*用户中心用户 保存 sysuserbean*/
+                            /*用户中心用户 保存 sysuserbean 等待 用户信息设置后进行 保存*/
+                            sysUserBean=ret.getSysUser();
                         case APP_USER:
-                            /*注册用户 保存 sysuser*/
-                            sysUserBean = ret.getSysUser();
+                            /*注册用户 保存 后台会自动对未添加班级的用户进行添加操作  不需要跳转*/
+                            alertDialog.setMessage(ret.getError().getMessage());
+                            alertDialog.show();
                             break;
                         default:
                             break;
@@ -356,9 +417,9 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
     /**
      * 请求获取验证码
      */
-    private void verfifyCodeRequest(final String number, final String clazsId) {
+    private void verfifyCodeRequest(final String number, final int clazsId) {
         PhoneNumCheckRequest request = new PhoneNumCheckRequest();
-        request.clazsId = clazsId;
+        request.clazsId = clazsId+"";
         request.mobile = number;
         request.startRequest(CheckPhoneNumResponse.class, new HttpCallback<CheckPhoneNumResponse>() {
             @Override
@@ -370,7 +431,8 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 } else {
                     /*发送验证码失败 关闭 下一步使能*/
                     disableNextStepBtn();
-                    alertDialog.setMessage(ret.getError().getMessage());
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
+//                    alertDialog.setMessage(ret.getError().getMessage());
                 }
             }
 
@@ -398,6 +460,11 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         /*首先验证基本格式 空 4位数字等等*/
         if (TextUtils.isEmpty(verifyCode)) {
             ToastUtil.showToast(getActivity(), "验证码不能为空");
+            return false;
+        }
+        /*验证码在4~6位*/
+        if (verifyCode.length()<4||verifyCode.length()>7){
+            ToastUtil.showToast(getActivity(),"验证码格式不正确");
             return false;
         }
         return true;

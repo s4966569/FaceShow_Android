@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,12 +34,14 @@ public class ModifyStageFragment extends Fragment {
     public ModifyStageFragment() {
         // Required empty public constructor
     }
+
     private SysUserBean userBean;
 
     private StageSubjectModel mStageSubjectModel;
     private int mSelectedPosition = 0;
     private boolean canSelected = false;
     RecyclerView mRecyclerViewChooseStage;
+
     public void setUserBean(SysUserBean userBean) {
         this.userBean = userBean;
     }
@@ -54,8 +55,8 @@ public class ModifyStageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(root==null) {
-            root=inflater.inflate(R.layout.activity_modify_user_stage_and_sbuject, null);
+        if (root == null) {
+            root = inflater.inflate(R.layout.activity_modify_user_stage_and_sbuject, null);
             publicLoadLayout = new PublicLoadLayout(getActivity());
             publicLoadLayout.setContentView(root);
 
@@ -72,27 +73,39 @@ public class ModifyStageFragment extends Fragment {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerViewChooseStage.setLayoutManager(linearLayoutManager);
         mRecyclerViewChooseStage.setAdapter(modifyUserStageAdapter);
+        /*初始化 选择的显示*/
+        for (StageSubjectModel.DataBean dataBean : mStageSubjectModel.getData()) {
+            if (dataBean.getId().equals(userBean.getStage()+"")) {
+                modifyUserStageAdapter.setDefaultSelectPosition(mStageSubjectModel.getData().indexOf(dataBean));
+                break;
+            }
+        }
     }
+
     /**
-    * 选择监听
+     * 选择监听
      * 只有选择了学段之后才能选择 科目
-    * */
+     */
     private IRecyclerViewItemClick mIRecyclerViewItemClickListener = new IRecyclerViewItemClick() {
         @Override
         public void onItemClick(View view, int position) {
+            enableNextStepBtn();
             mSelectedPosition = position;
-            userBean.setStage(mSelectedPosition);
+            /*获取 stage的ID*/
+            String stageId=mStageSubjectModel.getData().get(mSelectedPosition).getId();
+            userBean.setStage(Integer.valueOf(stageId));
             userBean.setStageName(mStageSubjectModel.getData().get(mSelectedPosition).getName());
-//            mTitleLayoutRightText.setTextColor(ContextCompat.getColor(ModifyUserStageActivity.this, R.color.color_1da1f2));
             canSelected = true;
         }
     };
+    ImageView backView;
+    TextView titleTxt;
+    TextView rightTxt;
 
-    private void viewInit(View root ){
-        ImageView backView=root.findViewById(R.id.title_layout_left_img);
-        TextView titleTxt=root.findViewById(R.id.title_layout_title);
-        TextView rightTxt=root.findViewById(R.id.title_layout_right_txt);
-        final EditText editText=root.findViewById(R.id.edt_name);
+    private void viewInit(View root) {
+        backView = root.findViewById(R.id.title_layout_left_img);
+        titleTxt = root.findViewById(R.id.title_layout_title);
+        rightTxt = root.findViewById(R.id.title_layout_right_txt);
 
         backView.setVisibility(View.VISIBLE);
         rightTxt.setVisibility(View.VISIBLE);
@@ -118,11 +131,28 @@ public class ModifyStageFragment extends Fragment {
             }
         });
 
-        mRecyclerViewChooseStage=root.findViewById(R.id.recyclerView_choose_stage);
-
+        mRecyclerViewChooseStage = root.findViewById(R.id.recyclerView_choose_stage);
+        disableNextStepBtn();
     }
 
     private ModifySysInfoCallback modifySysInfoCallback;
+
+    /**
+     * 开启下一步
+     */
+    public void enableNextStepBtn() {
+        rightTxt.setEnabled(true);
+        rightTxt.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
+    }
+
+    /**
+     * 关闭下一步
+     */
+    public void disableNextStepBtn() {
+        rightTxt.setEnabled(false);
+        rightTxt.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
+    }
+
 
     public void setModifySysInfoCallback(ModifySysInfoCallback modifySysInfoCallback) {
         this.modifySysInfoCallback = modifySysInfoCallback;

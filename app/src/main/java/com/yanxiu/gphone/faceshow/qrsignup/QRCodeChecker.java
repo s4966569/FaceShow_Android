@@ -79,4 +79,13 @@ public class QRCodeChecker {
     }
 
 
+    /**
+     * 二维码 信息提取
+     * 提取 calzsId
+     * */
+    public int getClazsIdFromQR(String result){
+        return -1;
+    }
+
+
 }

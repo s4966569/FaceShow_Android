@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
  * A simple {@link Fragment} subclass.
  */
 public class ModifyNameFragment extends Fragment {
-
+    private final String TAG=getClass().getSimpleName();
 
     public ModifyNameFragment() {
         // Required empty public constructor
@@ -69,13 +70,16 @@ public class ModifyNameFragment extends Fragment {
         rightTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveName(editText.getText().toString());
+                /*点击保存 首先判断 gettext是否为空 为空说明没有编辑 采用hint 进行保存 */
+                String nameStr=TextUtils.isEmpty(editText.getText().toString())
+                        ?editText.getHint().toString():editText.getText().toString();
+                saveName(nameStr);
                 if (toolbarActionCallback != null) {
                     toolbarActionCallback.onRightComponentClick();
                 }
             }
         });
-
+        editText.setHint(userBean.getRealName());
     }
 
 
