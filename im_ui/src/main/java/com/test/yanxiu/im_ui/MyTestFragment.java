@@ -16,7 +16,6 @@ import android.widget.Button;
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
-import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
@@ -40,7 +39,6 @@ import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
-import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.common.ImTopic;
@@ -52,18 +50,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class TopicFragment extends FaceShowBaseFragment {
+public class MyTestFragment extends FaceShowBaseFragment {
     Button btn;
 
-    public TopicFragment() {
+    public MyTestFragment() {
         // Required empty public constructor
     }
 
@@ -77,7 +71,7 @@ public class TopicFragment extends FaceShowBaseFragment {
 
         testDb();
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_topic, container, false);
+        View v = inflater.inflate(R.layout.fragment_my_test, container, false);
         btn = v.findViewById(R.id.send_btn);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

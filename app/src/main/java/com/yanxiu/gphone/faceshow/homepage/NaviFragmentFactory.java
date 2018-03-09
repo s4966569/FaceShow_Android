@@ -4,8 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import com.test.yanxiu.im_ui.ImTestFragment;
-import com.test.yanxiu.im_ui.TopicFragment;
+import com.test.yanxiu.im_ui.ImTopicListFragment;
+import com.test.yanxiu.im_ui.MyTestFragment;
 import com.yanxiu.gphone.faceshow.R;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
@@ -27,8 +27,8 @@ public class NaviFragmentFactory {
     private ClassCircleFragment mClassCircleFragment = new ClassCircleFragment();//班级圈
     private MyFragment mMyFragment = new MyFragment();//我
 
-    private TopicFragment mTopicFragment = new TopicFragment(); //IM相关
-    private ImTestFragment mTestFragment = new ImTestFragment();
+    private MyTestFragment mMyTestFragment = new MyTestFragment(); //IM相关
+    private ImTopicListFragment mTestFragment = new ImTopicListFragment();
 
     private List<FaceShowBaseFragment> fragments = new ArrayList<FaceShowBaseFragment>(
             Arrays.asList(
@@ -36,7 +36,7 @@ public class NaviFragmentFactory {
                     mNoticeFragment,
                     mClassCircleFragment,
                     //mMyFragment,
-                    //mTopicFragment
+                    //mMyTestFragment
                     mTestFragment
                     )
     );
@@ -79,8 +79,8 @@ public class NaviFragmentFactory {
         return mMyFragment;
     }
 
-    public TopicFragment getTopicFragment() {
-        return mTopicFragment;
+    public MyTestFragment getTopicFragment() {
+        return mMyTestFragment;
     }
 
     public FaceShowBaseFragment hideAndShowFragment(FragmentManager fragmentManager, int index) {
