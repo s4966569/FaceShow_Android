@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.test.yanxiu.network.HttpCallback;
@@ -175,7 +174,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             @Override
             public void onSuccess(RequestBase request, QrClazsInfoResponse ret) {
                 /*网络请求成功*/
-                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+//                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 mLoadingDialogView.dismiss();
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*服务器请求成功*/

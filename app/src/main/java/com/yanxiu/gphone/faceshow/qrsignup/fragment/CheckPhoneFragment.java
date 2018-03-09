@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -401,12 +400,12 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         VerifyCodeRequest verifyCodeRequest = new VerifyCodeRequest();
         verifyCodeRequest.clazsId = clazsId + "";
         verifyCodeRequest.mobile = number;
-        Log.i(TAG, "verfifyCodeRequest: "+new Gson().toJson(verifyCodeRequest));
-        Log.i(TAG, "verfifyCodeRequest: url "+ UrlRepository.getInstance().getServer());
+//        Log.i(TAG, "verfifyCodeRequest: "+new Gson().toJson(verifyCodeRequest));
+//        Log.i(TAG, "verfifyCodeRequest: url "+ UrlRepository.getInstance().getServer());
         verifyCodeRequest.startRequest(VerifyCodeResponse.class, new HttpCallback<VerifyCodeResponse>() {
             @Override
             public void onSuccess(RequestBase request, VerifyCodeResponse ret) {
-                Log.i(TAG, "onSuccess: verifyCode "+new Gson().toJson(ret));
+//                Log.i(TAG, "onSuccess: verifyCode "+new Gson().toJson(ret));
                 mRootView.hiddenLoadingView();
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*成功下发了 验证码 开启下一步使能*/

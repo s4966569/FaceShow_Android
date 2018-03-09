@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
-import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.test.yanxiu.network.HttpCallback;
@@ -235,7 +234,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         clazsInfoRequest.startRequest(ScanClazsCodeResponse.class, new HttpCallback<ScanClazsCodeResponse>() {
             @Override
             public void onSuccess(RequestBase request, final ScanClazsCodeResponse ret) {
-                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
+//                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
                 /*网络请求成功*/
                 mLoadingDialogView.dismiss();
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
@@ -287,7 +286,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         mUUID = getSudentClazsesRequest.startRequest(GetStudentClazsesResponse.class, new HttpCallback<GetStudentClazsesResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetStudentClazsesResponse ret) {
-                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+//                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 mLoadingDialogView.dismiss();
                 mUUID = null;
                 if (ret != null && ret.getCode() == 0) {
