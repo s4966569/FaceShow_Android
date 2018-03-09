@@ -35,7 +35,7 @@ public class SysUserBean implements Serializable{
     private int stage;
     private int subject;
     private int userStatus;
-    private String ucnterId;
+    private int ucnterId;
     private int sex;
     private String school;
     private String avatar;
@@ -108,11 +108,11 @@ public class SysUserBean implements Serializable{
         this.userStatus = userStatus;
     }
 
-    public String getUcnterId() {
+    public int getUcnterId() {
         return ucnterId;
     }
 
-    public void setUcnterId(String ucnterId) {
+    public void setUcnterId(int ucnterId) {
         this.ucnterId = ucnterId;
     }
 

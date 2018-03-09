@@ -144,6 +144,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         isToFirstFragment = intent.getBooleanExtra(ToMainActivityBroadcastReceiver.IS_TO_FIRST_FRAGMENT,
                 false);
         setIntent(intent);
+        setHomeFragment();
     }
 
     private void drawerLayoutInit() {

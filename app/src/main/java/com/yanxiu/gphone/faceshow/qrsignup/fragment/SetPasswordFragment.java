@@ -20,12 +20,14 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.request.SignUpRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.response.SignUpResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.util.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -221,7 +223,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     private void signUpRequest(final String phone, final String md5Psw, final int clazsId){
         SignUpRequest signUpRequest=new SignUpRequest();
         signUpRequest.mobile=phone;
-        signUpRequest.password=md5Psw;
+        signUpRequest.password= Utils.MD5Helper(md5Psw);
         signUpRequest.name=phone;
         signUpRequest.clazsId=clazsId+"";
         signUpRequest.startRequest(SignUpResponse.class, new HttpCallback<SignUpResponse>() {
@@ -238,18 +240,15 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                             }
                         }else {
                             /*没有返回 用信息的处理*/
-                            setErrorMsg(ret);
-                            alertDialog.show();
+                            ToastUtil.showToast(getActivity(), getErrorMsg(ret));
                         }
                     }else {
                         /*没有返回 data  检查error 字段 以及message 字段*/
-                        setErrorMsg(ret);
-                        alertDialog.show();
+                        ToastUtil.showToast(getActivity(),getErrorMsg(ret));
                     }
                 }else {
                     /*注册失败 */
-                    setErrorMsg(ret);
-                    alertDialog.show();
+                    ToastUtil.showToast(getActivity(),getErrorMsg(ret));
                 }
             }
 
@@ -300,7 +299,15 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
         return true;
     }
-
+    private String getErrorMsg(FaceShowBaseResponse ret) {
+        if (ret.getError() != null) {
+            return TextUtils.isEmpty(ret.getError().getMessage()) ?
+                    "请求失败" : ret.getError().getMessage();
+        } else {
+            return TextUtils.isEmpty(ret.getMessage()) ?
+                    "请求失败" : ret.getMessage();
+        }
+    }
     private AlertDialog alertDialog;
 
     private void dialogInit() {

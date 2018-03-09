@@ -4,17 +4,20 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.request.UpdateProfileRequest;
@@ -204,22 +207,23 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
      */
     private void updateSysUserInfoRequest(final SysUserBean userBean) {
         final UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
+
+        Log.i(TAG, "updateSysUserInfoRequest:  " +new Gson().toJson(userBean));
         updateProfileRequest.userId=userBean.getUserId()+"";
         updateProfileRequest.realName = userBean.getRealName();
-        updateProfileRequest.sex = userBean.getSex();
-        updateProfileRequest.stage = userBean.getStage();
-        updateProfileRequest.schoolNmae = userBean.getRealName();
-        updateProfileRequest.url = userBean.getRealName();
-        updateProfileRequest.subject = userBean.getSubject();
+        updateProfileRequest.sex = userBean.getSex()+"";
+        updateProfileRequest.stage = userBean.getStage()+"";
+        updateProfileRequest.subject = userBean.getSubject()+"";
 
         updateProfileRequest.startRequest(UpdateProfileResponse.class, new HttpCallback<UpdateProfileResponse>() {
             @Override
             public void onSuccess(RequestBase request, UpdateProfileResponse ret) {
                 mRootView.hiddenLoadingView();
+                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 if (ret.getCode()==0) {
                     ToastUtil.showToast(getActivity(),"用户信息已经保存！");
                 }else {
-                    setErrorMsg(ret);
+                    ToastUtil.showToast(getActivity(),getErrorMsg(ret));
 //                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
@@ -255,7 +259,15 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         }
     }
 
-
+    private String getErrorMsg(FaceShowBaseResponse ret) {
+        if (ret.getError() != null) {
+            return TextUtils.isEmpty(ret.getError().getMessage()) ?
+                    "请求失败" : ret.getError().getMessage();
+        } else {
+            return TextUtils.isEmpty(ret.getMessage()) ?
+                    "请求失败" : ret.getMessage();
+        }
+    }
     @Override
     public void onClick(View v) {
         if (itemClickListener != null) {

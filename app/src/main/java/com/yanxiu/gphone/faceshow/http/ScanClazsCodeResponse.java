@@ -1,14 +1,13 @@
-package com.yanxiu.gphone.faceshow.qrsignup.response;
+package com.yanxiu.gphone.faceshow.http;
 
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 
 /**
- * Created by srt on 2018/3/7.
+ * Created by srt on 2018/3/9.
  */
 
-public class QrClazsInfoResponse extends FaceShowBaseResponse {
-
+public class ScanClazsCodeResponse extends FaceShowBaseResponse {
 
     /**
      * data : {"clazsInfo":{"id":88,"platId":1,"projectId":79,"clazsName":"尚睿通2018公司年会","clazsStatus":1,"clazsType":1,"startTime":"2018-02-12 00:00:00","endTime":"2018-02-12 00:00:00","description":"尚睿通公司年会","topicId":null,"manager":null,"master":null,"clazsStatusName":null,"projectName":null},"clazsId":88,"sysUser":{"id":82,"userId":9768712,"realName":"多隆测试","mobilePhone":"18012345678","email":null,"stage":1202,"subject":1103,"userStatus":1,"ucnterId":null,"sex":1,"school":null,"avatar":null,"stageName":"小学","imTokenInfo":null,"subjectName":"数学","sexName":null}}
@@ -39,6 +38,7 @@ public class QrClazsInfoResponse extends FaceShowBaseResponse {
     public void setCurrentTime(long currentTime) {
         this.currentTime = currentTime;
     }
+
 
 
     public static class DataBean {
@@ -103,11 +103,11 @@ public class QrClazsInfoResponse extends FaceShowBaseResponse {
             private String startTime;
             private String endTime;
             private String description;
-            private String topicId;
-            private String manager;
-            private String master;
-            private String clazsStatusName;
-            private String projectName;
+            private Object topicId;
+            private Object manager;
+            private Object master;
+            private Object clazsStatusName;
+            private Object projectName;
 
             public int getId() {
                 return id;
@@ -185,42 +185,43 @@ public class QrClazsInfoResponse extends FaceShowBaseResponse {
                 return topicId;
             }
 
-            public void setTopicId(String topicId) {
+            public void setTopicId(Object topicId) {
                 this.topicId = topicId;
             }
 
-            public String getManager() {
+            public Object getManager() {
                 return manager;
             }
 
-            public void setManager(String manager) {
+            public void setManager(Object manager) {
                 this.manager = manager;
             }
 
-            public String getMaster() {
+            public Object getMaster() {
                 return master;
             }
 
-            public void setMaster(String master) {
+            public void setMaster(Object master) {
                 this.master = master;
             }
 
-            public String getClazsStatusName() {
+            public Object getClazsStatusName() {
                 return clazsStatusName;
             }
 
-            public void setClazsStatusName(String clazsStatusName) {
+            public void setClazsStatusName(Object clazsStatusName) {
                 this.clazsStatusName = clazsStatusName;
             }
 
-            public String getProjectName() {
+            public Object getProjectName() {
                 return projectName;
             }
 
-            public void setProjectName(String projectName) {
+            public void setProjectName(Object projectName) {
                 this.projectName = projectName;
             }
         }
+
 
     }
 }

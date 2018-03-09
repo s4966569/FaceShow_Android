@@ -15,18 +15,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.ClearEditText;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.dialog.SignUpDialogFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.request.PhoneNumCheckRequest;
+import com.yanxiu.gphone.faceshow.qrsignup.request.VerifyCodeRequest;
 import com.yanxiu.gphone.faceshow.qrsignup.response.CheckPhoneNumResponse;
+import com.yanxiu.gphone.faceshow.qrsignup.response.VerifyCodeResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
@@ -140,7 +144,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                     /*启动计时器*/
                     startTimer();
                     /*发起网络请求*/
-//                    fadeVerifyCodeRequest(); 本地模拟请求
                     verfifyCodeRequest(phoneEditText.getText().toString(), scannedClassId);
                 } else {
                     // TODO: 2018/3/1 提示手机号格式不正确
@@ -148,7 +151,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 }
             }
         });
-        dialogInit();
+//        dialogInit();
     }
 
     /**
@@ -192,13 +195,22 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
      * 取消计时器  退出界面 以及超时时使用
      */
     private void cancelTimer() {
-        timerTask.cancel();
-        verifyTimer.cancel();
-        verifyTimer.purge();
+        /*防止重复 cancel*/
+        if (timerTask != null) {
+            timerTask.cancel();
+
+        }
+        if (verifyTimer != null) {
+            verifyTimer.cancel();
+            verifyTimer.purge();
+        }
         getVerifyCodeTextView.setEnabled(true);
          /*更改 倒计时颜色*/
         getVerifyCodeTextView.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
         getVerifyCodeTextView.setText("获取验证码");
+
+        timerTask=null;
+        verifyTimer=null;
     }
 
     /**
@@ -261,10 +273,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 if (checkVerifyCode(verifyCodeEditText.getText().toString())) {
                     mRootView.showLoadingView();
 
-                    /*模拟网络请求*/
-//                    fadeUserTypeCheckRequest(phoneEditText.getText().toString(),
-//                            verifyCodeEditText.getText().toString(), scannedClassId); 本地模拟请求
-
                     userTypeCheckRequest(phoneEditText.getText().toString(),
                             verifyCodeEditText.getText().toString(), scannedClassId);
                 }
@@ -289,67 +297,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         }
     }
 
-    /**
-     * 模拟的 验证码请求
-     * */
-//    private void fadeVerifyCodeRequest(){
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                /*请求成功的情况*/
-//                alertDialog.setMessage("验证码已经发送");
-//                alertDialog.show();
-//                enableNextStepBtn();
-//                mRootView.hiddenLoadingView();
-//
-////                if (new Random().nextBoolean()) {
-////                /*请求失败的情况 */
-////                    mRootView.showOtherErrorView("请求失败 提示retry");
-////                }else {
-////                /*网络失败的额情况*/
-////                    mRootView.showNetErrorView();
-////                }
-////                mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
-////                    @Override
-////                    public void onClick(View view) {
-////                        fadeVerifyCodeRequest();
-////                    }
-////                });
-//
-//            }
-//        },300);
-//    }
-
-
-    /**
-     * 模拟的 账号验证请求
-     */
-//    private void fadeUserTypeCheckRequest(final String phone, final String verifycode, final int clazsID) {
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Random random = new Random();
-//                int n = random.nextInt(2);
-//                if (n == 0) {
-//                    /*账号没有注册过 */
-//                    phoneNumber=phone;
-//                    userType=UNRIGISTED_USER;
-//                } else if (n == 1) {
-//                    /*重复添加注册 提示重复 跳转登录*/
-//                    sysUserBean=new SysUserBean();
-//                    sysUserBean.setRealName("中心用户");
-//                    sysUserBean.setMobilePhone(phone);
-//                    userType=SERVER_USER;
-//                }
-//                /*隐藏 loading*/
-//                mRootView.hiddenLoadingView();
-//                if (toolbarActionCallback != null) {
-//                    toolbarActionCallback.onRightComponentClick();
-//                }
-//            }
-//        }, 500);
-//    }
 
 
     /**
@@ -368,7 +315,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         confirmRequest.startRequest(CheckPhoneNumResponse.class, new HttpCallback<CheckPhoneNumResponse>() {
             @Override
             public void onSuccess(RequestBase request, CheckPhoneNumResponse ret) {
-                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
+                Log.i(TAG, "onSuccess: type check" + new Gson().toJson(ret));
                 mRootView.hiddenLoadingView();
                 /*判断 服务器请求成功*/
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
@@ -381,10 +328,8 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                         alertDialog.show();
                     }
                 } else {
-                    /*验证失败 服务器 提示失败信息*/
-                    setErrorMsg(ret);
-//                    alertDialog.setMessage(ret.getError().getTitle()); 这里没有检查 getError 空情况
-                    alertDialog.show();
+                    /*验证失败 服务器 提示失败信息  包含 验证码失效的错误 以及其他未知错误*/
+                    ToastUtil.showToast(getActivity(),getErrorMsg(ret));
                 }
             }
 
@@ -418,16 +363,27 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             case SERVER_USER:
                 /*用户中心用户 保存 sysuserbean 等待 用户信息设置后进行 保存*/
                 if (ret.getData().getSysUser() != null) {
+                    Log.i(TAG, "checkUserType: "+new Gson().toJson(ret));
                     sysUserBean = ret.getData().getSysUser();
                 } else {
-                    // TODO: 2018/3/8  sysuser 字段为空 的处理 应该弹出提示 并禁止跳转
-                    setErrorMsg(ret);
-                    alertDialog.show();
+                    /*sysuser 字段为空 的处理 应该弹出提示 并禁止跳转*/
+                    ToastUtil.showToast(getActivity(),getErrorMsg(ret));
                 }
+                break;
             case APP_USER:
-                /*APP 用户 后台会进行 添加班级的操作 这里只弹出 提示即可 信息在message中 不在error*/
-                alertDialog.setMessage(ret.getMessage());
-                alertDialog.show();
+                /*APP 用户到这里 只可能是 APP 未添加该班级的用户
+                 已添加该班级的用户 在验证码请求的时候已经提示
+                 后台会进行添加班级的操作 这里只弹出 提示即可 信息在message中 不在error*/
+
+                StringBuilder stringBuilder=new StringBuilder();
+                stringBuilder.append("成功加入【"+ret.getData().getClazsInfo().getClazsName()+"】\n");
+                stringBuilder.append(ret.getData().getMsg());
+                createNomalDialog(stringBuilder.toString(), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        alertDialog.dismiss();
+                    }
+                });
                 break;
             default:
                 break;
@@ -442,22 +398,36 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
      * 请求获取验证码
      */
     private void verfifyCodeRequest(final String number, final int clazsId) {
-        PhoneNumCheckRequest request = new PhoneNumCheckRequest();
-        request.clazsId = clazsId + "";
-        request.mobile = number;
-        request.startRequest(CheckPhoneNumResponse.class, new HttpCallback<CheckPhoneNumResponse>() {
+        VerifyCodeRequest verifyCodeRequest = new VerifyCodeRequest();
+        verifyCodeRequest.clazsId = clazsId + "";
+        verifyCodeRequest.mobile = number;
+        Log.i(TAG, "verfifyCodeRequest: "+new Gson().toJson(verifyCodeRequest));
+        Log.i(TAG, "verfifyCodeRequest: url "+ UrlRepository.getInstance().getServer());
+        verifyCodeRequest.startRequest(VerifyCodeResponse.class, new HttpCallback<VerifyCodeResponse>() {
             @Override
-            public void onSuccess(RequestBase request, CheckPhoneNumResponse ret) {
+            public void onSuccess(RequestBase request, VerifyCodeResponse ret) {
+                Log.i(TAG, "onSuccess: verifyCode "+new Gson().toJson(ret));
+                mRootView.hiddenLoadingView();
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*成功下发了 验证码 开启下一步使能*/
                     enableNextStepBtn();
                     ToastUtil.showToast(getActivity(), "验证码已经发送到您的手机！");
                 } else {
                     /*发送验证码失败 关闭 下一步使能*/
-                    setErrorMsg(ret);
-                    alertDialog.show();
+                    cancelTimer();
                     disableNextStepBtn();
-                    mRootView.showOtherErrorView(ret.getError().getMessage());
+                    if (ret.getError() != null && ret.getError().getCode() == 210309) {
+                        createNomalDialog("您已经加入班级，请直接登录", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                alertDialog.dismiss();
+                            }
+                        });
+
+                    } else {
+                        /*其他未知的异常*/
+                        ToastUtil.showToast(getActivity(), getErrorMsg(ret));
+                    }
                 }
             }
 
@@ -465,6 +435,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             public void onFail(RequestBase request, Error error) {
                 /*网路请求失败 提示 */
                 disableNextStepBtn();
+                cancelTimer();
                 mRootView.showNetErrorView();
                 /*设置重试按钮监听*/
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
@@ -476,20 +447,31 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             }
         });
     }
+
     /**
      * 根据返回值 获取错误信息
-     * */
+     */
     private void setErrorMsg(CheckPhoneNumResponse ret) {
         if (ret.getError() != null) {
             /*首先检查 是否携带错误信息*/
             alertDialog.setMessage(ret.getError().getMessage());
-        }else {
+        } else {
             /*没有包含错误信息*/
             if (!TextUtils.isEmpty(ret.getMessage())) {
                 alertDialog.setMessage(ret.getMessage());
-            }else {
+            } else {
                 alertDialog.setMessage("请求失败！");
             }
+        }
+    }
+
+    private String getErrorMsg(FaceShowBaseResponse ret) {
+        if (ret.getError() != null) {
+            return TextUtils.isEmpty(ret.getError().getMessage()) ?
+                    "请求失败" : ret.getError().getMessage();
+        } else {
+            return TextUtils.isEmpty(ret.getMessage()) ?
+                    "请求失败" : ret.getMessage();
         }
     }
 
@@ -528,27 +510,26 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         titleRightText.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
     }
 
-    private CheckVerificationCallback checkVerificationCallback;
-
-    public void setCheckVerificationCallback(CheckVerificationCallback checkVerificationCallback) {
-        this.checkVerificationCallback = checkVerificationCallback;
-    }
-
-    public interface CheckVerificationCallback {
-        void onRequestGetVerifyCode(String phone);
-    }
-
     private AlertDialog alertDialog;
 
-    private void dialogInit() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("dialog").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                cancelTimer();
-                alertDialog.dismiss();
-            }
-        });
+
+    private void createNomalDialog(String msg, DialogInterface.OnClickListener btnListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setMessage(msg).setPositiveButton("确定", btnListener);
         alertDialog = builder.create();
+        alertDialog.show();
     }
+
+
+//    private void dialogInit() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage("dialog").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                cancelTimer();
+//                alertDialog.dismiss();
+//            }
+//        });
+//        alertDialog = builder.create();
+//    }
 }

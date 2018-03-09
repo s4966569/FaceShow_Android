@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.test.yanxiu.network.HttpCallback;
@@ -20,6 +22,7 @@ import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInCaptureManager;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.qrsignup.QRCodeChecker;
 import com.yanxiu.gphone.faceshow.qrsignup.base.PublicQRScanActivity;
@@ -35,6 +38,9 @@ import butterknife.ButterKnife;
  * 继承PublicQRScanActivity
  */
 public class QRCodeSignUpActivity extends PublicQRScanActivity {
+
+    private final String TAG=getClass().getSimpleName();
+
     private final int REQUEST_CODE_TO_CHECK_PHONE = 0X01;
     @BindView(R.id.img_left)
     ImageView imgLeft;
@@ -73,10 +79,12 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                 /*符合班级二维码格式 进行跳转，进入 号码检查界面 进行一个网络请求 获取班级详细信息*/
                 // TODO: 2018/3/7 拆分 二维码内容 获取classId
                 clazsInfoRequest(qrCodeChecker.getClazsIdFromQR(result)+"");
+//                toSignUpActivity(qrCodeChecker.getClazsIdFromQR(result));
             } else {
-                /*判断是否是 签到二维码*/
+                /*判断是否是 签到二维码 提示请先登录后再签到*/
                 if (qrCodeChecker.isCheckInCode(result)) {
-                    QRCodeSignUpActivity.this.finish();
+                    ToastUtil.showToast(QRCodeSignUpActivity.this,"请先登录后再签到");
+                    restartScan();
                 } else {
                     ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
                     restartScan();
@@ -167,25 +175,28 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             @Override
             public void onSuccess(RequestBase request, QrClazsInfoResponse ret) {
                 /*网络请求成功*/
+                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 mLoadingDialogView.dismiss();
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*服务器请求成功*/
-                    if (ret.getClazsInfo() != null||ret.getClazsId()!=0) {
+                    if (ret.getData() != null) {
                         /*可以获取到 classId*/
-                        toSignUpActivity(ret.getClazsId()!=0?
-                                ret.getClazsId():ret.getClazsInfo().getId());
+                        toSignUpActivity(ret.getData().getClazsId());
                     }else {
                         /*没有获取到有效的classId*/
-                        ToastUtil.showToast(QRCodeSignUpActivity.this,"班级信息获取失败！");
+                        ToastUtil.showToast(QRCodeSignUpActivity.this,getErrorMsg(ret));
+                        restartScan();
                     }
                 } else {
                     /*code!=0 是 服务器返回了 异常情况 可以判断是否是 班级二维码 或者 是其他二维码 */
-                    setErrorMsg(ret);
+                    ToastUtil.showToast(QRCodeSignUpActivity.this,getErrorMsg(ret));
+                    restartScan();
                 }
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
+                Log.i(TAG, "onFail: ");
                 mLoadingDialogView.dismiss();
                 publicLoadLayout.showNetErrorView();
                 publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
@@ -214,7 +225,15 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             }
         }
     }
-
+    private String getErrorMsg(FaceShowBaseResponse ret) {
+        if (ret.getError() != null) {
+            return TextUtils.isEmpty(ret.getError().getMessage()) ?
+                    "请求失败" : ret.getError().getMessage();
+        } else {
+            return TextUtils.isEmpty(ret.getMessage()) ?
+                    "请求失败" : ret.getMessage();
+        }
+    }
 
     /**
      * 条形码扫描视图

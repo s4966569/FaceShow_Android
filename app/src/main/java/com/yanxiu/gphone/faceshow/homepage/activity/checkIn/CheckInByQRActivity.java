@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
+import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.test.yanxiu.network.HttpCallback;
@@ -22,14 +24,21 @@ import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.LoadingDialogView;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
+import com.yanxiu.gphone.faceshow.http.ScanClazsCodeResponse;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.http.checkin.CheckInResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.UserSignInRequest;
+import com.yanxiu.gphone.faceshow.http.course.GetStudentClazsesResponse;
+import com.yanxiu.gphone.faceshow.http.course.GetSudentClazsesRequest;
+import com.yanxiu.gphone.faceshow.http.main.ScanClazsCodeRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.qrsignup.QRCodeChecker;
-import com.yanxiu.gphone.faceshow.qrsignup.request.QrClazsInfoRequest;
-import com.yanxiu.gphone.faceshow.qrsignup.response.QrClazsInfoResponse;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
+
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +52,8 @@ import butterknife.OnClick;
  */
 
 public class CheckInByQRActivity extends FaceShowBaseActivity {
+
+    private final String TAG = getClass().getSimpleName();
 
     @BindView(R.id.img_left)
     ImageView imgLeft;
@@ -60,7 +71,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
 
     /**
      * 条码处理器
-     * */
+     */
     private QRCodeChecker qrCodeChecker;
 
     private LoadingDialogView mLoadingDialogView;
@@ -88,13 +99,15 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         mCaptureManager.initializeFromIntent(getIntent(), savedInstanceState);
         mCaptureManager.decode();
         mCaptureManager.setCodeCallBack(codeCallBack);
-        qrCodeChecker=new QRCodeChecker();
+        qrCodeChecker = new QRCodeChecker();
+        mLoadingDialogView = new LoadingDialogView(this);
         dialogInit();
     }
 
     CheckInCaptureManager.CodeCallBack codeCallBack = new CheckInCaptureManager.CodeCallBack() {
         @Override
         public void callBack(String result) {
+            Log.i(TAG, "callBack: result = " + result);
             if (result != null) {
                 if (TextUtils.isEmpty(result)) {
                     CheckInByQRActivity.this.finish();
@@ -108,11 +121,12 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                         } else {
                             getLocation((values[1].split("="))[1], "");
                         }
-                    }else if (qrCodeChecker.isClazzCode(result)){
+                    } else if (qrCodeChecker.isClazzCode(result)) {
                         /*检查结果为 班级二维码 发起 班级 绑定请求*/
-                        scanClazsRequest(result);
-                    }else {
-                        /*其他*/
+                        scanClazsRequest(qrCodeChecker.getClazsIdFromQR(result)+"");
+                        restartScan();
+                    } else {
+                        /*其他 进入签到错误信息页面*/
                         Intent intent = new Intent(CheckInByQRActivity.this, CheckInErrorActivity.class);
                         CheckInResponse.Error error = new CheckInResponse.Error();
                         error.setCode(CheckInErrorActivity.QR_NO_USE);
@@ -159,9 +173,9 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 locationClient.stop();
                 double latitude = bdLocation.getLatitude();
                 double longitude = bdLocation.getLongitude();
-                if (TextUtils.isEmpty(bdLocation.getLocationDescribe())){
+                if (TextUtils.isEmpty(bdLocation.getLocationDescribe())) {
                     userSignIn(stepId, timestamp, "", "");
-                }else {
+                } else {
                     userSignIn(stepId, timestamp, longitude + "," + latitude, bdLocation.getLocationDescribe());
                 }
             }
@@ -170,9 +184,10 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
         locationClient.start();
         return locationClient;
     }
-/**
- * 签到 请求
- * */
+
+    /**
+     * 签到 请求
+     */
     private void userSignIn(String stepId, String timestamps, @NonNull String position, @NonNull String site) {
         UserSignInRequest userSignInRequest = new UserSignInRequest();
         userSignInRequest.position = position;
@@ -211,49 +226,46 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
 
     }
 
-/**
- * 加入班级请求
- * */
-    private void scanClazsRequest(String result){
-        QrClazsInfoRequest clazsInfoRequest = new QrClazsInfoRequest();
-
-        clazsInfoRequest.clazsId = qrCodeChecker.getClazsIdFromQR(result)+"";
-        clazsInfoRequest.startRequest(QrClazsInfoResponse.class, new HttpCallback<QrClazsInfoResponse>() {
+    /**
+     * 加入班级请求
+     */
+    private void scanClazsRequest(final String clazsId) {
+        ScanClazsCodeRequest clazsInfoRequest = new ScanClazsCodeRequest();
+        clazsInfoRequest.clazsId = clazsId;
+        clazsInfoRequest.startRequest(ScanClazsCodeResponse.class, new HttpCallback<ScanClazsCodeResponse>() {
             @Override
-            public void onSuccess(RequestBase request, final QrClazsInfoResponse ret) {
+            public void onSuccess(RequestBase request, final ScanClazsCodeResponse ret) {
+                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
                 /*网络请求成功*/
                 mLoadingDialogView.dismiss();
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*服务器请求成功*/
-                    if (ret.getClazsInfo() != null||ret.getClazsId()!=0) {
+                    if (ret.getData() != null && ret.getData().getClazsInfo() != null) {
                         /*可以获取到 classId*/
-                        alertDialog.setMessage("成功加入【"+ret.getClazsInfo().getClazsName()+"】");
+                        alertDialog.setMessage("成功加入【" + ret.getData().getClazsInfo().getClazsName() + "】");
                         alertDialog.show();
-                    }else {
+                    } else {
                         /*没有获取到有效的classId*/
-//                        ToastUtil.showToast(QRCodeSignUpActivity.this,"班级信息获取失败！");
+                        ToastUtil.showToast(CheckInByQRActivity.this, getErrorMsg(ret));
                     }
                 } else {
-                    /*code!=0 是 服务器返回了 异常情况 可以判断是否是 班级二维码 或者 是其他二维码 */
-//                    setErrorMsg(ret);
-                    if (ret.getCode()== ResponseConfig.ERROR_QR_HAS_JOINED_CLASS) {
+                    if (ret.getError().getCode() == ResponseConfig.ERROR_QR_HAS_JOINED_CLASS) {
                         /*已经加入了该班级*/
                         alertDialog.setMessage("已经加入此班级，点【确定】打开班级首页");
                         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // TODO: 2018/3/8  执行切换班级操作并 回到 首页
-                                /*直接设置 userInfo 的班级信息 */
-                                UserInfo.Info info = SpManager.getUserInfo();
-                                info.setClassId(String.valueOf(ret.getClazsInfo().getId()));
-                                info.setClassName(ret.getClazsInfo().getClazsName());
-                                info.setProjectName(ret.getClazsInfo().getProjectName());
-                                SpManager.saveUserInfo(info);
-
+                                /*直接设置 userInfo 的班级信息 在用户班级列表里查找 班级信息 */
+                                getClassListData(clazsId);
+                                /*这里如何控制 首页的刷新？*/
+                                // TODO: 2018/3/9 通知首页刷新
                             }
                         });
                         alertDialog.show();
-                    }else {
+                    } else {
+                        /*其他异常情况*/
+                        ToastUtil.showToast(CheckInByQRActivity.this, getErrorMsg(ret));
 
                     }
                 }
@@ -262,17 +274,54 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onFail(RequestBase request, Error error) {
                 mLoadingDialogView.dismiss();
-//                publicLoadLayout.showNetErrorView();
-//                publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        clazsInfoRequest(clazsId);
-//                    }
-//                });
+                Log.i(TAG, "onFail: " + error.getMessage());
             }
         });
     }
 
+    private UUID mUUID;
+
+    private void getClassListData(final String clazsId) {
+        mLoadingDialogView.show();
+        GetSudentClazsesRequest getSudentClazsesRequest = new GetSudentClazsesRequest();
+        mUUID = getSudentClazsesRequest.startRequest(GetStudentClazsesResponse.class, new HttpCallback<GetStudentClazsesResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetStudentClazsesResponse ret) {
+                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+                mLoadingDialogView.dismiss();
+                mUUID = null;
+                if (ret != null && ret.getCode() == 0) {
+                    if (ret.getData() != null && ret.getData().getClazsInfos() != null && ret.getData().getClazsInfos().size() > 0) {
+                        for (GetStudentClazsesResponse.ClazsInfosBean clazsInfosBean : ret.getData().getClazsInfos()) {
+                            if (clazsId.equals(clazsInfosBean.getId() + "")) {
+                                UserInfo.Info info = SpManager.getUserInfo();
+                                if (info == null) {
+                                    Log.e(TAG, " sp get user info null" );
+                                }
+                                info.setClassId(String.valueOf(clazsId));
+                                info.setClassName(clazsInfosBean.getClazsName());
+                                info.setProjectName(clazsInfosBean.getProjectName());
+                                SpManager.saveUserInfo(info);
+                                MainActivity.invoke(CheckInByQRActivity.this);
+                                CheckInByQRActivity.this.finish();
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mLoadingDialogView.dismiss();
+                mUUID = null;
+                ToastUtil.showToast(CheckInByQRActivity.this, error.getMessage());
+
+            }
+        });
+    }
 
     /**
      * 初始化窗口
@@ -347,8 +396,28 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 alertDialog.dismiss();
+                CheckInByQRActivity.this.finish();
             }
         });
+
         alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+    }
+
+    private String getErrorMsg(FaceShowBaseResponse ret) {
+        if (ret.getError() != null) {
+            return TextUtils.isEmpty(ret.getError().getMessage()) ?
+                    "请求失败" : ret.getError().getMessage();
+        } else {
+            return TextUtils.isEmpty(ret.getMessage()) ?
+                    "请求失败" : ret.getMessage();
+        }
+    }
+
+    private void restartScan() {
+        mCaptureManager.decode();
+        mCaptureManager.setCodeCallBack(codeCallBack);
+        mCaptureManager.onResume();
+
     }
 }

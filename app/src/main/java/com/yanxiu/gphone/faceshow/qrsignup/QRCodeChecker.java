@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.qrsignup;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.test.yanxiu.common_base.utils.UrlRepository;
 
@@ -12,7 +13,7 @@ import com.test.yanxiu.common_base.utils.UrlRepository;
  */
 
 public class QRCodeChecker {
-
+    private final String TAG=getClass().getSimpleName();
     /**
      * 检查是否是 签到二维码 仅对内容关键字段进行检查
      * @param codeStr 二维码扫描结果
@@ -84,7 +85,11 @@ public class QRCodeChecker {
      * 提取 calzsId
      * */
     public int getClazsIdFromQR(String result){
-        return -1;
+        int position=result.indexOf("clazsId=");
+        result=result.substring(position+8,result.length());
+        Log.i(TAG, "getClazsIdFromQR: "+ result);
+        return Integer.valueOf(result);
+//        return -1;
     }
 
 
