@@ -189,6 +189,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             @Override
             public void onHeaderButtonClicked() {
                 /*点击 切换班级按钮 在onactivityresult 回调中重置 抽屉的数据*/
+                mDrawerLayout.closeDrawer(mLeftDrawerView);
                 startActivityForResult(new Intent(MainActivity.this,
                         ChooseClassActivity.class), CHOOSE_CLASS);
             }
