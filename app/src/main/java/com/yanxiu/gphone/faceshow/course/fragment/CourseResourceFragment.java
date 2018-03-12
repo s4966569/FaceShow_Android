@@ -54,13 +54,13 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
         mPublicLoadLayout.setContentView(inflater.inflate(R.layout.fragment_course_task_layout, container, false));
         unbinder = ButterKnife.bind(this, mPublicLoadLayout);
 
-        data= (CourseBean) getArguments().get("data");
+        data = (CourseBean) getArguments().get("data");
         if (data == null) {
             Log.i(TAG, "onCreateView: data is null");
             mPublicLoadLayout.showOtherErrorView("暂无课程资源");
-        }else {
+        } else {
             Log.i(TAG, "onCreateView: data not null ");
-            if ( data.getAttachmentInfos()!=null&&data.getAttachmentInfos().size() > 0) {
+            if (data.getAttachmentInfos() != null && data.getAttachmentInfos().size() > 0) {
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                 linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -125,26 +125,36 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
     private RecyclerViewItemClickListener mRecyclerViewItemClickListener = new RecyclerViewItemClickListener() {
         @Override
         public void onItemClick(View v, int position) {
-            GetCourseResourcesResponse.ElementsBean data = mDataBean.getResources().getElements().get(position);
-            if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
-                WebViewActivity.loadThisAct(getContext(), data.getUrl(), data.getResName());
-            } else {
-                if (data.getType() != null) {
-                    requestDetailData(data);
+//            GetCourseResourcesResponse.ElementsBean data = mDataBean.getResources().getElements().get(position);
+            AttachmentInfosBean infosBean = data.getAttachmentInfos().get(position);
+
+            if (TextUtils.equals(infosBean.getResType(),"1")&&!TextUtils.isEmpty(infosBean.getDownloadUrl())) {
+                WebViewActivity.loadThisAct(getContext(), infosBean.getDownloadUrl(), infosBean.getResName());
+            }else {
+                if (infosBean.getResType() != null) {
+//                    requestDetailData(data);
+                    requestDetailData(infosBean.getResId());
                 } else {
                     ToastUtil.showToast(getContext(), "数据异常");
                 }
             }
+
+//            if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
+//                WebViewActivity.loadThisAct(getContext(), data.getUrl(), data.getResName());
+//            } else {
+//                if (data.getType() != null) {
+//                    requestDetailData(data);
+//                } else {
+//                    ToastUtil.showToast(getContext(), "数据异常");
+//                }
+//            }
         }
     };
 
-    /**
-     * 获取资源详情数据
-     */
-    private void requestDetailData(GetCourseResourcesResponse.ElementsBean bean) {
+    private void requestDetailData(String resId){
         mPublicLoadLayout.showLoadingView();
         ResourceDetailRequest resourceRequest = new ResourceDetailRequest();
-        resourceRequest.resId = String.valueOf(bean.getResId());
+        resourceRequest.resId = String.valueOf(resId);
         resourceRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
@@ -179,6 +189,49 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
                 ToastUtil.showToast(getContext(), error.getMessage());
             }
         });
+    }
+    /**
+     * 获取资源详情数据
+     */
+    private void requestDetailData(GetCourseResourcesResponse.ElementsBean bean) {
+        requestDetailData(bean.getResId()+"");
+//        mPublicLoadLayout.showLoadingView();
+//        ResourceDetailRequest resourceRequest = new ResourceDetailRequest();
+//        resourceRequest.resId = String.valueOf(bean.getResId());
+//        resourceRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
+//            @Override
+//            public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
+//                mPublicLoadLayout.finish();
+//                if (ret != null && ret.getCode() == 0) {
+//                    AttachmentInfosBean attachmentInfosBean = ret.getData().getAi();
+//                    switch (attachmentInfosBean.getResType()) {
+//                        case "word":
+//                        case "doc":
+//                        case "docx":
+//                        case "xls":
+//                        case "xlsx":
+//                        case "excel":
+//                        case "ppt":
+//                        case "pptx":
+//                        case "pdf":
+//                        case "text":
+//                        case "txt":
+//                            PDFViewActivity.invoke(getActivity(), attachmentInfosBean.getResName(), attachmentInfosBean.getPreviewUrl());
+//                            break;
+//                        default:
+//                            ToastUtil.showToast(getContext(), ret.getError().getMessage());
+//                            break;
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFail(RequestBase request, Error error) {
+//                mPublicLoadLayout.finish();
+//                ToastUtil.showToast(getContext(), error.getMessage());
+//            }
+//        });
 
     }
 

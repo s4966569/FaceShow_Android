@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,7 @@ public class CourseResourceAdapter extends BaseRecyclerViewAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_course_task_adapter_layout, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.coursedetail_resource_layout, parent, false));
 
     }
 
@@ -54,12 +53,14 @@ public class CourseResourceAdapter extends BaseRecyclerViewAdapter {
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.img_task_icon)
+        @BindView(R.id.resource_img)
         ImageView mImgTaskIcon;
-        @BindView(R.id.tv_task_name)
+        @BindView(R.id.resource_name)
         TextView mTvTaskName;
-        @BindView(R.id.tv_task_statue)
-        TextView mTvTaskStatue;
+//        @BindView(R.id.tv_task_statue)
+//        TextView mTvTaskStatue;
+//        @BindView(R.id.resource_time)
+//        TextView mTvResourceTime;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -67,10 +68,13 @@ public class CourseResourceAdapter extends BaseRecyclerViewAdapter {
         }
 
         void setData(AttachmentInfosBean element) {
+//            mTvResourceTime.setVisibility(View.GONE);
             mTvTaskName.setText(element.getResName());
-            mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_read_person_number,
+            // TODO: 2018/3/12  设置资源上传时间 当前使用的数据结构中不包含 上传时间 字段
+//            mTvResourceTime.setText(element.);
+//            mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_read_person_number,
                    /*资源使用情况 阅读数量等 */
-                    0, 0)));
+//                    0, 0)));
             switch (element.getResType()) {
                 case "word":
                 case "doc":

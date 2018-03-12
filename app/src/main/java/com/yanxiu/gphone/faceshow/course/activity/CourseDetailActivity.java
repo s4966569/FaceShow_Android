@@ -34,7 +34,6 @@ import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.ScreenUtils;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -152,8 +151,8 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
             @Override
             public void onSuccess(RequestBase request, CourseDetailResponse ret) {
                 mPublicLoadLayout.finish();
-                // TODO: 2018/3/5  获取课程详细信息 成功  设置数据
-                ToastUtil.showToast(CourseDetailActivity.this, "请求 课程详细信息成功");
+             /*TODO: 2018/3/5  获取课程详细信息 成功  设置数据
+                ToastUtil.showToast(CourseDetailActivity.this, "请求 课程详细信息成功");*/
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     courseDetailBean=ret.getData();
                     courseBean = ret.getData().getCourse();

@@ -29,6 +29,10 @@ import butterknife.Unbinder;
 
 /**
  * @author frc on 17-11-8.
+ *
+ * task 部分 三项  投票、问卷、讨论
+ *
+ *
  */
 
 public class CourseTaskFragment extends FaceShowBaseFragment {
@@ -58,7 +62,7 @@ public class CourseTaskFragment extends FaceShowBaseFragment {
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
                 linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 mRecyclerView.setLayoutManager(linearLayoutManager);
-                CourseTaskAdapter courseTaskAdapter = new CourseTaskAdapter(data.getInteractSteps());
+                CourseTaskAdapter courseTaskAdapter = new CourseTaskAdapter(data.getInteractSteps(),getActivity());
                 mRecyclerView.setAdapter(courseTaskAdapter);
                 courseTaskAdapter.addItemClickListener(new RecyclerViewItemClickListener() {
                     @Override
