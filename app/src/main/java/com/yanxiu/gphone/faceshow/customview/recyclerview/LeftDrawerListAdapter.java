@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.bean.CourseArrangeBean;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
+import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.YXPictureManager;
 
 /**
@@ -51,7 +53,16 @@ public class LeftDrawerListAdapter extends BaseRecyclerViewAdapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEAD) {
-            return new HeadViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_left_drawer_list_head_layout, parent, false));
+
+           HeadViewHolder headViewHolder =
+                   new HeadViewHolder(LayoutInflater.from(parent.getContext())
+                           .inflate(R.layout.item_left_drawer_list_head_layout, parent, false));
+            /*头像 默认图圆角设置*/
+            Glide.with(mContext)
+                    .load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap()
+                    .placeholder(R.drawable.person_img).centerCrop()
+                    .into(new CornersImageTarget(mContext, headViewHolder.user_icon, 12));
+            return headViewHolder;
         } else if (viewType == TYPE_NORMAL) {
             return new NormalViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_left_drawer_list_normal_layout, parent, false));
         } else {

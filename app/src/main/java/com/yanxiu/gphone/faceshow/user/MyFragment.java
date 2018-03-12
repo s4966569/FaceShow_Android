@@ -77,7 +77,10 @@ public class MyFragment extends FaceShowBaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        Glide.with(getContext()).load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap().placeholder(R.drawable.person_img).centerCrop().into(new CornersImageTarget(getContext(), mHeadImgView, 12));
+        Glide.with(getContext())
+                .load(UserInfo.getInstance().getInfo().getAvatar()).asBitmap()
+                .placeholder(R.drawable.person_img).centerCrop()
+                .into(new CornersImageTarget(getContext(), mHeadImgView, 12));
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
     }
 
