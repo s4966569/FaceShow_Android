@@ -8,7 +8,7 @@ import org.litepal.crud.DataSupport;
  */
 
 public class DbMyMsg extends DbMsg {
-    private int state;
+    private int state;      // 0-成功 1-正在传 2-失败
 
     public int getState() {
         return state;

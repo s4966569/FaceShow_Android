@@ -21,11 +21,13 @@ public class DbTopic extends DataSupport {
 
     // 只为UI显示用，不做数据库存储用
     @Column(ignore = true)
+    public boolean showDot = false;
+    @Column(ignore = true)
     public long latestMsgId;
     @Column(ignore = true)
     public long latestMsgTime;
     @Column(ignore = true)
-    public List<DbMsg> mergedMsgs;
+    public List<DbMsg> mergedMsgs = new ArrayList<>();
 
     //region getter setter
     public long getTopicId() {

@@ -284,7 +284,7 @@ public class MyTestFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
-        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg);
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", imId);
         // 找出对应的topic，加入并更新UI
         for (DbTopic topic : topics) {
             if (topic.getTopicId() == msg.topicId) {
@@ -418,7 +418,7 @@ public class MyTestFragment extends FaceShowBaseFragment {
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
                 // 更新DB，然后通知更新UI
                 for (ImMsg msg : ret.data.topicMsg) {
-                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg);
+                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", imId);
                     if (dbMsg == null) continue;    // 我发的消息
                     dbTopic.mergedMsgs.add(dbMsg);
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {

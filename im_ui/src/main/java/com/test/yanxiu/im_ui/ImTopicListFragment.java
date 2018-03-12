@@ -27,6 +27,8 @@ import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
+import org.litepal.LitePal;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +45,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private RecyclerView mTopicListRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private List<DbTopic> topics;
+    private List<DbTopic> topics = new ArrayList<>();
     public ImTopicListFragment() {
         // Required empty public constructor
     }
@@ -68,7 +70,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviLeftImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                LitePal.deleteDatabase("db_cailei");
             }
         });
         mTitleLayout.setLeftView(mNaviLeftImageView);
@@ -78,7 +80,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviRightTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (topics != null) {
+                    topics.clear();
+                    setupData();
+                }
             }
         });
         mTitleLayout.setRightView(mNaviRightTextView);
@@ -101,10 +106,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private String imToken = "fb1a05461324976e55786c2c519a8ccc";
+    private long imId = 9;
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser("cailei");
-        topics = DatabaseDealer.topicsFromDb();
+        topics.addAll(DatabaseDealer.topicsFromDb());
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -135,7 +141,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             boolean needUpdate = true;
             for (DbTopic dbTopic : topics) {
                 if ((dbTopic.getTopicId() == imTopic.topicId) &&
-                        (dbTopic.getChange() == imTopic.topicChange))
+                        dbTopic.getChange().equals(imTopic.topicChange))
                 {
                     needUpdate = false;
                     break;
@@ -171,6 +177,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 for (ImTopic imTopic : ret.data.topic) {
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
                     dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
 
                     // 更新uiTopics
                     for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
@@ -188,6 +195,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
                 // 4
+                updateEachTopicMsgs();
             }
 
             @Override
@@ -197,10 +205,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         });
     }
 
-    // 4，依次更新topic的最新一页数据，并更新数据库
+    // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
     private int totalRetryTimes;
     private RequestQueueHelper rqHelper = new RequestQueueHelper();
-    private void updateTopicMsgs() {
+    private void updateEachTopicMsgs() {
         totalRetryTimes = 10;
         for (final DbTopic dbTopic : topics) {
             doGetTopicMsgsRequest(dbTopic);
@@ -208,31 +216,46 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     };
 
     private void doGetTopicMsgsRequest(final DbTopic dbTopic) {
+        if ((dbTopic.mergedMsgs != null) && (dbTopic.mergedMsgs.size() > 0)) {
+            DbMsg dbMsg = dbTopic.mergedMsgs.get(0);
+            if (dbMsg.getMsgId() >= dbTopic.latestMsgId) {
+                // 数据库中已有最新的msg，不用更新
+                // TBD:cailei 这里可以每次更新下最后一页
+                dbTopic.latestMsgId = dbMsg.getMsgId();
+                return;
+            }
+        }
+
         GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
         getTopicMsgsRequest.imToken = imToken;
         getTopicMsgsRequest.topicId = Long.toString(dbTopic.getTopicId());
         getTopicMsgsRequest.startId = Long.toString(dbTopic.latestMsgId);
+        getTopicMsgsRequest.order = "desc";
         rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                // 更新DB，然后通知更新UI
+                // 有新消息，UI上应该显示红点
+                dbTopic.showDot = true;
+
+                // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
+                for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
+                    DbMsg uiMsg = i.next();
+                    if (uiMsg.getFrom().equals("mqtt")) {
+                        continue;
+                    }
+                    i.remove();
+                }
+
                 for (ImMsg msg : ret.data.topicMsg) {
-                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg);
-                    if (dbMsg == null) continue;    // 我发的消息
+                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", imId);
                     dbTopic.mergedMsgs.add(dbMsg);
+
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
                         dbTopic.latestMsgId = dbMsg.getMsgId();
                     }
                 }
 
-                // 还是不能排序，会打乱之前的顺序导致跳动，在逻辑完善前，先到先显示吧
-                // Collections.sort(dbTopic.mergedMsgs, DatabaseDealer.msgComparator);
-
-                // TBD:cailei 通知UI刷新
-
-                // 如果还有更多页，请求更多
-                if (ret.data.topicMsg.size() >= DatabaseDealer.pagesize)
-                    doGetTopicMsgsRequest(dbTopic);
+                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -245,6 +268,4 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         });
     }
-
-
 }

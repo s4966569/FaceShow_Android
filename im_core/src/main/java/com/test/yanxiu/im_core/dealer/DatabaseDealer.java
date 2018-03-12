@@ -1,5 +1,7 @@
 package com.test.yanxiu.im_core.dealer;
 
+import android.util.Log;
+
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
@@ -303,13 +305,23 @@ public class DatabaseDealer {
         return dbMember;
     }
 
-    private static long imId = 9;
-    public static DbMsg updateDbMsgWithImMsg(ImMsg msg) {
-        if (msg.senderId == imId) {
+    /**
+     * 获取此topic的从startMsgId开始的DbMsg中count条数据以及DbMyMsg中相关的数据，msgId值大的在前
+     * @param from : http 或 mqtt
+     * @param curUserImId : 当前app的登录用户的imId
+     * @return 返回merge后的数组，如果数据足够，数组size() >= count，如果数组size()小于count值，则表明已经取完所有数据
+     */
+    public static DbMsg updateDbMsgWithImMsg(ImMsg msg, String from, long curUserImId) {
+        DbMsg dbMsg;
+        if (msg.senderId == curUserImId) {
             // 我发的消息不入库，以后有删除后，重拉消息列表时，应该入DbMyMsg库
-            return null;
+            DbMyMsg dbMyMsg = new DbMyMsg();
+            dbMyMsg.setState(0);
+            dbMsg = dbMyMsg;
+        } else {
+            dbMsg = new DbMsg();
         }
-        DbMsg dbMsg = new DbMsg();
+
         dbMsg.setReqId(msg.reqId);
         dbMsg.setMsgId(msg.msgId);
         dbMsg.setTopicId(msg.topicId);
@@ -319,6 +331,7 @@ public class DatabaseDealer {
         dbMsg.setMsg(msg.contentData.msg);
         dbMsg.setThumbnail(msg.contentData.thumbnail);
         dbMsg.setViewUrl(msg.contentData.viewUrl);
+        dbMsg.setFrom(from);
         dbMsg.save();
         return dbMsg;
     }
