@@ -6,8 +6,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/color_white">
 
-    <com.test.yanxiu.im_ui.view.RoundCornerImageView
+    <ImageView
         android:id="@+id/avatar_imageview"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="15dp"
+        android:layout_centerVertical="true"
+        android:background="#00ff00" />
+    
+    <com.test.yanxiu.im_ui.view.RoundCornerMaskView
+        im:mask_color="@color/color_white"
+        im:corner_radius="5dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"

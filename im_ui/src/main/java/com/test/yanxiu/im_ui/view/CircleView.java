@@ -40,7 +40,7 @@ public class CircleView extends View {
     private void setup(Context context, @Nullable AttributeSet attrs) {
         mColor = Color.RED;
         if (attrs != null) {
-            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CircleView);//TypedArray属性对象
+            TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CircleView);
             mColor = ta.getColor(R.styleable.CircleView_circle_color, 0xff0000);
         }
     }
