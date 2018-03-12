@@ -239,6 +239,7 @@ public class DatabaseDealer {
             topic.latestMsgId = -1;
             if ((msgs != null) && (msgs.size() > 0)) {
                 topic.latestMsgId = msgs.get(0).getMsgId();
+                topic.latestMsgTime = msgs.get(0).getSendTime();
             }
             topic.mergedMsgs = msgs;
         }
@@ -251,8 +252,8 @@ public class DatabaseDealer {
     public static Comparator<DbTopic> topicComparator = new Comparator<DbTopic>() {
         @Override
         public int compare(DbTopic t1, DbTopic t2) {
-            long t1Time = t1.mergedMsgs.get(0).getSendTime();
-            long t2Time = t2.mergedMsgs.get(0).getSendTime();
+            long t1Time = t1.latestMsgTime;
+            long t2Time = t2.latestMsgTime;
             if (t1Time < t2Time) {
                 return 1;
             }
@@ -281,6 +282,8 @@ public class DatabaseDealer {
         dbTopic.setTopicId(topic.topicId);
         dbTopic.setName(topic.topicName);
         dbTopic.setType(topic.topicType);
+        dbTopic.setChange(topic.topicChange);
+
         for (ImTopic.Member member : topic.members) {
             ImMember imMember = member.memberInfo;
             DbMember dbMember = updateDbMemberWithImMember(imMember);

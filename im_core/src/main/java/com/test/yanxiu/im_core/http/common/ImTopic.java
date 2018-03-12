@@ -15,6 +15,7 @@ public class ImTopic {
     public String topicType;    // 1-私聊，2-群聊
     public int state;
     public String createTime;   // 格式 2017-12-27 20:15:17
+    public String topicChange;  // 见DbTopic::change
     public long latestMsgId;
     public long latestMsgTime;  // 格式 1514475540032
 

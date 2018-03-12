@@ -21,6 +21,8 @@ public class DbMsg extends DataSupport {
     protected String thumbnail;
     protected String viewUrl;
 
+    protected String from; // mqtt, http
+
     //region getter setter
     public String getReqId() {
         return reqId;
@@ -93,5 +95,14 @@ public class DbMsg extends DataSupport {
     public void setViewUrl(String viewUrl) {
         this.viewUrl = viewUrl;
     }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
     //endregion
 }

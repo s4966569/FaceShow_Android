@@ -15,12 +15,15 @@ public class DbTopic extends DataSupport {
     private long topicId;
     private String name;
     private String type;
+    private String change;  // 如果topic有名称、人员变动，则server的值和db值不相等，需要重新获取topic信息
 
     private List<DbMember> members = new ArrayList<>();
 
     // 只为UI显示用，不做数据库存储用
     @Column(ignore = true)
     public long latestMsgId;
+    @Column(ignore = true)
+    public long latestMsgTime;
     @Column(ignore = true)
     public List<DbMsg> mergedMsgs;
 
@@ -56,5 +59,14 @@ public class DbTopic extends DataSupport {
     public void setMembers(List<DbMember> members) {
         this.members = members;
     }
+
+    public String getChange() {
+        return change;
+    }
+
+    public void setChange(String change) {
+        this.change = change;
+    }
+
     //endregion
 }

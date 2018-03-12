@@ -38,6 +38,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 
     @Override
     public int getItemCount() {
+        if (mDatas == null) {
+            return 0;
+        }
         return mDatas.size();
     }
 
