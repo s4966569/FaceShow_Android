@@ -2,7 +2,6 @@ package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,7 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.project_task_item, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.coursedetail_task_item, parent, false));
 
     }
 
@@ -73,6 +72,7 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
         @BindView(R.id.project_task_status)
         TextView mTvTaskStatue;
 
+
         ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -80,7 +80,7 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
 
         void setData(Context context, InteractStepsBean interactStep) {
             mTvTaskName.setText(interactStep.getInteractName());
-
+            mTvTaskStatue.setVisibility(View.INVISIBLE);
             /*由于 管理端与 学员端 type 类型不同 这里复制 过来 对学员端string进行了类型转换*/
             switch (Integer.valueOf(interactStep.getInteractType())) {
                 case 6:
@@ -129,15 +129,18 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
 
 
         }
-        /**设置任务完成情况 */
+
+        /**
+         * 设置任务完成情况
+         */
         private void setTaskStatue(Context context, InteractStepsBean interactStep) {
-            if (TextUtils.equals(interactStep.getStepFinished(), "1")) {
-                mTvTaskStatue.setText("已完成");
-                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_finished));
-            } else {
-                mTvTaskStatue.setText("未完成");
-                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_unfinished));
-            }
+//            if (TextUtils.equals(interactStep.getStepFinished(), "1")) {
+//                mTvTaskStatue.setText("已完成");
+//                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_finished));
+//            } else {
+//                mTvTaskStatue.setText("未完成");
+//                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_unfinished));
+//            }
         }
     }
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/project_task_layout"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@drawable/selector_resource_adapter_item">
+    <ImageView
+        android:id="@+id/course_detail_item_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft" />
+
+    <TextView
+        android:id="@+id/project_task_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/course_adapter_marginleft"
+        android:text="未完成"
+        android:textColor="@color/color_999999"
+        android:textSize="13dp" />
+
+    <ImageView
+        android:id="@+id/project_task_img"
+        android:layout_width="@dimen/commontitle_title_rightIcon_width"
+        android:layout_height="@dimen/commontitle_title_rightIcon_width"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/project_task_status" />
+
+    <TextView
+        android:layout_centerVertical="true"
+        android:id="@+id/project_task_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:textStyle="bold"
+        android:layout_marginTop="14dp"
+        android:layout_toRightOf="@id/course_detail_item_icon"
+        android:layout_toLeftOf="@id/project_task_img"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="任务名称"
+        android:textColor="@color/color_333333"
+        android:textSize="@dimen/home_nav_bar_textsize" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/project_task_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/project_task_name"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:layout_toRightOf="@id/course_detail_item_icon"
+        android:text="2017.08.19 13:22"
+        android:textColor="@color/color_999999"
+        android:textSize="11dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/course_adapter_marginleft"
+        android:background="@color/color_d7dde0" />
+</RelativeLayout>

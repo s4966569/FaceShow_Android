@@ -5,13 +5,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.GetCourseResponse;
 import com.yanxiu.gphone.faceshow.course.adapter.LectureInfoAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
@@ -40,6 +41,7 @@ public class LectureInfoListFragment extends FaceShowBaseFragment {
 
 //        GetCourseResponse.CourseBean course = getArguments() != null ? (GetCourseResponse.CourseBean) getArguments().get("data") : null;
         CourseBean course = getArguments() != null ? (CourseBean) getArguments().get("data") : null;
+        Log.i(TAG, "onCreateView: "+new Gson().toJson(course));
         if (course != null && course.getLecturerInfos() != null && course.getLecturerInfos().size() > 0) {
             LectureInfoAdapter lectureInfoAdapter = new LectureInfoAdapter(course.getLecturerInfos());
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
