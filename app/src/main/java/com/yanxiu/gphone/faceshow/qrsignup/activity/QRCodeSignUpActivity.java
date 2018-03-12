@@ -85,8 +85,9 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                     ToastUtil.showToast(QRCodeSignUpActivity.this,"请先登录后再签到");
                     restartScan();
                 } else {
-                    ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
-                    restartScan();
+                    QRCodeSignUpActivity.this.finish();
+//                    ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
+//                    restartScan();
                 }
             }
         } else {
