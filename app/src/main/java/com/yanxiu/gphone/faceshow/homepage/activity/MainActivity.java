@@ -145,6 +145,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 false);
         setIntent(intent);
         setHomeFragment();
+        /*切换tab 到课程 */
     }
 
     private void drawerLayoutInit() {
@@ -212,18 +213,22 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 break;
             case 1:
                 /*跳转我的资料*/
+                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
                 toMyProfile();
                 break;
             case 2:
                 /*跳转签到记录*/
+                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
                 CheckInNotesActivity.toThisAct(MainActivity.this);
                 break;
             case 3:
                 /*跳转意见反馈*/
+                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
                 startActivity(new Intent(MainActivity.this, FeedBackActivity.class));
                 break;
             default:
         }
+//        mDrawerLayout.closeDrawer(mLeftDrawerView);
 
     }
 
@@ -234,6 +239,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void toClassHomePage() {
         showCurrentFragment(setHomeFragment());
+        /* 点击 课程详情 需要刷新 tab 位置*/
+        mNaviFragmentFactory.getHomeFragment().resetTab();
     }
 
     public void openLeftDrawer() {

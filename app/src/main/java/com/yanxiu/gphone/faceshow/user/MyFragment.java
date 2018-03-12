@@ -18,6 +18,7 @@ import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -45,10 +46,25 @@ public class MyFragment extends FaceShowBaseFragment {
     @BindView(R.id.rl_feedback)
     RelativeLayout mRlFeedback;
 
+
+    private ImageView titleLeftImageView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         unbinder = ButterKnife.bind(this, view);
+        /*左侧 菜单按钮*/
+        titleLeftImageView=view.findViewById(R.id.title_layout_left_img);
+        titleLeftImageView.setVisibility(View.VISIBLE);
+        titleLeftImageView.setImageResource(R.drawable.main_leftdrawe);
+        titleLeftImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).openLeftDrawer();
+//                MainActivity.invoke(getActivity());
+            }
+        });
+        /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
         initData();
         return view;
     }
