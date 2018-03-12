@@ -578,9 +578,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         } else if (requestCode == REQUEST_CODE_SET_PROFILE) {
             /*由用户信息界面返回 用户可能对信息进行了设置
               更新抽屉信息*/
-            if (resultCode == RESULT_OK) {
-                mLeftDrawerListAdapter.notifyItemChanged(0);
-            }
+            mLeftDrawerListAdapter.notifyItemChanged(0);
+//            if (resultCode == RESULT_OK) {
+//                mLeftDrawerListAdapter.notifyItemChanged(0);
+//            }
 
         }
     }

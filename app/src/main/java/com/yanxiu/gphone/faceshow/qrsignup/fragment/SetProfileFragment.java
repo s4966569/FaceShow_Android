@@ -168,7 +168,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
-        titleTextView.setText("设置密码");
+        titleTextView.setText("完善信息");
         titleRightText.setText("保存");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
