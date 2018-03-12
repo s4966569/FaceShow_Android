@@ -182,6 +182,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                     if (ret.getData() != null) {
                         /*可以获取到 classId*/
                         toSignUpActivity(ret.getData().getClazsId());
+                        QRCodeSignUpActivity.this.finish();
                     }else {
                         /*没有获取到有效的classId*/
                         ToastUtil.showToast(QRCodeSignUpActivity.this,getErrorMsg(ret));
