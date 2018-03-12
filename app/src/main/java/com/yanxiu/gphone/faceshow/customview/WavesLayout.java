@@ -47,7 +47,7 @@ public class WavesLayout extends RelativeLayout {
     /**
      * 颜色的初始alpha值, (0, 255)
      */
-    private int mColorAlpha = DEFAULT_ALPHA;
+    private int colorAlpha = DEFAULT_ALPHA;
     /**
      * 最终的颜色alpha值,(0,255)需要小于初始值
      * */
@@ -142,7 +142,7 @@ public class WavesLayout extends RelativeLayout {
         mCirclelColor = typedArray.getColor(R.styleable.WavesLayout_waves_color, DEFAULT_COLOR);
         mDuration = typedArray.getInteger(R.styleable.WavesLayout_waves_duration, DEFAULT_DURATION);
         mFrameRate = typedArray.getInteger(R.styleable.WavesLayout_waves_framerate, DEFAULT_FRAME_RATE);
-        mColorAlpha = typedArray.getInteger(R.styleable.WavesLayout_waves_alpha, DEFAULT_ALPHA);
+        colorAlpha = typedArray.getInteger(R.styleable.WavesLayout_waves_alpha, DEFAULT_ALPHA);
         mAnimEndColorAlpha=typedArray.getInteger(R.styleable.WavesLayout_waves_animend_alpha,DEFAULT_END_ALPHA);
         mCanShowWave = typedArray.getBoolean(R.styleable.WavesLayout_waves_canshowwave, DEFAULT_ENABLE);
         mShapeRadius = typedArray.getDimensionPixelSize(R.styleable.WavesLayout_waves_radius, DEFAULT_SHAPE_RADIUS);
@@ -169,8 +169,8 @@ public class WavesLayout extends RelativeLayout {
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(mCirclelColor);
-        mPaint.setAlpha(mColorAlpha);
-        mBackupAlpha = mColorAlpha;
+        mPaint.setAlpha(colorAlpha);
+        mBackupAlpha = colorAlpha;
     }
 
     public void setWaveColor(@ColorInt int color){
@@ -248,7 +248,7 @@ public class WavesLayout extends RelativeLayout {
 
         int redrawCount = mDuration / mFrameRate;
         mRadiusStep = (mMaxRadius - DEFAULT_RADIUS) / redrawCount;
-        mAlphaStep = (mColorAlpha - mAnimEndColorAlpha) / redrawCount;
+        mAlphaStep = (colorAlpha - mAnimEndColorAlpha) / redrawCount;
     }
 
     private void deliveryTouchDownEvent(MotionEvent event) {
@@ -302,7 +302,7 @@ public class WavesLayout extends RelativeLayout {
     private void drawRippleIfNecessary(Canvas canvas) {
         if (isFoundTouchedSubView()) {
             mRadius += mRadiusStep;
-            mColorAlpha -= mAlphaStep;
+            colorAlpha -= mAlphaStep;
 
             Path path = new Path();
             if (mShapeRadius != 0) {
@@ -312,7 +312,7 @@ public class WavesLayout extends RelativeLayout {
             }
             canvas.clipPath(path);
 
-            mPaint.setAlpha(mColorAlpha);
+            mPaint.setAlpha(colorAlpha);
             canvas.drawCircle(mClickPoint.x, mClickPoint.y, mRadius, mPaint);
         }
 
@@ -341,7 +341,7 @@ public class WavesLayout extends RelativeLayout {
         mClickPoint = null;
         mTargetRectf = null;
         mRadius = DEFAULT_RADIUS;
-        mColorAlpha = mBackupAlpha;
+        colorAlpha = mBackupAlpha;
         mTargetView = null;
         invalidate();
     }

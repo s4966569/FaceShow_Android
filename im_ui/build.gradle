@@ -1,9 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
+    resourcePrefix 'im_ui_'
     compileSdkVersion 26
-
-
 
     defaultConfig {
         minSdkVersion 15
