@@ -290,8 +290,8 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             ToastUtil.showToast(getActivity(),"密码不能为空");
             return false;
         }
-        if (psw.length()<6||psw.length()>12) {
-            ToastUtil.showToast(getActivity(),"密码长度在6到12位");
+        if (psw.length()<6||psw.length()>20) {
+            ToastUtil.showToast(getActivity(),"密码长度在6到20位");
             return false;
         }
 
