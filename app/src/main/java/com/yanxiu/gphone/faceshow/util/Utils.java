@@ -167,6 +167,19 @@ public class Utils {
         return m.matches();
     }
 
+    public static boolean isContainBlank(String str){
+        if (str == null||"".equals(str)) {
+            return true;
+        }
+        if (str.contains(" ")) {
+            return true;
+        }
+        // TODO: 2018/3/13  转义字符等
+//        str.contains("")
+        return false;
+    }
+
+
     /**
      * 根据不同的id类型，获取不同的组合文字结果
      *

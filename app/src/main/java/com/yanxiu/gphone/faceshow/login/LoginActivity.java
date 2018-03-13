@@ -312,10 +312,8 @@ public class LoginActivity extends FaceShowBaseActivity {
 
             case R.id.tv_qrcode_signup:
                /*跳转到扫码界面 并对扫描的二维码进行验证*/
-                startActivityForResult(new Intent(LoginActivity.this, QRCodeSignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
-//                startActivityForResult(new Intent(LoginActivity.this, ModifySysUserActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
-//                startActivityForResult(new Intent(LoginActivity.this, SignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
-
+                startActivityForResult(
+                        new Intent(LoginActivity.this, QRCodeSignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
                 break;
             default:
                 break;
