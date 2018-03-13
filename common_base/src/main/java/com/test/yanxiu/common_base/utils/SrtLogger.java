@@ -22,6 +22,6 @@ public class SrtLogger {
                 .build();
         Logger.clearLogAdapters();
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy));
-        Logger.d(message);
+        Logger.d(message, args);
     }
 }

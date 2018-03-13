@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_core.mqtt.MqttService;
+import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
@@ -119,6 +121,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 false));
         TopicListAdapter adapter = new TopicListAdapter(getContext(), topics);
         mTopicListRecyclerView.setAdapter(adapter);
+        adapter.setmOnItemClickCallback(onDbTopicCallback);
     }
 
     private void setupData() {
@@ -351,6 +354,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
+    //endregion
 
+    //region 跳转
+    private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
+        @Override
+        public void onItemClick(int position, DbTopic dbTopic) {
+            SrtLogger.log("imui", "topic : %s", dbTopic.getTopicId());
+        }
+    };
     //endregion
 }
