@@ -2,7 +2,6 @@ package com.yanxiu.gphone.faceshow.qrsignup.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
@@ -14,7 +13,6 @@ import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySexFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifyStageFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySubjectFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetProfileFragment;
-import com.yanxiu.gphone.faceshow.qrsignup.response.QrClazsInfoResponse;
 
 /**
  * 扫码注册用户 信息设置界面
@@ -48,19 +46,18 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_sys_user);
 
+
+        Bundle bundle = getIntent().getBundleExtra("data");
         /*获取传递过来的用户信息 */
-        registedUserBean = (SysUserBean) getIntent().getBundleExtra("data")
-                .getSerializable("user");
-        int userType = getIntent().getBundleExtra("data").getInt("type");
+        registedUserBean = (SysUserBean) bundle.getSerializable("user");
+        int userType = bundle.getInt("type");
         /*获取传递过来的班级信息 */
-        QrClazsInfoResponse.DataBean dataBean=
-                (QrClazsInfoResponse.DataBean) getIntent().getBundleExtra("data").getSerializable("classInfo");
-        targetClazsName = dataBean != null?dataBean.getClazsInfo().getClazsName():"";
+        targetClazsName=bundle.getString("className");
         /*初始化 fragment*/
         fragmentInit(userType);
         listenerInit();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container,profileFragment).commit();
+                .replace(R.id.fragment_container, profileFragment).commit();
     }
 
     private void fragmentInit(int userType) {
@@ -68,7 +65,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
         profileFragment = new SetProfileFragment();
 
         profileFragment.setSysUserBean(registedUserBean);
-        Log.i(TAG, "onCreate: type : " + userType);
+//        Log.i(TAG, "onCreate: type : " + userType);
         if (userType == 0) {
             profileFragment.hideNotice();
         } else {
@@ -117,6 +114,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
             }
         });
     }
+
     /**
      * 设置姓名
      */
@@ -229,8 +227,8 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
                 /*返回到 学段设置 这里的返回动画 需要注意一下*/
 //                transaction(modifyStageFragment);
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.qr_fragment_slide_in_left,R.anim.qr_fragment_slide_out_right)
-                        .replace(R.id.fragment_container,modifyStageFragment)
+                        .setCustomAnimations(R.anim.qr_fragment_slide_in_left, R.anim.qr_fragment_slide_out_right)
+                        .replace(R.id.fragment_container, modifyStageFragment)
                         .commit();
             }
 
@@ -262,7 +260,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
     private void backToProfileFragment() {
         isProfilePage = true;
         getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(R.anim.qr_fragment_slide_in_left,R.anim.qr_fragment_slide_out_right)
+                .setCustomAnimations(R.anim.qr_fragment_slide_in_left, R.anim.qr_fragment_slide_out_right)
                 .replace(R.id.fragment_container, profileFragment).commit();
     }
 

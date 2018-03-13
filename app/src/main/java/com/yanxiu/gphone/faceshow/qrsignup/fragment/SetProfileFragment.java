@@ -228,7 +228,17 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 mRootView.hiddenLoadingView();
 //                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 if (ret.getCode() == 0) {
-                    createNomalDialog("成功加入【"+clazsName+"】!\n登陆后即可查看到该班级。", new DialogInterface.OnClickListener() {
+                    /*这里对 服务器没有返回班级名的情况尽心给一个处理*/
+                    StringBuilder message=new StringBuilder();
+                    message.append("成功加入");
+                    if (!TextUtils.isEmpty(clazsName)) {
+                        message.append("【"+clazsName+"】!");
+                    }else {
+                        message.append("班级!");
+                    }
+                    message.append("\n登录后即可查看到该班级。");
+
+                    createNomalDialog(message.toString(), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             alertDialog.dismiss();

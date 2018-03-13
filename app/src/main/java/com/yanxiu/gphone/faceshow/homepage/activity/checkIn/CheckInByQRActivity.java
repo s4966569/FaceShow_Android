@@ -250,7 +250,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 } else {
                     if (ret.getError().getCode() == ResponseConfig.ERROR_QR_HAS_JOINED_CLASS) {
                         /*已经加入了该班级*/
-                        alertDialog.setMessage("已经加入此班级，点【确定】打开班级首页");
+                        alertDialog.setMessage(ret.getError().getMessage());
                         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
