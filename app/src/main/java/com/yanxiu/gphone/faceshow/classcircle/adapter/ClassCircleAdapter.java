@@ -1,13 +1,10 @@
 package com.yanxiu.gphone.faceshow.classcircle.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,8 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.orhanobut.logger.Logger;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
@@ -32,7 +27,6 @@ import com.yanxiu.gphone.faceshow.ninegrid.NineGridView;
 import com.yanxiu.gphone.faceshow.ninegrid.NineGridViewWrapper;
 import com.yanxiu.gphone.faceshow.ninegrid.preview.NineGridViewClickAdapter;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
-import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.nineGridView.GlideNineImageLoader;
 
 import java.util.ArrayList;
@@ -119,6 +113,10 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void setData(List<ClassCircleResponse.Data.Moments> list) {
         if (list == null || list.size() == 0) {
+            if (this.mData != null) {
+                this.mData.clear();
+            }
+            this.notifyDataSetChanged();
             return;
         }
         this.mData.clear();

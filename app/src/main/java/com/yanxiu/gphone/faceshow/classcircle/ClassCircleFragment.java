@@ -304,13 +304,19 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 });
                 if (ret != null) {
                     if (ret.getCode() == 0 && ret.data != null && ret.data.moments != null) {
+
                         if (offset.equals("0")) {
+                            /*如果 是首次请求数据 覆盖添加到adapter中*/
                             mClassCircleAdapter.setData(ret.data.moments);
                         } else {
+                            /*如果offset 不为0  需要拼接数据*/
                             mClassCircleAdapter.addData(ret.data.moments);
                         }
                         if (ret.data.moments == null || ret.data.moments.size() == 0) {
                             mDataEmptyView.setVisibility(View.VISIBLE);
+                            /*这里需要清空一次 数据*/
+
+
                         } else {
                             mDataEmptyView.setVisibility(View.GONE);
                         }
