@@ -2,7 +2,6 @@ package com.yanxiu.gphone.faceshow.qrsignup.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
@@ -66,7 +65,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
         profileFragment = new SetProfileFragment();
 
         profileFragment.setSysUserBean(registedUserBean);
-        Log.i(TAG, "onCreate: type : " + userType);
+//        Log.i(TAG, "onCreate: type : " + userType);
         if (userType == 0) {
             profileFragment.hideNotice();
         } else {

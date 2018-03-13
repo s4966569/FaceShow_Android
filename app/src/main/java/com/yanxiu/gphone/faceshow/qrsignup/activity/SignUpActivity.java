@@ -111,7 +111,7 @@ public class SignUpActivity extends FaceShowBaseActivity {
         Intent intent = new Intent(SignUpActivity.this, ModifySysUserActivity.class);
         Bundle bundle = new Bundle();
         /*传递 二维码代表的班级名称*/
-        bundle.putString("className",getIntent().getBundleExtra("data").getString("className"));
+        bundle.putString("className",checkPhoneFragment.getClazsName());
         /*传递 当前手机用户信息*/
         bundle.putSerializable("user", sysUserBean);
         bundle.putInt("type", userType);

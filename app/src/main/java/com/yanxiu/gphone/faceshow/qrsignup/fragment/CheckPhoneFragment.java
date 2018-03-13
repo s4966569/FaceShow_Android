@@ -100,9 +100,15 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
 
     /*手机号*/
     private String phoneNumber;
+    /*班级名称*/
+    private String clazsName;
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public String getClazsName() {
+        return clazsName;
     }
 
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
@@ -356,12 +362,19 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             case UNRIGISTED_USER:
                 /*未注册用户 保存电话号码 准备进行注册操作*/
                 phoneNumber = phone;
+                if (ret.getData().getClazsInfo() != null) {
+                    clazsName=ret.getData().getClazsInfo().getClazsName();
+                }
+
                 break;
             case SERVER_USER:
                 /*用户中心用户 保存 sysuserbean 等待 用户信息设置后进行 保存*/
                 if (ret.getData().getSysUser() != null) {
 //                    Log.i(TAG, "checkUserType: "+new Gson().toJson(ret));
                     sysUserBean = ret.getData().getSysUser();
+                    if (ret.getData().getClazsInfo() != null) {
+                        clazsName=ret.getData().getClazsInfo().getClazsName();
+                    }
                 } else {
                     /*sysuser 字段为空 的处理 应该弹出提示 并禁止跳转*/
                     ToastUtil.showToast(getActivity(),getErrorMsg(ret));
