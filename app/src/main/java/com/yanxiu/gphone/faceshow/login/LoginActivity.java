@@ -30,6 +30,7 @@ import com.baidu.location.Poi;
 import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.orhanobut.logger.Logger;
+import com.test.yanxiu.im_ui.constacts.ContactsActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -166,45 +167,6 @@ public class LoginActivity extends FaceShowBaseActivity {
         });
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
 
-//        String city = FileUtils.getFromAssets(getApplicationContext(), "city.json");
-//        String shen = FileUtils.getFromAssets(getApplicationContext(), "shen.json");
-//        String difang = FileUtils.getFromAssets(getApplicationContext(), "difang.json");
-//        cityModel cityModel = RequestBase.getGson().fromJson(city, cityModel.class);
-//        cityModel shenModel = RequestBase.getGson().fromJson(shen, cityModel.class);
-//        cityModel difangModel = RequestBase.getGson().fromJson(difang, cityModel.class);
-//        for (int i = 0; i < cityModel.getData().size(); i++) {
-//            for (int j = 0; j < difangModel.getData().size(); j++) {
-//                if (difangModel.getData().get(j).getParentId() == cityModel.getData().get(i).getId()) {
-//                    if (cityModel.getData().get(i).getNextLevelData() != null) {
-//                        cityModel.getData().get(i).getNextLevelData().add(difangModel.getData().get(j));
-//                    } else {
-//                        List<com.yanxiu.gphone.faceshow.db.cityModel.DataBean> nextLevelData = new ArrayList<>();
-//                        nextLevelData.add(difangModel.getData().get(j));
-//                        cityModel.getData().get(i).setNextLevelData(nextLevelData);
-//                    }
-//                }
-//            }
-//        }
-//
-//        for (int i = 0; i < shenModel.getData().size(); i++) {
-//            for (int j = 0; j < cityModel.getData().size(); j++) {
-//                if (shenModel.getData().get(i).getId() == cityModel.getData().get(j).getParentId()) {
-//                    if (shenModel.getData().get(i).getNextLevelData() != null) {
-//                        shenModel.getData().get(i).getNextLevelData().add(cityModel.getData().get(j));
-//                    } else {
-//                        List<com.yanxiu.gphone.faceshow.db.cityModel.DataBean> nextLevelData = new ArrayList<>();
-//                        nextLevelData.add(cityModel.getData().get(j));
-//                        shenModel.getData().get(i).setNextLevelData(nextLevelData);
-//                    }
-//                }
-//            }
-//        }
-//
-//        String data = RequestBase.getGson().toJson(shenModel);
-//        Log.e("frc",data);
-//
-//        FileUtils.writeFile(Constants.SDCARD_ROOT_NAME+"/xzz.txt", data,false);
-
 
     }
 
@@ -308,13 +270,15 @@ public class LoginActivity extends FaceShowBaseActivity {
                 }
                 break;
             case R.id.tv_sign_in:
-                if (edt_account_number.getText().length() <= 0) {
-                    Toast.makeText(mContext, R.string.account_name_can_not_be_null, Toast.LENGTH_SHORT).show();
-                } else if (edt_account_password.getText().length() <= 0) {
-                    Toast.makeText(mContext, R.string.account_password_can_not_be_null, Toast.LENGTH_SHORT).show();
-                } else {
-                    signInRequest();
-                }
+
+                startActivity(new Intent(LoginActivity.this, ContactsActivity.class));
+//                if (edt_account_number.getText().length() <= 0) {
+//                    Toast.makeText(mContext, R.string.account_name_can_not_be_null, Toast.LENGTH_SHORT).show();
+//                } else if (edt_account_password.getText().length() <= 0) {
+//                    Toast.makeText(mContext, R.string.account_password_can_not_be_null, Toast.LENGTH_SHORT).show();
+//                } else {
+//                    signInRequest();
+//                }
 
                 break;
             case R.id.tv_forget_password:
