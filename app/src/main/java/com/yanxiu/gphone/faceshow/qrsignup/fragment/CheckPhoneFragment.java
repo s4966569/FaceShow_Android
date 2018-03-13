@@ -378,6 +378,8 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         alertDialog.dismiss();
+                        /*返回登录页*/
+                        getActivity().finish();
                     }
                 });
                 break;
