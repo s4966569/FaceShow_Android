@@ -52,7 +52,10 @@ public class SignUpActivity extends FaceShowBaseActivity {
         checkPhoneFragment = new CheckPhoneFragment();
         setPasswordFragment = new SetPasswordFragment();
         /*记录 扫描的clazsId*/
-        scannedClassId = getIntent().getBundleExtra("data").getInt("clazsId");
+        QrClazsInfoResponse.DataBean dataBean=
+                (QrClazsInfoResponse.DataBean) getIntent().getBundleExtra("data").getSerializable("info");
+        scannedClassId = dataBean==null?0:dataBean.getClazsId();
+
         checkPhoneFragment.setScannedClassId(scannedClassId);
         setPasswordFragment.setScannedClassId(scannedClassId);
         /*第一步 在验证手机号码以及验证码页面 点击返回与下一步 */
