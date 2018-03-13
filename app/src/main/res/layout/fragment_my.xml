@@ -21,6 +21,7 @@
 
         <ImageView
             android:id="@+id/person_img"
+            android:src="@drawable/discuss_user_default_icon"
             android:layout_width="@dimen/net_error_layout_retrybutton_top"
             android:layout_height="@dimen/net_error_layout_retrybutton_top"
             android:layout_centerVertical="true"

@@ -7,14 +7,12 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -314,7 +312,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
         confirmRequest.startRequest(CheckPhoneNumResponse.class, new HttpCallback<CheckPhoneNumResponse>() {
             @Override
             public void onSuccess(RequestBase request, CheckPhoneNumResponse ret) {
-                Log.i(TAG, "onSuccess: type check" + new Gson().toJson(ret));
+//                Log.i(TAG, "onSuccess: type check" + new Gson().toJson(ret));
                 mRootView.hiddenLoadingView();
                 /*判断 服务器请求成功*/
                 if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
@@ -362,7 +360,7 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
             case SERVER_USER:
                 /*用户中心用户 保存 sysuserbean 等待 用户信息设置后进行 保存*/
                 if (ret.getData().getSysUser() != null) {
-                    Log.i(TAG, "checkUserType: "+new Gson().toJson(ret));
+//                    Log.i(TAG, "checkUserType: "+new Gson().toJson(ret));
                     sysUserBean = ret.getData().getSysUser();
                 } else {
                     /*sysuser 字段为空 的处理 应该弹出提示 并禁止跳转*/
@@ -373,7 +371,6 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 /*APP 用户到这里 只可能是 APP 未添加该班级的用户
                  已添加该班级的用户 在验证码请求的时候已经提示
                  后台会进行添加班级的操作 这里只弹出 提示即可 信息在message中 不在error*/
-
                 StringBuilder stringBuilder=new StringBuilder();
                 stringBuilder.append("成功加入【"+ret.getData().getClazsInfo().getClazsName()+"】\n");
                 stringBuilder.append(ret.getData().getMsg());
@@ -420,9 +417,9 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 alertDialog.dismiss();
+                                getActivity().finish();
                             }
                         });
-
                     } else {
                         /*其他未知的异常*/
                         ToastUtil.showToast(getActivity(), getErrorMsg(ret));

@@ -138,7 +138,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         TextView nameTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_name);
-        nameTv.setText(String.format("%s", userData.getRealName()));
+        nameTv.setText(String.format("%s", TextUtils.isEmpty(userData.getRealName())?"":userData.getRealName()));
 
         TextView phoneTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_phone);
@@ -168,7 +168,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
-        titleTextView.setText("设置密码");
+        titleTextView.setText("完善信息");
         titleRightText.setText("保存");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
