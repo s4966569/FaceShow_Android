@@ -9,6 +9,7 @@ import com.yanxiu.gphone.faceshow.R;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
+import com.yanxiu.gphone.faceshow.homepage.fragment.PlaceHoldFragment;
 import com.yanxiu.gphone.faceshow.user.MyFragment;
 import com.yanxiu.gphone.faceshow.notification.fragment.NoticeFragment;
 
@@ -25,15 +26,16 @@ public class NaviFragmentFactory {
     private NoticeFragment mNoticeFragment = new NoticeFragment();//通知
     private ClassCircleFragment mClassCircleFragment = new ClassCircleFragment();//班级圈
     private MyFragment mMyFragment = new MyFragment();//我
+    private PlaceHoldFragment placeHoldFragment = new PlaceHoldFragment();
+
     private TopicFragment mTopicFragment = new TopicFragment(); //IM相关
     private List<FaceShowBaseFragment> fragments = new ArrayList<FaceShowBaseFragment>(
             Arrays.asList(
                     mHomeFragment,
                     mNoticeFragment,
                     mClassCircleFragment,
-                    mMyFragment
-//                    mTopicFragment
-                    )
+                    placeHoldFragment
+            )
     );
 
     public NaviFragmentFactory(FragmentManager fm) {
@@ -65,8 +67,7 @@ public class NaviFragmentFactory {
         return mNoticeFragment;
     }
 
-    public ClassCircleFragment getClassCircleFragment()
-    {
+    public ClassCircleFragment getClassCircleFragment() {
         return mClassCircleFragment;
     }
 
