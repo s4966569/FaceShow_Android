@@ -190,6 +190,7 @@ public class LoginActivity extends FaceShowBaseActivity {
     }
 
     private void debugUserAccount(){
+        // TODO: 2018/3/13  需要删除！！！
         edt_account_number.setText("15655248880");
         edt_account_password.setText("123456");
     }
@@ -311,9 +312,8 @@ public class LoginActivity extends FaceShowBaseActivity {
 
             case R.id.tv_qrcode_signup:
                /*跳转到扫码界面 并对扫描的二维码进行验证*/
-                startActivityForResult(new Intent(LoginActivity.this, QRCodeSignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
-//                startActivityForResult(new Intent(LoginActivity.this, SignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
-
+                startActivityForResult(
+                        new Intent(LoginActivity.this, QRCodeSignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
                 break;
             default:
                 break;

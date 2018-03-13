@@ -50,6 +50,7 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
     private boolean isPhoneNumber = false;
     private boolean isVerificationCodeNull = true;
     private boolean isNewPasswordNull = true;
+    private boolean isNewPasswordContainBlank=true;
     private int time = 60;
 
     private Handler handler = new Handler() {
@@ -127,6 +128,7 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             isNewPasswordNull = s.length() > 20 || s.length() < 6;
+            isNewPasswordContainBlank=Utils.isContainBlank(s.toString());
             changSureBtnColor();
         }
 
@@ -140,7 +142,7 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
      * 是否可以点击确定按钮
      */
     private boolean isCanSure() {
-        return isPhoneNumber && !isNewPasswordNull && !isVerificationCodeNull;
+        return isPhoneNumber && !isNewPasswordNull && !isVerificationCodeNull&&!isNewPasswordContainBlank;
     }
 
     private void changSureBtnColor() {
@@ -194,6 +196,8 @@ public class ForgetPasswordActivity extends FaceShowBaseActivity {
                         ToastUtil.showToast(getApplicationContext(), "验证码不能为空");
                     } else if (isNewPasswordNull) {
                         ToastUtil.showToast(getApplicationContext(), R.string.please_input_new_password);
+                    }else if (isNewPasswordContainBlank){
+                        ToastUtil.showToast(getApplicationContext(),"密码不能含有空格");
                     }
                 }
                 break;

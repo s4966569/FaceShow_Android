@@ -14,6 +14,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySexFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifyStageFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySubjectFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetProfileFragment;
+import com.yanxiu.gphone.faceshow.qrsignup.response.QrClazsInfoResponse;
 
 /**
  * 扫码注册用户 信息设置界面
@@ -40,16 +41,21 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
     private ModifyStageFragment modifyStageFragment;
     private ModifySubjectFragment modifySubjectFragment;
 
+    private String targetClazsName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_sys_user);
 
-        /*获取传递过来的用户信息*/
+        /*获取传递过来的用户信息 */
         registedUserBean = (SysUserBean) getIntent().getBundleExtra("data")
                 .getSerializable("user");
         int userType = getIntent().getBundleExtra("data").getInt("type");
+        /*获取传递过来的班级信息 */
+        QrClazsInfoResponse.DataBean dataBean=
+                (QrClazsInfoResponse.DataBean) getIntent().getBundleExtra("data").getSerializable("classInfo");
+        targetClazsName = dataBean != null?dataBean.getClazsInfo().getClazsName():"";
         /*初始化 fragment*/
         fragmentInit(userType);
         listenerInit();

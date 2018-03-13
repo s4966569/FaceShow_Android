@@ -1,12 +1,14 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -61,7 +63,9 @@ public class ModifyNameFragment extends Fragment {
         backView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: 2018/3/13 收起软键盘
                 if (toolbarActionCallback != null) {
+                    hideSoftInput(editText);
                     toolbarActionCallback.onLeftComponentClick();
                 }
             }
@@ -71,17 +75,35 @@ public class ModifyNameFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 /*点击保存 首先判断 gettext是否为空 为空说明没有编辑 采用hint 进行保存 */
-                String nameStr=TextUtils.isEmpty(editText.getText().toString())
-                        ?editText.getHint().toString():editText.getText().toString();
-                saveName(nameStr);
+                if (TextUtils.isEmpty(editText.getText())) {
+                    if(TextUtils.isEmpty(editText.getHint())){
+                        /*如果text 与 hint都为空 保存空*/
+                        saveName("");
+                    }else {
+                        /*如果text 为空 hint 不为空 保存 hint*/
+                        saveName(editText.getHint().toString());
+                    }
+                }else {
+                    /*text 不为空 保存 text*/
+                    saveName(editText.getText().toString());
+                }
+
+
+//                String nameStr=TextUtils.isEmpty(editText.getText().toString())
+//                        ?editText.getHint().toString():editText.getText().toString();
+//                saveName(nameStr);
                 if (toolbarActionCallback != null) {
+                    hideSoftInput(editText);
                     toolbarActionCallback.onRightComponentClick();
                 }
             }
         });
         editText.setHint(userBean.getRealName());
     }
-
+    private void hideSoftInput(EditText editText) {
+        InputMethodManager inputMethodManager= (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
+    }
 
     private void saveName(String name) {
         userBean.setRealName(name);

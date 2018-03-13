@@ -11,6 +11,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.CheckPhoneFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.SetPasswordFragment;
+import com.yanxiu.gphone.faceshow.qrsignup.response.QrClazsInfoResponse;
 
 /**
  * 注册Activity 负责 扫码过程中的新用户注册
@@ -51,7 +52,10 @@ public class SignUpActivity extends FaceShowBaseActivity {
         checkPhoneFragment = new CheckPhoneFragment();
         setPasswordFragment = new SetPasswordFragment();
         /*记录 扫描的clazsId*/
-        scannedClassId = getIntent().getBundleExtra("data").getInt("clazsId");
+        QrClazsInfoResponse.DataBean dataBean=
+                (QrClazsInfoResponse.DataBean) getIntent().getBundleExtra("data").getSerializable("info");
+        scannedClassId = dataBean==null?0:dataBean.getClazsId();
+
         checkPhoneFragment.setScannedClassId(scannedClassId);
         setPasswordFragment.setScannedClassId(scannedClassId);
         /*第一步 在验证手机号码以及验证码页面 点击返回与下一步 */
@@ -75,6 +79,10 @@ public class SignUpActivity extends FaceShowBaseActivity {
                     case CheckPhoneFragment.SERVER_USER:
                           /*研修网用户 进入用户信息设置 直接获取了 sysuser */
                         sysUserBean = checkPhoneFragment.getSysUserBean();
+                        /*设置默认 性别信息*/
+                        sysUserBean.setSexName("男");
+                        sysUserBean.setSex(1);
+
                         toProfileActivity(CheckPhoneFragment.SERVER_USER);
                         break;
                     case CheckPhoneFragment.APP_USER:
@@ -107,12 +115,27 @@ public class SignUpActivity extends FaceShowBaseActivity {
     private void toProfileActivity(int userType) {
         Intent intent = new Intent(SignUpActivity.this, ModifySysUserActivity.class);
         Bundle bundle = new Bundle();
+        /*传递 二维码代表的班级信息*/
+        QrClazsInfoResponse.DataBean dataBean =
+                (QrClazsInfoResponse.DataBean) getIntent()
+                        .getBundleExtra("data")
+                        .getSerializable("info");
+
+        bundle.putSerializable("classInfo", dataBean);
+        /*传递 当前手机用户信息*/
         bundle.putSerializable("user", sysUserBean);
         bundle.putInt("type", userType);
         intent.putExtra("data", bundle);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 0) {
+            SignUpActivity.this.finish();
+        }
+    }
 
     private void setFragment(FaceShowBaseFragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.signupfragment_container, fragment).commit();

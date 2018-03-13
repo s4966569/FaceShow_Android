@@ -36,13 +36,15 @@ public class SysUserBean implements Serializable{
     private int subject;
     private int userStatus;
     private int ucnterId;
-    private int sex;
+    /**默认为男*/
+    private int sex=1;
+    private String sexName="男";
     private String school;
     private String avatar;
     private String stageName;
     private String imTokenInfo;
     private String subjectName;
-    private String sexName;
+
 
     public int getId() {
         return id;

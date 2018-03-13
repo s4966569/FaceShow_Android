@@ -294,9 +294,11 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             ToastUtil.showToast(getActivity(),"密码长度在6到20位");
             return false;
         }
-
         /*还要判断 不包含特殊字符 保证 密码由数字和字母组成 以及 字母大小写敏感*/
-
+        /*不能包含空格*/
+        if (Utils.isContainBlank(psw)) {
+            return false;
+        }
         return true;
     }
     private String getErrorMsg(FaceShowBaseResponse ret) {
