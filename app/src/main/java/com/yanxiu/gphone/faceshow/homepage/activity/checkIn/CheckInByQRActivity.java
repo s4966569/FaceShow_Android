@@ -242,6 +242,16 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     if (ret.getData() != null && ret.getData().getClazsInfo() != null) {
                         /*可以获取到 classId*/
                         alertDialog.setMessage("成功加入【" + ret.getData().getClazsInfo().getClazsName() + "】");
+                        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // TODO: 2018/3/8  执行切换班级操作并 回到 首页
+                                /*直接设置 userInfo 的班级信息 在用户班级列表里查找 班级信息 */
+                                getClassListData(clazsId);
+                                /*这里如何控制 首页的刷新？*/
+                                // TODO: 2018/3/9 通知首页刷新
+                            }
+                        });
                         alertDialog.show();
                     } else {
                         /*没有获取到有效的classId*/
