@@ -36,6 +36,7 @@ public class SystemUpdataDialog {
     private final AlertDialog alertDialog;
 
     public SystemUpdataDialog(@NonNull Context context, String title,String content, String updateType, UpdateDialogCallBack callBack) {
+
         this.mContext = context;
         this.mUpdateType = updateType;
         this.mCallBack = callBack;
