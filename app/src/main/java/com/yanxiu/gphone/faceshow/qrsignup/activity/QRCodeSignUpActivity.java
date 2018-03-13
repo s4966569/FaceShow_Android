@@ -185,8 +185,7 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("info", ret.getData());
                         intent.putExtra("data", bundle);
-                        startActivityForResult(intent, REQUEST_CODE_TO_CHECK_PHONE);
-//                        toSignUpActivity(ret.getData().getClazsId());
+                        startActivity(intent);
                         QRCodeSignUpActivity.this.finish();
                     }else {
                         /*没有获取到有效的classId*/
@@ -380,11 +379,11 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_TO_CHECK_PHONE) {
-            if (resultCode == RESULT_OK) {
-                QRCodeSignUpActivity.this.finish();
-            }
-        }
+//
+//        if (requestCode == REQUEST_CODE_TO_CHECK_PHONE) {
+//            if (resultCode == RESULT_OK) {
+//                QRCodeSignUpActivity.this.finish();
+//            }
+//        }
     }
 }
