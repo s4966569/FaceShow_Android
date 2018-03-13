@@ -79,6 +79,10 @@ public class SignUpActivity extends FaceShowBaseActivity {
                     case CheckPhoneFragment.SERVER_USER:
                           /*研修网用户 进入用户信息设置 直接获取了 sysuser */
                         sysUserBean = checkPhoneFragment.getSysUserBean();
+                        /*设置默认 性别信息*/
+                        sysUserBean.setSexName("男");
+                        sysUserBean.setSex(1);
+
                         toProfileActivity(CheckPhoneFragment.SERVER_USER);
                         break;
                     case CheckPhoneFragment.APP_USER:
