@@ -183,7 +183,10 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                         /*可以获取到 classId*/
                         Intent intent = new Intent(QRCodeSignUpActivity.this, SignUpActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("info", ret.getData());
+
+                        /*保存 id  与 name*/
+                        bundle.putInt("classId",ret.getData().getClazsId());
+                        bundle.putString("className",ret.getData().getClazsInfo().getClazsName());
                         intent.putExtra("data", bundle);
                         startActivity(intent);
                         QRCodeSignUpActivity.this.finish();
