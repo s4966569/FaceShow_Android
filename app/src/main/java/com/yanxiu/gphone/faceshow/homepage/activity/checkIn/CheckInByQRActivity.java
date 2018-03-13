@@ -314,11 +314,27 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                                 MainActivity.invoke(CheckInByQRActivity.this);
                                 CheckInByQRActivity.this.finish();
                                 break;
+                            }else {
+                                ToastUtil.showToast(CheckInByQRActivity.this,"没有找到目标班级！");
                             }
                         }
+                    }else {
+                        if (ret.getError() != null&& !TextUtils.isEmpty(ret.getError().getMessage())) {
+                            ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
+                        }else {
+                            ToastUtil.showToast(CheckInByQRActivity.this,
+                                    TextUtils.isEmpty(ret.getMessage())?"获取班级列表失败！":ret.getMessage());
+                        }
+
                     }
                 } else {
-                    ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
+//                    ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
+                    if (ret.getError() != null&& !TextUtils.isEmpty(ret.getError().getMessage())) {
+                        ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
+                    }else {
+                        ToastUtil.showToast(CheckInByQRActivity.this,
+                                TextUtils.isEmpty(ret.getMessage())?"获取班级列表失败！":ret.getMessage());
+                    }
                 }
             }
 
