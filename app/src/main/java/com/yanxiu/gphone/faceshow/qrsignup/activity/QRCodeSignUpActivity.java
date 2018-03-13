@@ -186,9 +186,6 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
 
                         /*保存 id  与 name*/
                         bundle.putInt("classId",ret.getData().getClazsId());
-                        if (ret.getData().getClazsInfo() != null) {
-                            bundle.putString("className",ret.getData().getClazsInfo().getClazsName());
-                        }
                         intent.putExtra("data", bundle);
                         startActivity(intent);
                         QRCodeSignUpActivity.this.finish();
