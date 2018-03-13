@@ -68,6 +68,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_topic_list, container, false);
+        startMqttService();
         setupView(v);
         setupData();
         return v;
@@ -122,8 +123,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     private void setupData() {
         // 为了不丢消息，上来就启动Mqtt
-        startMqttService();
-
         updateTopicsFromDb();
         updateTopicsFromHttpWithoutMembers();
     }
@@ -335,6 +334,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", imId);
+
+        // 如果是当前topic，不在这里更新，而在msgs界面更新
+        if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {
+            return;
+        }
 
         // mqtt上的实时消息，按照接收顺序写入ui的datalist
         // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息

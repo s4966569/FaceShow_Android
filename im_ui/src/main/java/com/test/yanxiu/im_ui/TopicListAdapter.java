@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -55,6 +56,8 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 
     public class TopicViewHolder extends RecyclerView.ViewHolder {
         private Context mContext;
+
+        private View mContainer;
         private ImageView mAvatarImageView;
         private TextView mSenderTextView;
         private TextView mTimeTextView;
@@ -65,6 +68,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             super(itemView);
             mContext = context;
 
+            mContainer = itemView;
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mSenderTextView = itemView.findViewById(R.id.sender_textview);
             mTimeTextView = itemView.findViewById(R.id.time_textView);
@@ -72,7 +76,15 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             mRedDotCircleView = itemView.findViewById(R.id.reddot_circleview);
         }
 
-        public void setData(DbTopic topic) {
+        public void setData(final DbTopic topic) {
+
+            mContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SrtLogger.log("im ui", "topic : %ll", topic.getTopicId());
+                }
+            });
+
             // 默认
             mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
             mSenderTextView.setText("未知");
