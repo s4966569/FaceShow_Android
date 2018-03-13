@@ -3,6 +3,8 @@ package com.yanxiu.gphone.faceshow.qrsignup.response;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 
+import java.io.Serializable;
+
 /**
  * Created by srt on 2018/3/7.
  */
@@ -41,7 +43,7 @@ public class QrClazsInfoResponse extends FaceShowBaseResponse {
     }
 
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         /**
          * clazsInfo : {"id":88,"platId":1,"projectId":79,"clazsName":"尚睿通2018公司年会","clazsStatus":1,"clazsType":1,"startTime":"2018-02-12 00:00:00","endTime":"2018-02-12 00:00:00","description":"尚睿通公司年会","topicId":null,"manager":null,"master":null,"clazsStatusName":null,"projectName":null}
          * clazsId : 88

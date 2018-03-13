@@ -1,8 +1,11 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +38,12 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
      * 用户信息  新注册用户信息内容 大部分为空  已有信息用户 有信息内容
      */
     private SysUserBean sysUserBean;
+    /**
+     * 目标班级名称
+     * */
+    public String clazsName;
+
+
 
     /**
      * toolbar 控件
@@ -219,10 +228,16 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 mRootView.hiddenLoadingView();
 //                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 if (ret.getCode() == 0) {
-                    ToastUtil.showToast(getActivity(), "用户信息已经保存！");
+                    createNomalDialog("成功加入【"+clazsName+"】!\n登陆后即可查看到该班级。", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            alertDialog.dismiss();
+                            getActivity().setResult(Activity.RESULT_OK);
+                            getActivity().finish();
+                        }
+                    });
                 } else {
                     ToastUtil.showToast(getActivity(), getErrorMsg(ret));
-//                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
 
@@ -288,6 +303,17 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                     break;
             }
         }
+    }
+
+
+    private AlertDialog alertDialog;
+
+
+    private void createNomalDialog(String msg, DialogInterface.OnClickListener btnListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                .setMessage(msg).setPositiveButton("确定", btnListener);
+        alertDialog = builder.create();
+        alertDialog.show();
     }
 
     private ProfileItemClickListener itemClickListener;

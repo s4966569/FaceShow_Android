@@ -181,7 +181,12 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                     /*服务器请求成功*/
                     if (ret.getData() != null) {
                         /*可以获取到 classId*/
-                        toSignUpActivity(ret.getData().getClazsId());
+                        Intent intent = new Intent(QRCodeSignUpActivity.this, SignUpActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("info", ret.getData());
+                        intent.putExtra("data", bundle);
+                        startActivityForResult(intent, REQUEST_CODE_TO_CHECK_PHONE);
+//                        toSignUpActivity(ret.getData().getClazsId());
                         QRCodeSignUpActivity.this.finish();
                     }else {
                         /*没有获取到有效的classId*/
