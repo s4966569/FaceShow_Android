@@ -35,14 +35,14 @@ public class SystemUpdataDialog {
     private final AlertDialog.Builder dialog;
     private final AlertDialog alertDialog;
 
-    public SystemUpdataDialog(@NonNull Context context, String content, String updateType, UpdateDialogCallBack callBack) {
+    public SystemUpdataDialog(@NonNull Context context,String title, String content, String updateType, UpdateDialogCallBack callBack) {
         this.mContext = context;
         this.mUpdateType = updateType;
         this.mCallBack = callBack;
 
         dialog = new AlertDialog.Builder(context);
         dialog.setMessage(content);
-        dialog.setTitle(R.string.version_updata);
+        dialog.setTitle(title);
         dialog.setCancelable(false);
         setListener();
         alertDialog = dialog.create();
