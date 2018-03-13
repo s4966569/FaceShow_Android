@@ -25,6 +25,7 @@
     <color name="color_333333">#333333</color>
     <color name="color_666666">#666666</color>
     <color name="color_black">#ff000000</color>
+    <color name="color_red">#ffff0000</color>
     <color name="color_99cc00">#99cc00</color>
     <color name="color_cccccc">#cccccc</color>
     <color name="color_7fcccccc">#7fcccccc</color>

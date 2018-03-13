@@ -16,7 +16,7 @@ public class DbMember extends DataSupport {
     private String name;
     private String avatar;
 
-    private List<DbTopic> topics;   // 表明此用户加入了哪些topic
+    private List<DbTopic> topics = new ArrayList<>();   // 表明此用户加入了哪些topic
 
     //region getter setter
     public long getImId() {

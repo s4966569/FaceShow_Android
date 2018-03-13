@@ -18,6 +18,7 @@ import org.litepal.crud.DataSupport;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -168,43 +169,53 @@ public class DatabaseDealer {
     /**
      * 获取此topic的从startMsgId开始的DbMsg中count条数据以及DbMyMsg中相关的数据，msgId值大的在前
      * @param startMsgId : 最大的msgId. 传-1为从最近一条msg开始
-     * @param count : DbMsg中的消息数
+     * @param count : 每页的数据个数，默认同server保持一致为20
      * @return 返回merge后的数组，如果数据足够，数组size() >= count，如果数组size()小于count值，则表明已经取完所有数据
      */
     public static List<DbMsg> getTopicMsgs(long topicId, long startMsgId, int count) {
-        ClusterQuery query = null;
+        ClusterQuery otherQuery = null;
+        ClusterQuery myQuery = null;
+
         if (startMsgId == -1) {
-            query = DataSupport.
-                    where("topicId = ?", Long.toString(topicId))
+            otherQuery = DataSupport
+                    .where("topicId = ?", Long.toString(topicId))
                     .limit(count)
                     .order("msgid desc");   // server按照msgId插入，这里也可以用sendtime
+            myQuery = DataSupport
+                    .where("topicid = ?", Long.toString(topicId))
+                    .limit(count)
+                    .order("sendtime desc");
+
         } else {
-            query = DataSupport.
-                    where("topicId = ? and msgid <= ?",
+            otherQuery = DataSupport
+                    .where("topicId = ? and msgid <= ?",
                             Long.toString(topicId),
                             Long.toString(startMsgId))
                     .limit(count)
                     .order("msgid desc");   // server按照msgId插入，这里也可以用sendtime
+            myQuery = DataSupport
+                    .where("topicId = ? and msgid <= ?",
+                            Long.toString(topicId),
+                            Long.toString(startMsgId))
+                    .limit(count)
+                    .order("sendtime desc");
         }
 
-        List<DbMsg> otherMsgs = query.find(DbMsg.class);
+        List<DbMsg> otherMsgs = otherQuery.find(DbMsg.class);
+        List<DbMyMsg> myMsgs = myQuery.find(DbMyMsg.class);
+        if (myMsgs.size() > 0) {
+            merge(otherMsgs, myMsgs);
+        }
 
-        if (otherMsgs.size() > 0) {
-            long myStartId = otherMsgs.get(0).getMsgId();                   // 大的
-            long myEndId = otherMsgs.get(otherMsgs.size() - 1).getMsgId();  // 小的
-            List<DbMyMsg> myMsgs = DataSupport
-                    .where("topicId = ? and msgid <= ? and msgid >= ?",
-                            Long.toString(topicId),
-                            Long.toString(myStartId),
-                            Long.toString(myEndId))
-                    .order("sendtime desc")
-                    .find(DbMyMsg.class);
-
-            if (myMsgs.size() > 0) {
-                // 需要merge进总queue
-                merge(otherMsgs, myMsgs);
+        int actualCount = Math.min(otherMsgs.size(), count);
+        for(Iterator<DbMsg> i = otherMsgs.iterator(); i.hasNext();) {
+            actualCount--;
+            i.next();
+            if (actualCount < 0) {
+                i.remove();
             }
         }
+
         return otherMsgs;
     }
 
@@ -280,7 +291,14 @@ public class DatabaseDealer {
     };
 
     public static DbTopic updateDbTopicWithImTopic(ImTopic topic) {
+        List<DbTopic> topics = DataSupport
+                .where("topicid=?", Long.toString(topic.topicId))
+                .find(DbTopic.class, true);
+
         DbTopic dbTopic = new DbTopic();
+        if (topics.size() > 0) {
+            dbTopic = topics.get(0);
+        }
         dbTopic.setTopicId(topic.topicId);
         dbTopic.setName(topic.topicName);
         dbTopic.setType(topic.topicType);
@@ -290,6 +308,8 @@ public class DatabaseDealer {
             ImMember imMember = member.memberInfo;
             DbMember dbMember = updateDbMemberWithImMember(imMember);
             dbTopic.getMembers().add(dbMember);
+            dbMember.getTopics().add(dbTopic);
+            dbMember.save();
         }
 
         dbTopic.save();
@@ -297,7 +317,14 @@ public class DatabaseDealer {
     }
 
     public static DbMember updateDbMemberWithImMember(ImMember member) {
+        List<DbMember> members = DataSupport
+                .where("imid = ?", Long.toString(member.imId))
+                .find(DbMember.class, true);
+
         DbMember dbMember = new DbMember();
+        if (members.size() > 0) {
+            dbMember = members.get(0);
+        }
         dbMember.setImId(member.imId);
         dbMember.setName(member.memberName);
         dbMember.setAvatar(member.avatar);
@@ -316,7 +343,7 @@ public class DatabaseDealer {
         if (msg.senderId == curUserImId) {
             // 我发的消息不入库，以后有删除后，重拉消息列表时，应该入DbMyMsg库
             DbMyMsg dbMyMsg = new DbMyMsg();
-            dbMyMsg.setState(0);
+            dbMyMsg.setState(0);    // http来的消息都是以完成的消息
             dbMsg = dbMyMsg;
         } else {
             dbMsg = new DbMsg();

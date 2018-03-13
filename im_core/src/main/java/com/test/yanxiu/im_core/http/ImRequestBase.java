@@ -1,6 +1,9 @@
 package com.test.yanxiu.im_core.http;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.test.yanxiu.network.RequestBase;
 
@@ -40,6 +43,14 @@ public class ImRequestBase extends RequestBase {
 
     @Override
     protected String fullUrl() throws NullPointerException, IllegalAccessException, IllegalArgumentException {
+        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
+                .showThreadInfo(false)
+                .methodCount(0)
+                .tag("ImHttp")
+                .build();
+        Logger.clearLogAdapters();
+        Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy));
+
         String url = super.fullUrl();
         Logger.d(url);
         return url;
