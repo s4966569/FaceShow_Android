@@ -25,7 +25,7 @@ public class ContactsPresenter {
 
     }
 
-    void getContactsList(ClassBean classBean) {
+   public void getContactsList(ClassBean classBean) {
         view.showContractsList(model.getPlayersDataByClass(classBean));
     }
 
@@ -35,8 +35,9 @@ public class ContactsPresenter {
 
 
     public void showChangeClassPopupWindow() {
-        view.showChangeClassPopupWindow(model.getClassListData());
+        view.showChangeClassWindow(model.getClassListData());
     }
+
 
 
 }

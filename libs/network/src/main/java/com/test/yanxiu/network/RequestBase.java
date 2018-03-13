@@ -34,7 +34,7 @@ import okhttp3.Response;
 
 public abstract class RequestBase {
     public transient ResponseBodyDealer bodyDealer;
-    public static final Gson gson = new GsonBuilder().create();
+    public static final Gson gson = new GsonBuilder().serializeNulls().create();
 
     public static Gson getGson() {
         return gson;
@@ -91,6 +91,7 @@ public abstract class RequestBase {
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             try {
                 Object value = entry.getValue();
+                if (value == null) continue;
                 if (!(value instanceof String)) {
                     value = gson.toJson(entry.getValue());
                 }
@@ -289,6 +290,7 @@ public abstract class RequestBase {
             Map<String, Object> params = bodyParams();
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 Object value = entry.getValue();
+                if (value == null) continue;
                 if (!(value instanceof String)) {
                     value = gson.toJson(entry.getValue());
                 }

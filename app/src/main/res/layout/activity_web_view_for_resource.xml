@@ -12,6 +12,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="@color/color_e6e6e6" />-->
+        android:backgrouncolorolor/color_e6e6e6" />-->
 
 </LinearLayout>

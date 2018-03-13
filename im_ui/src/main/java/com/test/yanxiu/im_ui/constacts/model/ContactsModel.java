@@ -16,6 +16,7 @@ public class ContactsModel {
     final String dbPath = "/data/data/com.yanxiu.gphone.faceshow/databases/yx.db";
     private ClassDao classDao;
     private ContactsDao contactsDao;
+    private ClassBean mCurrentClass;
 
     public List<ContactsPlayerBean> getPlayersDataByClass(ClassBean classData) {
         if (contactsDao == null) {
@@ -23,6 +24,7 @@ public class ContactsModel {
         }
         ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean();
         contactsPlayerBean.setClassId(classData.getClassId());
+        mCurrentClass = classData;
         return contactsDao.query(contactsPlayerBean);
     }
 
@@ -45,7 +47,10 @@ public class ContactsModel {
     }
 
     public List<ContactsPlayerBean> getCurrentClassPlayerList() {
-        return null;
+        if (mCurrentClass == null) {
+            return null;
+        }
+        return getPlayersDataByClass(mCurrentClass);
     }
 
 

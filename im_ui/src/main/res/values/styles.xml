@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="CircleView" tools:ignore="ResourceName">
+        <attr name="circle_color" format="color" tools:ignore="ResourceName"/>
+    </declare-styleable>
+
+    <declare-styleable name="RoundCornerMaskView" tools:ignore="ResourceName">
+        <attr name="mask_color" format="color" tools:ignore="ResourceName"/>
+        <attr name="corner_radius" format="dimension" tools:ignore="ResourceName"/>
+    </declare-styleable>
+
+    <style name="im_ui" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimarcolorolor/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDarcolorolor/colorPrimaryDark</item>-->
+        <!--<item name="colorAccencolorolor/colorAccent</item>-->
+    </style>
+</resources>

@@ -3,7 +3,9 @@
     package="com.test.yanxiu.im_ui">
 
     <application>
-        <activity android:name=".constacts.ContactsActivity"></activity>
+        <activity
+            android:name=".constacts.ContactsActivity"
+            android:theme="@style/im_ui"></activity>
     </application>
 
 </manifest>

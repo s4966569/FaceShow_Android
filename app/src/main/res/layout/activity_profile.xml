@@ -207,19 +207,19 @@
         <!--<View-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="2px"-->
-            <!--android:background="@color/color_EBEFF2" />-->
+            <!--android:backgrouncolorolor/color_EBEFF2" />-->
 
         <!--<RelativeLayout-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="45dp"-->
-            <!--android:background="@color/color_white">-->
+            <!--android:backgrouncolorolor/color_white">-->
 
             <!--<TextView-->
                 <!--android:layout_width="wrap_content"-->
                 <!--android:layout_height="wrap_content"-->
                 <!--android:layout_centerVertical="true"-->
                 <!--android:text="@string/subjectname"-->
-                <!--android:textColor="@color/color_333333"-->
+                <!--android:textColocolorolor/color_333333"-->
                 <!--android:textSize="@dimen/my_item_text_size" />-->
 
             <!--<TextView-->
@@ -230,7 +230,7 @@
                 <!--android:layout_centerVertical="true"-->
                 <!--android:layout_marginRight="15dp"-->
                 <!--android:ellipsize="end"-->
-                <!--android:textColor="@color/color_999999"-->
+                <!--android:textColocolorolor/color_999999"-->
                 <!--android:textSize="@dimen/my_item_text_size" />-->
 
         <!--</RelativeLayout>-->

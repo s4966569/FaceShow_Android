@@ -21,22 +21,26 @@ public class RequestQueueHelper {
 
     private List<Object> items = new ArrayList<>();
     private boolean hasOngoingRequest = false;
+    private RequestBase ongoingRequest;
+    private boolean bPaused;
 
     public <T> void addRequest(RequestBase request, final Class<T> clazz, final HttpCallback<T> callback) {
         HttpCallback<T> queueCallback = new HttpCallback<T>() {
             @Override
             public void onSuccess(RequestBase request, T ret) {
                 hasOngoingRequest = false;
-                callback.onSuccess(request, ret);
+                ongoingRequest = null;
                 removeFromQueue(request);
+                callback.onSuccess(request, ret);
                 doNextRequest();
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 hasOngoingRequest = false;
-                callback.onFail(request, error);
+                ongoingRequest = null;
                 removeFromQueue(request);
+                callback.onFail(request, error);    // 如果需要失败重试，则外部在onfail时重新加queue到index 0即可
                 doNextRequest();
             }
         };
@@ -60,6 +64,10 @@ public class RequestQueueHelper {
     }
 
     private void doNextRequest() {
+        if (bPaused) {
+            return;
+        }
+
         if (hasOngoingRequest) {
             return;
         }
@@ -70,5 +78,18 @@ public class RequestQueueHelper {
         final Item<Object> item = (Item<Object>) items.get(0);
         hasOngoingRequest = true;
         item.request.startRequest(item.clazz, item.callback);
+        ongoingRequest = item.request;
+    }
+
+    public void setPause(boolean pause) {
+        bPaused = true;
+        if (ongoingRequest != null) {
+            ongoingRequest.cancelRequest();
+        }
+    }
+
+    public void setResume(boolean resume) {
+        bPaused = false;
+        doNextRequest();
     }
 }

@@ -16,7 +16,7 @@ public interface IContactsView {
 
     void addCallBack();
 
-    void showChangeClassPopupWindow(List<ClassBean> list);
+//    void showChangeClassPopupWindow(List<ClassBean> list);
 
 //    void changeClassContacts(ChangeClassPopupWindow.OnClassChangedListener onClassChangedListener);
 
@@ -27,5 +27,9 @@ public interface IContactsView {
     void showQueryResultList(List<ContactsPlayerBean> data);
 
     void showContractsList(List<ContactsPlayerBean> data);
+
+    void showChangeClassWindow(List<ClassBean> data);
+
+    void hideChangeClassWindow();
 
 }

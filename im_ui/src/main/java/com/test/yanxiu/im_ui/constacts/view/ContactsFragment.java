@@ -8,10 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
-import com.test.yanxiu.im_core.Constants;
 import com.test.yanxiu.im_ui.R;
+import com.test.yanxiu.im_ui.constacts.ChangeClassAdapter;
 import com.test.yanxiu.im_ui.constacts.ContactsAdapter;
 import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
 import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
@@ -28,9 +31,14 @@ import java.util.List;
 public class ContactsFragment extends FaceShowBaseFragment implements IContactsView {
     ImageView mImgBack;
     ImageView mImgChangeClass;
-    RecyclerView mContactsList;
+    RecyclerView mContactsList, mChangeClassList;
     FSSearchView mSearchView;
+    TextView mTvCurrentClassName;
+    View mChangeClassBackView;
+
+    LinearLayout ll_change_class;
     public ContactsAdapter mContactsAdapter;
+    private ChangeClassAdapter mChangeClassAdapter;
     private ContactsPresenter mPresenter;
     private ChangeClassPopupWindow mPopupWindow;
 
@@ -41,12 +49,29 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
         mImgBack = rootView.findViewById(R.id.img_back);
         mImgChangeClass = rootView.findViewById(R.id.img_change_class);
         mContactsList = rootView.findViewById(R.id.recyclerView);
+        mTvCurrentClassName = rootView.findViewById(R.id.tv_current_class_name);
+        ll_change_class = rootView.findViewById(R.id.ll_change_class);
+        mChangeClassList = rootView.findViewById(R.id.recyclerView_change_class);
+        mChangeClassBackView = rootView.findViewById(R.id.back_view);
+
         mContactsAdapter = new ContactsAdapter();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mContactsList.setLayoutManager(linearLayoutManager);
         mContactsList.setAdapter(mContactsAdapter);
+
+        mChangeClassAdapter = new ChangeClassAdapter();
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this.getContext());
+        linearLayoutManager1.setOrientation(LinearLayoutManager.VERTICAL);
+        mChangeClassList.setLayoutManager(linearLayoutManager1);
+        mChangeClassList.setAdapter(mChangeClassAdapter);
+
+
         mPresenter = new ContactsPresenter(this);
+        addCallBack();
+        mTvCurrentClassName.setText("面授一班");
+        mPresenter.getContactsList(new ClassBean(1, "面授一班"));
+
         return rootView;
     }
 
@@ -73,7 +98,11 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
         mImgChangeClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.showChangeClassPopupWindow();
+                if (ll_change_class.getVisibility() == View.GONE) {
+                    mPresenter.showChangeClassPopupWindow();
+                } else {
+                    hideChangeClassWindow();
+                }
             }
         });
         mImgBack.setOnClickListener(new View.OnClickListener() {
@@ -82,17 +111,19 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
                 ContactsFragment.this.getActivity().finish();
             }
         });
-    }
-
-    @Override
-    public void showChangeClassPopupWindow(List<ClassBean> list) {
-        //todo showPopupWindow
+        mChangeClassBackView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideChangeClassWindow();
+            }
+        });
     }
 
 
     @Override
     public void showItemClickResult(View view, int position) {
         // TODO: 2018/3/13  item点击后的响应事件
+        Toast.makeText(this.getContext(), "position:: " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -103,7 +134,23 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
 
     @Override
     public void showContractsList(List<ContactsPlayerBean> data) {
-        mContactsAdapter.refreah(data);
+        mContactsAdapter.refresh(data);
+    }
+
+    @Override
+    public void showChangeClassWindow(List<ClassBean> data) {
+
+        if (data == null || data.size() == 0) {
+
+        } else {
+            mChangeClassAdapter.refresh(data);
+            ll_change_class.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void hideChangeClassWindow() {
+        ll_change_class.setVisibility(View.GONE);
     }
 
     @Override

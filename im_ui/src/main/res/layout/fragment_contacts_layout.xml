@@ -37,6 +37,7 @@
         android:layout_height="45dp">
 
         <TextView
+            android:id="@+id/tv_current_class_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -65,12 +66,46 @@
             android:contentDescription="@null" />
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/ll_change_class"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView_change_class"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_white" />
+
+            <TextView
+                android:id="@+id/tv_sure_change_class"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@color/color_1da1f2"
+                android:gravity="center"
+                android:text="@string/im_ui_sure"
+                android:textColor="@color/color_white"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/back_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#55000000" />
+
+        </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>

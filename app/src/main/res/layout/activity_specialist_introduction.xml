@@ -34,7 +34,7 @@
             <!--android:layout_width="65dp"-->
             <!--android:layout_height="1dp"-->
             <!--android:layout_gravity="center_horizontal"-->
-            <!--android:background="@color/viewfinder_mask" />-->
+            <!--android:backgrouncolorolor/viewfinder_mask" />-->
 
         <TextView
             android:id="@+id/specialist_name"
