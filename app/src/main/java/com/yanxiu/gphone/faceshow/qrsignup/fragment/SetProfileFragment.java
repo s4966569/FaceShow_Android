@@ -138,7 +138,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         TextView nameTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_name);
-        nameTv.setText(String.format("%s", TextUtils.isEmpty(userData.getRealName())?"":userData.getRealName()));
+        nameTv.setText(String.format("%s", TextUtils.isEmpty(userData.getRealName()) ? "" : userData.getRealName()));
 
         TextView phoneTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_phone);
@@ -146,16 +146,16 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         TextView sexTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_gender);
-        sexTv.setText(String.format("%s", TextUtils.isEmpty(userData.getSexName())?"":userData.getSexName()));
+        sexTv.setText(String.format("%s", TextUtils.isEmpty(userData.getSexName()) ? "" : userData.getSexName()));
 
         TextView stagetSunjectTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_stage_subject);
 
-        StringBuilder stageSubject= new StringBuilder();
+        StringBuilder stageSubject = new StringBuilder();
         /*拼接 学段*/
-        stageSubject.append(!TextUtils.isEmpty(userData.getStageName())?userData.getStageName():"");
-        stageSubject.append(TextUtils.isEmpty(userData.getSubjectName())?"":"、"+userData.getSubjectName());
-        stagetSunjectTv.setText(String.format("%s",stageSubject.toString()));
+        stageSubject.append(!TextUtils.isEmpty(userData.getStageName()) ? userData.getStageName() : "");
+        stageSubject.append(TextUtils.isEmpty(userData.getSubjectName()) ? "" : "、" + userData.getSubjectName());
+        stagetSunjectTv.setText(String.format("%s", stageSubject.toString()));
     }
 
     /**
@@ -168,7 +168,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
-        titleTextView.setText("完善信息");
+        titleTextView.setText("完善资料");
         titleRightText.setText("保存");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,21 +207,21 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         final UpdateProfileRequest updateProfileRequest = new UpdateProfileRequest();
 
 //        Log.i(TAG, "updateSysUserInfoRequest:  " +new Gson().toJson(userBean));
-        updateProfileRequest.userId=userBean.getUserId()+"";
+        updateProfileRequest.userId = userBean.getUserId() + "";
         updateProfileRequest.realName = userBean.getRealName();
-        updateProfileRequest.sex = userBean.getSex()+"";
-        updateProfileRequest.stage = userBean.getStage()+"";
-        updateProfileRequest.subject = userBean.getSubject()+"";
+        updateProfileRequest.sex = userBean.getSex() + "";
+        updateProfileRequest.stage = userBean.getStage() + "";
+        updateProfileRequest.subject = userBean.getSubject() + "";
 
         updateProfileRequest.startRequest(UpdateProfileResponse.class, new HttpCallback<UpdateProfileResponse>() {
             @Override
             public void onSuccess(RequestBase request, UpdateProfileResponse ret) {
                 mRootView.hiddenLoadingView();
 //                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
-                if (ret.getCode()==0) {
-                    ToastUtil.showToast(getActivity(),"用户信息已经保存！");
-                }else {
-                    ToastUtil.showToast(getActivity(),getErrorMsg(ret));
+                if (ret.getCode() == 0) {
+                    ToastUtil.showToast(getActivity(), "用户信息已经保存！");
+                } else {
+                    ToastUtil.showToast(getActivity(), getErrorMsg(ret));
 //                    mRootView.showOtherErrorView(ret.getError().getMessage());
                 }
             }
@@ -239,20 +239,21 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
             }
         });
     }
+
     /**
      * 根据返回值 获取错误信息
-     * */
+     */
     private void setErrorMsg(UpdateProfileResponse ret) {
         if (ret.getError() != null) {
             /*首先检查 是否携带错误信息*/
-            ToastUtil.showToast(getActivity(),ret.getError().getMessage());
+            ToastUtil.showToast(getActivity(), ret.getError().getMessage());
 //            alertDialog.setMessage();
-        }else {
+        } else {
             /*没有包含错误信息*/
             if (!TextUtils.isEmpty(ret.getMessage())) {
-                ToastUtil.showToast(getActivity(),ret.getMessage());
-            }else {
-                ToastUtil.showToast(getActivity(),"请求失败");
+                ToastUtil.showToast(getActivity(), ret.getMessage());
+            } else {
+                ToastUtil.showToast(getActivity(), "请求失败");
             }
         }
     }
@@ -266,6 +267,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                     "请求失败" : ret.getMessage();
         }
     }
+
     @Override
     public void onClick(View v) {
         if (itemClickListener != null) {

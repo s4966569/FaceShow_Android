@@ -50,6 +50,8 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
         registedUserBean = (SysUserBean) getIntent().getBundleExtra("data")
                 .getSerializable("user");
         int userType = getIntent().getBundleExtra("data").getInt("type");
+//        int userType = 0;
+//        registedUserBean=new SysUserBean();
         /*初始化 fragment*/
         fragmentInit(userType);
         listenerInit();
