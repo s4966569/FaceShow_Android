@@ -56,9 +56,10 @@ public class CourseMessageActivity extends FaceShowBaseActivity {
         Bundle bundle = new Bundle();
         bundle.putSerializable("data", course);
 
-         /*教师 信息fragment*/
+         /*教师 列表fragment*/
         LectureInfoListFragment lectureInfoListFragment = new LectureInfoListFragment();
         lectureInfoListFragment.setArguments(bundle);
+
         /*课程简介 fragment*/
         CourseBriefIntroductionFragment courseBriefIntroductionFragment = new CourseBriefIntroductionFragment();
         courseBriefIntroductionFragment.setArguments(bundle);

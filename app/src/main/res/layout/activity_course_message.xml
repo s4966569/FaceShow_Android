@@ -23,7 +23,10 @@
         app:tabIndicatorColor="@color/color_0068BD"
         app:tabSelectedTextColor="@color/color_0068BD"
         app:tabTextColor="@color/color_666666" />
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_EBEFF2" />
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"

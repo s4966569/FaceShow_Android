@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,17 +35,27 @@ public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_lecture_info_layout, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.course_detail_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         ((ViewHolder) holder).setData(data.get(position));
-        if (position == getItemCount() - 1) {
-            ((ViewHolder) holder).line.setVisibility(View.GONE);
-        } else {
-            ((ViewHolder) holder).line.setVisibility(View.VISIBLE);
+
+        if (recyclerViewItemClickListener != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    recyclerViewItemClickListener.onItemClick(holder.itemView,position);
+                }
+            });
+
         }
+//        if (position == getItemCount() - 1) {
+//            ((ViewHolder) holder).line.setVisibility(View.GONE);
+//        } else {
+//            ((ViewHolder) holder).line.setVisibility(View.VISIBLE);
+//        }
 
     }
 
@@ -56,14 +65,14 @@ public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.img_head)
+        @BindView(R.id.course_detail_item_icon)
         ImageView mImgHead;
-        @BindView(R.id.tv_name)
+        @BindView(R.id.course_detail_item_txt)
         TextView mTvName;
-        @BindView(R.id.rv_lecture_brief)
-        TextView mRvLectureBrief;
-        @BindView(R.id.line)
-        View line;
+//        @BindView(R.id.rv_lecture_brief)
+//        TextView mRvLectureBrief;
+//        @BindView(R.id.line)
+//        View line;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -72,7 +81,7 @@ public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
 
         void setData(LecturerInfosBean lecturerInfosBean) {
             mTvName.setText(lecturerInfosBean.getLecturerName());
-            mRvLectureBrief.setText(Html.fromHtml(lecturerInfosBean.getLecturerBriefing()));
+//            mRvLectureBrief.setText(Html.fromHtml(lecturerInfosBean.getLecturerBriefing()));
             Glide.with(itemView.getContext()).load(lecturerInfosBean.getLecturerAvatar())
                     .asBitmap().placeholder(R.drawable.classcircle_headimg)
                     .centerCrop()
