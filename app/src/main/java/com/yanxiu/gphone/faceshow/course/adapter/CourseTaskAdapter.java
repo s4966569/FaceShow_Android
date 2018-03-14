@@ -2,6 +2,7 @@ package com.yanxiu.gphone.faceshow.course.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,8 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
         TextView mTvTaskName;
         @BindView(R.id.project_task_status)
         TextView mTvTaskStatue;
+        @BindView(R.id.project_task_time)
+        TextView mTvTaskTime;
 
 
         ViewHolder(View itemView) {
@@ -87,27 +90,31 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
                     /*签到*/
                     mImgTaskIcon.setImageResource(R.drawable.ic_sign_in);
                     setTaskStatue(context, interactStep);
-//                    mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_finish_number, Integer.valueOf(interactStep.getStepFinished()),
-////                            Integer.valueOf(interactStep.getTotalStudentNum()))));
-//                           0)));
                     break;
                 case 5:
                     /*问卷*/
                     mImgTaskIcon.setImageResource(R.drawable.icon_questionnaire);
                     setTaskStatue(context, interactStep);
-//                    mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_finish_number,
-//                            /*学员端没有 学生人数 信息*/
-//                            0,0)));
-//                            interactStep.getFinishedStudentNum(),
-//                            interactStep.getTotalStudentNum())));
+
+                    /*设置 创建时间*/
+                    mTvTaskTime.setText(interactStep.getCreateTime());
+                    /*设置状态 文字*/
+                    setTaskStatue(context,interactStep);
+//                    if (InteractStepsBean.FINISH.equals(interactStep.getStepFinished())) {
+//                        mTvTaskStatue.setText("已完成");
+//                        mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_finished));
+//                    }else {
+//                        mTvTaskStatue.setText("未完成");
+//                        mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_unfinished));
+//                    }
                     break;
                 case 4:
                     /*讨论*/
                     int openType = 1;
                     if (openType == Integer.valueOf(interactStep.getStepStatus())) {
-                        mTvTaskStatue.setText("已开启");
+                        mTvTaskTime.setText("已开启");
                     } else {
-                        mTvTaskStatue.setText("未开启");
+                        mTvTaskTime.setText("未开启");
                     }
                     mImgTaskIcon.setImageResource(R.drawable.ic_comment);
                     break;
@@ -115,11 +122,8 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
                     /*投票*/
                     mImgTaskIcon.setImageResource(R.drawable.icon_vote);
                     setTaskStatue(context, interactStep);
-//                    mTvTaskStatue.setText(Html.fromHtml(itemView.getContext().getString(R.string.have_finish_number,
-                           /*学员端没有 学生人数 信息*/
-//                            0,0)));
-//                            interactStep.getFinishedStudentNum(),
-//                            interactStep.getTotalStudentNum())));
+                    /*设置 创建时间*/
+                    mTvTaskTime.setText(interactStep.getCreateTime());
                     break;
                 default:
                     /*其他 未知*/
@@ -134,13 +138,15 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
          * 设置任务完成情况
          */
         private void setTaskStatue(Context context, InteractStepsBean interactStep) {
-//            if (TextUtils.equals(interactStep.getStepFinished(), "1")) {
-//                mTvTaskStatue.setText("已完成");
-//                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_finished));
-//            } else {
-//                mTvTaskStatue.setText("未完成");
-//                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_unfinished));
-//            }
+
+            if (TextUtils.equals(interactStep.getStepFinished(), "1")) {
+                mTvTaskStatue.setText("已完成");
+                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_finished));
+            } else {
+                mTvTaskStatue.setText("未完成");
+                mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_unfinished));
+            }
+            mTvTaskStatue.setVisibility(View.VISIBLE);
         }
     }
 }

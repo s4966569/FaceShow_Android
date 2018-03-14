@@ -256,7 +256,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             }
         });
         leftTitleImageView.setVisibility(View.VISIBLE);
-        leftTitleImageView.setImageResource(R.drawable.main_leftdrawe);
+        leftTitleImageView.setImageResource(R.drawable.selector_main_leftdrawer);
         leftTitleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

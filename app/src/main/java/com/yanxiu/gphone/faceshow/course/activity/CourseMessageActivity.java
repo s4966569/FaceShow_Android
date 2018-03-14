@@ -110,6 +110,7 @@ public class CourseMessageActivity extends FaceShowBaseActivity {
             }
         });
         mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.color_1da1f2));
         setUpIndicatorWidth(mTabLayout, 20, 20);
 //
     }

@@ -81,6 +81,8 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
 
     GetCourseResourcesResponse.DataBean mDataBean;
 
+
+
 //    private void getCourseResources() {
 //        String courseId = (getArguments() != null ? (String) getArguments().get("courseId") : null);
 //        if (courseId != null) {

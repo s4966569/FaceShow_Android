@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="140dp"
-        android:background="@drawable/leftdrawer_std_bg">
+        android:background="@drawable/course_detail_bg">
 
         <ImageView
             android:id="@+id/img_left_back"
@@ -157,7 +157,7 @@
                     android:background="@drawable/selector_refresh_button_net_error"
                     android:gravity="center"
                     android:text="课程信息"
-                    android:textColor="@color/selector_refresh_text_color" />
+                    android:textColor="@color/color_1da1f2" />
 
                 <View
                     android:layout_width="match_parent"

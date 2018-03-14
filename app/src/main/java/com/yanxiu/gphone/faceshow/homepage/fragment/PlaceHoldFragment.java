@@ -41,7 +41,7 @@ public class PlaceHoldFragment extends FaceShowBaseFragment {
         /*左侧 菜单按钮*/
         titleLeftImageView=view.findViewById(R.id.title_layout_left_img);
         titleLeftImageView.setVisibility(View.VISIBLE);
-        titleLeftImageView.setImageResource(R.drawable.main_leftdrawe);
+        titleLeftImageView.setImageResource(R.drawable.selector_main_leftdrawer);
         mTitleView=view.findViewById(R.id.title_layout_title);
         mTitleView.setText("聊聊");
 

@@ -100,6 +100,7 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
      * 需要在 获取 网络请求结果后进行
      * */
     private void viewPagerInit(CourseDetailBean courseDetailBean) {
+        Log.i(TAG, "viewPagerInit: "+new Gson().toJson(courseDetailBean.getCourse()));
         /*任务列表*/
         final CourseTaskFragment taskFragment=new CourseTaskFragment();
         Bundle bundle = new Bundle();
@@ -138,6 +139,7 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
         };
         mViewPager.setAdapter(fragmentPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.color_1da1f2));
         setUpIndicatorWidth(mTabLayout, 20, 20);
     }
     private List<Fragment> list = new ArrayList<>();
@@ -175,7 +177,7 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
 
     private void setCourseTitleInfo(CourseBean courseBean) {
 //        CourseBean courseBean=ret.getData().getCourse();
-        Log.i(TAG, "onSuccess: " + new Gson().toJson(courseBean));
+//        Log.i(TAG, "onSuccess: " + new Gson().toJson(courseBean));
         mCourseTitle.setText(courseBean.getCourseName());
         mCourseTeacher.setText(courseBean.getLecturer());
         mCourseLocation.setText(courseBean.getSite());
