@@ -241,7 +241,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     /*服务器请求成功*/
                     if (ret.getData() != null && ret.getData().getClazsInfo() != null) {
                         /*可以获取到 classId*/
-                        alertDialog.setMessage(ret.getMessage());
+                        alertDialog.setMessage("成功加入【"+ret.getData().getClazsInfo().getClazsName()+"】!");
                         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

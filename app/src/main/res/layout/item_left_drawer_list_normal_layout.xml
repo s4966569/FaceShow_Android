@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="71dp"
+    android:layout_height="55dp"
+
     android:gravity="center_horizontal">
 
     <ImageView
@@ -16,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="48dp"
+
         android:layout_toRightOf="@+id/list_item_icon"
         android:gravity="center"
         android:textColor="@drawable/selector_leftdrawer_item_text_color"
