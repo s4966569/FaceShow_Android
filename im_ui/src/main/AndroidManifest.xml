@@ -3,7 +3,8 @@
     package="com.test.yanxiu.im_ui">
 
     <application>
-        <activity android:name=".ImMsgListActivity"></activity>
+        <activity android:name=".ImMsgListActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize"></activity>
     </application>
 
 </manifest>

@@ -46,6 +46,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="-15dp"
-        android:src="@drawable/selector_icon_back" />
+        android:src="@drawable/selector_icon_back"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>
