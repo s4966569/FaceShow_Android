@@ -575,7 +575,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             /*由切换班级界面返回 */
             if (resultCode == RESULT_OK) {
 //                getData();
-                reFreshFragment();
+//                reFreshFragment();
+                setHomeFragment();
+                showCurrentFragment(INDEX_HOME_TAB);
                 pollingRedPointer();
                 /*对 抽屉内的headerview展示信息进行更新   */
                 mLeftDrawerListAdapter.notifyItemChanged(0);
