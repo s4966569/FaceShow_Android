@@ -9,9 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 
 import java.util.zip.Inflater;
 
@@ -20,10 +23,32 @@ import java.util.zip.Inflater;
  */
 
 public class ImTitleLayout extends RelativeLayout {
+    private OnNaviLeftBackCallback onNaviLeftBackCallback;
+    private TextView mTitleTextView;
+    private LinearLayout mLeftView;
+    private LinearLayout mRightView;
+
+    private ImageView mDefaultBackImageView;
+
+    // 和setLeftView互斥
+    public void setOnNaviLeftBackCallback(final OnNaviLeftBackCallback onNaviLeftBackCallback) {
+        this.onNaviLeftBackCallback = onNaviLeftBackCallback;
+        setLeftView(mDefaultBackImageView);
+        mDefaultBackImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onNaviLeftBackCallback != null) {
+                    onNaviLeftBackCallback.onNaviBack();
+                }
+            }
+        });
+    }
+
     public void setTitle(String title) {
         mTitleTextView.setText(title);
     }
 
+    // 和setOnNaviLeftBackCallback互斥
     public void setLeftView(View v) {
         makeViewIndependence(v);
         mLeftView.addView(v);
@@ -41,10 +66,6 @@ public class ImTitleLayout extends RelativeLayout {
             v.setVisibility(View.VISIBLE);
         }
     }
-
-    private TextView mTitleTextView;
-    private LinearLayout mLeftView;
-    private LinearLayout mRightView;
 
     public ImTitleLayout(Context context) {
         super(context);
@@ -66,5 +87,6 @@ public class ImTitleLayout extends RelativeLayout {
         mTitleTextView = findViewById(R.id.title_textview);
         mLeftView = findViewById(R.id.left_view);
         mRightView = findViewById(R.id.right_view);
+        mDefaultBackImageView = findViewById(R.id.navi_left_back_imageview);
     }
 }

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.orhanobut.logger.Logger;
+import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
@@ -360,7 +361,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
         @Override
         public void onItemClick(int position, DbTopic dbTopic) {
-            SrtLogger.log("imui", "topic : %s", dbTopic.getTopicId());
+            SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
+            Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+            startActivity(i);
         }
     };
     //endregion
