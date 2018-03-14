@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ebeff2"
+    android:background="#dfe3e5"
     tools:context="com.test.yanxiu.im_ui.ImMsgListActivity">
 
     <com.test.yanxiu.im_ui.ImTitleLayout
@@ -15,7 +15,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/msg_list_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="100"
         android:background="@color/color_white" />
 
     <View

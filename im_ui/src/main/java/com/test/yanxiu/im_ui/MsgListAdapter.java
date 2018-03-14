@@ -1,0 +1,275 @@
+package com.test.yanxiu.im_ui;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.test.yanxiu.im_core.db.DbMsg;
+import com.test.yanxiu.im_core.db.DbMyMsg;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Created by cailei on 14/03/2018.
+ */
+
+public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListItemViewHolder> {
+    enum ItemType {
+        LOADING,
+        DATETIME,
+        DBMSG,
+        DBMYMSG
+    }
+
+    private Context mContext;
+    private List<DbMsg> mDatas;
+    private List<Item> mUiDatas;
+
+    public MsgListAdapter(Context context, List<DbMsg> msgs) {
+        mContext = context;
+        mDatas = msgs;
+
+        mock();
+    }
+
+    // 从现有的mDatas，生成mUiDatas
+    private void generateUiDatas() {
+        mUiDatas = new ArrayList<>();
+        for (int i = 0; i < mDatas.size() - 1; i++) {
+            DbMsg curDbMsg = mDatas.get(i);
+            DbMsg nextDbMsg = mDatas.get(i+1);
+
+            // 当前msg入队
+            Item msgItem = new Item();
+            if (curDbMsg.getSenderId() == Constants.imId) {
+                msgItem.setType(ItemType.DBMYMSG);
+                msgItem.setMyMsg((DbMyMsg) curDbMsg);
+            } else {
+                msgItem.setType(ItemType.DBMSG);
+                msgItem.setMsg(curDbMsg);
+            }
+
+            // 如果超过5分钟，则插入时间
+            if ((nextDbMsg.getSendTime() - curDbMsg.getSendTime()) > 5*60*1000) {
+                Item timeItem = new Item();
+                timeItem.setType(ItemType.DATETIME);
+                timeItem.setTimestamp(curDbMsg.getSendTime());
+            }
+        }
+    }
+
+    private void mock() {
+        mUiDatas = new ArrayList<>();
+        List<String> msgs = new ArrayList<>(Arrays.asList(
+                "hello world",
+                "aaaaaaa",
+                "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "c",
+                "look into my eye you will see what you mean to me"
+
+        ));
+
+        for (int i = 0; i < 5; i++) {
+            DbMsg dbMsg = new DbMsg();
+            dbMsg.setMsg(msgs.get(i));
+            Item msgItem = new Item();
+            msgItem.setType(ItemType.DBMSG);
+            msgItem.setMsg(dbMsg);
+            mUiDatas.add(msgItem);
+
+            Item datetimeItem = new Item();
+            datetimeItem.setType(ItemType.DATETIME);
+            Date date = new Date();
+            datetimeItem.setTimestamp(date.getTime());
+            mUiDatas.add(datetimeItem);
+        }
+
+        for (int i = 0; i < 5; i++) {
+            DbMyMsg dbMyMsg = new DbMyMsg();
+            dbMyMsg.setMsg(msgs.get(i));
+            Item myMsgItem = new Item();
+            myMsgItem.setType(ItemType.DBMYMSG);
+            myMsgItem.setMyMsg(dbMyMsg);
+            mUiDatas.add(myMsgItem);
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Item item = mUiDatas.get(position);
+        return item.type.ordinal();
+    }
+
+    @Override
+    public MsgListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == ItemType.DATETIME.ordinal()) {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.item_msg_datetime, parent, false);
+            return new DatetimeViewHolder(v);
+        }
+
+        if (viewType == ItemType.DBMSG.ordinal()) {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.item_msg_dbmsg, parent, false);
+            return new MsgViewHolder(v);
+        }
+
+        if (viewType == ItemType.DBMYMSG.ordinal()) {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.item_msg_dbmymsg, parent, false);
+            return new MyMsgViewHolder(v);
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(MsgListItemViewHolder holder, int position) {
+        Item item = mUiDatas.get(position);
+        holder.setData(item);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mUiDatas.size();
+    }
+
+    public abstract class MsgListItemViewHolder extends RecyclerView.ViewHolder {
+        public MsgListItemViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        public abstract void setData(Item item);
+    }
+
+    public class DatetimeViewHolder extends MsgListItemViewHolder {
+        private TextView mDatetimeTextView;
+        public DatetimeViewHolder(View itemView) {
+            super(itemView);
+            mDatetimeTextView = itemView.findViewById(R.id.datetime_textview);
+        }
+
+        @Override
+        public void setData(Item item) {
+            mDatetimeTextView.setText(timeStr(item.timestamp));
+        }
+
+        private String timeStr(long timestamp) {
+            String ret = null;
+
+            Date now = new Date();
+            Date date = new Date(timestamp);
+
+
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd", Locale.CHINA);
+            String nowStr = formatter.format(now);
+            String dateStr = formatter.format(date);
+
+            SimpleDateFormat timeFormatter = new SimpleDateFormat("a hh:mm", Locale.CHINA);
+            ret = timeFormatter.format(date);
+
+            // 由于server time可能有误差，所有未来时间也当做今天
+            if ((nowStr.equals(dateStr)) || (date.getTime() > now.getTime())) {
+                // 在同一天，显示"上午 10:36"
+                ret = timeFormatter.format(date);
+                return ret;
+            }
+
+            Date nowZero = null; // 今天零点
+            try {
+                nowZero = formatter.parse(nowStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if ((nowZero.getTime() - date.getTime()) < 24 * 60 * 60 * 1000) {
+                // 昨天
+                ret = "昨天 " + timeFormatter.format(date);
+                return ret;
+            }
+
+            // 星期三
+            SimpleDateFormat formatter2 = new SimpleDateFormat("EEE", Locale.CHINA);
+            ret = formatter2.format(date) + " " + timeFormatter.format(date);
+
+            return ret;
+        }
+    }
+
+    public class MsgViewHolder extends MsgListItemViewHolder {
+        private TextView mNameTextView;
+        private TextView mMsgTextView;
+
+        public MsgViewHolder(View itemView) {
+            super(itemView);
+            mNameTextView = itemView.findViewById(R.id.name_textview);
+            mMsgTextView = itemView.findViewById(R.id.msg_textview);
+        }
+
+        @Override
+        public void setData(Item item) {
+            DbMsg msg = item.getMsg();
+
+            mNameTextView.setText("张三");
+            mMsgTextView.setText(msg.getMsg());
+        }
+    }
+
+    public class MyMsgViewHolder extends MsgListItemViewHolder {
+        private TextView mMsgTextView;
+
+        public MyMsgViewHolder(View itemView) {
+            super(itemView);
+            mMsgTextView = itemView.findViewById(R.id.msg_textview);
+        }
+
+        @Override
+        public void setData(Item item) {
+            DbMyMsg myMsg = item.getMyMsg();
+            mMsgTextView.setText(myMsg.getMsg());
+        }
+    }
+
+    public class Item {
+        private ItemType type;   // 0-loading, 1-datetime, 2-dbmsg, 3-dbmymsg
+        private DbMsg msg;
+        private DbMyMsg myMsg;
+        private long timestamp;
+
+        public ItemType getType() {
+            return type;
+        }
+
+        public void setType(ItemType type) {
+            this.type = type;
+        }
+
+        public DbMsg getMsg() {
+            return msg;
+        }
+
+        public void setMsg(DbMsg msg) {
+            this.msg = msg;
+        }
+
+        public DbMyMsg getMyMsg() {
+            return myMsg;
+        }
+
+        public void setMyMsg(DbMyMsg myMsg) {
+            this.myMsg = myMsg;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
+    }
+}
