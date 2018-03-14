@@ -30,6 +30,14 @@ public class QRCodeChecker {
     }
 
     /**
+     * 是研修server的二维码
+     * */
+    private boolean isYanxiuServer(String codeStr){
+        return codeStr.startsWith(UrlRepository.getInstance().getServer());
+    }
+
+
+    /**
      * 检查是否是 HTML5 宣传界面
      * APP 不存在 HTML5 二维码使用
      *
@@ -48,8 +56,7 @@ public class QRCodeChecker {
      * */
     public boolean isDownloadCode(String codeStr) {
         if (strBaseCheck(codeStr)) {
-            return codeStr.startsWith(
-                    UrlRepository.getInstance().getServer()+"?method=interact.userSignIn");
+            return isYanxiuServer(codeStr);
         }
         return false;
     }
@@ -59,8 +66,7 @@ public class QRCodeChecker {
     public boolean isClazzCode(String codeStr) {
         if (strBaseCheck(codeStr)) {
             /*为了测试流程的顺畅 没有 检查逻辑*/
-            return codeStr.startsWith(
-                    UrlRepository.getInstance().getServer()+"?method=clazs.scanClazsCode");
+            return isYanxiuServer(codeStr);
         }
         return false;
     }
