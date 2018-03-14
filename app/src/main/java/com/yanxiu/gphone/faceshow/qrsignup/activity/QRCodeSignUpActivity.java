@@ -83,12 +83,8 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                 /*判断是否是 签到二维码 提示请先登录后再签到*/
                 if (qrCodeChecker.isCheckInCode(result)) {
                     ToastUtil.showToast(QRCodeSignUpActivity.this,"请先登录后再签到");
-                    restartScan();
-                } else {
-                    QRCodeSignUpActivity.this.finish();
-//                    ToastUtil.showToast(QRCodeSignUpActivity.this, "无效二维码！");
-//                    restartScan();
-                }
+                } else {}
+                QRCodeSignUpActivity.this.finish();
             }
         } else {
             QRCodeSignUpActivity.this.finish();
