@@ -122,7 +122,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                         }
                     } else if (qrCodeChecker.isClazzCode(result)) {
                         /*检查结果为 班级二维码 发起 班级 绑定请求*/
-                        scanClazsRequest(qrCodeChecker.getClazsIdFromQR(result)+"");
+                        scanClazsRequest(qrCodeChecker.getClazsIdFromQR(result) + "");
                         restartScan();
                     } else {
                         /*其他 进入签到错误信息页面*/
@@ -241,7 +241,7 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                     /*服务器请求成功*/
                     if (ret.getData() != null && ret.getData().getClazsInfo() != null) {
                         /*可以获取到 classId*/
-                        alertDialog.setMessage("成功加入【" + ret.getData().getClazsInfo().getClazsName() + "】");
+                        alertDialog.setMessage(ret.getMessage());
                         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -299,42 +299,16 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
 //                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 mLoadingDialogView.dismiss();
                 mUUID = null;
+                boolean hasClass=false;
                 if (ret != null && ret.getCode() == 0) {
                     if (ret.getData() != null && ret.getData().getClazsInfos() != null && ret.getData().getClazsInfos().size() > 0) {
-                        for (GetStudentClazsesResponse.ClazsInfosBean clazsInfosBean : ret.getData().getClazsInfos()) {
-                            if (clazsId.equals(clazsInfosBean.getId() + "")) {
-                                UserInfo.Info info = SpManager.getUserInfo();
-                                if (info == null) {
-                                    Log.e(TAG, " sp get user info null" );
-                                }
-                                info.setClassId(String.valueOf(clazsId));
-                                info.setClassName(clazsInfosBean.getClazsName());
-                                info.setProjectName(clazsInfosBean.getProjectName());
-                                SpManager.saveUserInfo(info);
-                                MainActivity.invoke(CheckInByQRActivity.this);
-                                CheckInByQRActivity.this.finish();
-                                break;
-                            }else {
-                                ToastUtil.showToast(CheckInByQRActivity.this,"没有找到目标班级！");
-                            }
-                        }
-                    }else {
-                        if (ret.getError() != null&& !TextUtils.isEmpty(ret.getError().getMessage())) {
-                            ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
-                        }else {
-                            ToastUtil.showToast(CheckInByQRActivity.this,
-                                    TextUtils.isEmpty(ret.getMessage())?"获取班级列表失败！":ret.getMessage());
-                        }
-
+                        /*在用户的班级列表中查找 二维码班级*/
+                        findTargetClazs(ret, hasClass, clazsId);
+                    } else {
+                        showErrorMsg(ret);
                     }
                 } else {
-//                    ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
-                    if (ret.getError() != null&& !TextUtils.isEmpty(ret.getError().getMessage())) {
-                        ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
-                    }else {
-                        ToastUtil.showToast(CheckInByQRActivity.this,
-                                TextUtils.isEmpty(ret.getMessage())?"获取班级列表失败！":ret.getMessage());
-                    }
+                    showErrorMsg(ret);
                 }
             }
 
@@ -343,9 +317,45 @@ public class CheckInByQRActivity extends FaceShowBaseActivity {
                 mLoadingDialogView.dismiss();
                 mUUID = null;
                 ToastUtil.showToast(CheckInByQRActivity.this, error.getMessage());
-
             }
         });
+    }
+
+    private void showErrorMsg(GetStudentClazsesResponse ret) {
+        if (ret.getError() != null && !TextUtils.isEmpty(ret.getError().getMessage())) {
+            ToastUtil.showToast(CheckInByQRActivity.this, ret.getError().getMessage());
+        } else {
+            ToastUtil.showToast(CheckInByQRActivity.this,
+                    TextUtils.isEmpty(ret.getMessage()) ? "获取班级列表失败！" : ret.getMessage());
+        }
+    }
+
+    private void findTargetClazs(GetStudentClazsesResponse ret, boolean hasClass, String clazsId) {
+        for (GetStudentClazsesResponse.ClazsInfosBean clazsInfosBean : ret.getData().getClazsInfos()) {
+            if (clazsId.equals(clazsInfosBean.getId() + "")) {
+                /*重置信息 并跳转到首页*/
+                resetUserInfoAndToHomePage(clazsInfosBean, clazsId);
+                /*toast 标志位 */
+                hasClass=true;
+                break;
+            }
+        }
+        if (!hasClass) {
+            ToastUtil.showToast(CheckInByQRActivity.this, "没有找到目标班级！");
+        }
+    }
+
+    private void resetUserInfoAndToHomePage(GetStudentClazsesResponse.ClazsInfosBean clazsInfosBean, String clazsId) {
+        UserInfo.Info info = SpManager.getUserInfo();
+        if (info == null) {
+            Log.e(TAG, " sp get user info null");
+        }
+        info.setClassId(String.valueOf(clazsId));
+        info.setClassName(clazsInfosBean.getClazsName());
+        info.setProjectName(clazsInfosBean.getProjectName());
+        SpManager.saveUserInfo(info);
+        MainActivity.invoke(CheckInByQRActivity.this);
+        CheckInByQRActivity.this.finish();
     }
 
     /**
