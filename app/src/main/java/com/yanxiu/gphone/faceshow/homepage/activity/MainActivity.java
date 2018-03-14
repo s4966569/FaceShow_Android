@@ -119,6 +119,11 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mContext = this;
         initView();
         initListener();
+        if (SpManager.isFristStartUp()) {
+            startActivityForResult(new Intent(MainActivity.this,
+                    ChooseClassActivity.class), CHOOSE_CLASS);
+            SpManager.setFristStartUp(false);
+        }
         getData();
         UpdateUtil.Initialize(this, false);
     }

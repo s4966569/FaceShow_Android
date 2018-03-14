@@ -101,9 +101,9 @@ public class LoginActivity extends FaceShowBaseActivity {
         rootView.setContentView(R.layout.activity_login);
         setContentView(rootView);
         unbinder = ButterKnife.bind(this);
-        if (SpManager.isFristStartUp()) {
-            SpManager.setFristStartUp(false);
-        }
+//        if (SpManager.isFristStartUp()) {
+//            SpManager.setFristStartUp(false);
+//        }
         edt_account_number.addTextChangedListener(accountNumberChangedListener);
         edt_account_password.addTextChangedListener(accountPasswordChangedListener);
         if (edt_account_number.getText().length() > 0 && edt_account_password.getText().length() > 0) {
