@@ -37,6 +37,14 @@ public class ModifyStageFragment extends Fragment {
 
     private SysUserBean userBean;
 
+    private String stageText;
+    /**
+     * 获取选择的学段名称
+     * */
+    public String getStageText() {
+        return stageText;
+    }
+
     private StageSubjectModel mStageSubjectModel;
     private int mSelectedPosition = 0;
     private boolean canSelected = false;
@@ -96,6 +104,8 @@ public class ModifyStageFragment extends Fragment {
             userBean.setStage(Integer.valueOf(stageId));
             userBean.setStageName(mStageSubjectModel.getData().get(mSelectedPosition).getName());
             canSelected = true;
+
+            stageText=mStageSubjectModel.getData().get(mSelectedPosition).getName();
         }
     };
     ImageView backView;

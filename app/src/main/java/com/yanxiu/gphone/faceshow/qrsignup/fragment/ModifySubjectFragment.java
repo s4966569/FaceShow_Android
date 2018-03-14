@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,12 @@ public class ModifySubjectFragment extends Fragment {
     public void setUserBean(SysUserBean userBean) {
         this.userBean = userBean;
     }
+
+    public void setTitleText(String title){
+        stageText=title;
+    }
+
+    private String stageText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,7 +103,13 @@ public class ModifySubjectFragment extends Fragment {
         rightTxt.setVisibility(View.VISIBLE);
 
         rightTxt.setText("保存");
-        titleTxt.setText("选择学段");
+
+        if (TextUtils.isEmpty(stageText)) {
+            titleTxt.setText("选择学段");
+        }else {
+            titleTxt.setText(stageText);
+        }
+
         backView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

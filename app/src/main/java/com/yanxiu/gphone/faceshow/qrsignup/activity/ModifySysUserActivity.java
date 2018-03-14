@@ -238,6 +238,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
                 backToProfileFragment();
             }
         });
+        modifySubjectFragment.setTitleText(modifyStageFragment.getStageText());
         modifySubjectFragment.setUserBean(registedUserBean);
         transaction(modifySubjectFragment);
     }
