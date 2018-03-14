@@ -3,8 +3,10 @@ package com.test.yanxiu.im_ui;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.facebook.stetho.inspector.protocol.module.Database;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.im_core.db.DbTopic;
+import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 
 public class ImMsgListActivity extends FragmentActivity {
@@ -16,21 +18,25 @@ public class ImMsgListActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_msg_list);
 
-        setupView();
+        topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
         setupData();
+        setupView();
     }
 
     private void setupView() {
         mTitleLayout = findViewById(R.id.title_layout);
+        mTitleLayout.setTitle("");
+
         mTitleLayout.setOnNaviLeftBackCallback(new OnNaviLeftBackCallback() {
             @Override
             public void onNaviBack() {
                 finish();
             }
         });
+
+        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
     }
 
     private void setupData() {
-        topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
     }
 }

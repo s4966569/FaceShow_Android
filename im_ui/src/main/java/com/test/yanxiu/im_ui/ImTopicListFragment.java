@@ -131,8 +131,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         updateTopicsFromHttpWithoutMembers();
     }
 
-    private String imToken = "fb1a05461324976e55786c2c519a8ccc";
-    private long imId = 9;
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser("cailei");
@@ -143,7 +141,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 2，从Http获取用户的topic列表，不包含members，完成后继续从Http获取需要更新的topic的信息
     private void updateTopicsFromHttpWithoutMembers() {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
-        getMemberTopicsRequest.imToken = imToken;
+        getMemberTopicsRequest.imToken = Constants.imToken;
         getMemberTopicsRequest.bizId = null;
         getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
             @Override
@@ -194,7 +192,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         strTopicIds = strTopicIds.substring(0, strTopicIds.length() - sep.length());
 
         TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
-        getTopicsRequest.imToken = imToken;
+        getTopicsRequest.imToken = Constants.imToken;
         getTopicsRequest.topicIds = strTopicIds;
         getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
             @Override
@@ -253,7 +251,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
 
         GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
-        getTopicMsgsRequest.imToken = imToken;
+        getTopicMsgsRequest.imToken = Constants.imToken;
         getTopicMsgsRequest.topicId = Long.toString(dbTopic.getTopicId());
         getTopicMsgsRequest.startId = Long.toString(dbTopic.latestMsgId);
         getTopicMsgsRequest.order = "desc";
@@ -273,7 +271,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
 
                 for (ImMsg msg : ret.data.topicMsg) {
-                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", imId);
+                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
                     dbTopic.mergedMsgs.add(dbMsg);
 
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
@@ -337,7 +335,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
-        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", imId);
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
 
         // 如果是当前topic，不在这里更新，而在msgs界面更新
         if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {

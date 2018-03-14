@@ -362,4 +362,24 @@ public class DatabaseDealer {
         dbMsg.save();
         return dbMsg;
     }
+
+    //region util
+
+    public static String getTopicTitle(DbTopic topic, long curUserImId) {
+        String ret = "未知";
+        if (topic.getType().equals("1")) { // 私聊
+            for (DbMember member : topic.getMembers()) {
+                if (member.getImId() != curUserImId) {
+                    ret = member.getName();
+                    break;
+                }
+            }
+        }
+
+        if (topic.getType().equals("2")) { // 群聊
+            ret = "班级群聊 (" + topic.getMembers().size() + ")";
+        }
+        return ret;
+    }
+    //endregion
 }
