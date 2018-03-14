@@ -159,6 +159,9 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         // TODO: 2018/3/2  将recyclerview 的overscroll 动画去除
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mLeftDrawerView = mRootView.findViewById(R.id.left_drawer);
+
+
+//        ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,mDrawerLayout,R.drawable.selector_drawerview_toggle,)
         setLeftDrawerContent();
         /*退出按钮*/
         TextView exitTextView = (TextView) mRootView.findViewById(R.id.exit);
