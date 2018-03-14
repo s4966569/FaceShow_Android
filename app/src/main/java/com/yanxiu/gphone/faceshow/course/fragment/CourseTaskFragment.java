@@ -13,15 +13,15 @@ import android.view.ViewGroup;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.activity.CourseCommentActivity;
+import com.yanxiu.gphone.faceshow.course.activity.CourseDiscussActivity;
+import com.yanxiu.gphone.faceshow.course.activity.EvaluationActivity;
 import com.yanxiu.gphone.faceshow.course.activity.VoteActivity;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseTaskAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.CourseDetailBean;
 import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.recyclerview.RecyclerViewItemClickListener;
-import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInDetailActivity;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,14 +86,14 @@ public class CourseTaskFragment extends FaceShowBaseFragment {
 //                                intent = new Intent(getContext(), VoteActivity.class);
 //                            default:
 //                        }
-                        if (intent == null) {
-                            ToastUtil.showToast(getContext(), "未知类型");
-                            return;
-                        }
-                        intent.putExtra("stepId", String.valueOf(interactStep.getStepId()));
-                        if (getActivity() != null) {
-                            getActivity().startActivity(intent);
-                        }
+//                        if (intent == null) {
+//                            ToastUtil.showToast(getContext(), "未知类型");
+//                            return;
+//                        }
+//                        intent.putExtra("stepId", String.valueOf(interactStep.getStepId()));
+//                        if (getActivity() != null) {
+//                            getActivity().startActivity(intent);
+//                        }
                     }
                 });
             } else {
@@ -106,13 +106,17 @@ public class CourseTaskFragment extends FaceShowBaseFragment {
     private Intent checkInteractStepType(InteractStepsBean interactStep, Intent intent) {
         String type = interactStep.getInteractType();
         if (InteractStepsBean.VOTE.equals(type)) {
-            intent = new Intent(getContext(), VoteActivity.class);
+            VoteActivity.invoke(getActivity(),interactStep.getStepId());
+//            intent = new Intent(getContext(), VoteActivity.class);
         } else if (InteractStepsBean.DISCUSS.equals(type)) {
-            intent = new Intent(getContext(), CourseCommentActivity.class);
+            CourseDiscussActivity.invoke(getActivity(),interactStep);
+//            intent = new Intent(getContext(), CourseCommentActivity.class);
         } else if (InteractStepsBean.QUESTIONNAIRES.equals(type)) {
+            EvaluationActivity.invoke(getActivity(),interactStep.getStepId());
 //                            intent = new Intent(getContext(), QuestionnaireActivity.class);
         } else if (InteractStepsBean.CHECK_IN.equals(type)) {
-            intent = new Intent(getContext(), CheckInDetailActivity.class);
+            CheckInByQRActivity.toThisAct(getActivity());
+//            intent = new Intent(getContext(), CheckInDetailActivity.class);
         } else {
 
         }

@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.course.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +19,7 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.common.activity.PDFViewActivity;
 import com.yanxiu.gphone.faceshow.common.activity.WebViewActivity;
+import com.yanxiu.gphone.faceshow.common.bean.PdfBean;
 import com.yanxiu.gphone.faceshow.course.GetCourseResourcesResponse;
 import com.yanxiu.gphone.faceshow.course.adapter.CourseResourceAdapter;
 import com.yanxiu.gphone.faceshow.course.bean.AttachmentInfosBean;
@@ -26,6 +29,7 @@ import com.yanxiu.gphone.faceshow.customview.recyclerview.RecyclerViewItemClickL
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailRequest;
 import com.yanxiu.gphone.faceshow.http.resource.ResourceDetailResponse;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
+import com.yanxiu.gphone.faceshow.webView.WebViewForResourceActivity;
 
 import java.util.UUID;
 
@@ -133,7 +137,7 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
             }else {
                 if (infosBean.getResType() != null) {
 //                    requestDetailData(data);
-                    requestDetailData(infosBean.getResId());
+                    getResourceDetail(infosBean.getResId(),getActivity());
                 } else {
                     ToastUtil.showToast(getContext(), "数据异常");
                 }
@@ -150,51 +154,103 @@ public class CourseResourceFragment extends FaceShowBaseFragment {
 //            }
         }
     };
-
-    private void requestDetailData(String resId){
+    private UUID mRequestUUID=null;
+    private void getResourceDetail(String resId, final Activity activity) {
         mPublicLoadLayout.showLoadingView();
-        ResourceDetailRequest resourceRequest = new ResourceDetailRequest();
-        resourceRequest.resId = String.valueOf(resId);
-        resourceRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
+        ResourceDetailRequest resourceDetailRequest = new ResourceDetailRequest();
+        resourceDetailRequest.resId = resId;
+        mRequestUUID = resourceDetailRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
             @Override
             public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
-                mPublicLoadLayout.finish();
+                mPublicLoadLayout.hiddenLoadingView();
                 if (ret != null && ret.getCode() == 0) {
-                    AttachmentInfosBean attachmentInfosBean = ret.getData().getAi();
-                    switch (attachmentInfosBean.getResType()) {
-                        case "word":
-                        case "doc":
-                        case "docx":
-                        case "xls":
-                        case "xlsx":
-                        case "excel":
-                        case "ppt":
-                        case "pptx":
-                        case "pdf":
-                        case "text":
-                        case "txt":
-                            PDFViewActivity.invoke(getActivity(), attachmentInfosBean.getResName(), attachmentInfosBean.getPreviewUrl());
-                            break;
-                        default:
-                            ToastUtil.showToast(getContext(), ret.getError().getMessage());
-                            break;
-                    }
+                    setIntent(ret.getData(),activity);
+                } else {
+                    ToastUtil.showToast(activity, ret.getError().getMessage());
                 }
-
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
-                mPublicLoadLayout.finish();
-                ToastUtil.showToast(getContext(), error.getMessage());
+                mPublicLoadLayout.hiddenLoadingView();
+                ToastUtil.showToast(activity,error.getMessage());
             }
         });
     }
+
+    public void setIntent(ResourceDetailResponse.ResourceDetailBean data,final Activity activity) {
+        if (TextUtils.equals(data.getType(), "1") && !TextUtils.isEmpty(data.getUrl())) {
+            WebViewForResourceActivity.lunch(activity,data.getUrl());
+        } else if(TextUtils.equals(data.getType(), "0")) {
+            AttachmentInfosBean attachmentInfosBean = data.getAi();
+            if (attachmentInfosBean != null && attachmentInfosBean.getResType() != null) {
+                if(attachmentInfosBean.getResType().equals(AttachmentInfosBean.EXCEL) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PDF)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.PPT) || attachmentInfosBean.getResType().equals(AttachmentInfosBean.TEXT)
+                        || attachmentInfosBean.getResType().equals(AttachmentInfosBean.WORD)) {
+                    Intent intent;
+                    PdfBean pdfbean = new PdfBean();
+                    pdfbean.setName(attachmentInfosBean.getResName());
+                    pdfbean.setUrl(attachmentInfosBean.getPreviewUrl());
+                    pdfbean.setRecord(0);
+
+                    intent = new Intent(activity, PDFViewActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("pdfbean", pdfbean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                    return;
+                }
+            } else {
+                ToastUtil.showToast(activity, "数据异常");
+            }
+        } else {
+            ToastUtil.showToast(activity, "数据异常");
+        }
+    }
+//    private void requestDetailData(String resId){
+//        mPublicLoadLayout.showLoadingView();
+//        ResourceDetailRequest resourceRequest = new ResourceDetailRequest();
+//        resourceRequest.resId = String.valueOf(resId);
+//        resourceRequest.startRequest(ResourceDetailResponse.class, new HttpCallback<ResourceDetailResponse>() {
+//            @Override
+//            public void onSuccess(RequestBase request, ResourceDetailResponse ret) {
+//                mPublicLoadLayout.finish();
+//                if (ret != null && ret.getCode() == 0) {
+//                    AttachmentInfosBean attachmentInfosBean = ret.getData().getAi();
+//                    switch (attachmentInfosBean.getResType()) {
+//                        case "word":
+//                        case "doc":
+//                        case "docx":
+//                        case "xls":
+//                        case "xlsx":
+//                        case "excel":
+//                        case "ppt":
+//                        case "pptx":
+//                        case "pdf":
+//                        case "text":
+//                        case "txt":
+//                            PDFViewActivity.invoke(getActivity(), attachmentInfosBean.getResName(), attachmentInfosBean.getPreviewUrl());
+//                            break;
+//                        default:
+//                            ToastUtil.showToast(getContext(), ret.getError().getMessage());
+//                            break;
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFail(RequestBase request, Error error) {
+//                mPublicLoadLayout.finish();
+//                ToastUtil.showToast(getContext(), error.getMessage());
+//            }
+//        });
+//    }
     /**
      * 获取资源详情数据
      */
     private void requestDetailData(GetCourseResourcesResponse.ElementsBean bean) {
-        requestDetailData(bean.getResId()+"");
+//        requestDetailData(bean.getResId()+"");
 //        mPublicLoadLayout.showLoadingView();
 //        ResourceDetailRequest resourceRequest = new ResourceDetailRequest();
 //        resourceRequest.resId = String.valueOf(bean.getResId());
