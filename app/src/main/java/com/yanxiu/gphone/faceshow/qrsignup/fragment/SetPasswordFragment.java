@@ -323,6 +323,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 alertDialog.dismiss();
             }
         });
+
         alertDialog = builder.create();
     }
 }
