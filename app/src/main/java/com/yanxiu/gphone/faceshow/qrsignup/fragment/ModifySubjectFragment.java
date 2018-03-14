@@ -96,7 +96,7 @@ public class ModifySubjectFragment extends Fragment {
         rightTxt.setVisibility(View.VISIBLE);
 
         rightTxt.setText("保存");
-        titleTxt.setText("编辑学段");
+        titleTxt.setText("选择学段");
         backView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

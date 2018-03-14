@@ -111,7 +111,7 @@ public class ModifyStageFragment extends Fragment {
         rightTxt.setVisibility(View.VISIBLE);
 
         rightTxt.setText("下一步");
-        titleTxt.setText("编辑学段");
+        titleTxt.setText("选择学段");
         backView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
