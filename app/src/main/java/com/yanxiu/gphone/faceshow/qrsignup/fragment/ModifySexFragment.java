@@ -78,7 +78,7 @@ public class ModifySexFragment extends Fragment implements View.OnClickListener 
         root.findViewById(R.id.rl_girl).setOnClickListener(this);
 
         /*根据已有信息显示 性别*/
-        if (userBean.getSex()==0) {
+        if (userBean.getSex()==1) {
             setMan();
         }else {
             setGirl();
