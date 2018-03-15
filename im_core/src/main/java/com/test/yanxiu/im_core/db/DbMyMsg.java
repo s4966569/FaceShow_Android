@@ -8,6 +8,12 @@ import org.litepal.crud.DataSupport;
  */
 
 public class DbMyMsg extends DbMsg {
+    public enum State {
+        Success,
+        Sending,
+        Failed
+    }
+
     private int state;      // 0-成功 1-正在传 2-失败
 
     public int getState() {

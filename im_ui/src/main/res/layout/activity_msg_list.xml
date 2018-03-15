@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="100"
-        android:background="@color/color_white" />
+        android:background="#dfe3e5" />
 
     <View
         android:layout_width="match_parent"
@@ -50,8 +50,7 @@
             android:maxLines="3"
             android:minHeight="33dp"
             android:lineSpacingExtra="8dp"
-            android:inputType="text"
-            android:imeOptions="actionSend" />
+            android:inputType="textMultiLine" />
 
         <ImageView
             android:id="@+id/takepic_imageview"

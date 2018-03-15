@@ -5,15 +5,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
+import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -31,14 +35,17 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
     private Context mContext;
-    private List<DbMsg> mDatas;     // msg队列队首为最新消息
-    private List<Item> mUiDatas;    // 最上面为loading，msg从上到下为从旧到新
+    private List<DbMsg> mDatas;
+    private List<Item> mUiDatas;
 
-    public MsgListAdapter(Context context, List<DbMsg> msgs) {
+    public MsgListAdapter(Context context) {
         mContext = context;
-        mDatas = msgs;
+    }
 
-        mock();
+    private OnRecyclerViewItemClickCallback mOnItemClickCallback;
+
+    public void setmOnItemClickCallback(OnRecyclerViewItemClickCallback mOnItemClickCallback) {
+        this.mOnItemClickCallback = mOnItemClickCallback;
     }
 
     private boolean isLoading;
@@ -58,6 +65,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         notifyDataSetChanged();
     }
 
+    public void setmDatas(List<DbMsg> mDatas) {
+        this.mDatas = mDatas;
+        // 重新生成用于显示的mUiDatas
+        generateUiDatas();
+        notifyDataSetChanged();
+    }
+
     // 从现有的mDatas，生成mUiDatas
     private void generateUiDatas() {
         mUiDatas = new ArrayList<>();
@@ -74,50 +88,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 msgItem.setType(ItemType.DBMSG);
                 msgItem.setMsg(curDbMsg);
             }
+            mUiDatas.add(0, msgItem);
 
             // 如果超过5分钟，则插入时间
-            if ((nextDbMsg.getSendTime() - curDbMsg.getSendTime()) > 5*60*1000) {
+            if ((curDbMsg.getSendTime() - nextDbMsg.getSendTime()) > 5*60*1000) {
                 Item timeItem = new Item();
                 timeItem.setType(ItemType.DATETIME);
                 timeItem.setTimestamp(curDbMsg.getSendTime());
+                mUiDatas.add(0, timeItem);
             }
-        }
-    }
-
-    private void mock() {
-        mUiDatas = new ArrayList<>();
-
-        List<String> msgs = new ArrayList<>(Arrays.asList(
-                "hello world",
-                "aaaaaaa",
-                "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-                "c",
-                "look into my eye you will see what you mean to me"
-
-        ));
-
-        for (int i = 0; i < 5; i++) {
-            DbMsg dbMsg = new DbMsg();
-            dbMsg.setMsg(msgs.get(i));
-            Item msgItem = new Item();
-            msgItem.setType(ItemType.DBMSG);
-            msgItem.setMsg(dbMsg);
-            mUiDatas.add(msgItem);
-
-            Item datetimeItem = new Item();
-            datetimeItem.setType(ItemType.DATETIME);
-            Date date = new Date();
-            datetimeItem.setTimestamp(date.getTime());
-            mUiDatas.add(datetimeItem);
-        }
-
-        for (int i = 0; i < 5; i++) {
-            DbMyMsg dbMyMsg = new DbMyMsg();
-            dbMyMsg.setMsg(msgs.get(i));
-            Item myMsgItem = new Item();
-            myMsgItem.setType(ItemType.DBMYMSG);
-            myMsgItem.setMyMsg(dbMyMsg);
-            mUiDatas.add(myMsgItem);
         }
     }
 
@@ -152,9 +131,20 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
     @Override
-    public void onBindViewHolder(MsgListItemViewHolder holder, int position) {
-        Item item = mUiDatas.get(position);
+    public void onBindViewHolder(MsgListItemViewHolder holder, final int position) {
+        final Item item = mUiDatas.get(position);
         holder.setData(item);
+
+        if (holder instanceof MyMsgViewHolder) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mOnItemClickCallback != null) {
+                        mOnItemClickCallback.onItemClick(position, item.getMyMsg());
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -255,16 +245,29 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
     public class MyMsgViewHolder extends MsgListItemViewHolder {
         private TextView mMsgTextView;
-
+        private ProgressBar mStateSendingProgressBar;
+        private ImageView mStateFailedImageView;
         public MyMsgViewHolder(View itemView) {
             super(itemView);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
+            mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
+            mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
         }
 
         @Override
         public void setData(Item item) {
             DbMyMsg myMsg = item.getMyMsg();
             mMsgTextView.setText(myMsg.getMsg());
+            mStateSendingProgressBar.setVisibility(View.GONE);
+            mStateFailedImageView.setVisibility(View.GONE);
+
+            if (myMsg.getState() == DbMyMsg.State.Sending.ordinal()) {
+                mStateSendingProgressBar.setVisibility(View.VISIBLE);
+            }
+
+            if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
+                mStateFailedImageView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
