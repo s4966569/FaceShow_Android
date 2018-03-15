@@ -108,14 +108,14 @@ public class ModifySexFragment extends Fragment implements View.OnClickListener 
     private void setGirl() {
         root.findViewById(R.id.boy_click).setVisibility(View.INVISIBLE);
         root.findViewById(R.id.girl_click).setVisibility(View.VISIBLE);
-        userBean.setSex(1);
+        userBean.setSex(0);
         userBean.setSexName("女");
     }
 
     private void setMan() {
         root.findViewById(R.id.boy_click).setVisibility(View.VISIBLE);
         root.findViewById(R.id.girl_click).setVisibility(View.INVISIBLE);
-        userBean.setSex(0);
+        userBean.setSex(1);
         userBean.setSexName("男");
     }
 }
