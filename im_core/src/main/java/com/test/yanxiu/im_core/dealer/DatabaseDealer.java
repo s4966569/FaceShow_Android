@@ -363,6 +363,18 @@ public class DatabaseDealer {
         return dbMsg;
     }
 
+    public static DbMember getMemberById(long memberId) {
+        DbMember member = null;
+        List<DbMember> members = DataSupport
+                .where("imid = ?", Long.toString(memberId))
+                .find(DbMember.class, true);
+
+        if (members.size() > 0) {
+            member = members.get(0);
+        }
+        return member;
+    }
+
     //region util
 
     public static String getTopicTitle(DbTopic topic, long curUserImId) {

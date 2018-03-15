@@ -9,8 +9,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
+import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 
 import java.text.ParseException;
@@ -230,11 +233,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
     public class MsgViewHolder extends MsgListItemViewHolder {
+        private ImageView mAvatarImageView;
         private TextView mNameTextView;
         private TextView mMsgTextView;
 
         public MsgViewHolder(View itemView) {
             super(itemView);
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
         }
@@ -243,17 +248,28 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         public void setData(Item item) {
             DbMsg msg = item.getMsg();
 
-            mNameTextView.setText("张三");
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
+            mNameTextView.setText("未知");
+            DbMember sender = DatabaseDealer.getMemberById(msg.getSenderId());
+            if (sender != null) {
+                Glide.with(mContext)
+                        .load(sender.getAvatar())
+                        .into(mAvatarImageView);
+                mNameTextView.setText(sender.getName());
+            }
+
             mMsgTextView.setText(msg.getMsg());
         }
     }
 
     public class MyMsgViewHolder extends MsgListItemViewHolder {
+        private ImageView mAvatarImageView;
         private TextView mMsgTextView;
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
         public MyMsgViewHolder(View itemView) {
             super(itemView);
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
@@ -262,7 +278,20 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         @Override
         public void setData(Item item) {
             DbMyMsg myMsg = item.getMyMsg();
+
+            // 设置头像
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
+            DbMember sender = DatabaseDealer.getMemberById(Constants.imId);
+            if (sender != null) {
+                Glide.with(mContext)
+                        .load(sender.getAvatar())
+                        .into(mAvatarImageView);
+            }
+
+            // 设置消息内容
             mMsgTextView.setText(myMsg.getMsg());
+
+            // 设置状态
             mStateSendingProgressBar.setVisibility(View.GONE);
             mStateFailedImageView.setVisibility(View.GONE);
 
