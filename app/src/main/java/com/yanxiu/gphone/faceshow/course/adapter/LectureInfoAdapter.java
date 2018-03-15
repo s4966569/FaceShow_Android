@@ -83,7 +83,9 @@ public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
 
         void setData(LecturerInfosBean lecturerInfosBean) {
             mTvName.setText(lecturerInfosBean.getLecturerName());
-            mRvLectureBrief.setText(Html.fromHtml(lecturerInfosBean.getLecturerBriefing()));
+//            Log.i(getClass().getSimpleName(), "setData: "+lecturerInfosBean.getLecturerBriefing());
+//            Log.i(getClass().getSimpleName(), "setData: "+Html.fromHtml(lecturerInfosBean.getLecturerBriefing()));
+            mRvLectureBrief.setText(Html.fromHtml(lecturerInfosBean.getLecturerBriefing().replace("\n","<br />")));
             Glide.with(itemView.getContext()).load(lecturerInfosBean.getLecturerAvatar())
                     .asBitmap().placeholder(R.drawable.classcircle_headimg)
                     .fitCenter()
