@@ -87,6 +87,7 @@ public class ModifyStageFragment extends Fragment {
             if (dataBean.getId().equals(userBean.getStage()+"")||dataBean.getName().equals(userBean.getStageName())) {
                 modifyUserStageAdapter.setDefaultSelectPosition(mStageSubjectModel.getData().indexOf(dataBean));
                 modifyUserStageAdapter.notifyDataSetChanged();
+                enableNextStepBtn();
                 break;
             }
         }

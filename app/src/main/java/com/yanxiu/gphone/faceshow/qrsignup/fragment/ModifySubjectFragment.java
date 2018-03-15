@@ -35,6 +35,7 @@ public class ModifySubjectFragment extends Fragment {
     private RecyclerView mRecyclerViewChooseStage;
     private SysUserBean userBean;
     private StageSubjectModel mStageSubjectModel;
+    private TextView rightTxt;
     private int mSelectedPosition=0;
 
     public void setmSelectedPosition(int mSelectedPosition) {
@@ -81,6 +82,7 @@ public class ModifySubjectFragment extends Fragment {
             if (dataBean.getId().equals(userBean.getSubject()+"")||dataBean.getName().equals(userBean.getSubjectName())) {
                 modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
                 modifyUserSubjectAdapter.notifyDataSetChanged();
+                enableNextStepBtn();
                 break;
             }
         }
@@ -97,7 +99,7 @@ public class ModifySubjectFragment extends Fragment {
     private void viewInit(View root ){
         ImageView backView=root.findViewById(R.id.title_layout_left_img);
         TextView titleTxt=root.findViewById(R.id.title_layout_title);
-        TextView rightTxt=root.findViewById(R.id.title_layout_right_txt);
+        rightTxt=root.findViewById(R.id.title_layout_right_txt);
         final EditText editText=root.findViewById(R.id.edt_name);
 
         backView.setVisibility(View.VISIBLE);
@@ -131,7 +133,21 @@ public class ModifySubjectFragment extends Fragment {
         mRecyclerViewChooseStage=root.findViewById(R.id.recyclerView_choose_stage);
         recyclerInit();
     }
+    /**
+     * 开启下一步
+     */
+    public void enableNextStepBtn() {
+        rightTxt.setEnabled(true);
+        rightTxt.setTextColor(getActivity().getResources().getColor(R.color.color_1da1f2));
+    }
 
+    /**
+     * 关闭下一步
+     */
+    public void disableNextStepBtn() {
+        rightTxt.setEnabled(false);
+        rightTxt.setTextColor(getActivity().getResources().getColor(R.color.color_999999));
+    }
     private ToolbarActionCallback toolbarActionCallback;
 
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
