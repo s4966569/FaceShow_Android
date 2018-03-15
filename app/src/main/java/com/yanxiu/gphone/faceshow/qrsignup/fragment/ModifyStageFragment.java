@@ -83,8 +83,10 @@ public class ModifyStageFragment extends Fragment {
         mRecyclerViewChooseStage.setAdapter(modifyUserStageAdapter);
         /*初始化 选择的显示*/
         for (StageSubjectModel.DataBean dataBean : mStageSubjectModel.getData()) {
-            if (dataBean.getId().equals(userBean.getStage()+"")) {
+            /*初始化选择 */
+            if (dataBean.getId().equals(userBean.getStage()+"")||dataBean.getName().equals(userBean.getStageName())) {
                 modifyUserStageAdapter.setDefaultSelectPosition(mStageSubjectModel.getData().indexOf(dataBean));
+                modifyUserStageAdapter.notifyDataSetChanged();
                 break;
             }
         }

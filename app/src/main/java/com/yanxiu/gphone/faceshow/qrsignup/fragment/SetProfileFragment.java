@@ -162,9 +162,32 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         StringBuilder stageSubject = new StringBuilder();
         /*拼接 学段*/
-        stageSubject.append(!TextUtils.isEmpty(userData.getStageName()) ? userData.getStageName() : "");
-        stageSubject.append(TextUtils.isEmpty(userData.getSubjectName()) ? "" : "、" + userData.getSubjectName());
-        stagetSunjectTv.setText(String.format("%s", stageSubject.toString()));
+        if (TextUtils.isEmpty(userData.getStageName())) {
+            if (TextUtils.isEmpty(userData.getSubjectName())) {
+                /*学科学段都为空*/
+                stagetSunjectTv.setText("暂无");
+            }else {
+                /*只有学科*/
+                stagetSunjectTv.setText(userData.getStageName());
+            }
+        }else {
+            if (TextUtils.isEmpty(userData.getSubjectName())) {
+                /*只有学段*/
+                stagetSunjectTv.setText(userData.getStageName());
+            }else {
+                /*都有*/
+                stagetSunjectTv.setText(userData.getStageName()+"、"+userData.getStageName());
+            }
+        }
+
+//        stageSubject.append(!TextUtils.isEmpty(userData.getStageName()) ? userData.getStageName() : "");
+//        stageSubject.append(TextUtils.isEmpty(userData.getSubjectName()) ? "" : "、" + userData.getSubjectName());
+//        if (TextUtils.isEmpty(stageSubject.toString())) {
+//
+//        }else {
+//            stagetSunjectTv.setText(String.format("%s", stageSubject.toString()));
+//        }
+
     }
 
     /**

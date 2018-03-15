@@ -78,8 +78,9 @@ public class ModifySubjectFragment extends Fragment {
          /*初始化 选择的显示*/
         List<StageSubjectModel.DataBean> subList= mStageSubjectModel.getData().get(mSelectedPosition).getSub();
         for (StageSubjectModel.DataBean dataBean :subList) {
-            if (dataBean.getId().equals(userBean.getSubject()+"")) {
+            if (dataBean.getId().equals(userBean.getSubject()+"")||dataBean.getName().equals(userBean.getSubjectName())) {
                 modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
+                modifyUserSubjectAdapter.notifyDataSetChanged();
                 break;
             }
         }
