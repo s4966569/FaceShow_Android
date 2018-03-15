@@ -44,7 +44,7 @@
         android:maxLines="1"
         android:text="任务名称"
         android:textColor="@color/color_333333"
-        android:textSize="@dimen/home_nav_bar_textsize" />
+        android:textSize="@dimen/tab_bar_textsize" />
 
     <TextView
         android:id="@+id/project_task_time"

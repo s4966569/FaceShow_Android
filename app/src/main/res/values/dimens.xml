@@ -84,4 +84,5 @@
     <dimen name="answer_card_submitbutton_textsize">20dp</dimen>
     <!--我的 start-->
     <dimen name="my_item_text_size">14dp</dimen>
+    <dimen name="task_res_textSize">14dp</dimen>
 </resources>
