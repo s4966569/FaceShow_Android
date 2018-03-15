@@ -1,0 +1,131 @@
+{
+  "msg": [
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "1",
+      "msgContent": "1111111111111111111111111111111111111111111111111111111111",
+      "msgTime": "11"
+    },
+    {
+      "type": 2,
+      "userName": "bbbb",
+      "userAvatarUrl": "",
+      "msgId": "2",
+      "msgContent": "2222222222222222222222222222222222222222222222222222222222",
+      "msgTime": "11"
+    },
+    {
+      "type": 3,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "3",
+      "msgContent": "1111111111111111111111",
+      "msgTime": "2018年3月14日12:04:17"
+    },
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "4",
+      "msgContent": "66666666666",
+      "msgTime": "11"
+    },
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "1",
+      "msgContent": "1111111111111111111111111111111111111111111111111111111111",
+      "msgTime": "11"
+    },
+    {
+      "type": 2,
+      "userName": "bbbb",
+      "userAvatarUrl": "",
+      "msgId": "2",
+      "msgContent": "2222222222222222222222222222222222222222222222222222222222",
+      "msgTime": "11"
+    },
+    {
+      "type": 3,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "3",
+      "msgContent": "1111111111111111111111",
+      "msgTime": "2018年3月14日12:04:17"
+    },
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "4",
+      "msgContent": "66666666666",
+      "msgTime": "11"
+    },
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "1",
+      "msgContent": "1111111111111111111111111111111111111111111111111111111111",
+      "msgTime": "11"
+    },
+    {
+      "type": 2,
+      "userName": "bbbb",
+      "userAvatarUrl": "",
+      "msgId": "2",
+      "msgContent": "2222222222222222222222222222222222222222222222222222222222",
+      "msgTime": "11"
+    },
+    {
+      "type": 3,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "3",
+      "msgContent": "1111111111111111111111",
+      "msgTime": "2018年3月14日12:04:17"
+    },
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "4",
+      "msgContent": "66666666666",
+      "msgTime": "11"
+    },{
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "1",
+      "msgContent": "1111111111111111111111111111111111111111111111111111111111",
+      "msgTime": "11"
+    },
+    {
+      "type": 2,
+      "userName": "bbbb",
+      "userAvatarUrl": "",
+      "msgId": "2",
+      "msgContent": "2222222222222222222222222222222222222222222222222222222222",
+      "msgTime": "11"
+    },
+    {
+      "type": 3,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "3",
+      "msgContent": "1111111111111111111111",
+      "msgTime": "2018年3月14日12:04:17"
+    },
+    {
+      "type": 1,
+      "userName": "aaa",
+      "userAvatarUrl": "",
+      "msgId": "4",
+      "msgContent": "66666666666",
+      "msgTime": "11"
+    }
+  ]
+}

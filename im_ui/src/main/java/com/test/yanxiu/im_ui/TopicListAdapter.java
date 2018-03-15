@@ -27,10 +27,20 @@ import java.util.Locale;
 public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.TopicViewHolder> {
     private Context mContext;
     private List<DbTopic> mDatas;
+    private OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener;
 
-    TopicListAdapter(Context context, List<DbTopic> topics) {
+    /**
+     * 需要写成公用的
+     */
+    public interface OnRecyclerViewItemClickListener {
+
+        void onItemClick(int position);
+    }
+
+    TopicListAdapter(Context context, List<DbTopic> topics,OnRecyclerViewItemClickListener onRecyclerViewItemClickListener) {
         mContext = context;
         mDatas = topics;
+        mOnRecyclerViewItemClickListener = onRecyclerViewItemClickListener;
     }
 
     @Override
@@ -40,9 +50,17 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
     }
 
     @Override
-    public void onBindViewHolder(TopicViewHolder holder, int position) {
+    public void onBindViewHolder(TopicViewHolder holder, final int position) {
         DbTopic topic = mDatas.get(position);
         holder.setData(topic);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mOnRecyclerViewItemClickListener != null){
+                    mOnRecyclerViewItemClickListener.onItemClick(position);
+                }
+            }
+        });
     }
 
     @Override

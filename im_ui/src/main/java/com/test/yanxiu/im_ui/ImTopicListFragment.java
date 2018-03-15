@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -32,6 +33,7 @@ import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_core.mqtt.MqttService;
+import com.test.yanxiu.im_ui.activity.ChatRoomActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
@@ -52,7 +54,7 @@ import static android.content.Context.BIND_AUTO_CREATE;
 import static com.test.yanxiu.im_core.dealer.DatabaseDealer.topicComparator;
 
 
-public class ImTopicListFragment extends FaceShowBaseFragment {
+public class ImTopicListFragment extends FaceShowBaseFragment implements TopicListAdapter.OnRecyclerViewItemClickListener {
     private ImTitleLayout mTitleLayout;
     private ImageView mNaviLeftImageView;
     private TextView mNaviRightTextView;
@@ -116,7 +118,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mTopicListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL,
                 false));
-        TopicListAdapter adapter = new TopicListAdapter(getContext(), topics);
+        TopicListAdapter adapter = new TopicListAdapter(getContext(), topics,this);
         mTopicListRecyclerView.setAdapter(adapter);
     }
 
@@ -349,4 +351,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     //endregion
+
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(getActivity(),""+position,Toast.LENGTH_SHORT).show();
+        ChatRoomActivity.invoke(getActivity());
+    }
 }
