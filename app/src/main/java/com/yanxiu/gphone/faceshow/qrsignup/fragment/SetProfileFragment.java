@@ -176,7 +176,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 stagetSunjectTv.setText(userData.getStageName());
             }else {
                 /*都有*/
-                stagetSunjectTv.setText(userData.getStageName()+"、"+userData.getStageName());
+                stagetSunjectTv.setText(userData.getStageName()+"、"+userData.getSubjectName());
             }
         }
 
