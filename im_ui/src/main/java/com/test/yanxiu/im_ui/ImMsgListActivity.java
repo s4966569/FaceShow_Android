@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.stetho.inspector.protocol.module.Database;
+import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -72,7 +74,7 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == event.KEYCODE_ENTER) {
+                if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     SrtLogger.log("imui", "TBD: 发送");
                     return true;
                 }
@@ -80,7 +82,7 @@ public class ImMsgListActivity extends FragmentActivity {
             }
         });
 
-        // 收起键盘
+        // 点击外部收起键盘
         mMsgListRecyclerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -91,18 +93,13 @@ public class ImMsgListActivity extends FragmentActivity {
             }
         });
 
-        // 弹出键盘
-        mMsgEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        // 弹出键盘后处理
+        KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
+        keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
             @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    mMsgListRecyclerView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount());
-                        }
-                    }, 100);
-
+            public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+                if (isShow) {
+                    mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
             }
         });

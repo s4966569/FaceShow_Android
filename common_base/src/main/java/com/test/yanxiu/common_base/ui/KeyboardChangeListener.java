@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.util.keyboard;
+package com.test.yanxiu.common_base.ui;
 
 import android.app.Activity;
 import android.os.Build;

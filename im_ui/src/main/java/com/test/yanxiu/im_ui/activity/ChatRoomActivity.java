@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.test.yanxiu.common_base.ui.InputMethodUtil;
+import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.adapter.BaseRecyclerViewAdapter;
 import com.test.yanxiu.im_ui.adapter.ChartRoomAdapter;
@@ -30,9 +32,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.test.yanxiu.im_ui.bean.ImMessageBean.MessageBean;
-import com.test.yanxiu.im_ui.util.keyboard.InputMethodUtil;
 import com.test.yanxiu.im_ui.view.ImRecyclerView;
-import com.test.yanxiu.im_ui.util.keyboard.KeyboardChangeListener;
 
 import static com.test.yanxiu.im_ui.ImConstants.MESSAGE_TYPE_MYSELF;
 
