@@ -34,6 +34,8 @@ import com.yanxiu.gphone.faceshow.homepage.NaviFragmentFactory;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInNotesActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
+import com.yanxiu.gphone.faceshow.http.course.GetStudentClazsesResponse;
+import com.yanxiu.gphone.faceshow.http.course.GetSudentClazsesRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.http.main.RedDotRequest;
@@ -119,13 +121,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mContext = this;
         initView();
         initListener();
-//        if (SpManager.isFristStartUp()) {
-//            startActivityForResult(new Intent(MainActivity.this,
-//                    ChooseClassActivity.class), CHOOSE_CLASS);
-//            SpManager.setFristStartUp(false);
-//        }
         getData();
         UpdateUtil.Initialize(this, false);
+
+        /*判断是否进入班级选择界面*/
+        if (SpManager.isFristStartUp()) {
+            SpManager.setFristStartUp(false);
+            /*请求班级列表 并判断是否跳转*/
+            getClassListData();
+        }
     }
 
 
@@ -198,13 +202,17 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             public void onHeaderButtonClicked() {
                 /*点击 切换班级按钮 在onactivityresult 回调中重置 抽屉的数据*/
                 mDrawerLayout.closeDrawer(mLeftDrawerView);
-                startActivityForResult(new Intent(MainActivity.this,
+                toChooseClassActivity(new Intent(MainActivity.this,
                         ChooseClassActivity.class), CHOOSE_CLASS);
             }
         });
         /*设置版本号显示*/
         TextView appVersionTv = mRootView.findViewById(R.id.app_version_textview);
         appVersionTv.setText("版本号：v" + SystemUtil.getVersionName());
+    }
+
+    private void toChooseClassActivity(Intent intent, int choose_class) {
+        startActivityForResult(intent, choose_class);
     }
 
     /**
@@ -243,7 +251,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
     private void toMyProfile() {
         Intent i = new Intent(MainActivity.this, ProfileActivity.class);
-        startActivityForResult(i, REQUEST_CODE_SET_PROFILE);
+        toChooseClassActivity(i, REQUEST_CODE_SET_PROFILE);
     }
 
     private void toClassHomePage() {
@@ -723,6 +731,36 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             handler.removeCallbacksAndMessages(null);
         }
 
+    }
+    private void getClassListData() {
+        mRootView.showLoadingView();
+        GetSudentClazsesRequest getSudentClazsesRequest = new GetSudentClazsesRequest();
+        getSudentClazsesRequest.startRequest(GetStudentClazsesResponse.class, new HttpCallback<GetStudentClazsesResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetStudentClazsesResponse ret) {
+                mRootView.finish();
+//                mUUID = null;
+                if (ret != null && ret.getCode() == 0) {
+                    if (ret.getData() != null && ret.getData().getClazsInfos() != null && ret.getData().getClazsInfos().size() > 0) {
+                        if (ret.getData().getClazsInfos().size()!=1) {
+                            /*当只有一个班级的时候 什么都不做*/
+                            toChooseClassActivity(new Intent(MainActivity.this,
+                                    ChooseClassActivity.class), CHOOSE_CLASS);
+                        }
+                    } else {
+                        mRootView.showOtherErrorView("暂无班级");
+                    }
+                } else {
+                    mRootView.showOtherErrorView(ret.getError().getMessage());
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mRootView.finish();
+                mRootView.showOtherErrorView(error.getMessage());
+            }
+        });
     }
 
 
