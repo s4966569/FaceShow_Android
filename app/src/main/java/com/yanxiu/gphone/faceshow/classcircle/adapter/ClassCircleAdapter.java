@@ -5,6 +5,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -220,7 +221,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
                 case REFRESH_COMMENT_DATA:
                     ClassCircleViewHolder classCircleViewHolder1 = (ClassCircleViewHolder) holder;
-                     ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
+                    ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
                     setViewVisibly(classCircleViewHolder1, moments);
                     classCircleViewHolder1.mCircleCommentLayout.setData(moments.comments);
                     break;
@@ -343,12 +344,21 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (moments.album != null && moments.album.size() > 0) {
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                     for (int i = 0; i < moments.album.size(); i++) {
+                        /*遍历album*/
                         ImageInfo imageInfo = new ImageInfo();
                         if (moments.album.size() > 1) {
                             //使用七牛对获取宽为200px的缩略图
-                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb + "?imageView2/0/w/200");
+                            if (moments.album.get(i).attachment != null) {
+                                imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb + "?imageView2/0/w/200");
+                            } else {
+                                Log.e("error", "onBindViewHolder: attachment is null");
+                            }
                         } else {
-                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb);
+                            if (moments.album.get(i).attachment != null) {
+                                imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb);
+                            } else {
+                                Log.e("error", "onBindViewHolder: attachment is null");
+                            }
                         }
                         imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
                         imageInfos.add(imageInfo);

@@ -35,17 +35,18 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:descendantFocusability="blocksDescendants"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@color/color_white"
                 android:orientation="vertical">
 
@@ -168,9 +169,9 @@
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tab_layout"
                     android:layout_width="match_parent"
-                    app:tabBackground="@android:color/transparent"
                     android:layout_height="40dp"
                     android:background="@color/color_white"
+                    app:tabBackground="@android:color/transparent"
                     app:tabIndicatorColor="@color/color_0068BD"
                     app:tabIndicatorHeight="2dp"
                     app:tabSelectedTextColor="@color/color_333333"
@@ -178,8 +179,9 @@
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/viewPager"
+                    android:layout_weight="1"
                     android:layout_width="match_parent"
-                    android:layout_height="350dp" />
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
 
