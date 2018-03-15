@@ -360,7 +360,12 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 Log.e("error", "onBindViewHolder: attachment is null");
                             }
                         }
-                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
+
+                        if (moments.album.get(i) != null&&moments.album.get(i).attachment!=null) {
+                            imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
+                        }else {
+                            imageInfo.setBigImageUrl("");
+                        }
                         imageInfos.add(imageInfo);
                     }
                     ((ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));
