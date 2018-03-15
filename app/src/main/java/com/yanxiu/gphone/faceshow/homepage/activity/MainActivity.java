@@ -590,6 +590,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 setHomeFragment();
                 showCurrentFragment(INDEX_HOME_TAB);
                 pollingRedPointer();
+                reFreshFragment();
                 /*对 抽屉内的headerview展示信息进行更新   */
                 mLeftDrawerListAdapter.notifyItemChanged(0);
             }

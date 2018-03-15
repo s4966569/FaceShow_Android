@@ -112,21 +112,34 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mContext = context;
     }
 
+    /**
+     * 仅仅在offset =0 时候才会调用
+     * 也就是在刷新数据的时候才会调用
+     * */
     public void setData(List<ClassCircleResponse.Data.Moments> list) {
+        /*刷新获取的数据为空 */
         if (list == null || list.size() == 0) {
+            /*原来有数据 需要尽行清空操作*/
             if (this.mData != null) {
                 this.mData.clear();
             }
             this.notifyDataSetChanged();
-            return;
+        } else {
+            /*刷新获取的数据不为空 */
+            if (this.mData != null) {
+                this.mData.clear();
+            }else {
+                this.mData=new ArrayList<>();
+            }
+            this.mData.addAll(list);
+            GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
+            NineGridView.setImageLoader(glideNineImageLoader);
+            this.notifyDataSetChanged();
         }
-        this.mData.clear();
-        this.mData.addAll(list);
-        GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
-        NineGridView.setImageLoader(glideNineImageLoader);
-        this.notifyDataSetChanged();
     }
-
+    /**
+     * offset !=0 时候  说明 是需要增加数据
+     * */
     public void addData(List<ClassCircleResponse.Data.Moments> list) {
         if (list == null || list.size() == 0) {
             return;
@@ -361,9 +374,9 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             }
                         }
 
-                        if (moments.album.get(i) != null&&moments.album.get(i).attachment!=null) {
+                        if (moments.album.get(i) != null && moments.album.get(i).attachment != null) {
                             imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
-                        }else {
+                        } else {
                             imageInfo.setBigImageUrl("");
                         }
                         imageInfos.add(imageInfo);
