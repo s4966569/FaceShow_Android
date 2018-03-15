@@ -21,6 +21,8 @@ import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
+import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
+import com.test.yanxiu.im_ui.view.RecyclerViewPullToRefreshHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,8 @@ public class ImMsgListActivity extends FragmentActivity {
 
     private ImTitleLayout mTitleLayout;
     private RecyclerView mMsgListRecyclerView;
+    private MsgListAdapter mMsgListAdapter;
+    private RecyclerViewPullToRefreshHelper ptrHelper;
     private EditText mMsgEditText;
     private ImageView mTakePicImageView;
 
@@ -59,8 +63,8 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgListRecyclerView.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
                 false));
-        MsgListAdapter adapter = new MsgListAdapter(this, topic.mergedMsgs);
-        mMsgListRecyclerView.setAdapter(adapter);
+        mMsgListAdapter = new MsgListAdapter(this, topic.mergedMsgs);
+        mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
         mTakePicImageView = findViewById(R.id.takepic_imageview);
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +107,16 @@ public class ImMsgListActivity extends FragmentActivity {
                 }
             }
         });
+
+        // pull to refresh
+        ptrHelper = new RecyclerViewPullToRefreshHelper(mMsgListRecyclerView);
+        ptrHelper.setmCallback(new OnPullToRefreshCallback() {
+            @Override
+            public void onLoadMore() {
+                mMsgListAdapter.setIsLoading(true);
+                handler.sendEmptyMessageDelayed(0, 1000);
+            }
+        });
     }
 
     private void setupData() {
@@ -115,4 +129,15 @@ public class ImMsgListActivity extends FragmentActivity {
     private void doTakePic() {
 
     }
+
+    // region handler
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mMsgListAdapter.setIsLoading(false);
+            ptrHelper.loadingComplete();
+        }
+    };
+    // endregion
 }

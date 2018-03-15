@@ -31,14 +31,31 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
     private Context mContext;
-    private List<DbMsg> mDatas;
-    private List<Item> mUiDatas;
+    private List<DbMsg> mDatas;     // msg队列队首为最新消息
+    private List<Item> mUiDatas;    // 最上面为loading，msg从上到下为从旧到新
 
     public MsgListAdapter(Context context, List<DbMsg> msgs) {
         mContext = context;
         mDatas = msgs;
 
         mock();
+    }
+
+    private boolean isLoading;
+    private Item loadingItem = new Item(ItemType.LOADING);
+    public void setIsLoading(boolean loading) {
+        if (isLoading == loading) {
+            return;
+        }
+
+        if (loading) {
+            mUiDatas.add(0, loadingItem);
+        } else {
+            mUiDatas.remove(loadingItem);
+        }
+
+        isLoading = loading;
+        notifyDataSetChanged();
     }
 
     // 从现有的mDatas，生成mUiDatas
@@ -69,6 +86,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
     private void mock() {
         mUiDatas = new ArrayList<>();
+
         List<String> msgs = new ArrayList<>(Arrays.asList(
                 "hello world",
                 "aaaaaaa",
@@ -111,6 +129,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
     @Override
     public MsgListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == ItemType.LOADING.ordinal()) {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.item_msg_loading, parent, false);
+            return new LoadingViewHolder(v);
+        }
+
         if (viewType == ItemType.DATETIME.ordinal()) {
             View v = LayoutInflater.from(mContext).inflate(R.layout.item_msg_datetime, parent, false);
             return new DatetimeViewHolder(v);
@@ -145,6 +168,17 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
         public abstract void setData(Item item);
+    }
+
+    public class LoadingViewHolder extends MsgListItemViewHolder {
+        public LoadingViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void setData(Item item) {
+
+        }
     }
 
     public class DatetimeViewHolder extends MsgListItemViewHolder {
@@ -239,6 +273,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private DbMsg msg;
         private DbMyMsg myMsg;
         private long timestamp;
+
+        public Item() {
+
+        }
+
+        public Item(ItemType t) {
+            type = t;
+        }
 
         public ItemType getType() {
             return type;
