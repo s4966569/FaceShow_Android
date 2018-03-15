@@ -90,7 +90,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private RecyclerView mLeftDrawerList;// 左侧抽屉View内的RecyclerView 菜单列表部分
     private View mLeftDrawerView;//左侧抽屉View 包含 顶部的头布局  还有菜单列表布局（由recyclerview 实现）
     private LeftDrawerListAdapter mLeftDrawerListAdapter;//左侧抽屉内 RecyclerView 的adapter 用于填充生成 菜单内容
-    private DrawerLayout.DrawerListener mDrawerToggle = new DrawerLayout.DrawerListener() {
+    private DrawerLayout.DrawerListener mDrawerToggleListener = new DrawerLayout.DrawerListener() {
         @Override
         public void onDrawerSlide(View drawerView, float slideOffset) {
         }
@@ -157,7 +157,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mDrawerLayout = (DrawerLayout) mRootView.findViewById(R.id.drawer_layout);
         mLeftDrawerList = (RecyclerView) mRootView.findViewById(R.id.left_drawer_list);
         // TODO: 2018/3/2  将recyclerview 的overscroll 动画去除
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggleListener);
         mLeftDrawerView = mRootView.findViewById(R.id.left_drawer);
 
 
