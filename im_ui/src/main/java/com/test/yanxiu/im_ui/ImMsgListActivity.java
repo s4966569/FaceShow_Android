@@ -73,6 +73,12 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
+        mMsgListRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+            }
+        });
 
         mTakePicImageView = findViewById(R.id.takepic_imageview);
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {

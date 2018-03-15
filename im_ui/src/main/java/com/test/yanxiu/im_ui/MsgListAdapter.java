@@ -75,9 +75,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     // 从现有的mDatas，生成mUiDatas
     private void generateUiDatas() {
         mUiDatas = new ArrayList<>();
-        for (int i = 0; i < mDatas.size() - 1; i++) {
+        for (int i = 0; i < mDatas.size(); i++) {
             DbMsg curDbMsg = mDatas.get(i);
-            DbMsg nextDbMsg = mDatas.get(i+1);
+            // 最后一条跟当前时间比较，其余的跟前一条时间比较
+            long nextSendTime = new Date().getTime();
+            if (i != (mDatas.size() - 1)) {
+                DbMsg nextDbMsg = mDatas.get(i+1);
+                nextSendTime = nextDbMsg.getSendTime();
+            }
 
             // 当前msg入队
             Item msgItem = new Item();
@@ -91,7 +96,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mUiDatas.add(0, msgItem);
 
             // 如果超过5分钟，则插入时间
-            if ((curDbMsg.getSendTime() - nextDbMsg.getSendTime()) > 5*60*1000) {
+            if ((curDbMsg.getSendTime() - nextSendTime) > 5*60*1000) {
                 Item timeItem = new Item();
                 timeItem.setType(ItemType.DATETIME);
                 timeItem.setTimestamp(curDbMsg.getSendTime());
