@@ -64,6 +64,9 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
     /*密码编辑框*/
     private ClearEditText passwordEditText;
+    /*用户名输入框*/
+    private ClearEditText usernameEditText;
+
     public void setToolbarActionCallback(ToolbarActionCallback toolbarActionCallback) {
         this.toolbarActionCallback = toolbarActionCallback;
     }
@@ -83,7 +86,9 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             mRootView=new PublicLoadLayout(getActivity());
             rootView=inflater.inflate(R.layout.fragment_setpassword_layout,null);
             passwordEditText=rootView.findViewById(R.id.setpassword_edit);
+            usernameEditText=rootView.findViewById(R.id.username_edit);
             passwordEditText.addTextChangedListener(pswEditWatcher);
+
             mRootView.setContentView(rootView);
             dialogInit();
         }
@@ -281,6 +286,15 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             }
         }
     }
+
+    private boolean userNameFormateCheck(String un){
+        if (TextUtils.isEmpty(un)) {
+            ToastUtil.showToast(getActivity(),"用户名不能为空");
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * 对 用户输入的密码进行格式验证

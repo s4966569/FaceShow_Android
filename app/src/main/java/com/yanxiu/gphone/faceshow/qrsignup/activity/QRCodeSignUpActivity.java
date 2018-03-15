@@ -78,16 +78,17 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
                 /*符合班级二维码格式 进行跳转，进入 号码检查界面 进行一个网络请求 获取班级详细信息*/
                 // TODO: 2018/3/7 拆分 二维码内容 获取classId
                 clazsInfoRequest(qrCodeChecker.getClazsIdFromQR(result)+"");
-//                toSignUpActivity(qrCodeChecker.getClazsIdFromQR(result));
             } else {
                 /*判断是否是 签到二维码 提示请先登录后再签到*/
                 if (qrCodeChecker.isCheckInCode(result)) {
                     ToastUtil.showToast(QRCodeSignUpActivity.this,"请先登录后再签到");
                     QRCodeSignUpActivity.this.finish();
                 } else if (qrCodeChecker.isDownloadCode(result)||qrCodeChecker.isHTML5Page(result)){
-                    ToastUtil.showToast(QRCodeSignUpActivity.this,"无效二维码");
+                    QRCodeSignUpActivity.this.finish();
                 }else {
                     Log.e(TAG, "processScanResult: undefine QR");
+                    ToastUtil.showToast(QRCodeSignUpActivity.this,"无效二维码");
+                    restartScan();
                 }
             }
         } else {
