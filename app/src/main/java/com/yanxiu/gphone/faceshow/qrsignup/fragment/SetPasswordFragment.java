@@ -34,7 +34,7 @@ import com.yanxiu.gphone.faceshow.util.Utils;
  * 设置用户密码界面
  * 当前 为 扫描注册的流程中一步
  * 后期可以复用
- *
+ * <p>
  * 设置完用户密码 后 用户账号已经生成 注册完成，下一步中为 正常的用户信息修改操作
  * 修改信息操作 可 复用已有的功能界面
  */
@@ -51,15 +51,17 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     private ToolbarActionCallback toolbarActionCallback;
     /**
      * classId
-     * */
-    private int scannedClassId=0;
+     */
+    private int scannedClassId = 0;
 
     public void setScannedClassId(int scannedClassId) {
         this.scannedClassId = scannedClassId;
     }
+
     private String phoneNumber;
-    public void setPhoneNumber(String phone){
-        phoneNumber=phone;
+
+    public void setPhoneNumber(String phone) {
+        phoneNumber = phone;
     }
 
     /*密码编辑框*/
@@ -83,12 +85,12 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            mRootView=new PublicLoadLayout(getActivity());
-            rootView=inflater.inflate(R.layout.fragment_setpassword_layout,null);
-            passwordEditText=rootView.findViewById(R.id.setpassword_edit);
-            usernameEditText=rootView.findViewById(R.id.username_edit);
-            passwordEditText.addTextChangedListener(pswEditWatcher);
-
+            mRootView = new PublicLoadLayout(getActivity());
+            rootView = inflater.inflate(R.layout.fragment_setpassword_layout, null);
+            passwordEditText = rootView.findViewById(R.id.setpassword_edit);
+            usernameEditText = rootView.findViewById(R.id.username_edit);
+            passwordEditText.addTextChangedListener(editWatcher);
+            usernameEditText.addTextChangedListener(editWatcher);
             mRootView.setContentView(rootView);
             dialogInit();
         }
@@ -98,15 +100,14 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     }
 
 
-
     /**
      * 对当前界面进行toolbar 设置
-     * */
-    private void toolbarInit(View root){
-        View toolbar=root.findViewById(R.id.setpassword_titlebar);
-        titleLeftImage= (ImageView) toolbar.findViewById(R.id.title_layout_left_img);
-        titleRightText= (TextView) toolbar.findViewById(R.id.title_layout_right_txt);
-        titleTextView= (TextView) toolbar.findViewById(R.id.title_layout_title);
+     */
+    private void toolbarInit(View root) {
+        View toolbar = root.findViewById(R.id.setpassword_titlebar);
+        titleLeftImage = (ImageView) toolbar.findViewById(R.id.title_layout_left_img);
+        titleRightText = (TextView) toolbar.findViewById(R.id.title_layout_right_txt);
+        titleTextView = (TextView) toolbar.findViewById(R.id.title_layout_title);
 
         titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
@@ -126,11 +127,12 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         titleRightText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*点击下一步 首先要对 输入的密码进行格式验证*/
-                if (pswFormateCheck(passwordEditText.getText().toString())) {
+                /*点击下一步 首先要对 输入的密码进行格式验证 并对 用户名进行 格式验证*/
+                if (pswFormateCheck(passwordEditText.getText().toString())
+                        && userNameFormateCheck(usernameEditText.getText().toString())) {
                     /*这里应该有网络请求 如果有 在请求回调里 调用 点击监听*/
 //                    fadeSignUpRequest(phoneNumber,passwordEditText.getText().toString(),scannedClassId);
-                    signUpRequest(phoneNumber,passwordEditText.getText().toString(),scannedClassId);
+                    signUpRequest(phoneNumber,usernameEditText.getText().toString(), passwordEditText.getText().toString(), scannedClassId);
                 }
             }
         });
@@ -155,9 +157,9 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     }
 
     /**
-     * 编辑监听 当用户开始编辑 密码输入框时 使能 下一步按钮
+     * 统一监听
      * */
-    private TextWatcher pswEditWatcher=new TextWatcher() {
+    private TextWatcher editWatcher=new TextWatcher()  {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -165,18 +167,73 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            if (charSequence.length()>0) {
-                enableNextStepBtn();
-            }else {
-                disableNextStepBtn();
-            }
+
         }
 
         @Override
         public void afterTextChanged(Editable editable) {
-
+            /*文字更改后 判断 密码与用户名的长度*/
+            int pl=passwordEditText.getText().toString().length();
+            int nl=usernameEditText.getText().toString().length();
+            /*检查 密码长度是否在 6~20 位之间*/
+           if(pl>5&&pl<21){
+               /*检查用户名长度 是否在1~6 位之间*/
+               if(nl>0&&nl<7){
+                   enableNextStepBtn();
+               }else {
+                   disableNextStepBtn();
+               }
+           }else {
+               disableNextStepBtn();
+           }
         }
     };
+
+
+    /**
+     * 编辑监听 当用户开始编辑 密码输入框时 使能 下一步按钮
+     */
+//    private TextWatcher pswEditWatcher = new TextWatcher() {
+//        @Override
+//        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//        }
+//
+//        @Override
+//        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//            Log.i(TAG, "onTextChanged: ");
+//            if (charSequence.length() > 0) {
+//                enableNextStepBtn();
+//            } else {
+//                disableNextStepBtn();
+//            }
+//        }
+//
+//        @Override
+//        public void afterTextChanged(Editable editable) {
+//            Log.i(TAG, "afterTextChanged: ");
+//        }
+//    };
+
+//    private TextWatcher usernameWatcher = new TextWatcher() {
+//        @Override
+//        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//            /*输入之前 判断当前内容长度*/
+//            if (charSequence.length()==6) {
+//                ToastUtil.showToast(getActivity(),"用户名最长为6");
+//            }
+//        }
+//
+//        @Override
+//        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//        }
+//
+//        @Override
+//        public void afterTextChanged(Editable editable) {
+//
+//        }
+//    };
 
 
     /**
@@ -223,37 +280,36 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
      * 网络请求 设置密码
      * 实际执行的是用户的注册操作
      * 传递参数 为 手机号 密码MD5  验证码
-     *
-     * */
-    private void signUpRequest(final String phone, final String md5Psw, final int clazsId){
-        SignUpRequest signUpRequest=new SignUpRequest();
-        signUpRequest.mobile=phone;
-        signUpRequest.password= Utils.MD5Helper(md5Psw);
-        signUpRequest.name=phone;
-        signUpRequest.clazsId=clazsId+"";
+     */
+    private void signUpRequest(final String phone,final String username, final String md5Psw, final int clazsId) {
+        SignUpRequest signUpRequest = new SignUpRequest();
+        signUpRequest.mobile = phone;
+        signUpRequest.password = Utils.MD5Helper(md5Psw);
+        signUpRequest.name = username;
+        signUpRequest.clazsId = clazsId + "";
         signUpRequest.startRequest(SignUpResponse.class, new HttpCallback<SignUpResponse>() {
             @Override
             public void onSuccess(RequestBase request, SignUpResponse ret) {
                 /*注册请求成功*/
-                if (ret.getCode()== ResponseConfig.INT_SUCCESS) {
+                if (ret.getCode() == ResponseConfig.INT_SUCCESS) {
                     /*注册成功*/
                     if (ret.getData() != null) {
                         if (ret.getData().getSysUser() != null) {
-                            sysUserBean=ret.getData().getSysUser();
+                            sysUserBean = ret.getData().getSysUser();
                             if (toolbarActionCallback != null) {
                                 toolbarActionCallback.onRightComponentClick();
                             }
-                        }else {
+                        } else {
                             /*没有返回 用信息的处理*/
                             ToastUtil.showToast(getActivity(), getErrorMsg(ret));
                         }
-                    }else {
+                    } else {
                         /*没有返回 data  检查error 字段 以及message 字段*/
-                        ToastUtil.showToast(getActivity(),getErrorMsg(ret));
+                        ToastUtil.showToast(getActivity(), getErrorMsg(ret));
                     }
-                }else {
+                } else {
                     /*注册失败 */
-                    ToastUtil.showToast(getActivity(),getErrorMsg(ret));
+                    ToastUtil.showToast(getActivity(), getErrorMsg(ret));
                 }
             }
 
@@ -263,7 +319,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        signUpRequest(phone, md5Psw, clazsId);
+                        signUpRequest(phone,username, md5Psw, clazsId);
                     }
                 });
             }
@@ -272,24 +328,28 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
     /**
      * 根据返回值 获取错误信息
-     * */
+     */
     private void setErrorMsg(SignUpResponse ret) {
         if (ret.getError() != null) {
             /*首先检查 是否携带错误信息*/
             alertDialog.setMessage(ret.getError().getMessage());
-        }else {
+        } else {
             /*没有包含错误信息*/
             if (!TextUtils.isEmpty(ret.getMessage())) {
                 alertDialog.setMessage(ret.getMessage());
-            }else {
+            } else {
                 alertDialog.setMessage("请求失败！");
             }
         }
     }
 
-    private boolean userNameFormateCheck(String un){
+    private boolean userNameFormateCheck(String un) {
         if (TextUtils.isEmpty(un)) {
-            ToastUtil.showToast(getActivity(),"用户名不能为空");
+            ToastUtil.showToast(getActivity(), "用户名不能为空");
+            return false;
+        }
+        if (un.contains(" ")) {
+            ToastUtil.showToast(getActivity(), "用户名不能包含空格");
             return false;
         }
         return true;
@@ -298,19 +358,20 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
     /**
      * 对 用户输入的密码进行格式验证
-     * */
-    private boolean pswFormateCheck(String psw){
+     */
+    private boolean pswFormateCheck(String psw) {
         if (TextUtils.isEmpty(psw)) {
-            ToastUtil.showToast(getActivity(),"密码不能为空");
+            ToastUtil.showToast(getActivity(), "密码不能为空");
             return false;
         }
-        if (psw.length()<6||psw.length()>20) {
-            ToastUtil.showToast(getActivity(),"密码长度在6到20位");
+        if (psw.length() < 6 || psw.length() > 20) {
+            ToastUtil.showToast(getActivity(), "密码长度在6到20位");
             return false;
         }
         /*还要判断 不包含特殊字符 保证 密码由数字和字母组成 以及 字母大小写敏感*/
         /*不能包含空格*/
-        if (psw.contains(" ")){
+        if (psw.contains(" ")) {
+            ToastUtil.showToast(getActivity(), "密码不能包含空格");
             return false;
         }
 //        if (Utils.isContainBlank(psw)) {
@@ -318,6 +379,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 //        }
         return true;
     }
+
     private String getErrorMsg(FaceShowBaseResponse ret) {
         if (ret.getError() != null) {
             return TextUtils.isEmpty(ret.getError().getMessage()) ?
@@ -327,6 +389,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                     "请求失败" : ret.getMessage();
         }
     }
+
     private AlertDialog alertDialog;
 
     private void dialogInit() {
