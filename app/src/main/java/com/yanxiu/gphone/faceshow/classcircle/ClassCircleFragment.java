@@ -273,7 +273,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private void startRequest(final String offset) {
         ClassCircleRequest circleRequest = new ClassCircleRequest();
         circleRequest.offset = offset;
-        ((MainActivity)getActivity()).hideClassCircleRedDot();
+        ((MainActivity) getActivity()).hideClassCircleRedDot();
         mClassCircleRequest = circleRequest.startRequest(ClassCircleResponse.class, new HttpCallback<ClassCircleResponse>() {
             @Override
             public void onSuccess(RequestBase request, ClassCircleResponse ret) {
@@ -852,7 +852,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
             case REQUEST_CODE_MY_PUBLISHED_MOMENTS:
             case REQUEST_CODE_PUBLISH_MOMENT:
                 if (resultCode == RESULT_OK) {
-                    mLinearLayoutManager.smoothScrollToPosition(mClassCircleRecycleView,null,0);
+                    mLinearLayoutManager.smoothScrollToPosition(mClassCircleRecycleView, null, 0);
                     toRefresh();
                 }
                 break;
@@ -884,7 +884,7 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
                 @Override
                 public PointF computeScrollVectorForPosition(int targetPosition) {
-                    return  FastScrollLinearLayoutManager.this.computeScrollVectorForPosition(targetPosition);
+                    return FastScrollLinearLayoutManager.this.computeScrollVectorForPosition(targetPosition);
                 }
 
                 //该方法控制速度。
