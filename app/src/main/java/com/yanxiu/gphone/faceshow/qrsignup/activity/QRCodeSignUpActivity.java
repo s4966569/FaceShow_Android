@@ -278,6 +278,8 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
         /*二维码格式检查工具*/
         qrCodeChecker = new QRCodeChecker();
         mLoadingDialogView=new LoadingDialogView(this);
+
+//        toSignUpActivity(0);
     }
 
     private void restartScan() {

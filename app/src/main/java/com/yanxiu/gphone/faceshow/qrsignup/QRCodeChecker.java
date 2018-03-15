@@ -44,8 +44,7 @@ public class QRCodeChecker {
      * */
     public boolean isHTML5Page(String codeStr) {
         if (strBaseCheck(codeStr)) {
-            return codeStr.startsWith(
-                    UrlRepository.getInstance().getServer()+"?method=interact.userSignIn");
+            return codeStr.startsWith("http://2bai.co");
         }
         return false;
     }
