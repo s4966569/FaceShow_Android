@@ -86,7 +86,7 @@ public class LectureInfoAdapter extends BaseRecyclerViewAdapter {
             mRvLectureBrief.setText(Html.fromHtml(lecturerInfosBean.getLecturerBriefing()));
             Glide.with(itemView.getContext()).load(lecturerInfosBean.getLecturerAvatar())
                     .asBitmap().placeholder(R.drawable.classcircle_headimg)
-                    .centerCrop()
+                    .fitCenter()
                     .into(new CornersImageTarget(itemView.getContext(), mImgHead, 10));
         }
     }
