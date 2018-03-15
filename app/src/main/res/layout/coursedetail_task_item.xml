@@ -4,6 +4,7 @@
     android:id="@+id/project_task_layout"
     android:layout_width="match_parent"
     android:layout_height="70dp"
+
     android:background="@drawable/selector_resource_adapter_item">
     <ImageView
         tools:src="@color/color_1da1f2"
@@ -14,6 +15,7 @@
         android:layout_marginLeft="@dimen/course_adapter_marginleft" />
 
     <TextView
+        android:visibility="invisible"
         android:id="@+id/project_task_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/course_adapter_marginleft"
         android:textStyle="bold"
-        android:layout_marginTop="14dp"
+        android:layout_centerVertical="true"
         android:layout_toRightOf="@id/course_detail_item_icon"
         android:layout_toLeftOf="@id/project_task_img"
         android:ellipsize="end"
@@ -50,7 +52,7 @@
         android:textSize="@dimen/home_nav_bar_textsize" />
 
     <TextView
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/project_task_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

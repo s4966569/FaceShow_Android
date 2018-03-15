@@ -146,7 +146,7 @@ public class CourseTaskAdapter extends BaseRecyclerViewAdapter {
                 mTvTaskStatue.setText("未完成");
                 mTvTaskStatue.setTextColor(context.getResources().getColor(R.color.color_task_unfinished));
             }
-            mTvTaskStatue.setVisibility(View.VISIBLE);
+//            mTvTaskStatue.setVisibility(View.VISIBLE);
         }
     }
 }
