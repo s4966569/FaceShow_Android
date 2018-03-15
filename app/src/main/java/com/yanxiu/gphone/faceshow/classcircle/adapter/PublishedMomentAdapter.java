@@ -21,7 +21,6 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
-import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
@@ -291,8 +290,13 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                     for (int i = 0; i < moments.album.size(); i++) {
                         ImageInfo imageInfo = new ImageInfo();
-                        imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
-                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
+                        if (moments.album.get(i) != null&&moments.album.get(i).attachment!=null) {
+                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
+                            imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
+                        }else{
+                            imageInfo.setThumbnailUrl("");
+                            imageInfo.setBigImageUrl("");
+                        }
                         imageInfos.add(imageInfo);
                     }
 
