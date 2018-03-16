@@ -35,6 +35,7 @@ import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.contacts.ContactsActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
@@ -104,6 +105,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviRightTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: 2018/3/16 通讯录入口
+                startActivity(new Intent(ImTopicListFragment.this.getContext(), ContactsActivity.class));
                 if (topics != null) {
                     topics.clear();
                     setupData();

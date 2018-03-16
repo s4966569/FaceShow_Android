@@ -249,15 +249,13 @@ public class LoginActivity extends FaceShowBaseActivity {
                 }
                 break;
             case R.id.tv_sign_in:
-
-                startActivity(new Intent(LoginActivity.this, ContactsActivity.class));
-//                if (edt_account_number.getText().length() <= 0) {
-//                    Toast.makeText(mContext, R.string.account_name_can_not_be_null, Toast.LENGTH_SHORT).show();
-//                } else if (edt_account_password.getText().length() <= 0) {
-//                    Toast.makeText(mContext, R.string.account_password_can_not_be_null, Toast.LENGTH_SHORT).show();
-//                } else {
-//                    signInRequest();
-//                }
+                if (edt_account_number.getText().length() <= 0) {
+                    Toast.makeText(mContext, R.string.account_name_can_not_be_null, Toast.LENGTH_SHORT).show();
+                } else if (edt_account_password.getText().length() <= 0) {
+                    Toast.makeText(mContext, R.string.account_password_can_not_be_null, Toast.LENGTH_SHORT).show();
+                } else {
+                    signInRequest();
+                }
 
                 break;
             case R.id.tv_forget_password:

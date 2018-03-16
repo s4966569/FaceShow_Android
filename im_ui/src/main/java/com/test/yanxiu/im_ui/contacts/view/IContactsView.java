@@ -33,4 +33,9 @@ public interface IContactsView {
 
     void changeCurrentClassName(String className);
 
+    void showLoadingView();
+
+    void hideLoadingView();
+
+
 }

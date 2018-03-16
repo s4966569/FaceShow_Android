@@ -15,7 +15,7 @@ import java.util.List;
  * @author by frc on 2018/3/13.
  */
 
-public class ContactsPresenter {
+public class ContactsPresenter<V extends IContactsView> extends BasePresenter<V> {
 
     private IContactsView view;
     private ContactsModel model = new ContactsModel();
