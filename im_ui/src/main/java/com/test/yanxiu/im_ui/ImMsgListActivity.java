@@ -324,21 +324,22 @@ public class ImMsgListActivity extends FragmentActivity {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
+
         if (msg.topicId != topic.getTopicId()) {
             // 不是本topic的直接抛弃
             return;
         }
 
         if (msg.senderId == Constants.imId) {
-            for (DbMsg dbMsg : topic.mergedMsgs) {
-                if (dbMsg.getReqId().equals(msg.reqId)) {
-                    // 已经有了
+            for (DbMsg theDbMsg : topic.mergedMsgs) {
+                if (theDbMsg.getReqId().equals(msg.reqId)) {
+                    // 已经有了, 不去动UI
                     return;
                 }
             }
         }
 
-        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
         topic.mergedMsgs.add(0, dbMsg);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
