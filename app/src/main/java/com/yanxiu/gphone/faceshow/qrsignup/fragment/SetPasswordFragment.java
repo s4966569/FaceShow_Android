@@ -3,14 +3,18 @@ package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -90,7 +94,12 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             passwordEditText = rootView.findViewById(R.id.setpassword_edit);
             usernameEditText = rootView.findViewById(R.id.username_edit);
             passwordEditText.addTextChangedListener(editWatcher);
-            usernameEditText.addTextChangedListener(editWatcher);
+//            usernameEditText.addTextChangedListener(editWatcher);
+
+            usernameEditText.addTextChangedListener(new SketchTextWatcher(usernameEditText));
+            InputFilter[] filters={new SketchLengthFilter()};
+            usernameEditText.setFilters(filters);
+
             mRootView.setContentView(rootView);
             dialogInit();
         }
@@ -132,7 +141,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                         && userNameFormateCheck(usernameEditText.getText().toString())) {
                     /*这里应该有网络请求 如果有 在请求回调里 调用 点击监听*/
 //                    fadeSignUpRequest(phoneNumber,passwordEditText.getText().toString(),scannedClassId);
-                    signUpRequest(phoneNumber,usernameEditText.getText().toString(), passwordEditText.getText().toString(), scannedClassId);
+                    signUpRequest(phoneNumber, usernameEditText.getText().toString(), passwordEditText.getText().toString(), scannedClassId);
                 }
             }
         });
@@ -158,8 +167,8 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
     /**
      * 统一监听
-     * */
-    private TextWatcher editWatcher=new TextWatcher()  {
+     */
+    private TextWatcher editWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -173,19 +182,19 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         @Override
         public void afterTextChanged(Editable editable) {
             /*文字更改后 判断 密码与用户名的长度*/
-            int pl=passwordEditText.getText().toString().length();
-            int nl=usernameEditText.getText().toString().length();
+            int pl = passwordEditText.getText().toString().length();
+            int nl = usernameEditText.getText().toString().length();
             /*检查 密码长度是否在 6~20 位之间*/
-           if(pl>5&&pl<21){
+            if (pl > 5 && pl < 21) {
                /*检查用户名长度 是否在1~6 位之间*/
-               if(nl>0&&nl<7){
-                   enableNextStepBtn();
-               }else {
-                   disableNextStepBtn();
-               }
-           }else {
-               disableNextStepBtn();
-           }
+                if (nl > 0 && nl < 7) {
+                    enableNextStepBtn();
+                } else {
+                    disableNextStepBtn();
+                }
+            } else {
+                disableNextStepBtn();
+            }
         }
     };
 
@@ -281,7 +290,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
      * 实际执行的是用户的注册操作
      * 传递参数 为 手机号 密码MD5  验证码
      */
-    private void signUpRequest(final String phone,final String username, final String md5Psw, final int clazsId) {
+    private void signUpRequest(final String phone, final String username, final String md5Psw, final int clazsId) {
         SignUpRequest signUpRequest = new SignUpRequest();
         signUpRequest.mobile = phone;
         signUpRequest.password = Utils.MD5Helper(md5Psw);
@@ -319,7 +328,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        signUpRequest(phone,username, md5Psw, clazsId);
+                        signUpRequest(phone, username, md5Psw, clazsId);
                     }
                 });
             }
@@ -327,22 +336,21 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
     }
 
 
-
     /**
      * toast message
-     * */
-    private void toastErrorMsg(FaceShowBaseResponse ret){
+     */
+    private void toastErrorMsg(FaceShowBaseResponse ret) {
         if (ret.getError() != null) {
             if (TextUtils.isEmpty(ret.getError().getMessage())) {
 
-            }else {
-                ToastUtil.showToast(getActivity(),ret.getError().getMessage());
+            } else {
+                ToastUtil.showToast(getActivity(), ret.getError().getMessage());
             }
-        }else {
+        } else {
             if (TextUtils.isEmpty(ret.getMessage())) {
 
-            }else {
-                ToastUtil.showToast(getActivity(),ret.getMessage());
+            } else {
+                ToastUtil.showToast(getActivity(), ret.getMessage());
             }
         }
     }
@@ -424,4 +432,147 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
         alertDialog = builder.create();
     }
+
+
+    public static class SketchTextWatcher implements TextWatcher {
+        private int editStart;
+        private int editEnd;
+        private int maxLen = 12; // 6 个汉字 12 个英文字符 (表情 2 个字符)
+
+        private EditText editText;
+
+        public SketchTextWatcher(EditText e) {
+            editText = e;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+//        D.i("slack", "afterTextChanged..." + s);
+            editStart = editText.getSelectionStart();
+            editEnd = editText.getSelectionEnd();
+            // 先去掉监听器，否则会出现栈溢出
+            editText.removeTextChangedListener(this);
+            if (!TextUtils.isEmpty(s.toString())) {
+                while (calculateLength(s.toString()) > maxLen) {
+                    s.delete(--editStart, editEnd--);
+//                D.i("slack", "editStart = " + editStart + " editEnd = " + editEnd + " s = " + s);
+                }
+            }
+
+            editText.setText(s);
+            editText.setSelection(editStart);
+            // 恢复监听器
+            editText.addTextChangedListener(this);
+        }
+
+        /**
+         * 英文一个字符  中文两个字符
+         */
+        private int calculateLength(String string) {
+            char[] ch = string.toCharArray();
+
+            int varlength = 0;
+            for (char c : ch) {
+                // changed by zyf 0825 , bug 6918，加入中文标点范围 ， TODO 标点范围有待具体化
+                if ((c >= 0x2E80 && c <= 0xFE4F) || (c >= 0xA13F && c <= 0xAA40) || c >= 0x80) { // 中文字符范围0x4e00 0x9fbb
+//                    if (c >= 0x4E00 && c <= 0x9FBB) { // 中文字符范围 0x4E00-0x9FA5 + 0x9FA6-0x9FBB
+                    varlength = varlength + 2;
+                } else {
+                    varlength++;
+                }
+            }
+//        D.i("slack", "length : " + varlength + " l: " + string.length());
+            return varlength;
+        }
+    }
+
+    /**
+     * 纯英文 纯中文 可以实现 from : http://justwyy.iteye.com/blog/1543419
+     * 中英混输入 :
+     * 中文 占 2 位
+     * 英文 占 1 位
+     * 思路：计算 已有文字的长度，计算新增文字的长度，长度没有到达限制时，拼接
+     * 小米 输入时，没有边输入边写入EditText的手机有问题，比如小米
+     * 华为这种输入一个字符就写入的，没有问题
+     */
+    private static class SketchLengthFilter implements InputFilter {
+
+        private final int LENGTH_ENGLISH;
+
+        SketchLengthFilter() {
+            this(12);
+        }
+
+        SketchLengthFilter(int english) {
+            LENGTH_ENGLISH = english;
+        }
+
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+
+            int keep = LENGTH_ENGLISH - (calculateLength(dest.toString()) - (dend - dstart));
+            end = calculateLength(source.toString());
+//        D.i("slack", "source(" + start + "," + end + ")=" + source + ",dest(" + dstart + "," + dend + ")=" + dest + " keep:" + keep);
+
+            CharSequence result = "";
+            if (keep >= 0) {
+                if (keep >= end - start) {
+                    result = null; // keep original
+                } else {
+                    result = subSequence(source.toString(), start, start + keep);
+                }
+            }
+//        D.i("slack", "result : " + (result == null ? "null" : result) + ".");
+            return result;
+        }
+
+        private CharSequence subSequence(@NonNull String source, int start, int length) {
+            int size = calculateLength(source);
+            if (size < length) {
+                return source;
+            }
+            char[] chars = source.toCharArray();
+            if (chars.length < length) {
+                return source;
+            }
+            char[] result = new char[length - start];
+            System.arraycopy(chars, start, result, 0, length);
+            return new String(result);
+        }
+
+        private int calculateLength(String string) {
+            int length = 0;
+            char[] chars = string.toCharArray();
+            for (char c : chars) {
+                if (isChinese(c)) {
+                    length += 2;
+                } else {
+                    length++;
+                }
+            }
+            return length;
+        }
+
+        private boolean isChinese(char c) {
+            Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+            return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                    || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                    || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION
+                    || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                    || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS;
+        }
+    }
 }
+
+

@@ -437,7 +437,13 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                         });
                     } else {
                         /*其他未知的异常*/
-                        ToastUtil.showToast(getActivity(), getErrorMsg(ret));
+                        createNomalDialog(getErrorMsg(ret), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                alertDialog.dismiss();
+                                getActivity().finish();
+                            }
+                        });
                     }
                 }
             }

@@ -90,11 +90,18 @@ public class QRCodeChecker {
      * 提取 calzsId
      * */
     public int getClazsIdFromQR(String result){
-        int position=result.indexOf("clazsId=");
-        result=result.substring(position+8,result.length());
-        Log.i(TAG, "getClazsIdFromQR: "+ result);
-        return Integer.valueOf(result);
-//        return -1;
+        if (TextUtils.isEmpty(result)) {
+            return -1;
+        }else {
+            int position=result.indexOf("clazsId=");
+            if (result.contains("clazsId")&&position>0&&result.length()>position+8) {
+                result=result.substring(position+8,result.length());
+                Log.i(TAG, "getClazsIdFromQR: "+ result);
+            }else {
+                return -1;
+            }
+            return Integer.valueOf(result);
+        }
     }
 
 

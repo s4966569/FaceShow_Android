@@ -205,14 +205,16 @@ public class QRCodeSignUpActivity extends PublicQRScanActivity {
             @Override
             public void onFail(RequestBase request, Error error) {
                 Log.i(TAG, "onFail: ");
-                mLoadingDialogView.dismiss();
-                publicLoadLayout.showNetErrorView();
-                publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        clazsInfoRequest(clazsId);
-                    }
-                });
+                ToastUtil.showToast(QRCodeSignUpActivity.this,error.getMessage()+"");
+                restartScan();
+//                mLoadingDialogView.dismiss();
+//                publicLoadLayout.showNetErrorView();
+//                publicLoadLayout.setRetryButtonOnclickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        clazsInfoRequest(clazsId);
+//                    }
+//                });
             }
         });
     }
