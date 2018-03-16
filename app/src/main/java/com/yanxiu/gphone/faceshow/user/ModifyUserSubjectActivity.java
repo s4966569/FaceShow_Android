@@ -3,14 +3,12 @@ package com.yanxiu.gphone.faceshow.user;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
@@ -20,10 +18,10 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseCallback;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.user.request.ModifyUserInfoRequest;
 import com.yanxiu.gphone.faceshow.user.response.ModifyUserInfoResponse;
-import com.yanxiu.gphone.faceshow.util.ActivityManger;
-import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +54,23 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
         ModifyUserSubjectAdapter modifyUserSubjectAdapter = new ModifyUserSubjectAdapter(mData.getSub(),mIRecyclerViewItemClick);
         mRecyclerViewChooseSubject.setAdapter(modifyUserSubjectAdapter);
 
+           /*初始化 选择的显示*/
+           UserInfo.Info userInfo=SpManager.getUserInfo();
+
+        List<StageSubjectModel.DataBean> subList=mData.getSub();
+        for (StageSubjectModel.DataBean dataBean :subList) {
+            if (dataBean.getId().equals(userInfo.getSubject()+"")||dataBean.getName().equals(userInfo.getSubjectName())) {
+                modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
+                modifyUserSubjectAdapter.notifyDataSetChanged();
+//                enableNextStepBtn();
+                canSelected=true;
+                mSelectedPosition = subList.indexOf(dataBean);
+                mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(ModifyUserSubjectActivity.this, R.color.color_1da1f2));
+                break;
+            }
+        }
+
+
     }
     private IRecyclerViewItemClick mIRecyclerViewItemClick= new IRecyclerViewItemClick() {
         @Override
@@ -63,6 +78,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
             mSelectedPosition =postion;
             mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(ModifyUserSubjectActivity.this, R.color.color_1da1f2));
             canSelected=true;
+
         }
     };
 

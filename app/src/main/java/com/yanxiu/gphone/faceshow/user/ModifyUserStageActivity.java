@@ -12,11 +12,12 @@ import android.widget.TextView;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.FileUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -58,6 +59,22 @@ public class ModifyUserStageActivity extends FaceShowBaseActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerViewChooseStage.setLayoutManager(linearLayoutManager);
         mRecyclerViewChooseStage.setAdapter(modifyUserStageAdapter);
+
+
+      UserInfo.Info userInfo= SpManager.getUserInfo();
+                  /*初始化 选择的显示*/
+        for (StageSubjectModel.DataBean dataBean : mStageSubjectModel.getData()) {
+            /*初始化选择 */
+            if (dataBean.getId().equals(userInfo.getStage()+"")||dataBean.getName().equals(userInfo.getStageName())) {
+                modifyUserStageAdapter.setDefaultSelectPosition(mStageSubjectModel.getData().indexOf(dataBean));
+                modifyUserStageAdapter.notifyDataSetChanged();
+//                enableNextStepBtn();
+                canSelected=true;
+                mSelectedPosition = mStageSubjectModel.getData().indexOf(dataBean);
+                mTitleLayoutRightText.setTextColor(ContextCompat.getColor(ModifyUserStageActivity.this, R.color.color_1da1f2));
+                break;
+            }
+        }
     }
 
     private IRecyclerViewItemClick mIRecyclerViewItemClickListener = new IRecyclerViewItemClick() {
