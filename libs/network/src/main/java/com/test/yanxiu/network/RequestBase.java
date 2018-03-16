@@ -2,19 +2,14 @@ package com.test.yanxiu.network;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -146,7 +141,9 @@ public abstract class RequestBase {
                     // 如易学易练项目，需要Des解密
                     bodyString = bodyDealer.dealWithBody(bodyString);
                 }
-                final String retStr = Html.fromHtml(bodyString).toString();
+//                final String retStr = Html.fromHtml(bodyString).toString();
+                final String retStr = dealWithException(bodyString);
+//                final String retStr = bodyString;
                 try {
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -175,6 +172,17 @@ public abstract class RequestBase {
         });
 
         return uuid;
+    }
+
+    /**
+     *
+     * */
+    private String dealWithException(String response){
+        if (response.contains("&quot;")) {
+            return response.replace("&quot;","\\\"");
+        }else {
+            return response;
+        }
     }
 
     protected OkHttpClient setClient() {
