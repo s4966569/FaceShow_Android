@@ -24,15 +24,14 @@ android {
         applicationId "com.yanxiu.gphone.faceshow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.2"
+        versionCode 5
+        versionName "1.2.1"
         multiDexEnabled true
 
         flavorDimensions "4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [
-
                 PACKAGE_NAME: applicationId   //applicationId
         ]
 
