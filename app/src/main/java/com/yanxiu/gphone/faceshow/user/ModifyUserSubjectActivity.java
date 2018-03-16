@@ -47,6 +47,7 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
         setContentView(R.layout.activity_modify_user_subject);
         ButterKnife.bind(this);
         mData= (StageSubjectModel.DataBean) getIntent().getSerializableExtra("data");
+
         initTitle();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -56,20 +57,22 @@ public class ModifyUserSubjectActivity extends FaceShowBaseActivity {
 
            /*初始化 选择的显示*/
            UserInfo.Info userInfo=SpManager.getUserInfo();
+        boolean isUserReselect=getIntent().getBooleanExtra("reselect",true);
 
-        List<StageSubjectModel.DataBean> subList=mData.getSub();
-        for (StageSubjectModel.DataBean dataBean :subList) {
-            if (dataBean.getId().equals(userInfo.getSubject()+"")||dataBean.getName().equals(userInfo.getSubjectName())) {
-                modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
-                modifyUserSubjectAdapter.notifyDataSetChanged();
+        if (!isUserReselect) {
+            List<StageSubjectModel.DataBean> subList=mData.getSub();
+            for (StageSubjectModel.DataBean dataBean :subList) {
+                if (dataBean.getId().equals(userInfo.getSubject()+"")) {
+                    modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
+                    modifyUserSubjectAdapter.notifyDataSetChanged();
 //                enableNextStepBtn();
-                canSelected=true;
-                mSelectedPosition = subList.indexOf(dataBean);
-                mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(ModifyUserSubjectActivity.this, R.color.color_1da1f2));
-                break;
+                    canSelected=true;
+                    mSelectedPosition = subList.indexOf(dataBean);
+                    mTitleLayoutRightTxt.setTextColor(ContextCompat.getColor(ModifyUserSubjectActivity.this, R.color.color_1da1f2));
+                    break;
+                }
             }
         }
-
 
     }
     private IRecyclerViewItemClick mIRecyclerViewItemClick= new IRecyclerViewItemClick() {

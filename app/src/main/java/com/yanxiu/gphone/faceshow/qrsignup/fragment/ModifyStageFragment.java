@@ -38,6 +38,8 @@ public class ModifyStageFragment extends Fragment {
     private SysUserBean userBean;
 
     private String stageText;
+
+
     /**
      * 获取选择的学段名称
      * */
@@ -73,7 +75,7 @@ public class ModifyStageFragment extends Fragment {
         initRecyclerView();
         return publicLoadLayout;
     }
-
+    public boolean isReSelected=false;
     private void initRecyclerView() {
         mStageSubjectModel = RequestBase.getGson().fromJson(FileUtil.getDataFromAssets(getActivity(), "stageSubject.json"), StageSubjectModel.class);
         ModifyUserSubjectAdapter modifyUserStageAdapter = new ModifyUserSubjectAdapter(mStageSubjectModel.getData(), mIRecyclerViewItemClickListener);
@@ -101,6 +103,11 @@ public class ModifyStageFragment extends Fragment {
         @Override
         public void onItemClick(View view, int position) {
             enableNextStepBtn();
+            if (mSelectedPosition==position) {
+                isReSelected=false;
+            }else {
+                isReSelected=true;
+            }
             mSelectedPosition = position;
             /*获取 stage的ID*/
             String stageId=mStageSubjectModel.getData().get(mSelectedPosition).getId();

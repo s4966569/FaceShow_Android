@@ -76,10 +76,16 @@ public class ModifyUserStageActivity extends FaceShowBaseActivity {
             }
         }
     }
-
+    private boolean isReSelected=false;
     private IRecyclerViewItemClick mIRecyclerViewItemClickListener = new IRecyclerViewItemClick() {
         @Override
         public void onItemClick(View view, int position) {
+            if (mSelectedPosition==position) {
+                isReSelected=false;
+            }else {
+                isReSelected=true;
+            }
+
             mSelectedPosition = position;
             mTitleLayoutRightText.setTextColor(ContextCompat.getColor(ModifyUserStageActivity.this, R.color.color_1da1f2));
             canSelected = true;
@@ -106,6 +112,7 @@ public class ModifyUserStageActivity extends FaceShowBaseActivity {
                 if (canSelected) {
                     Intent intent = new Intent(ModifyUserStageActivity.this, ModifyUserSubjectActivity.class);
                     intent.putExtra("data", mStageSubjectModel.getData().get(mSelectedPosition));
+                    intent.putExtra("reselect",isReSelected);
                     startActivityForResult(intent, REQUEST_CODE_CHOOSE_SUBJECT);
                 }else {
                     ToastUtil.showToast(ModifyUserStageActivity.this,"请先选择学段");

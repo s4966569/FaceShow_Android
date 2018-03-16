@@ -221,6 +221,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
     private void toModifySubject() {
         modifySubjectFragment = new ModifySubjectFragment();
         modifySubjectFragment.setmSelectedPosition(modifyStageFragment.getmSelectedPosition());
+        modifySubjectFragment.setReselected(modifyStageFragment.isReSelected);
         modifySubjectFragment.setToolbarActionCallback(new ToolbarActionCallback() {
             @Override
             public void onLeftComponentClick() {
@@ -240,6 +241,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
         });
         modifySubjectFragment.setTitleText(modifyStageFragment.getStageText());
         modifySubjectFragment.setUserBean(registedUserBean);
+
         transaction(modifySubjectFragment);
     }
 

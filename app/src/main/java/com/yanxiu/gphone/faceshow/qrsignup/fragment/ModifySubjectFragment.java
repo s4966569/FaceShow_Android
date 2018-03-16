@@ -38,6 +38,12 @@ public class ModifySubjectFragment extends Fragment {
     private TextView rightTxt;
     private int mSelectedPosition=0;
 
+    private boolean isReselected=false;
+
+    public void setReselected(boolean reselected) {
+        isReselected = reselected;
+    }
+
     public void setmSelectedPosition(int mSelectedPosition) {
         this.mSelectedPosition = mSelectedPosition;
     }
@@ -77,15 +83,19 @@ public class ModifySubjectFragment extends Fragment {
         mRecyclerViewChooseStage.setAdapter(modifyUserSubjectAdapter);
 
          /*初始化 选择的显示*/
-        List<StageSubjectModel.DataBean> subList= mStageSubjectModel.getData().get(mSelectedPosition).getSub();
-        for (StageSubjectModel.DataBean dataBean :subList) {
-            if (dataBean.getId().equals(userBean.getSubject()+"")||dataBean.getName().equals(userBean.getSubjectName())) {
-                modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
-                modifyUserSubjectAdapter.notifyDataSetChanged();
-                enableNextStepBtn();
-                break;
+        /*如果重新选择了 学段 放弃 默认选项*/
+        if (!isReselected) {
+            List<StageSubjectModel.DataBean> subList= mStageSubjectModel.getData().get(mSelectedPosition).getSub();
+            for (StageSubjectModel.DataBean dataBean :subList) {
+                if (dataBean.getId().equals(userBean.getSubject()+"")||dataBean.getName().equals(userBean.getSubjectName())) {
+                    modifyUserSubjectAdapter.setDefaultSelectPosition(subList.indexOf(dataBean));
+                    modifyUserSubjectAdapter.notifyDataSetChanged();
+                    enableNextStepBtn();
+                    break;
+                }
             }
         }
+
     }
     private IRecyclerViewItemClick mIRecyclerViewItemClick= new IRecyclerViewItemClick() {
         @Override
