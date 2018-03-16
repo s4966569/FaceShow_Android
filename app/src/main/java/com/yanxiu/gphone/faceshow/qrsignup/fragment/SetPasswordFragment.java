@@ -181,22 +181,27 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            /*文字更改后 判断 密码与用户名的长度*/
-            int pl = passwordEditText.getText().toString().length();
-            int nl = usernameEditText.getText().toString().length();
+            checkEnable();
+
+        }
+    };
+
+    private void checkEnable() {
+    /*文字更改后 判断 密码与用户名的长度*/
+        int pl = passwordEditText.getText().toString().length();
+        int nl = usernameEditText.getText().toString().length();
             /*检查 密码长度是否在 6~20 位之间*/
-            if (pl > 5 && pl < 21) {
-               /*检查用户名长度 是否在1~6 位之间*/
-                if (nl > 0 && nl < 12) {
-                    enableNextStepBtn();
-                } else {
-                    disableNextStepBtn();
-                }
+        if (pl > 5 && pl < 21) {
+           /*检查用户名长度 是否在1~6 位之间*/
+            if (nl > 0 && nl < 13) {
+                enableNextStepBtn();
             } else {
                 disableNextStepBtn();
             }
+        } else {
+            disableNextStepBtn();
         }
-    };
+    }
 
 
     /**
@@ -440,6 +445,26 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         private int maxLen = 12; // 6 个汉字 12 个英文字符 (表情 2 个字符)
 
         private EditText editText;
+        private EditText otherText;
+        private TextView targetTextView;
+
+
+        public void setEditText(EditText editText) {
+            this.editText = editText;
+        }
+
+        public void setOtherText(EditText otherText) {
+            this.otherText = otherText;
+        }
+
+        public void setTargetTextView(TextView targetTextView) {
+            this.targetTextView = targetTextView;
+        }
+
+        public SketchTextWatcher(EditText otherText, TextView targetTextView) {
+            this.otherText = otherText;
+            this.targetTextView = targetTextView;
+        }
 
         public SketchTextWatcher(EditText e) {
             editText = e;
@@ -448,10 +473,29 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+ /*文字更改后 判断 密码与用户名的长度*/
+            int pl = otherText.getText().toString().length();
+            int nl = editText.getText().toString().length();
+            /*检查 密码长度是否在 6~20 位之间*/
+            if (pl > 5 && pl < 21) {
+           /*检查用户名长度 是否在1~6 位之间*/
+                if (nl > 0 && nl < 13) {
+                      /*禁止再次编辑电话号*/
+                    targetTextView.setEnabled(true);
+                    targetTextView.setTextColor(targetTextView.getContext().getResources().getColor(R.color.color_1da1f2));
+                } else {
+                    targetTextView.setEnabled(false);
+                    targetTextView.setTextColor(targetTextView.getContext().getResources().getColor(R.color.color_999999));
+                }
+            } else {
+                targetTextView.setEnabled(false);
+                targetTextView.setTextColor(targetTextView.getContext().getResources().getColor(R.color.color_999999));
+            }
 
         }
 
