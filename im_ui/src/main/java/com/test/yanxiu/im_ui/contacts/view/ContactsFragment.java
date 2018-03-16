@@ -18,10 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.test.yanxiu.common_base.ui.InputMethodUtil;
-import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
-import com.test.yanxiu.im_ui.contacts.ContactMvpBaseFragment;
 import com.test.yanxiu.im_ui.contacts.ContactsAdapter;
 import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
 import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
@@ -47,7 +45,6 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     private RecyclerView mContactsList;
     private int mCurrentItemClassSelected;
     private View rootView;
-    private ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener;
 
     @Nullable
     @Override
@@ -78,6 +75,17 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         addCallBack();
         presenter.getContactsList(null);
         return rootView;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        hideChangeClassWindow();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     @Override
@@ -269,17 +277,6 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         // TODO: 2018/3/16
     }
 
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        hideChangeClassWindow();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
 
     private void hideSoftInput() {
         InputMethodUtil.closeInputMethod(ContactsFragment.this.getContext(), mImgBack);

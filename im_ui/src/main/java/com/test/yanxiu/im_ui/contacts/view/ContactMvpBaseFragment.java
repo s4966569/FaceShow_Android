@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.contacts;
+package com.test.yanxiu.im_ui.contacts.view;
 
 
 import android.os.Bundle;
