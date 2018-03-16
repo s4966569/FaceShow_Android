@@ -1,14 +1,10 @@
-package com.test.yanxiu.im_ui.constacts.presenter;
+package com.test.yanxiu.im_ui.contacts.presenter;
 
 import android.text.TextUtils;
 
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
-import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
-import com.test.yanxiu.im_ui.constacts.model.ContactsModel;
-import com.test.yanxiu.im_ui.constacts.view.FSSearchView;
-import com.test.yanxiu.im_ui.constacts.view.IContactsView;
-
-import java.util.ArrayList;
+import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.contacts.model.ContactsModel;
+import com.test.yanxiu.im_ui.contacts.view.IContactsView;
 
 
 /**

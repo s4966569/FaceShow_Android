@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.constacts.view;
+package com.test.yanxiu.im_ui.contacts.view;
 
 import android.content.Context;
 import android.support.v7.widget.SearchView;

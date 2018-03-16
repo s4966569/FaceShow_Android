@@ -1,10 +1,9 @@
-package com.test.yanxiu.im_ui.constacts.view;
+package com.test.yanxiu.im_ui.contacts.view;
 
 import android.view.View;
 
-import com.test.yanxiu.im_ui.constacts.ContactsAdapter;
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
-import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
+import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
 
 import java.util.List;
 

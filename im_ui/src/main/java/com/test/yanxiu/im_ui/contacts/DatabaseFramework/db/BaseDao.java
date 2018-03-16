@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.constacts.DatabaseFramework.db;
+package com.test.yanxiu.im_ui.contacts.DatabaseFramework.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 
-import com.test.yanxiu.im_ui.constacts.DatabaseFramework.annotation.DbField;
-import com.test.yanxiu.im_ui.constacts.DatabaseFramework.annotation.DbTable;
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbField;
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

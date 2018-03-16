@@ -4,17 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,25 +19,16 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.location.BDAbstractLocationListener;
-import com.baidu.location.BDLocation;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
-import com.baidu.location.Poi;
-import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.orhanobut.logger.Logger;
-import com.test.yanxiu.im_ui.constacts.ContactsActivity;
+import com.test.yanxiu.im_ui.contacts.ContactsActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.db.NeedModel;
 import com.yanxiu.gphone.faceshow.db.SpManager;
-import com.yanxiu.gphone.faceshow.db.cityModel;
 import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.login.GetUserInfoRequest;
@@ -49,25 +37,16 @@ import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
-import com.yanxiu.gphone.faceshow.util.FileUtils;
-import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
-import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 import com.yanxiu.gphone.faceshow.util.anim.AnimUtil;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-
-import javax.security.auth.login.LoginException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import cn.magicwindow.MWConfiguration;
-import cn.magicwindow.MagicWindowSDK;
 
 
 /**

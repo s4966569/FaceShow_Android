@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.constacts.DatabaseFramework.db;
+package com.test.yanxiu.im_ui.contacts.DatabaseFramework.db;
 
 import java.util.List;
 

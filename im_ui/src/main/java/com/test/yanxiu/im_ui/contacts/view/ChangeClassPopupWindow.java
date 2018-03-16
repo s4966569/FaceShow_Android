@@ -1,6 +1,6 @@
-package com.test.yanxiu.im_ui.constacts.view;
+package com.test.yanxiu.im_ui.contacts.view;
 
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
 
 /**
  * Created by frc on 2018/3/13.

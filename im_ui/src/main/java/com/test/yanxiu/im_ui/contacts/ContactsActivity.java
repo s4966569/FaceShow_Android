@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.constacts;
+package com.test.yanxiu.im_ui.contacts;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -6,12 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.test.yanxiu.im_ui.R;
-import com.test.yanxiu.im_ui.constacts.DatabaseFramework.db.BaseDaoFactory;
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
-import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
-import com.test.yanxiu.im_ui.constacts.db.ClassDao;
-import com.test.yanxiu.im_ui.constacts.db.ContactsDao;
-import com.test.yanxiu.im_ui.constacts.view.ContactsFragment;
+import com.test.yanxiu.im_ui.contacts.view.ContactsFragment;
 
 public class ContactsActivity extends FragmentActivity {
 

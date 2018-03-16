@@ -1,6 +1,6 @@
-package com.test.yanxiu.im_ui.constacts.bean;
+package com.test.yanxiu.im_ui.contacts.bean;
 
-import com.test.yanxiu.im_ui.constacts.DatabaseFramework.annotation.DbTable;
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 
 /**
  * Created by frc on 2018/3/13.

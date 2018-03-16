@@ -4,6 +4,6 @@
     android:id="@+id/fragment_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.test.yanxiu.im_ui.constacts.ContactsActivity">
+    tools:context="com.test.yanxiu.im_ui.contacts.ContactsActivity">
 
 </FrameLayout>

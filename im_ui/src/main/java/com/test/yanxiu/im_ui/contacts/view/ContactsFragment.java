@@ -1,14 +1,12 @@
-package com.test.yanxiu.im_ui.constacts.view;
+package com.test.yanxiu.im_ui.contacts.view;
 
 import android.content.Context;
-import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +18,12 @@ import android.widget.Toast;
 
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_ui.R;
-import com.test.yanxiu.im_ui.constacts.ChangeClassAdapter;
-import com.test.yanxiu.im_ui.constacts.ContactsAdapter;
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
-import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
-import com.test.yanxiu.im_ui.constacts.presenter.ContactsPresenter;
+import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
+import com.test.yanxiu.im_ui.contacts.ContactsAdapter;
+import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
+import com.test.yanxiu.im_ui.contacts.presenter.ContactsPresenter;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**

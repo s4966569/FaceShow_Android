@@ -1,12 +1,12 @@
-package com.test.yanxiu.im_ui.constacts.model;
+package com.test.yanxiu.im_ui.contacts.model;
 
 import android.text.TextUtils;
 
-import com.test.yanxiu.im_ui.constacts.DatabaseFramework.db.BaseDaoFactory;
-import com.test.yanxiu.im_ui.constacts.db.ClassDao;
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
-import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
-import com.test.yanxiu.im_ui.constacts.db.ContactsDao;
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.db.BaseDaoFactory;
+import com.test.yanxiu.im_ui.contacts.db.ClassDao;
+import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
+import com.test.yanxiu.im_ui.contacts.db.ContactsDao;
 
 import java.util.List;
 

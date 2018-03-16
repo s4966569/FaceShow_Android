@@ -1,4 +1,4 @@
-package com.test.yanxiu.im_ui.constacts;
+package com.test.yanxiu.im_ui.contacts;
 
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.test.yanxiu.im_ui.R;
-import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
 
 import java.util.ArrayList;
 import java.util.List;
