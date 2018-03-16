@@ -321,7 +321,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (moments.publisher != null) {
                 headimg = moments.publisher.avatar;
             }
-            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
+            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.icon_classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
                 ((NineGridView) classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {

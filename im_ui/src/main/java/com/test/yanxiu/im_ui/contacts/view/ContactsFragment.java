@@ -1,6 +1,5 @@
 package com.test.yanxiu.im_ui.contacts.view;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -10,12 +9,12 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.test.yanxiu.common_base.ui.InputMethodUtil;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
@@ -44,7 +43,6 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
     public ContactsAdapter mContactsAdapter;
     private ChangeClassAdapter mChangeClassAdapter;
     private ContactsPresenter mPresenter;
-    private ChangeClassPopupWindow mPopupWindow;
 
     private int mCurrentItemClassSelected;
 
@@ -109,14 +107,13 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
             @Override
             public boolean onClose() {
                 mPresenter.getCurrentClassContactsList();
-                //hideSoftInput();
                 return false;
             }
         });
         mImgChangeClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideSoftInput();
+                InputMethodUtil.closeInputMethod(ContactsFragment.this.getContext(), v);
                 if (ll_change_class.getVisibility() == View.GONE) {
                     openChangeClassWindow();
                 } else {
@@ -200,18 +197,6 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
         mTvCurrentClassName.setText(className);
     }
 
-
-    private InputMethodManager mInputMethodManager;
-
-    private void hideSoftInput() {
-        if (mInputMethodManager == null) {
-            mInputMethodManager = (InputMethodManager) this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        }
-        if (mInputMethodManager.isActive()){
-            mInputMethodManager.hideSoftInputFromWindow(mImgBack.getWindowToken(),0);
-        }
-
-    }
 
     @Override
     public void onStop() {

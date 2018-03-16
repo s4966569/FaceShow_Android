@@ -1,12 +1,15 @@
 package com.test.yanxiu.im_ui.contacts;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
 
@@ -41,6 +44,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         ContactsPlayerBean bean = data.get(position);
         holder.tvPhoneNumber.setText(bean.getPhoneName());
         holder.tvName.setText(bean.getName());
+        if (TextUtils.isEmpty(bean.getHardImgPath())) {
+            holder.imgHard.setImageDrawable(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.icon_classcircle_headimg_small));
+        } else {
+            Glide.with(holder.itemView.getContext()).load(bean.getHardImgPath())
+                    .placeholder(R.drawable.icon_classcircle_headimg_small)
+                    .error(R.drawable.icon_change_class_selected)
+                    .into(holder.imgHard);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,11 +79,11 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     }
 
 
-    public class ContactsViewHolder extends RecyclerView.ViewHolder {
+    class ContactsViewHolder extends RecyclerView.ViewHolder {
         ImageView imgHard;
         TextView tvName, tvPhoneNumber;
 
-        public ContactsViewHolder(View itemView) {
+        ContactsViewHolder(View itemView) {
             super(itemView);
             imgHard = itemView.findViewById(R.id.img_hard);
             tvName = itemView.findViewById(R.id.tv_name);

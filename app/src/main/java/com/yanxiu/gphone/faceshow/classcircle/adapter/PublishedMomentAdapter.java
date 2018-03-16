@@ -21,7 +21,6 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
 import com.yanxiu.gphone.faceshow.classcircle.response.Comments;
-import com.yanxiu.gphone.faceshow.common.activity.PhotoActivity;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleCommentLayout;
 import com.yanxiu.gphone.faceshow.customview.ClassCircleThumbView;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextLayout;
@@ -270,7 +269,7 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             if (moments.publisher != null) {
                 headimg = moments.publisher.avatar;
             }
-            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
+            Glide.with(mContext).load(headimg).asBitmap().placeholder(R.drawable.icon_classcircle_headimg_small).centerCrop().into(new CornersImageTarget(mContext, classCircleViewHolder.mHeadImgView, 10));
             if (moments.album != null && moments.album.size() > 0) {
                 classCircleViewHolder.mContentImageView.setVisibility(View.VISIBLE);
                 ((NineGridView) classCircleViewHolder.mContentImageView).setViewOntouch(new NineGridViewWrapper.onViewOntouch() {
