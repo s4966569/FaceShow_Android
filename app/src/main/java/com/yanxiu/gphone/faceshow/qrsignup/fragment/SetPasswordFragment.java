@@ -187,7 +187,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             /*检查 密码长度是否在 6~20 位之间*/
             if (pl > 5 && pl < 21) {
                /*检查用户名长度 是否在1~6 位之间*/
-                if (nl > 0 && nl < 7) {
+                if (nl > 0 && nl < 12) {
                     enableNextStepBtn();
                 } else {
                     disableNextStepBtn();
