@@ -9,9 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
+import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.im_ui.view.CircleView;
 
 import java.text.ParseException;
@@ -27,6 +29,11 @@ import java.util.Locale;
 public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.TopicViewHolder> {
     private Context mContext;
     private List<DbTopic> mDatas;
+    private OnRecyclerViewItemClickCallback mOnItemClickCallback;
+
+    public void setmOnItemClickCallback(OnRecyclerViewItemClickCallback mOnItemClickCallback) {
+        this.mOnItemClickCallback = mOnItemClickCallback;
+    }
 
     TopicListAdapter(Context context, List<DbTopic> topics) {
         mContext = context;
@@ -40,9 +47,18 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
     }
 
     @Override
-    public void onBindViewHolder(TopicViewHolder holder, int position) {
-        DbTopic topic = mDatas.get(position);
+    public void onBindViewHolder(TopicViewHolder holder, final int position) {
+        final DbTopic topic = mDatas.get(position);
         holder.setData(topic);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnItemClickCallback != null) {
+                    mOnItemClickCallback.onItemClick(position,topic);
+                }
+            }
+        });
     }
 
     @Override
@@ -55,6 +71,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 
     public class TopicViewHolder extends RecyclerView.ViewHolder {
         private Context mContext;
+
         private ImageView mAvatarImageView;
         private TextView mSenderTextView;
         private TextView mTimeTextView;
@@ -72,7 +89,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             mRedDotCircleView = itemView.findViewById(R.id.reddot_circleview);
         }
 
-        public void setData(DbTopic topic) {
+        public void setData(final DbTopic topic) {
             // 默认
             mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
             mSenderTextView.setText("未知");

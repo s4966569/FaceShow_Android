@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.orhanobut.logger.Logger;
+import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
@@ -32,6 +34,7 @@ import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_core.mqtt.MqttService;
+import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
@@ -68,6 +71,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_topic_list, container, false);
+        startMqttService();
         setupView(v);
         setupData();
         return v;
@@ -118,18 +122,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 false));
         TopicListAdapter adapter = new TopicListAdapter(getContext(), topics);
         mTopicListRecyclerView.setAdapter(adapter);
+        adapter.setmOnItemClickCallback(onDbTopicCallback);
     }
 
     private void setupData() {
         // 为了不丢消息，上来就启动Mqtt
-        startMqttService();
-
         updateTopicsFromDb();
         updateTopicsFromHttpWithoutMembers();
     }
 
-    private String imToken = "fb1a05461324976e55786c2c519a8ccc";
-    private long imId = 9;
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser("cailei");
@@ -140,7 +141,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 2，从Http获取用户的topic列表，不包含members，完成后继续从Http获取需要更新的topic的信息
     private void updateTopicsFromHttpWithoutMembers() {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
-        getMemberTopicsRequest.imToken = imToken;
+        getMemberTopicsRequest.imToken = Constants.imToken;
         getMemberTopicsRequest.bizId = null;
         getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
             @Override
@@ -191,7 +192,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         strTopicIds = strTopicIds.substring(0, strTopicIds.length() - sep.length());
 
         TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
-        getTopicsRequest.imToken = imToken;
+        getTopicsRequest.imToken = Constants.imToken;
         getTopicsRequest.topicIds = strTopicIds;
         getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
             @Override
@@ -250,7 +251,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
 
         GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
-        getTopicMsgsRequest.imToken = imToken;
+        getTopicMsgsRequest.imToken = Constants.imToken;
         getTopicMsgsRequest.topicId = Long.toString(dbTopic.getTopicId());
         getTopicMsgsRequest.startId = Long.toString(dbTopic.latestMsgId);
         getTopicMsgsRequest.order = "desc";
@@ -270,7 +271,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
 
                 for (ImMsg msg : ret.data.topicMsg) {
-                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", imId);
+                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
                     dbTopic.mergedMsgs.add(dbMsg);
 
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
@@ -334,7 +335,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
-        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", imId);
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
+
+        // 如果是当前topic，不在这里更新，而在msgs界面更新
+        if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {
+            return;
+        }
 
         // mqtt上的实时消息，按照接收顺序写入ui的datalist
         // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
@@ -347,6 +353,16 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
+    //endregion
 
+    //region 跳转
+    private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
+        @Override
+        public void onItemClick(int position, DbTopic dbTopic) {
+            SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
+            Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+            startActivity(i);
+        }
+    };
     //endregion
 }

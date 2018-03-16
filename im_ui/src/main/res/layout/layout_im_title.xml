@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="15dp"/>
+        android:paddingLeft="15dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"/>
 
     <TextView
         android:id="@+id/title_textview"
@@ -33,6 +35,18 @@
         android:layout_gravity="center_vertical"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:paddingRight="15dp"/>
+        android:paddingRight="15dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"/>
+
+    <!--默认navi left为返回键-->
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/navi_left_back_imageview"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="-15dp"
+        android:src="@drawable/selector_icon_back"
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>

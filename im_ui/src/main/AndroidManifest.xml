@@ -7,6 +7,9 @@
             android:name=".constacts.ContactsActivity"
             android:theme="@style/im_ui"
             android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".ImMsgListActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
     </application>
 
 </manifest>

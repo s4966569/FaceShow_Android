@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="64dp"
+    android:background="#dfe3e5">
+
+    <ImageView
+        android:id="@+id/avatar_imageview"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="#ff0000"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        />
+
+    <TextView
+        android:id="@+id/name_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12dp"
+        android:textColor="#999999"
+        android:layout_toRightOf="@id/avatar_imageview"
+        android:layout_marginLeft="10dp"
+        android:layout_alignTop="@id/avatar_imageview"
+        android:layout_alignParentRight="true" />
+
+    <TextView
+        android:gravity="center_vertical"
+        android:minHeight="40dp"
+        android:id="@+id/msg_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:textColor="#333333"
+        android:layout_toRightOf="@id/avatar_imageview"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@id/name_textview"
+        android:layout_marginTop="6dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp"
+        android:background="@drawable/bg_msg_white"/>
+
+</RelativeLayout>

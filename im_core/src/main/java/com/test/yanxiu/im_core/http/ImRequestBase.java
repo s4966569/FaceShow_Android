@@ -6,6 +6,7 @@ import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.common_base.utils.UrlRepository;
+import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 
 import java.util.UUID;
@@ -47,5 +48,26 @@ public class ImRequestBase extends RequestBase {
         String url = super.fullUrl();
         SrtLogger.log("im http", url);
         return url;
+    }
+
+    @Override
+    public <T> UUID startRequest(Class<T> clazz, final HttpCallback<T> callback) {
+        return super.startRequest(clazz, new HttpCallback<T>() {
+            @Override
+            public void onSuccess(RequestBase request, T ret) {
+                ImResponseBase retbase = (ImResponseBase)ret;
+                if (retbase.code != 0) {
+                    callback.onFail(request, new Error(((ImResponseBase) ret).message));
+                    return;
+                }
+
+                callback.onSuccess(request, ret);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                callback.onFail(request, error);
+            }
+        });
     }
 }
