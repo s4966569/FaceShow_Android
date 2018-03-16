@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -24,6 +25,16 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  */
 
 public class MqttService extends Service {
+    public interface MqttServiceCallback {
+        void onDisconnect();
+        void onConnect();
+    }
+
+    private MqttServiceCallback mMqttServiceCallback;
+    public void setmMqttServiceCallback(MqttServiceCallback mMqttServiceCallback) {
+        this.mMqttServiceCallback = mMqttServiceCallback;
+    }
+
     public class MqttBinder extends Binder {
         public void init() {
             doInit();
@@ -49,6 +60,10 @@ public class MqttService extends Service {
         public void subscribe(String topicId) {
             doSubscribe(topicId);
         }
+
+        public MqttService getService() {
+            return MqttService.this;
+        }
     }
 
     @Nullable
@@ -69,7 +84,10 @@ public class MqttService extends Service {
     protected MqttCallback mCallback = new MqttCallback() {
         @Override
         public void connectionLost(Throwable cause) {
-
+            SrtLogger.log("immqtt", "connection lost");
+            if (mMqttServiceCallback != null) {
+                mMqttServiceCallback.onDisconnect();
+            }
         }
 
         @Override
@@ -77,7 +95,7 @@ public class MqttService extends Service {
 
             MqttProtobufDealer.dealWithData(message.getPayload());
             // 有消息来了
-            Log.d("Tag", "mqtt msg arrived : " + topic);
+            SrtLogger.log("immqtt", "mqtt msg arrived : " + topic);
         }
 
         @Override
@@ -111,14 +129,18 @@ public class MqttService extends Service {
                 mClient.connect(mMqttConnectOptions, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.d("Tag", "mqtt connect successfully");
-
-                        doSubscribe("16");
+                        SrtLogger.log("immqtt", "mqtt connectted");
+                        if (mMqttServiceCallback != null) {
+                            mMqttServiceCallback.onConnect();
+                        }
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.d("Tag", "mqtt connect failed" + exception.toString());
+                        SrtLogger.log("immqtt", "mqtt failed to connect");
+                        if (mMqttServiceCallback != null) {
+                            mMqttServiceCallback.onDisconnect();
+                        }
                     }
                 });
             } catch (Exception e) {
@@ -136,7 +158,7 @@ public class MqttService extends Service {
         }
     }
 
-    private void doSubscribe(String topicId) {
+    public void doSubscribe(String topicId) {
         if ((mClient != null) && mClient.isConnected()) {
             try {
                 mClient.subscribe("im/v1.0/topic/" + topicId, 1, null, new IMqttActionListener() {

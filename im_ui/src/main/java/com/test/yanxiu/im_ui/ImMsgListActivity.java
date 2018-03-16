@@ -21,17 +21,28 @@ import com.facebook.stetho.inspector.protocol.module.Database;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
+import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
+import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
+import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
+import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.im_ui.view.RecyclerViewPullToRefreshHelper;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public class ImMsgListActivity extends FragmentActivity {
     private DbTopic topic;
@@ -51,6 +62,14 @@ public class ImMsgListActivity extends FragmentActivity {
         setContentView(R.layout.activity_msg_list);
         setupView();
         setupData();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     private void setupView() {
@@ -139,33 +158,51 @@ public class ImMsgListActivity extends FragmentActivity {
     private void setupData() {
     }
 
-    private void doSend() {
-        long latestMsgId = -1;
-        for (DbMsg msg : topic.mergedMsgs) {
-            if (msg.getMsgId() > latestMsgId) {
-                latestMsgId = msg.getMsgId();
-            }
+    private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
+    private void doSend()
+    {
+        String msg = mMsgEditText.getText().toString();
+        String trimMsg = msg.trim();
+        if (trimMsg.length() == 0) {
+            return;
         }
 
-        DbMyMsg myMsg = new DbMyMsg();
-        myMsg.setSenderId(Constants.imId);
-        myMsg.setMsgId(latestMsgId);
+        SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
+        saveTextMsgRequest.imToken = Constants.imToken;
+        saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
+        saveTextMsgRequest.msg = msg;
+
+        final DbMyMsg myMsg = new DbMyMsg();
         myMsg.setState(DbMyMsg.State.Sending.ordinal());
-        myMsg.setReqId("000");
-        myMsg.setMsg(mMsgEditText.getText().toString());
-
-        DbMyMsg myMsg1 = new DbMyMsg();
-        myMsg1.setSenderId(Constants.imId);
-        myMsg1.setMsgId(latestMsgId);
-        myMsg1.setState(DbMyMsg.State.Failed.ordinal());
-        myMsg1.setReqId("000");
-        myMsg1.setMsg(mMsgEditText.getText().toString());
-
+        myMsg.setReqId(saveTextMsgRequest.reqId);
+        myMsg.setMsgId(latestMsgId());
+        myMsg.setTopicId(topic.getTopicId());
+        myMsg.setSenderId(Constants.imId);
+        myMsg.setSendTime(new Date().getTime());
+        myMsg.setContentType(10);
+        myMsg.setMsg(msg);
+        myMsg.save();
         topic.mergedMsgs.add(0, myMsg);
-        topic.mergedMsgs.add(0, myMsg1);
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
+
+        // 数据存储，UI显示都完成后，http发送
+        httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                myMsg.setState(DbMyMsg.State.Success.ordinal());
+                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                myMsg.setState(DbMyMsg.State.Failed.ordinal());
+                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void doTakePic() {
@@ -192,9 +229,10 @@ public class ImMsgListActivity extends FragmentActivity {
                 if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
                     // 重新发送
                     topic.mergedMsgs.remove(myMsg);
+                    // 1, 先更新数据库中
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
+                    myMsg.setMsgId(latestMsgId());
                     topic.mergedMsgs.add(0, myMsg);
-
                     mMsgListAdapter.setmDatas(topic.mergedMsgs);
                     mMsgListAdapter.notifyDataSetChanged();
                 }
@@ -202,5 +240,34 @@ public class ImMsgListActivity extends FragmentActivity {
         }
     };
 
+    //endregion
+
+    //region mqtt
+    @Subscribe
+    public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
+        ImMsg msg = event.msg;
+        if ((msg.topicId != topic.getTopicId()) || (msg.senderId == Constants.imId)) {
+            // 不是本topic的直接抛弃
+            // 自己发的从mqtt回来的，不用
+            return;
+        }
+
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
+        topic.mergedMsgs.add(0, dbMsg);
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+    }
+    //endregion
+
+    //region util
+    private long latestMsgId() {
+        long latestMsgId = -1;
+        for (DbMsg dbMsg : topic.mergedMsgs) {
+            if (dbMsg.getMsgId() > latestMsgId) {
+                latestMsgId = dbMsg.getMsgId();
+            }
+        }
+        return latestMsgId;
+    }
     //endregion
 }

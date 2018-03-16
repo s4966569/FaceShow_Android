@@ -133,7 +133,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
-        DatabaseDealer.useDbForUser("cailei");
+        DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
+
+
         topics.addAll(DatabaseDealer.topicsFromDb());
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -304,9 +306,21 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 SrtLogger.log("im mqtt", "mqtt connectted");
                 binder = (MqttService.MqttBinder) iBinder;
 
+                binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
+                    @Override
+                    public void onDisconnect() {
+
+                    }
+
+                    @Override
+                    public void onConnect() {
+                        for (DbTopic dbTopic : topics) {
+                            binder.subscribe(Long.toString(dbTopic.getTopicId()));
+                        }
+                    }
+                });
                 binder.init();
                 binder.connect();
-                //binder.subscribe("16");
             }
 
             @Override
@@ -334,25 +348,30 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
-        ImMsg msg = event.msg;
-        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
 
-        // 如果是当前topic，不在这里更新，而在msgs界面更新
-        if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {
-            return;
-        }
-
-        // mqtt上的实时消息，按照接收顺序写入ui的datalist
-        // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
-        for (DbTopic dbTopic : topics) {
-            if (dbTopic.getTopicId() == msg.topicId) {
-                dbTopic.mergedMsgs.add(dbMsg);
-                break;
-            }
-        }
-
-        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
+
+//    @Subscribe
+//    public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
+//        ImMsg msg = event.msg;
+//        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
+//
+//        // 如果是当前topic，不在这里更新，而在msgs界面更新
+//        if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {
+//            return;
+//        }
+//
+//        // mqtt上的实时消息，按照接收顺序写入ui的datalist
+//        // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
+//        for (DbTopic dbTopic : topics) {
+//            if (dbTopic.getTopicId() == msg.topicId) {
+//                dbTopic.mergedMsgs.add(dbMsg);
+//                break;
+//            }
+//        }
+//
+//        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+//    }
     //endregion
 
     //region 跳转
