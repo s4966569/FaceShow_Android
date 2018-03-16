@@ -7,8 +7,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -181,7 +179,7 @@ public abstract class RequestBase {
      * 用于 处理 字符串转义
      * */
     private String dealWithException(String response){
-       return  StringEscapeUtils.unescapeHtml(response);
+        return response!=null?response.replace("&quot;","\\\""):"";
     }
 
     protected OkHttpClient setClient() {
