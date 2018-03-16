@@ -210,6 +210,21 @@ public class BaseDao<T> implements IBaseDao<T> {
         return result;
     }
 
+    @Override
+    public List<T> fuzzyQuery(T where) {
+        Map map = getValues(where);
+
+        FuzzySearchCondition condition = new FuzzySearchCondition(map);
+        Cursor cursor = sqLiteDatabase.query(tableName, null, condition.whereCasue
+                , condition.whereArgs, null, null, null, null);
+        //定义个用来解析游标的方法
+        List<T> result = getResult(cursor, where);
+
+
+        return result;
+    }
+
+
     /**
      * @param cursor
      * @param obj    用来表示类结构的
@@ -277,6 +292,31 @@ public class BaseDao<T> implements IBaseDao<T> {
                 if (value != null) {
                     stringBuilder.append(" and " + key + "=?");
                     list.add(value);
+                }
+
+            }
+            this.whereCasue = stringBuilder.toString();
+            this.whereArgs = (String[]) list.toArray(new String[list.size()]);
+        }
+    }
+
+    private class FuzzySearchCondition {
+        private String whereCasue;
+        private String[] whereArgs;
+
+        public FuzzySearchCondition(Map<String, String> whereCasue) {
+            ArrayList list = new ArrayList();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("1=1");
+            //取所有的字段名
+            Set keys = whereCasue.keySet();
+            Iterator iterator = keys.iterator();
+            while (iterator.hasNext()) {
+                String key = (String) iterator.next();
+                String value = whereCasue.get(key);
+                if (value != null) {
+                    stringBuilder.append(" and " + key + " like ?");
+                    list.add("%"+value+"%");
                 }
 
             }

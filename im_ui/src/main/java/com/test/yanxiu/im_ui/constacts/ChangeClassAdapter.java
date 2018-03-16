@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui.constacts;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.widget.TextView;
 
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
-import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ public class ChangeClassAdapter extends RecyclerView.Adapter<ChangeClassAdapter.
     private OnItemClickListener onItemClickListener;
 
     private List<ClassBean> data = new ArrayList<>();
+    public int mCurrentSelectedItem;
 
     public void addItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -38,14 +39,23 @@ public class ChangeClassAdapter extends RecyclerView.Adapter<ChangeClassAdapter.
     }
 
     @Override
-    public void onBindViewHolder(final ChangeClassViewHolder holder, int position) {
+    public void onBindViewHolder(final ChangeClassViewHolder holder, final int position) {
         ClassBean bean = data.get(position);
         holder.tvClassName.setText(bean.getClassName());
+        if (position == mCurrentSelectedItem) {
+            holder.tvClassName.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_1da1f2));
+            holder.imgGo.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvClassName.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_333333));
+            holder.imgGo.setVisibility(View.INVISIBLE);
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (onItemClickListener != null) {
+                    mCurrentSelectedItem = position;
                     onItemClickListener.itemClick(v, holder.getAdapterPosition());
+                    notifyDataSetChanged();
                 }
             }
         });
@@ -57,8 +67,9 @@ public class ChangeClassAdapter extends RecyclerView.Adapter<ChangeClassAdapter.
         return data.size();
     }
 
-    public void refresh(List<ClassBean> playerList) {
+    public void refresh(List<ClassBean> playerList, int currentClassPosition) {
         this.data = playerList;
+        mCurrentSelectedItem = currentClassPosition;
         notifyDataSetChanged();
     }
 

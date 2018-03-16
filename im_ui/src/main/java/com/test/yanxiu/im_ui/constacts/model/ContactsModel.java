@@ -1,5 +1,7 @@
 package com.test.yanxiu.im_ui.constacts.model;
 
+import android.text.TextUtils;
+
 import com.test.yanxiu.im_ui.constacts.DatabaseFramework.db.BaseDaoFactory;
 import com.test.yanxiu.im_ui.constacts.db.ClassDao;
 import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
@@ -17,6 +19,8 @@ public class ContactsModel {
     private ClassDao classDao;
     private ContactsDao contactsDao;
     private ClassBean mCurrentClass;
+    private int mCurrentClassPosition;
+    private String mCurrentQueryKey = "";
 
     public List<ContactsPlayerBean> getPlayersDataByClass(ClassBean classData) {
         if (contactsDao == null) {
@@ -25,7 +29,12 @@ public class ContactsModel {
         ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean();
         contactsPlayerBean.setClassId(classData.getClassId());
         mCurrentClass = classData;
-        return contactsDao.query(contactsPlayerBean);
+        if (TextUtils.isEmpty(mCurrentQueryKey)) {
+            return contactsDao.query(contactsPlayerBean);
+        } else {
+            contactsPlayerBean.setName(mCurrentQueryKey);
+            return contactsDao.fuzzyQuery(contactsPlayerBean);
+        }
     }
 
 
@@ -38,12 +47,14 @@ public class ContactsModel {
     }
 
     public List<ContactsPlayerBean> getQueryResult(String queryContent) {
+        mCurrentQueryKey = queryContent;
         if (contactsDao == null) {
             contactsDao = BaseDaoFactory.getOutInstance(dbPath).getBaseDao(ContactsDao.class, ContactsPlayerBean.class);
         }
         ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean();
+        contactsPlayerBean.setClassId(mCurrentClass.getClassId());
         contactsPlayerBean.setName(queryContent);
-        return contactsDao.query(contactsPlayerBean);
+        return contactsDao.fuzzyQuery(contactsPlayerBean);
     }
 
     public List<ContactsPlayerBean> getCurrentClassPlayerList() {
@@ -53,5 +64,16 @@ public class ContactsModel {
         return getPlayersDataByClass(mCurrentClass);
     }
 
+    public int getmCurrentClassPosition() {
+        return mCurrentClassPosition;
+    }
+
+    public void setmCurrentClassPosition(int mCurrentClassPosition) {
+        this.mCurrentClassPosition = mCurrentClassPosition;
+    }
+
+    public String clearQueryKey() {
+        return mCurrentQueryKey = "";
+    }
 
 }

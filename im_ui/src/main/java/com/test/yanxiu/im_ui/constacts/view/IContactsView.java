@@ -28,8 +28,10 @@ public interface IContactsView {
 
     void showContractsList(List<ContactsPlayerBean> data);
 
-    void showChangeClassWindow(List<ClassBean> data);
+    void showChangeClassWindow(List<ClassBean> data, int currentClassPosition);
 
     void hideChangeClassWindow();
+
+    void changeCurrentClassName(String className);
 
 }

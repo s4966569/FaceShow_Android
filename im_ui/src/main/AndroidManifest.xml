@@ -5,7 +5,8 @@
     <application>
         <activity
             android:name=".constacts.ContactsActivity"
-            android:theme="@style/im_ui"></activity>
+            android:theme="@style/im_ui"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
     </application>
 
 </manifest>

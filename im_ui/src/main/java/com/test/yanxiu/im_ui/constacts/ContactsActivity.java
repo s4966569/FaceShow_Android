@@ -6,6 +6,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.test.yanxiu.im_ui.R;
+import com.test.yanxiu.im_ui.constacts.DatabaseFramework.db.BaseDaoFactory;
+import com.test.yanxiu.im_ui.constacts.bean.ClassBean;
+import com.test.yanxiu.im_ui.constacts.bean.ContactsPlayerBean;
+import com.test.yanxiu.im_ui.constacts.db.ClassDao;
+import com.test.yanxiu.im_ui.constacts.db.ContactsDao;
 import com.test.yanxiu.im_ui.constacts.view.ContactsFragment;
 
 public class ContactsActivity extends FragmentActivity {
@@ -17,15 +22,20 @@ public class ContactsActivity extends FragmentActivity {
 
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction=fragmentManager.beginTransaction();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
         ContactsFragment contactsFragment = new ContactsFragment();
-        transaction.add(R.id.fragment_content,contactsFragment);
+        transaction.add(R.id.fragment_content, contactsFragment);
         transaction.commit();
-
 
 
 //        String sqlDatabasePath = "/data/data/" + this.getPackageName() + "/databases/yx.db";
 //        Log.e("frc", "path::: " + sqlDatabasePath);
+//
+//        ClassDao classDao = BaseDaoFactory.getOutInstance(sqlDatabasePath).getBaseDao(ClassDao.class, ClassBean.class);
+//        classDao.insert(new ClassBean(1, "面授一班"));
+//        classDao.insert(new ClassBean(2, "面授二班"));
+//        classDao.insert(new ClassBean(3, "面授三班"));
+//        classDao.insert(new ClassBean(4, "面授四班"));
 
 
 //        ContactsDao contactsDao = BaseDaoFactory.getOutInstance(sqlDatabasePath).getBaseDao(ContactsDao.class, ContactsPlayerBean.class);
