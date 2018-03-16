@@ -65,14 +65,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
         isLoading = loading;
-        notifyDataSetChanged();
     }
 
     public void setmDatas(List<DbMsg> mDatas) {
         this.mDatas = mDatas;
         // 重新生成用于显示的mUiDatas
         generateUiDatas();
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     // 从现有的mDatas，生成mUiDatas
@@ -118,6 +117,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 break;
             }
         }
+
+
         return position;
     }
 

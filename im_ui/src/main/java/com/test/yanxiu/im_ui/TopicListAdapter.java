@@ -149,7 +149,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             }
 
             mRedDotCircleView.setVisibility(View.INVISIBLE);
-            if (topic.showDot) {
+            if (topic.isShowDot()) {
                 mRedDotCircleView.setVisibility(View.VISIBLE);
             }
         }

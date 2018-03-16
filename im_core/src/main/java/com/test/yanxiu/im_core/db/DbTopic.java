@@ -18,10 +18,10 @@ public class DbTopic extends DataSupport {
     private String change;  // 如果topic有名称、人员变动，则server的值和db值不相等，需要重新获取topic信息
 
     private List<DbMember> members = new ArrayList<>();
+    private boolean showDot = false;
+
 
     // 只为UI显示用，不做数据库存储用
-    @Column(ignore = true)
-    public boolean showDot = false;
     @Column(ignore = true)
     public long latestMsgId;
     @Column(ignore = true)
@@ -68,6 +68,14 @@ public class DbTopic extends DataSupport {
 
     public void setChange(String change) {
         this.change = change;
+    }
+
+    public boolean isShowDot() {
+        return showDot;
+    }
+
+    public void setShowDot(boolean showDot) {
+        this.showDot = showDot;
     }
 
     //endregion

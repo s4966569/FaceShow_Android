@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.stetho.inspector.protocol.module.Database;
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -84,7 +85,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public void onMsgListActivityReturned() {
-        // 如果curTopic中有新msg则，排到最前
+        // 如果curTopic中有新msg则将此topic排到最前
         long latestMsgTime = curTopic.latestMsgTime;
         for (DbMsg dbMsg : curTopic.mergedMsgs) {
             if (dbMsg.getSendTime() > latestMsgTime) {
@@ -93,6 +94,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         }
 
+        // 保留最多pagesize条
+        curTopic.mergedMsgs = curTopic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, curTopic.mergedMsgs.size()));
         curTopic = null;
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -140,7 +143,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private void setupData() {
-        // 为了不丢消息，上来就启动Mqtt
         updateTopicsFromDb();
         updateTopicsFromHttpWithoutMembers();
     }
@@ -263,6 +265,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateEachTopicMsgs(List<DbTopic> topics) {
         totalRetryTimes = 10;
         for (final DbTopic dbTopic : topics) {
+            // 对于已经有最新消息在数据库的
+            long dbLastMsgId = DatabaseDealer.getLatestMsgIdForTopic(dbTopic.getTopicId());
+            if (dbTopic.latestMsgId <= dbLastMsgId) {
+                continue;
+            }
+
             doGetTopicMsgsRequest(dbTopic);
         }
     };
@@ -286,7 +294,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
                 // 有新消息，UI上应该显示红点
-                dbTopic.showDot = true;
+                dbTopic.setShowDot(true);
+                dbTopic.save();
 
                 // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
                 for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
@@ -376,7 +385,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         for (DbTopic dbTopic : topics) {
             if (dbTopic.getTopicId() == msg.topicId) {
                 dbTopic.mergedMsgs.add(0, dbMsg);
-                dbTopic.showDot = true;
+                dbTopic.setShowDot(true);
+                dbTopic.save();
                 break;
             }
         }
@@ -393,7 +403,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             curTopic = dbTopic;
-            dbTopic.showDot = false;
+            dbTopic.setShowDot(false);
+            dbTopic.save();
         }
     };
     //endregion

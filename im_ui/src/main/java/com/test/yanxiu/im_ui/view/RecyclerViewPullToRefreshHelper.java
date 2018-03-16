@@ -5,6 +5,7 @@ import android.support.v4.view.ScrollingView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
@@ -23,29 +24,41 @@ public class RecyclerViewPullToRefreshHelper {
     private OnPullToRefreshCallback mCallback;
     private boolean isLoading = false;
 
-    public RecyclerViewPullToRefreshHelper(Context context, RecyclerView v) {
+    private float startY;
+    boolean isPullDown;
+
+    public RecyclerViewPullToRefreshHelper(Context context, final RecyclerView v) {
         RecyclerView.OnScrollListener listener;
-        v.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+        v.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                // TBD:cailei 目前是松手后再判断，需要改进
-                if ((!isLoading) && (newState == SCROLL_STATE_IDLE) && (!recyclerView.canScrollVertically(-1)))  {
-                    LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    if (manager.findFirstVisibleItemPosition() == 0) {
-                        if (mCallback != null) {
-                            isLoading = true;
-                            mCallback.onLoadMore();
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startY = motionEvent.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float currentY = motionEvent.getY();
+                        isPullDown = currentY - startY > 10 ? true : false;
+
+                        if ((!isLoading) && (isPullDown) && (!v.canScrollVertically(-1)))  {
+                            LinearLayoutManager manager = (LinearLayoutManager) v.getLayoutManager();
+                            if (manager.findFirstVisibleItemPosition() == 0) {
+                                if (mCallback != null) {
+                                    isLoading = true;
+                                    mCallback.onLoadMore();
+                                }
+                            }
                         }
-                    }
+
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                    case MotionEvent.ACTION_UP:
+                        isPullDown = false;
+                        break;
                 }
+                return false;
             }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-
         });
     }
 
