@@ -32,14 +32,12 @@ import java.util.List;
  */
 
 public class ContactsFragment extends FaceShowBaseFragment implements IContactsView {
-    ImageView mImgBack;
-    ImageView mImgChangeClass;
-    RecyclerView mContactsList, mChangeClassList;
-    SearchView mSearchView;
-    TextView mTvCurrentClassName, mTvSureChangeClass;
-    View mChangeClassBackView;
-
-    LinearLayout ll_change_class;
+    private ImageView mImgBack;
+    private ImageView mImgChangeClass;
+    private SearchView mSearchView;
+    private TextView mTvCurrentClassName, mTvSureChangeClass;
+    private View mChangeClassBackView;
+    private LinearLayout mLlChangeClass;
     public ContactsAdapter mContactsAdapter;
     private ChangeClassAdapter mChangeClassAdapter;
     private ContactsPresenter mPresenter;
@@ -53,34 +51,51 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
         View rootView = inflater.inflate(R.layout.fragment_contacts_layout, container, false);
         mImgBack = rootView.findViewById(R.id.img_back);
         mImgChangeClass = rootView.findViewById(R.id.img_change_class);
-        mContactsList = rootView.findViewById(R.id.recyclerView);
         mTvCurrentClassName = rootView.findViewById(R.id.tv_current_class_name);
-        ll_change_class = rootView.findViewById(R.id.ll_change_class);
-        mChangeClassList = rootView.findViewById(R.id.recyclerView_change_class);
+        mLlChangeClass = rootView.findViewById(R.id.ll_change_class);
         mChangeClassBackView = rootView.findViewById(R.id.back_view);
         mTvSureChangeClass = rootView.findViewById(R.id.tv_sure_change_class);
         mSearchView = rootView.findViewById(R.id.searchView);
-
-
+        modifySearchViewStyle(mSearchView);
+        /*初始化通讯录列表*/
         mContactsAdapter = new ContactsAdapter();
+        RecyclerView mContactsList = rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mContactsList.setLayoutManager(linearLayoutManager);
         mContactsList.setAdapter(mContactsAdapter);
-
+        /*初始化切换班级列表*/
         mChangeClassAdapter = new ChangeClassAdapter();
+        RecyclerView mChangeClassList = rootView.findViewById(R.id.recyclerView_change_class);
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this.getContext());
         linearLayoutManager1.setOrientation(LinearLayoutManager.VERTICAL);
         mChangeClassList.setLayoutManager(linearLayoutManager1);
         mChangeClassList.setAdapter(mChangeClassAdapter);
 
-
-        mPresenter = new ContactsPresenter(this);
         addCallBack();
-        mTvCurrentClassName.setText("面授一班");
-        mPresenter.getContactsList(new ClassBean(1, "面授一班"));
+        mPresenter = new ContactsPresenter(this);
+        mPresenter.getContactsList(null);
 
         return rootView;
+    }
+
+    /**
+     * V7包原生的SearchView在UI上有限不符  所以做了些修改
+     * 可参考: https://tanjundang.github.io/2016/11/17/SearchView/
+     *
+     * @param searchView searchView
+     */
+    private void modifySearchViewStyle(SearchView searchView) {
+        SearchView.SearchAutoComplete tv = searchView.findViewById(R.id.search_src_text);
+        tv.setTextColor(ContextCompat.getColor(this.getContext(), R.color.color_333333));
+        tv.setHintTextColor(ContextCompat.getColor(this.getContext(), R.color.color_999999));
+        tv.setTextSize(14);
+
+        ImageView imageView = searchView.findViewById(R.id.search_mag_icon);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) imageView.getLayoutParams();
+        layoutParams.width = 51;
+        layoutParams.height = 51;
+        imageView.setLayoutParams(layoutParams);
     }
 
     @Override
@@ -103,18 +118,11 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
                 return false;
             }
         });
-        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                mPresenter.getCurrentClassContactsList();
-                return false;
-            }
-        });
         mImgChangeClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 InputMethodUtil.closeInputMethod(ContactsFragment.this.getContext(), v);
-                if (ll_change_class.getVisibility() == View.GONE) {
+                if (mLlChangeClass.getVisibility() == View.GONE) {
                     openChangeClassWindow();
                 } else {
                     closeChangeClassWindow();
@@ -182,14 +190,14 @@ public class ContactsFragment extends FaceShowBaseFragment implements IContactsV
     public void showChangeClassWindow(List<ClassBean> data, int currentClassPosition) {
         if (data != null && data.size() > 0) {
             mChangeClassAdapter.refresh(data, currentClassPosition);
-            ll_change_class.setVisibility(View.VISIBLE);
+            mLlChangeClass.setVisibility(View.VISIBLE);
         }
     }
 
 
     @Override
     public void hideChangeClassWindow() {
-        ll_change_class.setVisibility(View.GONE);
+        mLlChangeClass.setVisibility(View.GONE);
     }
 
     @Override

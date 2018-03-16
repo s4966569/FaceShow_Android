@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:background="@color/color_eceff2"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -42,8 +44,9 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/im_ui_shape_search_background"
         app:closeIcon="@drawable/selector_search_delete"
-        app:iconifiedByDefault="true"
+        app:iconifiedByDefault="false"
         app:queryHint="搜索"
+        app:queryBackground="@null"
         app:searchIcon="@drawable/icon_search" />
 
 

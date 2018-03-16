@@ -11,11 +11,13 @@ import com.test.yanxiu.im_ui.contacts.db.ContactsDao;
 import java.util.List;
 
 /**
- * Created by frc on 2018/3/13.
+ * 通讯录对应的数据处理类
+ *
+ * @author frc on 2018/3/13.
  */
 
 public class ContactsModel {
-    final String dbPath = "/data/data/com.yanxiu.gphone.faceshow/databases/yx.db";
+    private final String dbPath = "/data/data/com.yanxiu.gphone.faceshow/databases/yx.db";
     private ClassDao classDao;
     private ContactsDao contactsDao;
     private ClassBean mCurrentClass;
@@ -64,16 +66,16 @@ public class ContactsModel {
         return getPlayersDataByClass(mCurrentClass);
     }
 
-    public int getmCurrentClassPosition() {
+    public int getCurrentClassPosition() {
         return mCurrentClassPosition;
     }
 
-    public void setmCurrentClassPosition(int mCurrentClassPosition) {
+    public void setCurrentClassPosition(int mCurrentClassPosition) {
         this.mCurrentClassPosition = mCurrentClassPosition;
     }
 
-    public String clearQueryKey() {
-        return mCurrentQueryKey = "";
+    public void clearQueryKey() {
+        mCurrentQueryKey = "";
     }
 
 }
