@@ -111,7 +111,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
 
         titleRightText.setVisibility(View.VISIBLE);
         titleLeftImage.setVisibility(View.VISIBLE);
-        titleTextView.setText("设置密码");
+        titleTextView.setText("填写注册信息");
         titleRightText.setText("下一步");
         titleLeftImage.setOnClickListener(new View.OnClickListener() {
             @Override
