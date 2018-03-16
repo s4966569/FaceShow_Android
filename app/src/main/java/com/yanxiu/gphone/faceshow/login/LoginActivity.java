@@ -186,7 +186,7 @@ public class LoginActivity extends FaceShowBaseActivity {
 //
 //        FileUtils.writeFile(Constants.SDCARD_ROOT_NAME+"/xzz.txt", data,false);
 /*！~！~！~！~*/
-    debugUserAccount();
+//    debugUserAccount();
     }
 
     private void debugUserAccount(){
