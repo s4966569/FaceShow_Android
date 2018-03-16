@@ -65,7 +65,10 @@ public class QRCodeChecker {
     public boolean isClazzCode(String codeStr) {
         if (strBaseCheck(codeStr)) {
             /*为了测试流程的顺畅 没有 检查逻辑*/
-            return isYanxiuServer(codeStr);
+            return codeStr.startsWith(
+                    UrlRepository.getInstance().getServer()+"?method=clazs.scanClazsCode&clazsId");
+
+//            return isYanxiuServer(codeStr);
         }
         return false;
     }
