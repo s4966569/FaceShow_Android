@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:im="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="15dp"
@@ -16,10 +17,17 @@
             android:id="@+id/avatar_imageview"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="#ff0000"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             />
+
+        <com.test.yanxiu.im_ui.view.RoundCornerMaskView
+            im:mask_color="#dfe3e5"
+            im:corner_radius="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true" />
 
         <TextView
             android:gravity="center_vertical"

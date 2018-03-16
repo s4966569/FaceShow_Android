@@ -56,7 +56,7 @@ import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.util.ClassCircleTimeUtils;
 import com.yanxiu.gphone.faceshow.util.Logger;
-import com.yanxiu.gphone.faceshow.util.ScreenUtils;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.List;

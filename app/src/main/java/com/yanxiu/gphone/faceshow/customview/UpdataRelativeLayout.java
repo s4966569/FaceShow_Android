@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
-import com.yanxiu.gphone.faceshow.util.ScreenUtils;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 
 /**
  * Created by Canghaixiao.

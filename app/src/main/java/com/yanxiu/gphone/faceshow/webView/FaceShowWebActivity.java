@@ -6,24 +6,20 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.just.agentweb.AgentWeb;
-import com.just.agentweb.ChromeClientCallbackManager;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.main.GetToolsResponse;
-import com.yanxiu.gphone.faceshow.util.ScreenUtils;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * 使用了三方架包 AgentWeb

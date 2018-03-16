@@ -16,12 +16,12 @@ public class DbMsg extends DataSupport {
     protected long senderId;     // 此msg的owner
     protected long sendTime;       // msg的发送时间
 
-    protected int contentType;     // 目前为txt，未来支持pic
+    protected int contentType;     // 10-文本，20-图片，30-视频
     protected String msg;          // txt怎插入msg，pic插入
     protected String thumbnail;
     protected String viewUrl;
 
-    protected String from; // mqtt, http
+    protected String from; // mqtt, http, local
 
     //region getter setter
     public String getReqId() {

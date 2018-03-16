@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.stetho.inspector.protocol.module.Database;
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -84,6 +85,22 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         super.onDestroyView();
     }
 
+    public void onMsgListActivityReturned() {
+        // 如果curTopic中有新msg则将此topic排到最前
+        long latestMsgTime = curTopic.latestMsgTime;
+        for (DbMsg dbMsg : curTopic.mergedMsgs) {
+            if (dbMsg.getSendTime() > latestMsgTime) {
+                topics.remove(curTopic);
+                topics.add(0, curTopic);
+            }
+        }
+
+        // 保留最多pagesize条
+        curTopic.mergedMsgs = curTopic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, curTopic.mergedMsgs.size()));
+        curTopic = null;
+        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
     private void setupView(View v) {
         mTitleLayout = v.findViewById(R.id.title_layout);
 
@@ -95,7 +112,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviLeftImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LitePal.deleteDatabase("db_cailei");
+                LitePal.deleteDatabase(Long.toString(Constants.imId) + "_db");
             }
         });
         mTitleLayout.setLeftView(mNaviLeftImageView);
@@ -129,14 +146,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private void setupData() {
-        // 为了不丢消息，上来就启动Mqtt
         updateTopicsFromDb();
         updateTopicsFromHttpWithoutMembers();
     }
 
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
-        DatabaseDealer.useDbForUser("cailei");
+        DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
+
+
         topics.addAll(DatabaseDealer.topicsFromDb());
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -162,32 +180,41 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     // 3，从Http获取需要更新的topic的信息，完成后写入DB，更新UI
     private void updateTopicsFromHttpAddMembers(TopicGetMemberTopicsResponse ret) {
-        List<String> ids = new ArrayList<>();
+        List<String> idTopicsNeedUpdateMember = new ArrayList<>(); // 因为可能有新的，所以只能用topicId
+        List<DbTopic> topicsNotNeedUpdateMember = new ArrayList<>();
+
         // 所有不在DB中的，以及所有在DB中但change不等于topicChange的topics
         for (ImTopic imTopic : ret.data.topic) {
-            boolean needUpdate = true;
+            boolean needUpdateMembers = true;
             for (DbTopic dbTopic : topics) {
-                if ((dbTopic.getTopicId() == imTopic.topicId) &&
-                        dbTopic.getChange().equals(imTopic.topicChange))
-                {
-                    needUpdate = false;
-                    break;
+                if (dbTopic.getTopicId() == imTopic.topicId) {
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    if (dbTopic.getChange().equals(imTopic.topicChange)) {
+                        needUpdateMembers = false;
+                        topicsNotNeedUpdateMember.add(dbTopic);
+                        break;
+                    }
+
                 }
             }
 
-            if (needUpdate) {
-                ids.add(Long.toString(imTopic.topicId));
+            if (needUpdateMembers) {
+                idTopicsNeedUpdateMember.add(Long.toString(imTopic.topicId));
             }
         }
 
-        if (ids.size() == 0) {
+        // 4，对于不需要更新members的topic，直接更新msgs即可
+        updateEachTopicMsgs(topicsNotNeedUpdateMember);
+
+        if (idTopicsNeedUpdateMember.size() == 0) {
             return;
         }
 
         // 组成,分割的字符串
         StringBuilder sb = new StringBuilder();
         String sep = ",";
-        for(String topicId : ids){
+        for(String topicId : idTopicsNeedUpdateMember){
             sb.append(topicId);
             sb.append(",");
         }
@@ -201,6 +228,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 // 更新数据库
+                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
+
                 for (ImTopic imTopic : ret.data.topic) {
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
                     dbTopic.latestMsgTime = imTopic.latestMsgTime;
@@ -215,14 +244,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     }
 
                     topics.add(dbTopic);
+                    topicsNeedUpdateMember.add(dbTopic);
                 }
 
-                // 更新UI
-                Collections.sort(topics, topicComparator);
+                // 更新UI, 需要重新排列么？
+                // Collections.sort(topics, topicComparator);
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
-                // 4
-                updateEachTopicMsgs();
+                // 4，对于需要更新members的topic，等待更新完members，再去取msgs
+                updateEachTopicMsgs(topicsNeedUpdateMember);
             }
 
             @Override
@@ -235,9 +265,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
     private int totalRetryTimes;
     private RequestQueueHelper rqHelper = new RequestQueueHelper();
-    private void updateEachTopicMsgs() {
+    private void updateEachTopicMsgs(List<DbTopic> topics) {
         totalRetryTimes = 10;
         for (final DbTopic dbTopic : topics) {
+            // 对于已经有最新消息在数据库的
+            long dbLastMsgId = DatabaseDealer.getLatestMsgIdForTopic(dbTopic.getTopicId());
+            if (dbTopic.latestMsgId <= dbLastMsgId) {
+                continue;
+            }
+
             doGetTopicMsgsRequest(dbTopic);
         }
     };
@@ -247,7 +283,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             DbMsg dbMsg = dbTopic.mergedMsgs.get(0);
             if (dbMsg.getMsgId() >= dbTopic.latestMsgId) {
                 // 数据库中已有最新的msg，不用更新
-                // TBD:cailei 这里可以每次更新下最后一页
                 dbTopic.latestMsgId = dbMsg.getMsgId();
                 return;
             }
@@ -262,7 +297,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
                 // 有新消息，UI上应该显示红点
-                dbTopic.showDot = true;
+                dbTopic.setShowDot(true);
+                dbTopic.save();
 
                 // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
                 for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
@@ -307,9 +343,21 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 SrtLogger.log("im mqtt", "mqtt connectted");
                 binder = (MqttService.MqttBinder) iBinder;
 
+                binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
+                    @Override
+                    public void onDisconnect() {
+
+                    }
+
+                    @Override
+                    public void onConnect() {
+                        for (DbTopic dbTopic : topics) {
+                            binder.subscribe(Long.toString(dbTopic.getTopicId()));
+                        }
+                    }
+                });
                 binder.init();
                 binder.connect();
-                //binder.subscribe("16");
             }
 
             @Override
@@ -322,17 +370,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private void stopMqttService() {
-        getActivity().unbindService(new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                SrtLogger.log("im mqtt", "mqtt disconnectted");
-            }
-        });
+        // TBD:cailei 这里需要仔细研究下unbind service时机，直接加上会crash
     }
 
     @Subscribe
@@ -349,7 +387,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
         for (DbTopic dbTopic : topics) {
             if (dbTopic.getTopicId() == msg.topicId) {
-                dbTopic.mergedMsgs.add(dbMsg);
+                dbTopic.mergedMsgs.add(0, dbMsg);
+                dbTopic.setShowDot(true);
+                dbTopic.save();
                 break;
             }
         }
@@ -364,7 +404,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         public void onItemClick(int position, DbTopic dbTopic) {
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
-            startActivity(i);
+            getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
+            curTopic = dbTopic;
+            dbTopic.setShowDot(false);
+            dbTopic.save();
         }
     };
     //endregion

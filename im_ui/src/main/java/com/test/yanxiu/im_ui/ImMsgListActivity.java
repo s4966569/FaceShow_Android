@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -19,19 +20,35 @@ import android.widget.Toast;
 
 import com.facebook.stetho.inspector.protocol.module.Database;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
+import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
+import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
+import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
+import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
+import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
+import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.im_ui.view.RecyclerViewPullToRefreshHelper;
+import com.test.yanxiu.network.HttpCallback;
+import com.test.yanxiu.network.RequestBase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class ImMsgListActivity extends FragmentActivity {
     private DbTopic topic;
@@ -46,11 +63,21 @@ public class ImMsgListActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setResult(RESULT_CANCELED); // 只为有返回，code无意义
+
         topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
 
         setContentView(R.layout.activity_msg_list);
         setupView();
         setupData();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     private void setupView() {
@@ -72,7 +99,15 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgListAdapter = new MsgListAdapter(this);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
+        mMsgListRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+            }
+        });
 
         mTakePicImageView = findViewById(R.id.takepic_imageview);
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
@@ -121,45 +156,59 @@ public class ImMsgListActivity extends FragmentActivity {
 
         // pull to refresh
         ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView);
-        ptrHelper.setmCallback(new OnPullToRefreshCallback() {
-            @Override
-            public void onLoadMore() {
-                mMsgListAdapter.setIsLoading(true);
-                handler.sendEmptyMessageDelayed(0, 1000);
-            }
-        });
+        ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
     private void setupData() {
     }
 
-    private void doSend() {
-        long latestMsgId = -1;
-        for (DbMsg msg : topic.mergedMsgs) {
-            if (msg.getMsgId() > latestMsgId) {
-                latestMsgId = msg.getMsgId();
-            }
+    private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
+    private void doSend()
+    {
+        String msg = mMsgEditText.getText().toString();
+        String trimMsg = msg.trim();
+        if (trimMsg.length() == 0) {
+            return;
         }
 
-        DbMyMsg myMsg = new DbMyMsg();
-        myMsg.setSenderId(Constants.imId);
-        myMsg.setMsgId(latestMsgId);
+        SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
+        saveTextMsgRequest.imToken = Constants.imToken;
+        saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
+        saveTextMsgRequest.msg = msg;
+
+        final DbMyMsg myMsg = new DbMyMsg();
         myMsg.setState(DbMyMsg.State.Sending.ordinal());
-        myMsg.setReqId("000");
-        myMsg.setMsg(mMsgEditText.getText().toString());
-
-        DbMyMsg myMsg1 = new DbMyMsg();
-        myMsg1.setSenderId(Constants.imId);
-        myMsg1.setMsgId(latestMsgId);
-        myMsg1.setState(DbMyMsg.State.Failed.ordinal());
-        myMsg1.setReqId("000");
-        myMsg1.setMsg(mMsgEditText.getText().toString());
-
+        myMsg.setReqId(saveTextMsgRequest.reqId);
+        myMsg.setMsgId(latestMsgId());
+        myMsg.setTopicId(topic.getTopicId());
+        myMsg.setSenderId(Constants.imId);
+        myMsg.setSendTime(new Date().getTime());
+        myMsg.setContentType(10);
+        myMsg.setMsg(msg);
+        myMsg.setFrom("local");
+        myMsg.save();
         topic.mergedMsgs.add(0, myMsg);
-        topic.mergedMsgs.add(0, myMsg1);
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
-        mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
+        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+
+        // 数据存储，UI显示都完成后，http发送
+        httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                myMsg.setState(DbMyMsg.State.Success.ordinal());
+                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                myMsg.setState(DbMyMsg.State.Failed.ordinal());
+                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void doTakePic() {
@@ -186,9 +235,10 @@ public class ImMsgListActivity extends FragmentActivity {
                 if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
                     // 重新发送
                     topic.mergedMsgs.remove(myMsg);
+                    // 1, 先更新数据库中
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
+                    myMsg.setMsgId(latestMsgId());
                     topic.mergedMsgs.add(0, myMsg);
-
                     mMsgListAdapter.setmDatas(topic.mergedMsgs);
                     mMsgListAdapter.notifyDataSetChanged();
                 }
@@ -196,5 +246,116 @@ public class ImMsgListActivity extends FragmentActivity {
         }
     };
 
+    private boolean hasMoreMsgs = true;
+    private OnPullToRefreshCallback mOnLoadMoreCallback = new OnPullToRefreshCallback() {
+        @Override
+        public void onLoadMore() {
+            if (hasMoreMsgs) {
+                mMsgListAdapter.setIsLoading(true);
+                mMsgListAdapter.notifyItemRangeInserted(0, 1);
+                // 先从网络取，如果失败了则由数据库重建
+                final DbMsg earliestMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
+                getTopicMsgsRequest.imToken = Constants.imToken;
+                getTopicMsgsRequest.topicId = Long.toString(topic.getTopicId());
+                getTopicMsgsRequest.startId = Long.toString(earliestMsg.getMsgId());
+                getTopicMsgsRequest.order = "desc";
+                getTopicMsgsRequest.startRequest(GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
+                    @Override
+                    public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
+                        ptrHelper.loadingComplete();
+                        mMsgListAdapter.setIsLoading(false);
+                        mMsgListAdapter.notifyItemRangeRemoved(0, 1);
+
+                        final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+
+                        if (ret.data.topicMsg.size() < DatabaseDealer.pagesize) {
+                            hasMoreMsgs = false;
+                        }
+
+                        if (ret.data.topicMsg.size() > 0) {
+                            // 去除最后一条重复的
+                            ret.data.topicMsg.remove(0);
+                        }
+
+                        for (ImMsg msg : ret.data.topicMsg) {
+                            DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
+                            topic.mergedMsgs.add(dbMsg);
+
+                            if (dbMsg.getMsgId() > topic.latestMsgId) {
+                                topic.latestMsgId = dbMsg.getMsgId();
+                            }
+                        }
+
+                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                        int position = mMsgListAdapter.uiPositionForMsg(theRefreshingMsg);
+                        mMsgListAdapter.notifyItemRangeInserted(0, position);
+                    }
+
+                    @Override
+                    public void onFail(RequestBase request, Error error) {
+                        // 从数据库获取
+                        ptrHelper.loadingComplete();
+                        mMsgListAdapter.setIsLoading(false);
+                        mMsgListAdapter.notifyItemRangeRemoved(0, 1);
+
+                        final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                        
+                        List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
+                                earliestMsg.getMsgId(),
+                                DatabaseDealer.pagesize);
+
+                        if (msgs.size() < DatabaseDealer.pagesize) {
+                            hasMoreMsgs = false;
+                        }
+                        topic.mergedMsgs.addAll(msgs);
+                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                        int position = mMsgListAdapter.uiPositionForMsg(theRefreshingMsg);
+                        mMsgListAdapter.notifyItemRangeInserted(0, position);
+                    }
+                });
+            }
+
+        }
+    };
+    //endregion
+
+    //region mqtt
+    @Subscribe
+    public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
+        ImMsg msg = event.msg;
+        DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
+
+        if (msg.topicId != topic.getTopicId()) {
+            // 不是本topic的直接抛弃
+            return;
+        }
+
+        if (msg.senderId == Constants.imId) {
+            for (DbMsg theDbMsg : topic.mergedMsgs) {
+                if (theDbMsg.getReqId().equals(msg.reqId)) {
+                    // 已经有了, 不去动UI
+                    return;
+                }
+            }
+        }
+
+        topic.mergedMsgs.add(0, dbMsg);
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+    }
+    //endregion
+
+    //region util
+    private long latestMsgId() {
+        long latestMsgId = -1;
+        for (DbMsg dbMsg : topic.mergedMsgs) {
+            if (dbMsg.getMsgId() > latestMsgId) {
+                latestMsgId = dbMsg.getMsgId();
+            }
+        }
+        return latestMsgId;
+    }
     //endregion
 }

@@ -9,8 +9,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
+import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 
 import java.text.ParseException;
@@ -62,22 +65,26 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
         isLoading = loading;
-        notifyDataSetChanged();
     }
 
     public void setmDatas(List<DbMsg> mDatas) {
         this.mDatas = mDatas;
         // 重新生成用于显示的mUiDatas
         generateUiDatas();
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     // 从现有的mDatas，生成mUiDatas
     private void generateUiDatas() {
         mUiDatas = new ArrayList<>();
-        for (int i = 0; i < mDatas.size() - 1; i++) {
+        for (int i = 0; i < mDatas.size(); i++) {
             DbMsg curDbMsg = mDatas.get(i);
-            DbMsg nextDbMsg = mDatas.get(i+1);
+            // 最后一条跟当前时间比较，其余的跟前一条时间比较
+            long nextSendTime = new Date().getTime();
+            if (i != (mDatas.size() - 1)) {
+                DbMsg nextDbMsg = mDatas.get(i+1);
+                nextSendTime = nextDbMsg.getSendTime();
+            }
 
             // 当前msg入队
             Item msgItem = new Item();
@@ -91,7 +98,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mUiDatas.add(0, msgItem);
 
             // 如果超过5分钟，则插入时间
-            if ((curDbMsg.getSendTime() - nextDbMsg.getSendTime()) > 5*60*1000) {
+            if ((curDbMsg.getSendTime() - nextSendTime) > 5*60*1000) {
                 Item timeItem = new Item();
                 timeItem.setType(ItemType.DATETIME);
                 timeItem.setTimestamp(curDbMsg.getSendTime());
@@ -99,6 +106,22 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
         }
     }
+
+
+    // 加载更多时需要滚动到相应的位置
+    public int uiPositionForMsg(DbMsg msg) {
+        int position = 0;
+        for (Item uiItem : mUiDatas) {
+            if ((uiItem.getMsg() == msg) || (uiItem.getMyMsg() == msg)) {
+                position = mUiDatas.indexOf(uiItem);
+                break;
+            }
+        }
+
+
+        return position;
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -225,11 +248,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
     public class MsgViewHolder extends MsgListItemViewHolder {
+        private ImageView mAvatarImageView;
         private TextView mNameTextView;
         private TextView mMsgTextView;
 
         public MsgViewHolder(View itemView) {
             super(itemView);
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
         }
@@ -238,17 +263,28 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         public void setData(Item item) {
             DbMsg msg = item.getMsg();
 
-            mNameTextView.setText("张三");
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
+            mNameTextView.setText("未知");
+            DbMember sender = DatabaseDealer.getMemberById(msg.getSenderId());
+            if (sender != null) {
+                Glide.with(mContext)
+                        .load(sender.getAvatar())
+                        .into(mAvatarImageView);
+                mNameTextView.setText(sender.getName());
+            }
+
             mMsgTextView.setText(msg.getMsg());
         }
     }
 
     public class MyMsgViewHolder extends MsgListItemViewHolder {
+        private ImageView mAvatarImageView;
         private TextView mMsgTextView;
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
         public MyMsgViewHolder(View itemView) {
             super(itemView);
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
@@ -257,7 +293,20 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         @Override
         public void setData(Item item) {
             DbMyMsg myMsg = item.getMyMsg();
+
+            // 设置头像
+            mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
+            DbMember sender = DatabaseDealer.getMemberById(Constants.imId);
+            if (sender != null) {
+                Glide.with(mContext)
+                        .load(sender.getAvatar())
+                        .into(mAvatarImageView);
+            }
+
+            // 设置消息内容
             mMsgTextView.setText(myMsg.getMsg());
+
+            // 设置状态
             mStateSendingProgressBar.setVisibility(View.GONE);
             mStateFailedImageView.setVisibility(View.GONE);
 

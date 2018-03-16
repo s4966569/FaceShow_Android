@@ -20,10 +20,10 @@ public class ImRequestBase extends RequestBase {
     public String bizId;      // 业务id，研修宝用1
     public String bizToken;         // App用的Token
     public String imToken;          // 专门为im用的Token
-    protected String reqId;         // 客户端生成的，保证唯一性的32位uuid
+    public String reqId;         // 客户端生成的，保证唯一性的32位uuid
 
     ImRequestBase() {
-        bizSource = "1";
+        bizSource = "22";
         bizId = "1";
         reqId = UUID.randomUUID().toString();
     }

@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 import com.yanxiu.gphone.faceshow.util.Logger;
-import com.yanxiu.gphone.faceshow.util.ScreenUtils;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 
 /**
  * Created by Canghaixiao.

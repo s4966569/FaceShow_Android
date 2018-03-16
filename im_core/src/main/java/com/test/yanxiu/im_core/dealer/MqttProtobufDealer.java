@@ -49,6 +49,7 @@ public class MqttProtobufDealer {
                 for (ByteString item : imMqtt.getBodyList()) {
                     TopicMsgProto.TopicMsg msgProto = TopicMsgProto.TopicMsg.parseFrom(item);
                     ImMsg msg = new ImMsg();
+                    msg.reqId = msgProto.getReqId();
                     msg.msgId = msgProto.getId();
                     msg.topicId = msgProto.getTopicId();
                     msg.senderId = msgProto.getSenderId();

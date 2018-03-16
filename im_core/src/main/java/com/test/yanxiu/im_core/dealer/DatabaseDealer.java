@@ -339,31 +339,79 @@ public class DatabaseDealer {
      * @return 返回merge后的数组，如果数据足够，数组size() >= count，如果数组size()小于count值，则表明已经取完所有数据
      */
     public static DbMsg updateDbMsgWithImMsg(ImMsg msg, String from, long curUserImId) {
-        DbMsg dbMsg;
+        DbMsg theMsg;
         if (msg.senderId == curUserImId) {
             // 我发的消息不入库，以后有删除后，重拉消息列表时，应该入DbMyMsg库
-            DbMyMsg dbMyMsg = new DbMyMsg();
+            DbMyMsg dbMyMsg = DataSupport
+                    .where("reqid = ?", msg.reqId)
+                    .findFirst(DbMyMsg.class);
+            if (dbMyMsg == null) {
+                dbMyMsg = new DbMyMsg();
+            }
+
             dbMyMsg.setState(0);    // http来的消息都是以完成的消息
-            dbMsg = dbMyMsg;
+            theMsg = dbMyMsg;
         } else {
-            dbMsg = new DbMsg();
+            DbMsg dbMsg = DataSupport
+                    .where("reqid = ?", msg.reqId)
+                    .findFirst(DbMsg.class);
+            if (dbMsg == null) {
+                dbMsg = new DbMyMsg();
+            }
+
+            theMsg = dbMsg;
         }
 
-        dbMsg.setReqId(msg.reqId);
-        dbMsg.setMsgId(msg.msgId);
-        dbMsg.setTopicId(msg.topicId);
-        dbMsg.setSenderId(msg.senderId);
-        dbMsg.setSendTime(msg.sendTime);
-        dbMsg.setContentType(msg.contentType);
-        dbMsg.setMsg(msg.contentData.msg);
-        dbMsg.setThumbnail(msg.contentData.thumbnail);
-        dbMsg.setViewUrl(msg.contentData.viewUrl);
-        dbMsg.setFrom(from);
-        dbMsg.save();
-        return dbMsg;
+        theMsg.setReqId(msg.reqId);
+        theMsg.setMsgId(msg.msgId);
+        theMsg.setTopicId(msg.topicId);
+        theMsg.setSenderId(msg.senderId);
+        theMsg.setSendTime(msg.sendTime);
+        theMsg.setContentType(msg.contentType);
+        theMsg.setMsg(msg.contentData.msg);
+        theMsg.setThumbnail(msg.contentData.thumbnail);
+        theMsg.setViewUrl(msg.contentData.viewUrl);
+        theMsg.setFrom(from);
+        theMsg.save();
+        return theMsg;
     }
 
     //region util
+
+    public static long getLatestMsgIdForTopic(long topicId) {
+        long ret = -1;
+        DbMsg msg = DataSupport
+                .where("topicid = ?", Long.toString(topicId))
+                .order("msgid desc")
+                .findFirst(DbMsg.class);
+
+        DbMyMsg myMsg = DataSupport
+                .where("topicid = ?", Long.toString(topicId))
+                .order("msgid desc")
+                .findFirst(DbMyMsg.class);
+
+        if (msg != null) {
+            ret = msg.getMsgId();
+        }
+
+        if (myMsg != null) {
+            ret = ret > myMsg.getMsgId() ? ret : myMsg.getMsgId();
+        }
+
+        return ret;
+    }
+
+    public static DbMember getMemberById(long memberId) {
+        DbMember member = null;
+        List<DbMember> members = DataSupport
+                .where("imid = ?", Long.toString(memberId))
+                .find(DbMember.class, true);
+
+        if (members.size() > 0) {
+            member = members.get(0);
+        }
+        return member;
+    }
 
     public static String getTopicTitle(DbTopic topic, long curUserImId) {
         String ret = "未知";
