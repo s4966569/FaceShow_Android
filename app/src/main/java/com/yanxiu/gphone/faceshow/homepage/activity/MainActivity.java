@@ -170,6 +170,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 false);
         setIntent(intent);
         setHomeFragment();
+        reFreshFragment();
+        if (mLeftDrawerListAdapter != null) {
+            mLeftDrawerListAdapter.notifyItemChanged(0);
+        }
         /*切换tab 到课程 */
     }
 
