@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -27,6 +28,8 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
+import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
 import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
 import com.test.yanxiu.im_core.http.common.ImMsg;
@@ -43,6 +46,8 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class ImMsgListActivity extends FragmentActivity {
     private DbTopic topic;
@@ -148,13 +153,7 @@ public class ImMsgListActivity extends FragmentActivity {
 
         // pull to refresh
         ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView);
-        ptrHelper.setmCallback(new OnPullToRefreshCallback() {
-            @Override
-            public void onLoadMore() {
-                mMsgListAdapter.setIsLoading(true);
-                handler.sendEmptyMessageDelayed(0, 1000);
-            }
-        });
+        ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
     private void setupData() {
@@ -243,6 +242,68 @@ public class ImMsgListActivity extends FragmentActivity {
         }
     };
 
+    private boolean hasMoreMsgs = true;
+    private OnPullToRefreshCallback mOnLoadMoreCallback = new OnPullToRefreshCallback() {
+        @Override
+        public void onLoadMore() {
+            if (hasMoreMsgs) {
+                mMsgListAdapter.setIsLoading(true);
+                // 先从网络取，如果失败了则由数据库重建
+                final DbMsg earliestMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
+                getTopicMsgsRequest.imToken = Constants.imToken;
+                getTopicMsgsRequest.topicId = Long.toString(topic.getTopicId());
+                getTopicMsgsRequest.startId = Long.toString(earliestMsg.getMsgId());
+                getTopicMsgsRequest.order = "desc";
+                getTopicMsgsRequest.startRequest(GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
+                    @Override
+                    public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
+                        ptrHelper.loadingComplete();
+                        DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+
+                        for (ImMsg msg : ret.data.topicMsg) {
+                            DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
+                            topic.mergedMsgs.add(dbMsg);
+
+                            if (dbMsg.getMsgId() > topic.latestMsgId) {
+                                topic.latestMsgId = dbMsg.getMsgId();
+                            }
+                        }
+
+                        if (ret.data.topicMsg.size() < DatabaseDealer.pagesize) {
+                            hasMoreMsgs = false;
+                        }
+                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                        mMsgListAdapter.notifyDataSetChanged();
+                        LinearLayoutManager llm = (LinearLayoutManager) mMsgListRecyclerView.getLayoutManager();
+                        llm.scrollToPositionWithOffset(mMsgListAdapter.uiPositionForMsg(theRefreshingMsg), 10);
+                    }
+
+                    @Override
+                    public void onFail(RequestBase request, Error error) {
+                        // 从数据库获取
+                        ptrHelper.loadingComplete();
+                        DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                        
+                        List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
+                                earliestMsg.getMsgId(),
+                                DatabaseDealer.pagesize);
+                        int position = msgs.size();
+
+                        if (msgs.size() < DatabaseDealer.pagesize) {
+                            hasMoreMsgs = false;
+                        }
+                        topic.mergedMsgs.addAll(msgs);
+                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                        mMsgListAdapter.notifyDataSetChanged();
+                        LinearLayoutManager llm = (LinearLayoutManager) mMsgListRecyclerView.getLayoutManager();
+                        llm.scrollToPositionWithOffset(mMsgListAdapter.uiPositionForMsg(theRefreshingMsg), 10);
+                    }
+                });
+            }
+
+        }
+    };
     //endregion
 
     //region mqtt

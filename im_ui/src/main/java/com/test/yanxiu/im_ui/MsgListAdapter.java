@@ -108,6 +108,20 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
     }
 
+
+    // 加载更多时需要滚动到相应的位置
+    public int uiPositionForMsg(DbMsg msg) {
+        int position = 0;
+        for (Item uiItem : mUiDatas) {
+            if ((uiItem.getMsg() == msg) || (uiItem.getMyMsg() == msg)) {
+                position = mUiDatas.indexOf(uiItem);
+                break;
+            }
+        }
+        return position;
+    }
+
+
     @Override
     public int getItemViewType(int position) {
         Item item = mUiDatas.get(position);
