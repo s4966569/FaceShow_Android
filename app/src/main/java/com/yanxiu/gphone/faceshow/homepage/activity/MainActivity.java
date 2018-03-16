@@ -111,6 +111,22 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     };
     private Context mContext;
 
+    /**
+     * 优化 抽屉关闭
+     * */
+    private boolean canCloseDrawerFlag=false;
+
+    public boolean isCanCloseDrawer() {
+        return canCloseDrawerFlag;
+    }
+
+    public void setCanCloseDrawer() {
+        this.canCloseDrawerFlag = true;
+    }
+    public void resetCanCloseDrawerFlag(){
+        this.canCloseDrawerFlag=false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -201,7 +217,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             @Override
             public void onHeaderButtonClicked() {
                 /*点击 切换班级按钮 在onactivityresult 回调中重置 抽屉的数据*/
-                mDrawerLayout.closeDrawer(mLeftDrawerView);
+//                mDrawerLayout.closeDrawer(mLeftDrawerView);
+                setCanCloseDrawer();
                 toChooseClassActivity(new Intent(MainActivity.this,
                         ChooseClassActivity.class), CHOOSE_CLASS);
             }
@@ -230,17 +247,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 break;
             case 1:
                 /*跳转我的资料*/
-                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
+//                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
+                setCanCloseDrawer();
                 toMyProfile();
                 break;
             case 2:
                 /*跳转签到记录*/
-                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
+//                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
+                setCanCloseDrawer();
                 CheckInNotesActivity.toThisAct(MainActivity.this);
                 break;
             case 3:
                 /*跳转意见反馈*/
-                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
+//                mDrawerLayout.closeDrawer(mLeftDrawerView,true);
+                setCanCloseDrawer();
                 startActivity(new Intent(MainActivity.this, FeedBackActivity.class));
                 break;
             default:
@@ -765,4 +785,12 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     }
 
 
+    @Override
+    protected void onStop() {
+        /*当首页 完全被覆盖 执行收起抽屉*/
+        if (isCanCloseDrawer()) {
+            mDrawerLayout.closeDrawer(mLeftDrawerView,false);
+        }
+        super.onStop();
+    }
 }

@@ -326,6 +326,27 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         });
     }
 
+
+
+    /**
+     * toast message
+     * */
+    private void toastErrorMsg(FaceShowBaseResponse ret){
+        if (ret.getError() != null) {
+            if (TextUtils.isEmpty(ret.getError().getMessage())) {
+
+            }else {
+                ToastUtil.showToast(getActivity(),ret.getError().getMessage());
+            }
+        }else {
+            if (TextUtils.isEmpty(ret.getMessage())) {
+
+            }else {
+                ToastUtil.showToast(getActivity(),ret.getMessage());
+            }
+        }
+    }
+
     /**
      * 根据返回值 获取错误信息
      */
