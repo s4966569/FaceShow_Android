@@ -15,4 +15,7 @@ public class Constants {
 
 
     public static final String kShareTopic = "Share Topic";
+
+    public static final int IM_REQUEST_CODE_BASE = 800;
+    public static final int IM_REQUEST_CODE_MSGLIST = IM_REQUEST_CODE_BASE + 1;
 }

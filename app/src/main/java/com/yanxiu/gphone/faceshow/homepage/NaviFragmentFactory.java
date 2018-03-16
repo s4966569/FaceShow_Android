@@ -26,7 +26,7 @@ public class NaviFragmentFactory {
     private ClassCircleFragment mClassCircleFragment = new ClassCircleFragment();//班级圈
     private MyFragment mMyFragment = new MyFragment();//我
 
-    private ImTopicListFragment mTestFragment = new ImTopicListFragment();
+    private ImTopicListFragment mImFragment = new ImTopicListFragment(); //聊天
 
     private List<FaceShowBaseFragment> fragments = new ArrayList<FaceShowBaseFragment>(
             Arrays.asList(
@@ -35,7 +35,7 @@ public class NaviFragmentFactory {
                     mClassCircleFragment,
                     //mMyFragment,
                     //mMyTestFragment
-                    mTestFragment
+                    mImFragment
                     )
     );
 
@@ -75,6 +75,10 @@ public class NaviFragmentFactory {
 
     public MyFragment getMyFragment() {
         return mMyFragment;
+    }
+
+    public ImTopicListFragment getImFragment() {
+        return mImFragment;
     }
 
     public FaceShowBaseFragment hideAndShowFragment(FragmentManager fragmentManager, int index) {

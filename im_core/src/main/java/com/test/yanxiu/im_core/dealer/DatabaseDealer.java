@@ -363,6 +363,31 @@ public class DatabaseDealer {
         return dbMsg;
     }
 
+    //region util
+
+    public static long getLatestMsgIdForTopic(long topicId) {
+        long ret = -1;
+        DbMsg msg = DataSupport
+                .where("topicid = ?", Long.toString(topicId))
+                .order("msgid desc")
+                .findFirst(DbMsg.class);
+
+        DbMyMsg myMsg = DataSupport
+                .where("topicid = ?", Long.toString(topicId))
+                .order("msgid desc")
+                .findFirst(DbMyMsg.class);
+
+        if (msg != null) {
+            ret = msg.getMsgId();
+        }
+
+        if (myMsg != null) {
+            ret = ret > myMsg.getMsgId() ? ret : myMsg.getMsgId();
+        }
+
+        return ret;
+    }
+
     public static DbMember getMemberById(long memberId) {
         DbMember member = null;
         List<DbMember> members = DataSupport
@@ -374,8 +399,6 @@ public class DatabaseDealer {
         }
         return member;
     }
-
-    //region util
 
     public static String getTopicTitle(DbTopic topic, long curUserImId) {
         String ret = "未知";

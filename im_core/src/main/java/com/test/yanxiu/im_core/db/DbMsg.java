@@ -21,7 +21,7 @@ public class DbMsg extends DataSupport {
     protected String thumbnail;
     protected String viewUrl;
 
-    protected String from; // mqtt, http
+    protected String from; // mqtt, http, local
 
     //region getter setter
     public String getReqId() {

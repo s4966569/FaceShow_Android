@@ -57,6 +57,8 @@ public class ImMsgListActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setResult(RESULT_CANCELED); // 只为有返回，code无意义
+
         topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
 
         setContentView(R.layout.activity_msg_list);
@@ -181,6 +183,7 @@ public class ImMsgListActivity extends FragmentActivity {
         myMsg.setSendTime(new Date().getTime());
         myMsg.setContentType(10);
         myMsg.setMsg(msg);
+        myMsg.setFrom("local");
         myMsg.save();
         topic.mergedMsgs.add(0, myMsg);
 

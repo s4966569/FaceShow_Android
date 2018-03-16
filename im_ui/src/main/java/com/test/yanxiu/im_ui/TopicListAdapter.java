@@ -96,8 +96,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             mTimeTextView.setText("未知");
             mMsgTextView.setText("未知");
 
-            long imId = 9;  // TBD:cailei 需要替换
-
             List<DbMember> members = topic.getMembers();
             if ((members == null) || (members.size() == 0)) {
                 // 尚且没有member信息，全部用默认
@@ -112,7 +110,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 
             if (topic.getType().equals("1")) { // 私聊
                 for (DbMember member : topic.getMembers()) {
-                    if (member.getImId() != imId) {
+                    if (member.getImId() != Constants.imId) {
                         // 1, 显示对方头像
                         Glide.with(mContext)
                                 .load(member.getAvatar())

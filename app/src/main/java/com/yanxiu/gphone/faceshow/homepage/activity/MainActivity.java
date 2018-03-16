@@ -379,6 +379,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 pollingRedPointer();
             }
         }
+
+        if (requestCode == com.test.yanxiu.im_ui.Constants.IM_REQUEST_CODE_MSGLIST) {
+            mNaviFragmentFactory.getImFragment().onMsgListActivityReturned();
+        }
     }
 
     private void reFreshFragment() {
