@@ -107,6 +107,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviLeftImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (titleActionCallback != null) {
+                    titleActionCallback.onLeftImgClicked();
+                }
                 LitePal.deleteDatabase(Long.toString(Constants.imId) + "_db");
             }
         });
@@ -513,5 +516,18 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
 
         topics.addAll(privateTopics);
+    }
+
+
+    private TitleActionCallback titleActionCallback;
+
+    public void setTitleActionCallback(TitleActionCallback titleActionCallback) {
+        this.titleActionCallback = titleActionCallback;
+    }
+
+    public interface TitleActionCallback{
+
+        void onLeftImgClicked();
+
     }
 }

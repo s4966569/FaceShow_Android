@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@null"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:background="@null"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <android.support.design.widget.AppBarLayout
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include
+            android:id="@+id/title_bar"
+            layout="@layout/common_title_layout" />
+        <android.support.design.widget.CollapsingToolbarLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/ll_course"
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:layout_below="@+id/title_bar"
+                android:background="@drawable/homepage_bg"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/currentProject"
+                    android:layout_width="60dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/shape_homepage_currentproject"
+                    android:gravity="center"
+                    android:text="@string/currentProject"
+                    android:textColor="@color/color_ffffff"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/project_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/currentProject"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:text="项目名称项目名称项目名称项目名称项目名称"
+                    android:textColor="@color/color_ffffff"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="26dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="18dp"
+                    android:background="@drawable/shape_homepage_class"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/class_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:lines="1"
+                        android:text="19号一班"
+                        android:textColor="@color/color_ffffff"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/ll_course"
+        android:background="@color/color_00cccc" />
+
+    <LinearLayout
+        android:background="@null"
+        android:id="@+id/ll_tab"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/line"
+        android:gravity="center_vertical">
+        <!--这里 对tab的顺序进行了更改 原顺序为  课程 资源 任务 日程-->
+        <LinearLayout
+            android:background="@null"
+            android:id="@+id/courseArrange_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/courseArrange_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/courseArrange"
+                android:textColor="@drawable/selector_homepage_tab_text"
+                android:textSize="@dimen/tab_bar_textsize"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/courseArrange_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_bar_bottomline_height"
+                android:background="@drawable/selector_homepage_tab_line" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:background="@null"
+            android:id="@+id/schedule_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/schedule_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/schedule"
+                android:textColor="@drawable/selector_homepage_tab_text"
+                android:textSize="@dimen/tab_bar_textsize"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/schedule_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_bar_bottomline_height"
+                android:background="@drawable/selector_homepage_tab_line" />
+
+        </LinearLayout>
+        <RelativeLayout
+            android:background="@null"
+            android:id="@+id/projectTask_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+
+            <RelativeLayout
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/projectTask_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="@string/projectTask"
+                    android:textColor="@drawable/selector_homepage_tab_text"
+                    android:textSize="@dimen/tab_bar_textsize"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_project_task_red_dot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_toEndOf="@id/projectTask_tv"
+                    android:src="@drawable/shape_red_circle_6dp"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+
+            <View
+                android:id="@+id/projectTask_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_bar_bottomline_height"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/selector_homepage_tab_line" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:background="@null"
+            android:id="@+id/resources_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <TextView
+                    android:id="@+id/resources_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="@string/resources"
+                    android:textColor="@drawable/selector_homepage_tab_text"
+                    android:textSize="@dimen/tab_bar_textsize"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_resource_red_dot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_toEndOf="@id/resources_tv"
+                    android:src="@drawable/shape_red_circle_6dp"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/resources_line"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_bar_bottomline_height"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/selector_homepage_tab_line" />
+
+        </RelativeLayout>
+
+
+
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/homefragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ll_tab" />
+
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

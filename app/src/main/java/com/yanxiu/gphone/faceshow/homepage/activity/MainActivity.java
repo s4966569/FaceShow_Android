@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
+import com.test.yanxiu.im_ui.ImTopicListFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -298,6 +299,13 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void initFragment() {
         mFragmentManager = getSupportFragmentManager();
         mNaviFragmentFactory = new NaviFragmentFactory(mFragmentManager);
+        mNaviFragmentFactory.getImFragment().setTitleActionCallback(new ImTopicListFragment.TitleActionCallback() {
+            @Override
+            public void onLeftImgClicked() {
+                openLeftDrawer();
+            }
+        });
+
         showCurrentFragment(0);
 
     }
