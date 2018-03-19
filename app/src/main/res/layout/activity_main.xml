@@ -118,7 +118,7 @@
             android:id="@+id/left_drawer_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/app_version_textview" />
+            android:layout_above="@+id/app_version_textview" />
 
         <TextView
             android:layout_centerHorizontal="true"

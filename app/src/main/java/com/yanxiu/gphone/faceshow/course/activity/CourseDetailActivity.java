@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -32,7 +33,6 @@ import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
-import com.yanxiu.gphone.faceshow.util.ScreenUtils;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
 
 import java.lang.reflect.Field;

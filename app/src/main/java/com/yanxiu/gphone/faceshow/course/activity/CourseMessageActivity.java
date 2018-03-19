@@ -12,12 +12,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.course.fragment.CourseBriefIntroductionFragment;
 import com.yanxiu.gphone.faceshow.course.fragment.LectureInfoListFragment;
-import com.yanxiu.gphone.faceshow.util.ScreenUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
