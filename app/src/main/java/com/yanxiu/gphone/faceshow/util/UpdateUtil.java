@@ -25,7 +25,6 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.constant.Constants;
-import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.request.DownLoadRequest;
 import com.yanxiu.gphone.faceshow.http.request.InitializeRequest;
 import com.yanxiu.gphone.faceshow.http.response.InitializeReponse;
@@ -177,7 +176,7 @@ public class UpdateUtil {
 //         mUpdateDialog.setContent(data.content);
 //         mUpdateDialog.setCanceledOnTouchOutside(false);
 //         mUpdateDialog.show();
-        mUpdateDialog = new SystemUpdataDialog(context, data.content, data.upgradetype, new SystemUpdataDialog.UpdateDialogCallBack() {
+        mUpdateDialog = new SystemUpdataDialog(context,data.title, data.content, data.upgradetype, new SystemUpdataDialog.UpdateDialogCallBack() {
             @Override
             public void update() {
                 FaceShowBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));

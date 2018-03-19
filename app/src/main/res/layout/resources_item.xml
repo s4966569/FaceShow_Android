@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/resource_layout"
     android:layout_width="match_parent"
     android:layout_height="60dp"
+    android:gravity="center_vertical"
     android:background="@drawable/selector_resource_adapter_item">
 
     <ImageView
@@ -18,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/resource_img"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="12dp"
         android:layout_marginLeft="@dimen/course_adapter_marginleft"
         android:layout_marginRight="@dimen/course_adapter_marginleft"
         android:maxLines="1"
@@ -26,7 +28,7 @@
         android:text="资源名称"
         android:textStyle="bold"
         android:textColor="@color/color_333333"
-        android:textSize="@dimen/home_nav_bar_textsize" />
+        android:textSize="@dimen/tab_bar_textsize" />
 
     <TextView
         android:id="@+id/resource_time"
@@ -36,7 +38,7 @@
         android:layout_below="@id/resource_name"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="@dimen/course_adapter_marginleft"
-        android:text="2017.08.19 13:22"
+        tools:text="2017.08.19 13:22"
         android:textColor="@color/color_999999"
         android:textSize="11dp" />
 

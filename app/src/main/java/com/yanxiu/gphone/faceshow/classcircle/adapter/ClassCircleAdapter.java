@@ -5,6 +5,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -111,17 +112,34 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.mContext = context;
     }
 
+    /**
+     * 仅仅在offset =0 时候才会调用
+     * 也就是在刷新数据的时候才会调用
+     * */
     public void setData(List<ClassCircleResponse.Data.Moments> list) {
+        /*刷新获取的数据为空 */
         if (list == null || list.size() == 0) {
-            return;
+            /*原来有数据 需要尽行清空操作*/
+            if (this.mData != null) {
+                this.mData.clear();
+            }
+            this.notifyDataSetChanged();
+        } else {
+            /*刷新获取的数据不为空 */
+            if (this.mData != null) {
+                this.mData.clear();
+            }else {
+                this.mData=new ArrayList<>();
+            }
+            this.mData.addAll(list);
+            GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
+            NineGridView.setImageLoader(glideNineImageLoader);
+            this.notifyDataSetChanged();
         }
-        this.mData.clear();
-        this.mData.addAll(list);
-        GlideNineImageLoader glideNineImageLoader = new GlideNineImageLoader();
-        NineGridView.setImageLoader(glideNineImageLoader);
-        this.notifyDataSetChanged();
     }
-
+    /**
+     * offset !=0 时候  说明 是需要增加数据
+     * */
     public void addData(List<ClassCircleResponse.Data.Moments> list) {
         if (list == null || list.size() == 0) {
             return;
@@ -216,7 +234,7 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
                 case REFRESH_COMMENT_DATA:
                     ClassCircleViewHolder classCircleViewHolder1 = (ClassCircleViewHolder) holder;
-                     ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
+                    ClassCircleResponse.Data.Moments moments = mData.get(position - 1);
                     setViewVisibly(classCircleViewHolder1, moments);
                     classCircleViewHolder1.mCircleCommentLayout.setData(moments.comments);
                     break;
@@ -339,14 +357,28 @@ public class ClassCircleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (moments.album != null && moments.album.size() > 0) {
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                     for (int i = 0; i < moments.album.size(); i++) {
+                        /*遍历album*/
                         ImageInfo imageInfo = new ImageInfo();
                         if (moments.album.size() > 1) {
                             //使用七牛对获取宽为200px的缩略图
-                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb + "?imageView2/0/w/200");
+                            if (moments.album.get(i).attachment != null) {
+                                imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb + "?imageView2/0/w/200");
+                            } else {
+                                Log.e("error", "onBindViewHolder: attachment is null");
+                            }
                         } else {
-                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb);
+                            if (moments.album.get(i).attachment != null) {
+                                imageInfo.setThumbnailUrl(moments.album.get(i).attachment.resThumb);
+                            } else {
+                                Log.e("error", "onBindViewHolder: attachment is null");
+                            }
                         }
-                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
+
+                        if (moments.album.get(i) != null && moments.album.get(i).attachment != null) {
+                            imageInfo.setBigImageUrl(moments.album.get(i).attachment.previewUrl);
+                        } else {
+                            imageInfo.setBigImageUrl("");
+                        }
                         imageInfos.add(imageInfo);
                     }
                     ((ClassCircleViewHolder) holder).mContentImageView.setAdapter(new NineGridViewClickAdapter(holder.itemView.getContext(), imageInfos));

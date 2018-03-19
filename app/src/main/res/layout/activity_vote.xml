@@ -7,7 +7,11 @@
 
     <include layout="@layout/common_title_layout" />
 
-    <include layout="@layout/big_line" />
+    <!--<include layout="@layout/big_line" />-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/segmentationLine_height"
+        android:background="@color/color_EBEFF2"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

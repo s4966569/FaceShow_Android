@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/color_EBEFF2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include
+        android:id="@+id/checkphone_titlebar"
+        layout="@layout/common_title_layout"/>
+    <include
+        layout="@layout/get_verification_code_layout"
+        android:id="@+id/checkphone_verification_layout"
+        />
+</LinearLayout>

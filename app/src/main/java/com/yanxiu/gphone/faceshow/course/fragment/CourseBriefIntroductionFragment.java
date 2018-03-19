@@ -1,0 +1,54 @@
+package com.yanxiu.gphone.faceshow.course.fragment;
+
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.Html;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
+import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
+/**
+ * @author frc  on 17-11-9.
+ */
+
+public class CourseBriefIntroductionFragment extends FaceShowBaseFragment {
+    PublicLoadLayout mPublicLoadLayout;
+    @BindView(R.id.tv_content)
+    TextView mTvContent;
+    Unbinder unbinder;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mPublicLoadLayout = new PublicLoadLayout(getContext());
+        mPublicLoadLayout.setContentView(R.layout.fragment_brief_introduction_layout);
+        mPublicLoadLayout.setErrorLayoutFullScreen();
+        unbinder = ButterKnife.bind(this, mPublicLoadLayout);
+//        GetCourseResponse.CourseBean course = getArguments() != null ? (GetCourseResponse.CourseBean) getArguments().get("data") : null;
+        CourseBean course = getArguments() != null ? (CourseBean) getArguments().get("data") : null;
+        if (course != null && !TextUtils.isEmpty(Html.fromHtml(course.getBriefing()))) {
+            mTvContent.setText(course.getBriefing());
+        } else {
+            mPublicLoadLayout.showOtherErrorView(getString(R.string.no_brief));
+        }
+        return mPublicLoadLayout;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+}

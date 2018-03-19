@@ -27,6 +27,12 @@ public class ModifyUserSubjectAdapter extends RecyclerView.Adapter<ModifyUserSub
         private int mSelectedPosition =-1;
 
 
+        public void setDefaultSelectPosition(int defaultPosition){
+            mSelectedPosition=defaultPosition;
+            notifyDataSetChanged();
+        }
+
+
     public ModifyUserSubjectAdapter(List<StageSubjectModel.DataBean> data, IRecyclerViewItemClick IRecyclerViewItemClick) {
         if (data!=null){
             mData = data;

@@ -36,6 +36,8 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
     private boolean isActive = true;
     private String mFaceShowLocalName;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

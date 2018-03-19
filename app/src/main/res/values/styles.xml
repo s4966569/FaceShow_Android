@@ -3,9 +3,18 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <!--<item name="colorPrimarcolorolor/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDarcolorolor/colorPrimaryDark</item>-->
-        <!--<item name="colorAccencolorolor/colorAccent</item>-->
+
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <!--<item name="colorAccent">@color/colorAccent</item>-->
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_drawable</item>
+    </style>
+
+
+    <style name="APPtabLayoutStyle" >
+        <item name="android:textSize">@dimen/tab_bar_textsize</item>
+        <item name="android:textStyle">bold</item>
+
     </style>
 
     <style name="HomeNavBar">

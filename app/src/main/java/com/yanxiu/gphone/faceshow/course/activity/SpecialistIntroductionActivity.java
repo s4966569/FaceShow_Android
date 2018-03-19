@@ -13,11 +13,9 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
-import com.yanxiu.gphone.faceshow.util.YXPictureManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -57,14 +55,17 @@ public class SpecialistIntroductionActivity extends FaceShowBaseActivity impleme
         String name = getIntent().getStringExtra("SPECIALIST_NAME");
         String info = getIntent().getStringExtra("SPECIALIST_INFO");
         String imageUrl = getIntent().getStringExtra("SPECIALIST_IMAGE");
+
+        LecturerInfosBean infosBean= (LecturerInfosBean) getIntent().getBundleExtra("data").get("info");
+
         title_layout_title.setText(R.string.specialist_title);
         title_layout_left_img.setVisibility(View.VISIBLE);
-        specialist_name.setText(name);
+        specialist_name.setText(infosBean.getLecturerName());
 //        specialist_backimg
-        introduction_content.setText(info);
+        introduction_content.setText(infosBean.getLecturerBriefing());
 //        YXPictureManager.getInstance().showRoundPic(this, "http://scc.jsyxw.cn/answer/images/2017/0831/file_59a7d19f6cc53.jpg", specialist_img, 5, R.mipmap.ic_launcher);
 //        YXPictureManager.getInstance().showRoundPic(this, imageUrl, specialist_img, 5, R.mipmap.ic_launcher);
-        Glide.with(this).load(imageUrl).asBitmap().placeholder(R.drawable.classcircle_headimg).into(new CornersImageTarget(this,specialist_img,5));
+        Glide.with(this).load(infosBean.getLecturerAvatar()).asBitmap().placeholder(R.drawable.classcircle_headimg).into(new CornersImageTarget(this,specialist_img,5));
     }
 
     private void initListener() {

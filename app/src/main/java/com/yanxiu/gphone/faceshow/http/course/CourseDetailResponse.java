@@ -18,10 +18,12 @@ import java.util.ArrayList;
 public class CourseDetailResponse extends FaceShowBaseResponse {
     private CourseDetailBean data = new CourseDetailBean();
 
-
-//    public CourseDetailBean getData() {
-//        return data;
-//    }
+    /**
+     * 界面 同步管理端时 启用该方法
+     * * */
+    public CourseDetailBean getData() {
+        return data;
+    }
 
     public void setData(CourseDetailBean data) {
         this.data = data;

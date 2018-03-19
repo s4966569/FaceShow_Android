@@ -290,8 +290,13 @@ public class PublishedMomentAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     ArrayList<ImageInfo> imageInfos = new ArrayList<>();
                     for (int i = 0; i < moments.album.size(); i++) {
                         ImageInfo imageInfo = new ImageInfo();
-                        imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
-                        imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
+                        if (moments.album.get(i) != null&&moments.album.get(i).attachment!=null) {
+                            imageInfo.setThumbnailUrl(moments.album.get(i).attachment.previewUrl);
+                            imageInfo.setBigImageUrl(moments.album.get(i).attachment.downloadUrl);
+                        }else{
+                            imageInfo.setThumbnailUrl("");
+                            imageInfo.setBigImageUrl("");
+                        }
                         imageInfos.add(imageInfo);
                     }
 
