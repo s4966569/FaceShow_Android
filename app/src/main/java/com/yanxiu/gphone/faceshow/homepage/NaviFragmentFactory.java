@@ -4,14 +4,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_ui.ImTopicListFragment;
 import com.yanxiu.gphone.faceshow.R;
-import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.classcircle.ClassCircleFragment;
 import com.yanxiu.gphone.faceshow.homepage.fragment.HomeFragment;
-import com.yanxiu.gphone.faceshow.homepage.fragment.PlaceHoldFragment;
-import com.yanxiu.gphone.faceshow.user.MyFragment;
 import com.yanxiu.gphone.faceshow.notification.fragment.NoticeFragment;
+import com.yanxiu.gphone.faceshow.user.MyFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
