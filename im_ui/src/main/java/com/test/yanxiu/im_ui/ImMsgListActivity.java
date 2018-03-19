@@ -105,7 +105,9 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgListRecyclerView.post(new Runnable() {
             @Override
             public void run() {
-                mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+                if (mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
+                    mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+                }
             }
         });
 
@@ -148,7 +150,7 @@ public class ImMsgListActivity extends FragmentActivity {
         keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
             @Override
             public void onKeyboardChange(boolean isShow, int keyboardHeight) {
-                if (isShow) {
+                if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
                     mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
             }

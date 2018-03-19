@@ -3,6 +3,7 @@ package com.yanxiu.gphone.faceshow.db;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.test.yanxiu.im_ui.Constants;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -161,6 +162,12 @@ public class SpManager {
 
     public static UserInfo.Info getUserInfo() {
         String userInfoStr = mySharedPreferences.getString(USER_INFO, "");
-        return RequestBase.getGson().fromJson(userInfoStr, UserInfo.Info.class);
+
+        UserInfo.Info info = RequestBase.getGson().fromJson(userInfoStr, UserInfo.Info.class);
+        Constants.imId = info.imTokenInfo.imMember.imId;
+        Constants.imToken = info.imTokenInfo.imToken;
+        Constants.imAvatar = info.imTokenInfo.imMember.avatar;
+
+        return info;
     }
 }

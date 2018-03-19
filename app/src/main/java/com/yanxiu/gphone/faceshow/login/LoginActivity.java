@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
 import com.orhanobut.logger.Logger;
+import com.test.yanxiu.im_ui.Constants;
 import com.test.yanxiu.im_ui.contacts.ContactsActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -372,6 +373,11 @@ public class LoginActivity extends FaceShowBaseActivity {
                     info.setClassId(data.getClazsInfo().getId());
                     SpManager.saveUserInfo(info);
                     PushManager.getInstance().turnOnPush(activity);//开启个推服务
+
+                    Constants.imId = info.imTokenInfo.imMember.imId;
+                    Constants.imToken = info.imTokenInfo.imToken;
+                    Constants.imAvatar = info.imTokenInfo.imMember.avatar;
+
                     //boolean isBind= PushManager.getInstance().bindAlias(activity, String.valueOf(ret.getData().getUserId()));
                     MainActivity.invoke(activity);
                     LoginActivity.this.finish();

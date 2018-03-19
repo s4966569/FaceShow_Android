@@ -414,7 +414,7 @@ public class DatabaseDealer {
     }
 
     public static String getTopicTitle(DbTopic topic, long curUserImId) {
-        String ret = "未知";
+        String ret = "";
         if (topic.getType().equals("1")) { // 私聊
             for (DbMember member : topic.getMembers()) {
                 if (member.getImId() != curUserImId) {

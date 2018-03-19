@@ -5,19 +5,15 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.stetho.inspector.protocol.module.Database;
-import com.orhanobut.logger.Logger;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
@@ -46,19 +42,12 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
-import org.litepal.util.Const;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static com.test.yanxiu.im_core.dealer.DatabaseDealer.topicComparator;
 
 
 public class ImTopicListFragment extends FaceShowBaseFragment {
@@ -318,8 +307,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                     @Override
                     public void onConnect() {
+                        binder.subscribeMember(Constants.imId);
+
                         for (DbTopic dbTopic : topics) {
-                            binder.subscribe(Long.toString(dbTopic.getTopicId()));
+                            binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
                         }
                     }
                 });

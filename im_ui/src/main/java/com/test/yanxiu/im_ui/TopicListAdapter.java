@@ -92,9 +92,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
         public void setData(final DbTopic topic) {
             // 默认
             mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
-            mSenderTextView.setText("未知");
-            mTimeTextView.setText("未知");
-            mMsgTextView.setText("未知");
+            mSenderTextView.setText("");
+            mTimeTextView.setText("");
+            mMsgTextView.setText("");
 
             List<DbMember> members = topic.getMembers();
             if ((members == null) || (members.size() == 0)) {
