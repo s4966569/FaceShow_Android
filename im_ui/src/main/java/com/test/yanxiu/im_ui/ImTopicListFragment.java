@@ -22,12 +22,15 @@ import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
+import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
+import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
@@ -43,6 +46,7 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
+import org.litepal.util.Const;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -410,5 +414,76 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             dbTopic.save();
         }
     };
+
+    private void goChatWith(final DbMember member) {
+        long memberId = member.getImId();
+        boolean privateChatExist = false;
+
+        for (DbTopic topic : topics) {
+            if (topic.getType() == "1") {
+                for (DbMember dbMember : topic.getMembers()) {
+                    if (dbMember.getImId() == memberId) {
+                        privateChatExist = true;
+                        break;
+                    }
+                }
+                if (privateChatExist) {
+                    curTopic = topic;
+                    break;
+                }
+            }
+        }
+
+        if (privateChatExist) {
+            SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
+            Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+            getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
+            curTopic.setShowDot(false);
+            curTopic.save();
+            return;
+        }
+
+        // 如果之前没有和member的chat记录则新创建一个
+        TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
+        createTopicRequest.imToken = Constants.imToken;
+        createTopicRequest.topicType = "1"; // 私聊
+        createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + memberId;
+        createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                for (ImTopic imTopic : ret.data.topic) {
+                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+
+                    // 更新数据库
+                    // TBD:cailei 需要填充自己的头像地址
+                    DbMember dbMyself = new DbMember();
+                    dbMyself.setImId(Constants.imId);
+                    // dbMyself.setAvatar();
+
+                    dbTopic.getMembers().add(dbMyself);
+                    dbTopic.getMembers().add(member);
+                    dbTopic.save();
+
+                    // 更新UI
+                    topics.add(dbTopic);
+                    mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+                    curTopic = dbTopic;
+                    SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
+                    Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+                    getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
+                    curTopic.setShowDot(false);
+                    curTopic.save();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                // TBD:cailei 这里需要弹个toast
+            }
+        });
+    }
     //endregion
 }
