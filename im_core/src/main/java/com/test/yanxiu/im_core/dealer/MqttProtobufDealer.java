@@ -18,8 +18,18 @@ import org.greenrobot.eventbus.EventBus;
  */
 
 public class MqttProtobufDealer {
+    public enum TopicChange {
+        AddTo,
+        RemoveFrom
+    }
+
     public static class NewMsgEvent {
         public ImMsg msg;
+    }
+
+    public static class TopicChangeEvent {
+        public long topicId;
+        public TopicChange type;
     }
 
     public static class TopicUpdateEvent {
@@ -41,6 +51,11 @@ public class MqttProtobufDealer {
                     TopicGetProto.TopicGet topicProto = TopicGetProto.TopicGet.parseFrom(item);
                     long topicId = topicProto.getTopicId();
                     // EventBus发现topic更新
+                    if (imMqtt.getImEvent() == 112) {
+                        onTopicChange(topicId, TopicChange.RemoveFrom);
+                    } else {
+                        onTopicChange(topicId, TopicChange.AddTo);
+                    }
                 }
             }
 
@@ -79,5 +94,13 @@ public class MqttProtobufDealer {
         NewMsgEvent event = new NewMsgEvent();
         event.msg = msg;
         EventBus.getDefault().post(event);
+    }
+
+    public static void onTopicChange(long topicId, TopicChange type) {
+        TopicChangeEvent event = new TopicChangeEvent();
+        event.topicId = topicId;
+        event.type = type;
+        EventBus.getDefault().post(event);
+
     }
 }

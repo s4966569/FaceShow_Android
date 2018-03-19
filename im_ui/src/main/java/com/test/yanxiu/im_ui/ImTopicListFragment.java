@@ -5,29 +5,28 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.stetho.inspector.protocol.module.Database;
-import com.orhanobut.logger.Logger;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
+import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
+import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
@@ -44,17 +43,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static com.test.yanxiu.im_core.dealer.DatabaseDealer.topicComparator;
 
 
 public class ImTopicListFragment extends FaceShowBaseFragment {
@@ -98,6 +91,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         // 保留最多pagesize条
         curTopic.mergedMsgs = curTopic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, curTopic.mergedMsgs.size()));
         curTopic = null;
+
+        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -156,6 +151,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
 
         topics.addAll(DatabaseDealer.topicsFromDb());
+
+        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -221,45 +218,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         String strTopicIds = sb.toString();
         strTopicIds = strTopicIds.substring(0, strTopicIds.length() - sep.length());
 
-        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
-        getTopicsRequest.imToken = Constants.imToken;
-        getTopicsRequest.topicIds = strTopicIds;
-        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
-                // 更新数据库
-                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
-
-                for (ImTopic imTopic : ret.data.topic) {
-                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                    dbTopic.latestMsgId = imTopic.latestMsgId;
-
-                    // 更新uiTopics
-                    for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
-                        DbTopic uiTopic = i.next();
-                        if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
-                            i.remove();
-                        }
-                    }
-
-                    topics.add(dbTopic);
-                    topicsNeedUpdateMember.add(dbTopic);
-                }
-
-                // 更新UI, 需要重新排列么？
-                // Collections.sort(topics, topicComparator);
-                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-
-                // 4，对于需要更新members的topic，等待更新完members，再去取msgs
-                updateEachTopicMsgs(topicsNeedUpdateMember);
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-
-            }
-        });
+        // 抽出方法，与mqtt公用
+        updateTopicsWithMembers(strTopicIds);
     }
 
     // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
@@ -318,6 +278,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     }
                 }
 
+                rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
 
@@ -351,8 +312,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                     @Override
                     public void onConnect() {
+                        binder.subscribeMember(Constants.imId);
+
                         for (DbTopic dbTopic : topics) {
-                            binder.subscribe(Long.toString(dbTopic.getTopicId()));
+                            binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
                         }
                     }
                 });
@@ -394,7 +357,60 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         }
 
+        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Subscribe
+    public void onMqttMsg(MqttProtobufDealer.TopicChangeEvent event) {
+        // 目前只处理AddTo
+        if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
+            updateTopicsWithMembers(Long.toString(event.topicId));
+        }
+    }
+
+    // http, mqtt 公用
+    private void updateTopicsWithMembers(String topicIds) {
+        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
+        getTopicsRequest.imToken = Constants.imToken;
+        getTopicsRequest.topicIds = topicIds;
+        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
+                // 更新数据库
+                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
+
+                for (ImTopic imTopic : ret.data.topic) {
+                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+
+                    // 更新uiTopics
+                    for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+                        DbTopic uiTopic = i.next();
+                        if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                            i.remove();
+                        }
+                    }
+
+                    topics.add(dbTopic);
+                    topicsNeedUpdateMember.add(dbTopic);
+                }
+
+                // 更新UI, 需要重新排列么？
+                // Collections.sort(topics, topicComparator);
+                rearrangeTopics();
+                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+
+                // 4，对于需要更新members的topic，等待更新完members，再去取msgs
+                updateEachTopicMsgs(topicsNeedUpdateMember);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
     }
     //endregion
 
@@ -410,5 +426,92 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             dbTopic.save();
         }
     };
+
+    private void goChatWith(final DbMember member) {
+        long memberId = member.getImId();
+        boolean privateChatExist = false;
+
+        for (DbTopic topic : topics) {
+            if (topic.getType().equals("1")) {
+                for (DbMember dbMember : topic.getMembers()) {
+                    if (dbMember.getImId() == memberId) {
+                        privateChatExist = true;
+                        break;
+                    }
+                }
+                if (privateChatExist) {
+                    curTopic = topic;
+                    break;
+                }
+            }
+        }
+
+        if (privateChatExist) {
+            SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
+            Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+            getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
+            curTopic.setShowDot(false);
+            curTopic.save();
+            return;
+        }
+
+        // 如果之前没有和member的chat记录则新创建一个
+        TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
+        createTopicRequest.imToken = Constants.imToken;
+        createTopicRequest.topicType = "1"; // 私聊
+        createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + memberId;
+        createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                for (ImTopic imTopic : ret.data.topic) {
+                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+
+                    // 更新数据库
+                    // TBD:cailei 需要填充自己的头像地址
+                    DbMember dbMyself = new DbMember();
+                    dbMyself.setImId(Constants.imId);
+                    // dbMyself.setAvatar();
+
+                    dbTopic.getMembers().add(dbMyself);
+                    dbTopic.getMembers().add(member);
+                    dbTopic.save();
+
+                    // 更新UI
+                    topics.add(dbTopic);
+                    rearrangeTopics();
+                    mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+                    curTopic = dbTopic;
+                    SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
+                    Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+                    getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
+                    curTopic.setShowDot(false);
+                    curTopic.save();
+                    return;
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                // TBD:cailei 这里需要弹个toast
+            }
+        });
+    }
     //endregion
+
+    private void rearrangeTopics() {
+        // 只区分开群聊、私聊，不改变以前里面的顺序
+        List<DbTopic> privateTopics = new ArrayList<>();
+        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+            DbTopic topic = i.next();
+            if (topic.getType().equals("1")) {
+                // 私聊
+                i.remove();
+                privateTopics.add(topic);
+            }
+        }
+
+        topics.addAll(privateTopics);
+    }
 }

@@ -1,5 +1,6 @@
 package com.yanxiu.gphone.faceshow.http.login;
 
+import com.test.yanxiu.im_core.http.common.ImTokenInfo;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 
@@ -8,7 +9,6 @@ import com.yanxiu.gphone.faceshow.login.UserInfo;
  */
 
 public class GetUserInfoResponse extends FaceShowBaseResponse {
-
     /**
      * currentUser :
      * error : null

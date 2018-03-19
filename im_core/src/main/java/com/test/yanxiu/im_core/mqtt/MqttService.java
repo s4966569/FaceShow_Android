@@ -57,8 +57,12 @@ public class MqttService extends Service {
             doDisconnect();
         }
 
-        public void subscribe(String topicId) {
-            doSubscribe(topicId);
+        public void subscribeTopic(String topicId) {
+            doSubscribeTopic(topicId);
+        }
+
+        public void subscribeMember(long memberId) {
+            doSubscribeMember(memberId);
         }
 
         public MqttService getService() {
@@ -158,18 +162,38 @@ public class MqttService extends Service {
         }
     }
 
-    public void doSubscribe(String topicId) {
+    public void doSubscribeTopic(String topicId) {
         if ((mClient != null) && mClient.isConnected()) {
             try {
                 mClient.subscribe("im/v1.0/topic/" + topicId, 1, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.d("Tag", "mqtt subscribe successfully");
+                        Log.d("Tag", "mqtt subscribeTopic successfully");
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.d("Tag", "mqtt subscribe failed");
+                        Log.d("Tag", "mqtt subscribeTopic failed");
+                    }
+                });
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void doSubscribeMember(long memberId) {
+        if ((mClient != null) && mClient.isConnected()) {
+            try {
+                mClient.subscribe("im/v1.0/member/" + Long.toString(memberId), 1, null, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.d("Tag", "mqtt subscribeTopic successfully");
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.d("Tag", "mqtt subscribeTopic failed");
                     }
                 });
             } catch (MqttException e) {

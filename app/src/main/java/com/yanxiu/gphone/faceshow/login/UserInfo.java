@@ -1,5 +1,7 @@
 package com.yanxiu.gphone.faceshow.login;
 
+import com.test.yanxiu.im_core.http.common.ImTokenInfo;
+
 /**
  * Created by Canghaixiao.
  * Time : 2017/9/14 17:26.
@@ -35,6 +37,8 @@ public class UserInfo {
     }
 
     public class Info {
+        public ImTokenInfo imTokenInfo;
+
 
         private int id;
         private int userId;

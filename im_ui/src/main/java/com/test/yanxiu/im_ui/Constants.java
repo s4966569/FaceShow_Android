@@ -9,9 +9,11 @@ public class Constants {
 //    public static final long imId = 9;
 //    public static final String imToken = "fb1a05461324976e55786c2c519a8ccc";
 
-    //
-    public static final long imId = 217;
-    public static final String imToken = "d47cce8d9a930fe57b401ad70802300b";
+    // start *** im 用户信息，module对接用，因为已经写入所有code中，所以这样替换最为便捷
+    public static long imId;
+    public static String imToken;
+    public static String imAvatar;
+    // end *** im 用户信息
 
 
     public static final String kShareTopic = "Share Topic";

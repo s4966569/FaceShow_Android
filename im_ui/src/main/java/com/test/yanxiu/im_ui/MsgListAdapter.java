@@ -264,7 +264,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             DbMsg msg = item.getMsg();
 
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
-            mNameTextView.setText("未知");
+            mNameTextView.setText("");
             DbMember sender = DatabaseDealer.getMemberById(msg.getSenderId());
             if (sender != null) {
                 Glide.with(mContext)
