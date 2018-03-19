@@ -235,7 +235,7 @@ public class ImMsgListActivity extends FragmentActivity {
         @Override
         public void onItemClick(int position, DbMsg dbMsg) {
             if (dbMsg instanceof DbMyMsg) {
-                DbMyMsg myMsg = (DbMyMsg) dbMsg;
+                final DbMyMsg myMsg = (DbMyMsg) dbMsg;
                 if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
                     // 重新发送
                     topic.mergedMsgs.remove(myMsg);
@@ -245,6 +245,26 @@ public class ImMsgListActivity extends FragmentActivity {
                     topic.mergedMsgs.add(0, myMsg);
                     mMsgListAdapter.setmDatas(topic.mergedMsgs);
                     mMsgListAdapter.notifyDataSetChanged();
+
+                    SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
+                    saveTextMsgRequest.imToken = Constants.imToken;
+                    saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
+                    saveTextMsgRequest.msg = myMsg.getMsg();
+                    httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
+                        @Override
+                        public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                            myMsg.setState(DbMyMsg.State.Success.ordinal());
+                            myMsg.save();
+                            mMsgListAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onFail(RequestBase request, Error error) {
+                            myMsg.setState(DbMyMsg.State.Failed.ordinal());
+                            myMsg.save();
+                            mMsgListAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             }
         }
