@@ -211,6 +211,8 @@ public class ImMsgListActivity extends FragmentActivity {
                 mMsgListAdapter.notifyDataSetChanged();
             }
         });
+
+        mMsgEditText.setText("");
     }
 
     private void doTakePic() {
