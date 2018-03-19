@@ -256,6 +256,16 @@ public final class TopicMsgProto {
        */
       com.google.protobuf.ByteString
           getViewUrlBytes();
+
+      /**
+       * <code>int32 width = 5;</code>
+       */
+      int getWidth();
+
+      /**
+       * <code>int32 height = 6;</code>
+       */
+      int getHeight();
     }
     /**
      * Protobuf type {@code TopicMsg.ContentDataProto}
@@ -274,6 +284,8 @@ public final class TopicMsgProto {
         rid_ = "";
         thumbnail_ = "";
         viewUrl_ = "";
+        width_ = 0;
+        height_ = 0;
       }
 
       @java.lang.Override
@@ -329,6 +341,16 @@ public final class TopicMsgProto {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 viewUrl_ = s;
+                break;
+              }
+              case 40: {
+
+                width_ = input.readInt32();
+                break;
+              }
+              case 48: {
+
+                height_ = input.readInt32();
                 break;
               }
             }
@@ -491,6 +513,24 @@ public final class TopicMsgProto {
         }
       }
 
+      public static final int WIDTH_FIELD_NUMBER = 5;
+      private int width_;
+      /**
+       * <code>int32 width = 5;</code>
+       */
+      public int getWidth() {
+        return width_;
+      }
+
+      public static final int HEIGHT_FIELD_NUMBER = 6;
+      private int height_;
+      /**
+       * <code>int32 height = 6;</code>
+       */
+      public int getHeight() {
+        return height_;
+      }
+
       private byte memoizedIsInitialized = -1;
       public final boolean isInitialized() {
         byte isInitialized = memoizedIsInitialized;
@@ -515,6 +555,12 @@ public final class TopicMsgProto {
         if (!getViewUrlBytes().isEmpty()) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 4, viewUrl_);
         }
+        if (width_ != 0) {
+          output.writeInt32(5, width_);
+        }
+        if (height_ != 0) {
+          output.writeInt32(6, height_);
+        }
         unknownFields.writeTo(output);
       }
 
@@ -534,6 +580,14 @@ public final class TopicMsgProto {
         }
         if (!getViewUrlBytes().isEmpty()) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, viewUrl_);
+        }
+        if (width_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(5, width_);
+        }
+        if (height_ != 0) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(6, height_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -559,6 +613,10 @@ public final class TopicMsgProto {
             .equals(other.getThumbnail());
         result = result && getViewUrl()
             .equals(other.getViewUrl());
+        result = result && (getWidth()
+            == other.getWidth());
+        result = result && (getHeight()
+            == other.getHeight());
         result = result && unknownFields.equals(other.unknownFields);
         return result;
       }
@@ -578,6 +636,10 @@ public final class TopicMsgProto {
         hash = (53 * hash) + getThumbnail().hashCode();
         hash = (37 * hash) + VIEWURL_FIELD_NUMBER;
         hash = (53 * hash) + getViewUrl().hashCode();
+        hash = (37 * hash) + WIDTH_FIELD_NUMBER;
+        hash = (53 * hash) + getWidth();
+        hash = (37 * hash) + HEIGHT_FIELD_NUMBER;
+        hash = (53 * hash) + getHeight();
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
         return hash;
@@ -715,6 +777,10 @@ public final class TopicMsgProto {
 
           viewUrl_ = "";
 
+          width_ = 0;
+
+          height_ = 0;
+
           return this;
         }
 
@@ -741,6 +807,8 @@ public final class TopicMsgProto {
           result.rid_ = rid_;
           result.thumbnail_ = thumbnail_;
           result.viewUrl_ = viewUrl_;
+          result.width_ = width_;
+          result.height_ = height_;
           onBuilt();
           return result;
         }
@@ -797,6 +865,12 @@ public final class TopicMsgProto {
           if (!other.getViewUrl().isEmpty()) {
             viewUrl_ = other.viewUrl_;
             onChanged();
+          }
+          if (other.getWidth() != 0) {
+            setWidth(other.getWidth());
+          }
+          if (other.getHeight() != 0) {
+            setHeight(other.getHeight());
           }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
@@ -1097,6 +1171,58 @@ public final class TopicMsgProto {
   checkByteStringIsUtf8(value);
           
           viewUrl_ = value;
+          onChanged();
+          return this;
+        }
+
+        private int width_ ;
+        /**
+         * <code>int32 width = 5;</code>
+         */
+        public int getWidth() {
+          return width_;
+        }
+        /**
+         * <code>int32 width = 5;</code>
+         */
+        public Builder setWidth(int value) {
+          
+          width_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>int32 width = 5;</code>
+         */
+        public Builder clearWidth() {
+          
+          width_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private int height_ ;
+        /**
+         * <code>int32 height = 6;</code>
+         */
+        public int getHeight() {
+          return height_;
+        }
+        /**
+         * <code>int32 height = 6;</code>
+         */
+        public Builder setHeight(int value) {
+          
+          height_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>int32 height = 6;</code>
+         */
+        public Builder clearHeight() {
+          
+          height_ = 0;
           onChanged();
           return this;
         }
@@ -2206,15 +2332,15 @@ public final class TopicMsgProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016TopicMsg.proto\"\231\002\n\010TopicMsg\022\n\n\002id\030\001 \001(" +
+      "\n\016TopicMsg.proto\"\270\002\n\010TopicMsg\022\n\n\002id\030\001 \001(" +
       "\003\022\021\n\tbizSource\030\002 \001(\005\022\017\n\007topicId\030\003 \001(\003\022\020\n" +
       "\010senderId\030\004 \001(\003\022\022\n\nsenderName\030\005 \001(\t\022\r\n\005r" +
       "eqId\030\006 \001(\t\022\023\n\013contentType\030\007 \001(\005\022/\n\013conte" +
       "ntData\030\010 \001(\0132\032.TopicMsg.ContentDataProto" +
-      "\022\020\n\010sendTime\030\t \001(\003\032P\n\020ContentDataProto\022\013" +
+      "\022\020\n\010sendTime\030\t \001(\003\032o\n\020ContentDataProto\022\013" +
       "\n\003msg\030\001 \001(\t\022\013\n\003rid\030\002 \001(\t\022\021\n\tthumbnail\030\003 " +
-      "\001(\t\022\017\n\007viewUrl\030\004 \001(\tB\017B\rTopicMsgProtob\006p" +
-      "roto3"
+      "\001(\t\022\017\n\007viewUrl\030\004 \001(\t\022\r\n\005width\030\005 \001(\005\022\016\n\006h" +
+      "eight\030\006 \001(\005B\017B\rTopicMsgProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2239,7 +2365,7 @@ public final class TopicMsgProto {
     internal_static_TopicMsg_ContentDataProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TopicMsg_ContentDataProto_descriptor,
-        new java.lang.String[] { "Msg", "Rid", "Thumbnail", "ViewUrl", });
+        new java.lang.String[] { "Msg", "Rid", "Thumbnail", "ViewUrl", "Width", "Height", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
