@@ -91,6 +91,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         // 保留最多pagesize条
         curTopic.mergedMsgs = curTopic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, curTopic.mergedMsgs.size()));
         curTopic = null;
+
+        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -149,6 +151,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
 
         topics.addAll(DatabaseDealer.topicsFromDb());
+
+        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -274,6 +278,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     }
                 }
 
+                rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
 
@@ -352,6 +357,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         }
 
+        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -393,6 +399,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                 // 更新UI, 需要重新排列么？
                 // Collections.sort(topics, topicComparator);
+                rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
                 // 4，对于需要更新members的topic，等待更新完members，再去取msgs
@@ -425,7 +432,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         boolean privateChatExist = false;
 
         for (DbTopic topic : topics) {
-            if (topic.getType() == "1") {
+            if (topic.getType().equals("1")) {
                 for (DbMember dbMember : topic.getMembers()) {
                     if (dbMember.getImId() == memberId) {
                         privateChatExist = true;
@@ -473,6 +480,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                     // 更新UI
                     topics.add(dbTopic);
+                    rearrangeTopics();
                     mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
                     curTopic = dbTopic;
                     SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
@@ -491,4 +499,19 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         });
     }
     //endregion
+
+    private void rearrangeTopics() {
+        // 只区分开群聊、私聊，不改变以前里面的顺序
+        List<DbTopic> privateTopics = new ArrayList<>();
+        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+            DbTopic topic = i.next();
+            if (topic.getType().equals("1")) {
+                // 私聊
+                i.remove();
+                privateTopics.add(topic);
+            }
+        }
+
+        topics.addAll(privateTopics);
+    }
 }
