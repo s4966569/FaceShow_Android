@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -150,6 +149,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                     holder2.all_title_layout.setVisibility(View.GONE);
                 }
                 break;
+                default:break;
         }
 
     }

@@ -37,6 +37,9 @@ import com.yanxiu.gphone.faceshow.http.login.SignInRequest;
 import com.yanxiu.gphone.faceshow.http.login.SignInResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
+
+import com.yanxiu.gphone.faceshow.qrsignup.activity.QRCodeSignUpActivity;
+
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 import com.yanxiu.gphone.faceshow.util.anim.AnimUtil;
@@ -57,6 +60,7 @@ import butterknife.Unbinder;
 public class LoginActivity extends FaceShowBaseActivity {
 
     private static final int TO_FORGET_PASSWORD_REQUEST_CODE = 0X01;
+    private static final int TO_QRCODE_SIGNUP_REQUEST_CODE = 0X02;
 
     private Unbinder unbinder;
     private Context mContext;
@@ -100,9 +104,9 @@ public class LoginActivity extends FaceShowBaseActivity {
         rootView.setContentView(R.layout.activity_login);
         setContentView(rootView);
         unbinder = ButterKnife.bind(this);
-        if (SpManager.isFristStartUp()) {
-            SpManager.setFristStartUp(false);
-        }
+//        if (SpManager.isFristStartUp()) {
+//            SpManager.setFristStartUp(false);
+//        }
         edt_account_number.addTextChangedListener(accountNumberChangedListener);
         edt_account_password.addTextChangedListener(accountPasswordChangedListener);
         if (edt_account_number.getText().length() > 0 && edt_account_password.getText().length() > 0) {
@@ -146,6 +150,53 @@ public class LoginActivity extends FaceShowBaseActivity {
         });
         rootView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
 
+
+//        String city = FileUtils.getFromAssets(getApplicationContext(), "city.json");
+//        String shen = FileUtils.getFromAssets(getApplicationContext(), "shen.json");
+//        String difang = FileUtils.getFromAssets(getApplicationContext(), "difang.json");
+//        cityModel cityModel = RequestBase.getGson().fromJson(city, cityModel.class);
+//        cityModel shenModel = RequestBase.getGson().fromJson(shen, cityModel.class);
+//        cityModel difangModel = RequestBase.getGson().fromJson(difang, cityModel.class);
+//        for (int i = 0; i < cityModel.getData().size(); i++) {
+//            for (int j = 0; j < difangModel.getData().size(); j++) {
+//                if (difangModel.getData().get(j).getParentId() == cityModel.getData().get(i).getId()) {
+//                    if (cityModel.getData().get(i).getNextLevelData() != null) {
+//                        cityModel.getData().get(i).getNextLevelData().add(difangModel.getData().get(j));
+//                    } else {
+//                        List<com.yanxiu.gphone.faceshow.db.cityModel.DataBean> nextLevelData = new ArrayList<>();
+//                        nextLevelData.add(difangModel.getData().get(j));
+//                        cityModel.getData().get(i).setNextLevelData(nextLevelData);
+//                    }
+//                }
+//            }
+//        }
+//
+//        for (int i = 0; i < shenModel.getData().size(); i++) {
+//            for (int j = 0; j < cityModel.getData().size(); j++) {
+//                if (shenModel.getData().get(i).getId() == cityModel.getData().get(j).getParentId()) {
+//                    if (shenModel.getData().get(i).getNextLevelData() != null) {
+//                        shenModel.getData().get(i).getNextLevelData().add(cityModel.getData().get(j));
+//                    } else {
+//                        List<com.yanxiu.gphone.faceshow.db.cityModel.DataBean> nextLevelData = new ArrayList<>();
+//                        nextLevelData.add(cityModel.getData().get(j));
+//                        shenModel.getData().get(i).setNextLevelData(nextLevelData);
+//                    }
+//                }
+//            }
+//        }
+//
+//        String data = RequestBase.getGson().toJson(shenModel);
+//        Log.e("frc",data);
+//
+//        FileUtils.writeFile(Constants.SDCARD_ROOT_NAME+"/xzz.txt", data,false);
+/*！~！~！~！~*/
+//    debugUserAccount();
+    }
+
+    private void debugUserAccount(){
+        // TODO: 2018/3/13  需要删除！！！
+        edt_account_number.setText("15655248880");
+        edt_account_password.setText("123456");
 
     }
 
@@ -233,8 +284,10 @@ public class LoginActivity extends FaceShowBaseActivity {
             rootView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
         }
     }
-
-    @OnClick({R.id.img_show_password, R.id.tv_sign_in, R.id.tv_forget_password})
+    /**
+     * 点击监听 增加 一个 扫码注册的textview
+     * */
+    @OnClick({R.id.img_show_password, R.id.tv_sign_in, R.id.tv_forget_password,R.id.tv_qrcode_signup})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_show_password:
@@ -260,6 +313,12 @@ public class LoginActivity extends FaceShowBaseActivity {
                 break;
             case R.id.tv_forget_password:
                 startActivityForResult(new Intent(LoginActivity.this, ForgetPasswordActivity.class), TO_FORGET_PASSWORD_REQUEST_CODE);
+                break;
+
+            case R.id.tv_qrcode_signup:
+               /*跳转到扫码界面 并对扫描的二维码进行验证*/
+                startActivityForResult(
+                        new Intent(LoginActivity.this, QRCodeSignUpActivity.class),TO_QRCODE_SIGNUP_REQUEST_CODE);
                 break;
             default:
                 break;
@@ -369,6 +428,8 @@ public class LoginActivity extends FaceShowBaseActivity {
                     edt_account_password.setText(data.getStringExtra("password"));
                 }
             }
+        }else if (requestCode==TO_QRCODE_SIGNUP_REQUEST_CODE){
+            // TODO: 2018/3/1  执行登录操作
         }
     }
 

@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.homepage.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,16 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.BaseBean;
-import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
+import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
+import com.yanxiu.gphone.faceshow.course.activity.CourseDetailActivity;
 import com.yanxiu.gphone.faceshow.course.bean.CourseBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
-import com.yanxiu.gphone.faceshow.course.activity.CourseActivity;
 import com.yanxiu.gphone.faceshow.homepage.adapter.CourseArrangeAdapter;
-import com.yanxiu.gphone.faceshow.common.listener.OnRecyclerViewItemClickListener;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseArrangeResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
@@ -66,8 +67,17 @@ public class CourseArrangeFragment extends HomePageBaseFragment implements View.
 
     @Override
     public void onItemClick(int position, BaseBean baseBean) {
+//        ToastUtil.showToast(getActivity(),"点击 item");
+        // TODO: 2018/3/5  这里 学员版的 数据处理 跳转方式与管理端相同
         CourseBean bean = (CourseBean) baseBean;
-        CourseActivity.invoke(getActivity(), bean.getId());
+        Gson gson=new Gson();
+
+        Log.i(getClass().getSimpleName(),gson.toJson(bean));
+        /*这里 两个课程详情的入口 */
+//        CourseActivity.invoke(getActivity(), bean.getId());
+        Intent intent = new Intent(getActivity(), CourseDetailActivity.class);
+        intent.putExtra("courseId",bean.getId());
+        startActivity(intent);
     }
 
     @Override

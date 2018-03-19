@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/check_in_title_layout" />
+    <include
+        android:id="@+id/checkup_titlebar"
+        layout="@layout/check_in_title_layout" />
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/zxing_barcode_scanner"
         android:layout_width="match_parent"

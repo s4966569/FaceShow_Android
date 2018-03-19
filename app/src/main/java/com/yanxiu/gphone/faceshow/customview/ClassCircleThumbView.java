@@ -13,7 +13,6 @@ import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.Toast;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.classcircle.response.ClassCircleResponse;
@@ -92,7 +91,7 @@ public class ClassCircleThumbView extends android.support.v7.widget.AppCompatTex
     private SpannableString setImageSpan() {
         String text = "  ";
         SpannableString imgSpanText = new SpannableString(text);
-        imgSpanText.setSpan(new ImageSpan(getContext(), R.drawable.classcircle_like, DynamicDrawableSpan.ALIGN_BASELINE),
+        imgSpanText.setSpan(new ImageSpan(getContext(), R.drawable.like_red_heart, DynamicDrawableSpan.ALIGN_BASELINE),
                 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return imgSpanText;
     }

@@ -31,6 +31,7 @@
     <dimen name="commontitle_title_textsize">20dp</dimen>
     <dimen name="commontitle_singin_textsize">17dp</dimen>
     <dimen name="commontitle_title_rightIcon_width">30dp</dimen>
+    <dimen name="dimen_0dp">0dp</dimen>
     <!--commontitlelayout end-->
 
     <!--首页相关 start-->
@@ -83,4 +84,5 @@
     <dimen name="answer_card_submitbutton_textsize">20dp</dimen>
     <!--我的 start-->
     <dimen name="my_item_text_size">14dp</dimen>
+    <dimen name="task_res_textSize">14dp</dimen>
 </resources>

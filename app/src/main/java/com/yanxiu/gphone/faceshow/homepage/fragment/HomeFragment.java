@@ -4,7 +4,6 @@ package com.yanxiu.gphone.faceshow.homepage.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
-import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.HomeFragmentFactory;
-import com.yanxiu.gphone.faceshow.homepage.activity.ChooseClassActivity;
+import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 import com.yanxiu.gphone.faceshow.homepage.activity.checkIn.CheckInByQRActivity;
 import com.yanxiu.gphone.faceshow.homepage.bean.main.MainBean;
 import com.yanxiu.gphone.faceshow.http.main.GetToolsRequest;
@@ -75,6 +74,10 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private ImageView mImgResourceRedDot, mImgProjectTaskRedDot;
     private int lastIndex = 0;
 
+
+    //titleimage
+    private ImageView mTitleLeftImage;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = new PublicLoadLayout(getContext());
@@ -128,6 +131,12 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         getToolsData();
     }
 
+    public void resetTab(){
+//        showCurrentFragment(0);
+        setCourseArrageTab();
+        fixLastIndex(INDEX_HOME_TAB);
+    }
+
     private void requestData() {
         MainRequest mainRequest = new MainRequest();
         mainRequest.startRequest(MainResponse.class, new HttpCallback<MainResponse>() {
@@ -164,21 +173,31 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
     private void initView() {
         mTitle = (TextView) mRootView.findViewById(R.id.title_layout_title);
         mTitle.setText("研修宝");
+        mTitleLeftImage= (ImageView) mRootView.findViewById(R.id.title_layout_left_img);
+        mTitleLeftImage.setVisibility(View.VISIBLE);
+        mTitleLeftImage.setImageResource(R.drawable.selector_main_leftdrawer);
+        mTitleLeftImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).openLeftDrawer();
+            }
+        });
+
         mCheckInEnterTV = (TextView) mRootView.findViewById(R.id.title_layout_signIn);
         mCheckInEnterTV.setVisibility(View.VISIBLE);
         mCheckInEnterIMG = (ImageView) mRootView.findViewById(R.id.title_layout_right_img);
         mCheckInEnterIMG.setImageResource(R.drawable.scan_selector);
         mCheckInEnterIMG.setVisibility(View.VISIBLE);
-        TextView textView = (TextView) mRootView.findViewById(R.id.title_layout_left_txt);
-        textView.setText(R.string.choose_class);
-        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.color_1da1f2));
-        textView.setVisibility(View.VISIBLE);
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().startActivityForResult(new Intent(HomeFragment.this.getActivity(), ChooseClassActivity.class), CHOOSE_CLASS);
-            }
-        });
+//        TextView textView = (TextView) mRootView.findViewById(R.id.title_layout_left_txt);
+//        textView.setText(R.string.choose_class);
+//        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.color_1da1f2));
+//        textView.setVisibility(View.VISIBLE);
+//        textView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                getActivity().startActivityForResult(new Intent(HomeFragment.this.getActivity(), ChooseClassActivity.class), CHOOSE_CLASS);
+//            }
+//        });
         mProject_tv = (TextView) mRootView.findViewById(R.id.project_tv);
         mClass_tv = (TextView) mRootView.findViewById(R.id.class_tv);
         mImgProjectTaskRedDot = (ImageView) mRootView.findViewById(R.id.img_project_task_red_dot);
@@ -280,57 +299,16 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
         int curItem = INDEX_HOME_TAB;
         switch (view.getId()) {
             case R.id.courseArrange_tab:
-                curItem = INDEX_HOME_TAB;
-                mNavBarViews[0].setEnabled(false);
-                mNavBarViews[1].setEnabled(true);
-                mNavBarViews[2].setEnabled(true);
-                mNavBarViews[3].setEnabled(true);
-
-                mNavBarViews[0].setSelected(true);
-                mNavBarViews[1].setSelected(false);
-                mNavBarViews[2].setSelected(false);
-                mNavBarViews[3].setSelected(false);
-                EventUpdate.onCourseButton(getContext());
+                curItem = setCourseArrageTab();
                 break;
             case R.id.resources_tab:
-                curItem = INDEX_NOTICE_TAB;
-                mNavBarViews[0].setEnabled(true);
-                mNavBarViews[1].setEnabled(false);
-                mNavBarViews[2].setEnabled(true);
-                mNavBarViews[3].setEnabled(true);
-
-                mNavBarViews[0].setSelected(false);
-                mNavBarViews[1].setSelected(true);
-                mNavBarViews[2].setSelected(false);
-                mNavBarViews[3].setSelected(false);
-                EventUpdate.onResourceButton(getContext());
-                mImgResourceRedDot.setVisibility(View.GONE);
+                curItem = setResourceTab();
                 break;
             case R.id.projectTask_tab:
-                curItem = INDEX_CLASSCIRCLE_TAB;
-                mNavBarViews[0].setEnabled(true);
-                mNavBarViews[1].setEnabled(true);
-                mNavBarViews[2].setEnabled(false);
-                mNavBarViews[3].setEnabled(true);
-
-                mNavBarViews[0].setSelected(false);
-                mNavBarViews[1].setSelected(false);
-                mNavBarViews[2].setSelected(true);
-                mNavBarViews[3].setSelected(false);
-                EventUpdate.onTaskButton(getContext());
+                curItem = setProjectTaskTab();
                 break;
             case R.id.schedule_tab:
-                curItem = INDEX_MY;
-                mNavBarViews[0].setEnabled(true);
-                mNavBarViews[1].setEnabled(true);
-                mNavBarViews[2].setEnabled(true);
-                mNavBarViews[3].setEnabled(false);
-
-                mNavBarViews[0].setSelected(false);
-                mNavBarViews[1].setSelected(false);
-                mNavBarViews[2].setSelected(false);
-                mNavBarViews[3].setSelected(true);
-                EventUpdate.onScheduleButton(getContext());
+                curItem = setScheduleTab();
                 break;
             case R.id.title_layout_signIn:
             case R.id.title_layout_right_img:
@@ -340,10 +318,82 @@ public class HomeFragment extends FaceShowBaseFragment implements View.OnClickLi
             default:
                 break;
         }
+        /*更改 lastTab*/
+        fixLastIndex(curItem);
+    }
+    /**
+     * 点击或设置tab后 对 lastindex 进行设置
+     * */
+    private void fixLastIndex(int curItem) {
         if (lastIndex != curItem) {
             showCurrentFragment(curItem);
         }
         lastIndex = curItem;
+    }
+
+    private int setScheduleTab() {
+        int curItem;
+        curItem = INDEX_MY;
+        mNavBarViews[0].setEnabled(true);
+        mNavBarViews[1].setEnabled(true);
+        mNavBarViews[2].setEnabled(true);
+        mNavBarViews[3].setEnabled(false);
+
+        mNavBarViews[0].setSelected(false);
+        mNavBarViews[1].setSelected(false);
+        mNavBarViews[2].setSelected(false);
+        mNavBarViews[3].setSelected(true);
+        EventUpdate.onScheduleButton(getContext());
+        return curItem;
+    }
+
+    private int setProjectTaskTab() {
+        int curItem;
+        curItem = INDEX_CLASSCIRCLE_TAB;
+        mNavBarViews[0].setEnabled(true);
+        mNavBarViews[1].setEnabled(true);
+        mNavBarViews[2].setEnabled(false);
+        mNavBarViews[3].setEnabled(true);
+
+        mNavBarViews[0].setSelected(false);
+        mNavBarViews[1].setSelected(false);
+        mNavBarViews[2].setSelected(true);
+        mNavBarViews[3].setSelected(false);
+        EventUpdate.onTaskButton(getContext());
+        return curItem;
+    }
+
+    private int setResourceTab() {
+        int curItem;
+        curItem = INDEX_NOTICE_TAB;
+        mNavBarViews[0].setEnabled(true);
+        mNavBarViews[1].setEnabled(false);
+        mNavBarViews[2].setEnabled(true);
+        mNavBarViews[3].setEnabled(true);
+
+        mNavBarViews[0].setSelected(false);
+        mNavBarViews[1].setSelected(true);
+        mNavBarViews[2].setSelected(false);
+        mNavBarViews[3].setSelected(false);
+        EventUpdate.onResourceButton(getContext());
+        mImgResourceRedDot.setVisibility(View.GONE);
+        return curItem;
+    }
+
+    private int setCourseArrageTab() {
+        int curItem;
+        curItem = INDEX_HOME_TAB;
+        mNavBarViews[0].setEnabled(false);
+        mNavBarViews[1].setEnabled(true);
+        mNavBarViews[2].setEnabled(true);
+        mNavBarViews[3].setEnabled(true);
+
+        mNavBarViews[0].setSelected(true);
+        mNavBarViews[1].setSelected(false);
+        mNavBarViews[2].setSelected(false);
+        mNavBarViews[3].setSelected(false);
+        EventUpdate.onCourseButton(getContext());
+        return curItem;
     }
 
     private void showCurrentFragment(int index) {

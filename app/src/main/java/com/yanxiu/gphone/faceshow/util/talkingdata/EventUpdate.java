@@ -53,6 +53,19 @@ public class EventUpdate {
     }
 
     /**
+     * 课程详情页面
+     */
+    public static void onSeeCourseProfile(Context context) {
+        TCAgent.onEvent(context, "查看课程简介");
+    }
+    /**
+     * 课程讨论页面
+     */
+    public static void onDeleteDiscuss(Context context) {
+        TCAgent.onEvent(context, "删除讨论");
+    }
+
+    /**
      * 点击签到详情页中的签到按钮
      */
     public static void onSignInButtonInSignInDetailPage(Context context){

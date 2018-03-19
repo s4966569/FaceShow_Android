@@ -54,12 +54,25 @@
     <color name="color_EBEFF2">#ebeff2</color>
     <color name="color_d7dde0">#d7dde0</color>
     <color name="color_1da1f2">#1da1f2</color>
+    <color name="color_0068BD">#0068BD</color>
+    <color name="color_DCE0E3">#DCE0E3</color>
+    <color name="color_0059b3">#0059b3</color>
+    <color name="color_dae1e3">#DAE1E3</color>
+    <color name="color_dce0e3">#dce0e3</color>
     <color name="color_1a90d9">#1a90d9</color>
     <color name="color_fcfcfc">#fcfcfc</color>
     <color name="color_000000">#00000000</color>
     <color name="color_e6ffffff">#e6ffffff</color>
     <color name="color_fdfdfe">#fdfdfe</color>
     <color name="color_dadde0">#dadde0</color>
+    <color name="color_a4acb8">#a4acb8</color>
+
+
+    <color name="color_0068bd">#0068bd</color>
+    
+    <!--task color-->
+    <color name="color_task_unfinished">#ff0000</color>
+    <color name="color_task_finished">@color/color_333333</color>
     !--qr code-->
     <color name="viewfinder_mask">#33000000</color>
     <color name="result_view">#b0000000</color>

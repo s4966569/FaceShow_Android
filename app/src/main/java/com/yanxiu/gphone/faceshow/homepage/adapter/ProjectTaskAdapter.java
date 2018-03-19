@@ -81,11 +81,11 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 if (TextUtils.equals(data.getStepFinished(), "1")) {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_completed));
-                    holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_333333));
+                    holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_task_finished));
 //                    holder2.project_task_img.setImageResource(R.drawable.task_completed);
                 } else {
                     holder2.project_task_status.setText(mContext.getResources().getString(R.string.has_uncompleted));
-                    holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_999999));
+                    holder2.project_task_status.setTextColor(mContext.getResources().getColor(R.color.color_task_unfinished));
 //                    holder2.project_task_img.setImageResource(R.drawable.task_uncompleted);
                 }
                 switch (data.getInteractType()) {
@@ -101,6 +101,7 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     case InteractStepsBean.CHECK_IN:
                         holder2.course_detail_item_icon.setImageResource(R.drawable.coursedetail_check_in);
                         break;
+                        default:break;
                 }
 
                 holder2.project_task_layout.setOnClickListener(new View.OnClickListener() {
@@ -112,9 +113,8 @@ public class ProjectTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 });
                 break;
-
+                default:break;
         }
-
     }
 
     @Override

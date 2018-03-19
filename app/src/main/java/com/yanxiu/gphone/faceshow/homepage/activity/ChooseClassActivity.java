@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.homepage.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,11 +14,9 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.homepage.adapter.ClassManagerListAdapter;
-import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.course.GetStudentClazsesResponse;
 import com.yanxiu.gphone.faceshow.http.course.GetSudentClazsesRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
 
 import java.util.ArrayList;
@@ -79,8 +76,6 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
                 mSelcetPosition = postion;
             }
         });
-
-
     }
 
     private void initTitle() {

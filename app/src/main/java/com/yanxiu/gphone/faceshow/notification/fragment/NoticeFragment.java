@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -59,11 +61,18 @@ public class NoticeFragment extends FaceShowBaseFragment {
 
     private int tatleNum=0;
 
+    /*标题栏 相关控件*/
+    private ImageView titleImage;
+    private TextView titleTextView;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notice, container, false);
         mRootView = new PublicLoadLayout(getActivity());
         mRootView.setContentView(view);
+//        初始化标题栏
+        titalbarInit(view);
         unbinder = ButterKnife.bind(this, mRootView);
         setRecyclerView(loadMoreRecyclerView);
 
@@ -80,6 +89,23 @@ public class NoticeFragment extends FaceShowBaseFragment {
             }
         });
         return mRootView;
+    }
+/**
+ * 通知界面 标题栏的初始化操作
+ * */
+    private void titalbarInit(View titleView){
+        titleImage= (ImageView) titleView.findViewById(R.id.title_layout_left_img);
+        titleImage.setVisibility(View.VISIBLE);
+        titleImage.setImageResource(R.drawable.selector_main_leftdrawer);
+        titleImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).openLeftDrawer();
+            }
+        });
+        titleTextView= (TextView) titleView.findViewById(R.id.title_layout_title);
+        titleTextView.setVisibility(View.VISIBLE);
+        titleTextView.setText(getResources().getText(R.string.notice));
     }
 
     /**

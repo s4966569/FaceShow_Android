@@ -5,9 +5,15 @@
     android:layout_height="155dp"
     android:orientation="vertical">
 
-    <include layout="@layout/big_line" />
-
+    <include layout="@layout/big_line"
+        android:visibility="gone"/>
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/color_EBEFF2"
+        android:layout_height="@dimen/segmentationLine_height"/>
     <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="5dp"

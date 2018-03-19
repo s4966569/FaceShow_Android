@@ -18,6 +18,8 @@ public class CourseDetailBean extends BaseBean {
         return course;
     }
 
+
+
     public void setCourse(CourseBean course) {
         this.course = course;
     }

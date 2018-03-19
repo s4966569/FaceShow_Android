@@ -110,6 +110,11 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
     private UUID mDiscardMomentRequest;
     private UUID mDiscardCommentRequest;
 
+    /**
+     * 班级圈 顶部 title栏添加 左侧 抽屉菜单
+     * */
+    private ImageView leftTitleImageView;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -212,6 +217,9 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
 
         mRefreshView = (SwipeRefreshLayout) rootView.findViewById(R.id.srl_refresh);
         mDataEmptyView = rootView.findViewById(R.id.rl_data_empty);
+
+        /*添加 左侧title*/
+        leftTitleImageView=rootView.findViewById(R.id.title_layout_left_img);
     }
 
     private void listener() {
@@ -245,6 +253,15 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 } else {
                     mTvSureComment.setEnabled(true);
                 }
+            }
+        });
+        leftTitleImageView.setVisibility(View.VISIBLE);
+        leftTitleImageView.setImageResource(R.drawable.selector_main_leftdrawer);
+        leftTitleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity)getActivity()).openLeftDrawer();
+//                MainActivity.invoke(getActivity());
             }
         });
     }
@@ -287,13 +304,19 @@ public class ClassCircleFragment extends FaceShowBaseFragment implements LoadMor
                 });
                 if (ret != null) {
                     if (ret.getCode() == 0 && ret.data != null && ret.data.moments != null) {
+
                         if (offset.equals("0")) {
+                            /*如果 是首次请求数据 覆盖添加到adapter中*/
                             mClassCircleAdapter.setData(ret.data.moments);
                         } else {
+                            /*如果offset 不为0  需要拼接数据*/
                             mClassCircleAdapter.addData(ret.data.moments);
                         }
                         if (ret.data.moments == null || ret.data.moments.size() == 0) {
                             mDataEmptyView.setVisibility(View.VISIBLE);
+                            /*这里需要清空一次 数据*/
+
+
                         } else {
                             mDataEmptyView.setVisibility(View.GONE);
                         }

@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.base.BaseBean;
 import com.yanxiu.gphone.faceshow.course.bean.EvaluationBean;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.customview.ChooseLayout;
@@ -170,6 +169,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     holder2.all_title_layout.setVisibility(View.GONE);
                 }
                 break;
+                default:break;
         }
 
     }

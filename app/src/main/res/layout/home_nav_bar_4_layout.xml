@@ -17,7 +17,7 @@
         android:id="@+id/nav_icon"
         android:layout_width="@dimen/nav_icon_width"
         android:layout_height="@dimen/nav_icon_width"
-        android:src="@drawable/selector_my"
+        android:src="@drawable/selector_im"
         android:scaleType="centerCrop"/>
 
     <TextView
@@ -27,5 +27,5 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/home_nav_bar_marginleft"
         android:gravity="center_vertical"
-        android:text="@string/my"/>
+        android:text="@string/talk"/>
 </LinearLayout>
