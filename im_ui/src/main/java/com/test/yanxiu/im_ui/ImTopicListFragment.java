@@ -225,45 +225,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         String strTopicIds = sb.toString();
         strTopicIds = strTopicIds.substring(0, strTopicIds.length() - sep.length());
 
-        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
-        getTopicsRequest.imToken = Constants.imToken;
-        getTopicsRequest.topicIds = strTopicIds;
-        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
-                // 更新数据库
-                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
-
-                for (ImTopic imTopic : ret.data.topic) {
-                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                    dbTopic.latestMsgId = imTopic.latestMsgId;
-
-                    // 更新uiTopics
-                    for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
-                        DbTopic uiTopic = i.next();
-                        if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
-                            i.remove();
-                        }
-                    }
-
-                    topics.add(dbTopic);
-                    topicsNeedUpdateMember.add(dbTopic);
-                }
-
-                // 更新UI, 需要重新排列么？
-                // Collections.sort(topics, topicComparator);
-                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-
-                // 4，对于需要更新members的topic，等待更新完members，再去取msgs
-                updateEachTopicMsgs(topicsNeedUpdateMember);
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-
-            }
-        });
+        // 抽出方法，与mqtt公用
+        updateTopicsWithMembers(strTopicIds);
     }
 
     // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
@@ -399,6 +362,57 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
 
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Subscribe
+    public void onMqttMsg(MqttProtobufDealer.TopicChangeEvent event) {
+        // 目前只处理AddTo
+        if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
+            updateTopicsWithMembers(Long.toString(event.topicId));
+        }
+    }
+
+    // http, mqtt 公用
+    private void updateTopicsWithMembers(String topicIds) {
+        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
+        getTopicsRequest.imToken = Constants.imToken;
+        getTopicsRequest.topicIds = topicIds;
+        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
+                // 更新数据库
+                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
+
+                for (ImTopic imTopic : ret.data.topic) {
+                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+
+                    // 更新uiTopics
+                    for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+                        DbTopic uiTopic = i.next();
+                        if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                            i.remove();
+                        }
+                    }
+
+                    topics.add(dbTopic);
+                    topicsNeedUpdateMember.add(dbTopic);
+                }
+
+                // 更新UI, 需要重新排列么？
+                // Collections.sort(topics, topicComparator);
+                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+
+                // 4，对于需要更新members的topic，等待更新完members，再去取msgs
+                updateEachTopicMsgs(topicsNeedUpdateMember);
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
     }
     //endregion
 
