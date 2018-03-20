@@ -15,13 +15,7 @@ public interface IContactsView {
 
     void addCallBack();
 
-//    void showChangeClassPopupWindow(List<ClassBean> list);
-
-//    void changeClassContacts(ChangeClassPopupWindow.OnClassChangedListener onClassChangedListener);
-
-//    void itemClick(ContactsAdapter.OnItemClickListener onItemClickListener);
-
-    void showItemClickResult(View view, int position);
+    void showItemClickResult(ContactsPlayerBean memberInfo);
 
     void showQueryResultList(List<ContactsPlayerBean> data);
 
@@ -37,5 +31,12 @@ public interface IContactsView {
 
     void hideLoadingView();
 
+    void showDataErrorView(String errorMessage);
+
+    void showNoDataView();
+
+    void showNetError();
+
+    void showToast(String message);
 
 }

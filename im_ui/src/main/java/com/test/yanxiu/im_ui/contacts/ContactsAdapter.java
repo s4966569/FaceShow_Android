@@ -42,12 +42,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     @Override
     public void onBindViewHolder(final ContactsViewHolder holder, int position) {
         ContactsPlayerBean bean = data.get(position);
-        holder.tvPhoneNumber.setText(bean.getPhoneName());
+//        holder.tvPhoneNumber.setText(bean.getPhoneName());
         holder.tvName.setText(bean.getName());
-        if (TextUtils.isEmpty(bean.getHardImgPath())) {
+        if (TextUtils.isEmpty(bean.getAvatar())) {
             holder.imgHard.setImageDrawable(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.icon_classcircle_headimg_small));
         } else {
-            Glide.with(holder.itemView.getContext()).load(bean.getHardImgPath())
+            Glide.with(holder.itemView.getContext()).load(bean.getAvatar())
                     .placeholder(R.drawable.icon_classcircle_headimg_small)
                     .error(R.drawable.icon_change_class_selected)
                     .into(holder.imgHard);

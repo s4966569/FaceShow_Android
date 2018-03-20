@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui.contacts.view;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.test.yanxiu.common_base.ui.InputMethodUtil;
+import com.test.yanxiu.common_base.ui.PublicLoadLayout;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
 import com.test.yanxiu.im_ui.contacts.ContactsAdapter;
@@ -45,11 +48,14 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     private RecyclerView mContactsList;
     private int mCurrentItemClassSelected;
     private View rootView;
+    public PublicLoadLayout mRootView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contacts_layout, container, false);
+        mRootView = new PublicLoadLayout(this.getContext());
+        mRootView.setContentView(rootView);
         mImgBack = rootView.findViewById(R.id.img_back);
         mImgChangeClass = rootView.findViewById(R.id.img_change_class);
         mTvCurrentClassName = rootView.findViewById(R.id.tv_current_class_name);
@@ -68,14 +74,32 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         /*初始化切换班级列表*/
         mChangeClassAdapter = new ChangeClassAdapter();
         RecyclerView changeClassList = rootView.findViewById(R.id.recyclerView_change_class);
-        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this.getContext());
+
+        //此处是为了实现切换班级列表限制最多显示三行半
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this.getContext()) {
+            @Override
+            public void onMeasure(RecyclerView.Recycler recycler, RecyclerView.State state, int widthSpec, int heightSpec) {
+                View view = recycler.getViewForPosition(0);
+                measureChild(view, widthSpec, heightSpec);
+                int measuredWidth = View.MeasureSpec.getSize(widthSpec);
+                int measuredHeight = view.getMeasuredHeight();
+                if (mChangeClassAdapter.getItemCount() > 3) {
+                    setMeasuredDimension(measuredWidth, (int) (measuredHeight * 3.5));
+                } else {
+                    setMeasuredDimension(measuredWidth, measuredHeight * mChangeClassAdapter.getItemCount());
+                }
+            }
+        };
+        linearLayoutManager1.setAutoMeasureEnabled(false);
+        changeClassList.setHasFixedSize(false);
         linearLayoutManager1.setOrientation(LinearLayoutManager.VERTICAL);
         changeClassList.setLayoutManager(linearLayoutManager1);
         changeClassList.setAdapter(mChangeClassAdapter);
         addCallBack();
-        presenter.getContactsList(null);
-        return rootView;
+        presenter.loadDataByNet();
+        return mRootView;
     }
+
 
     @Override
     public void onStop() {
@@ -94,7 +118,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     }
 
     /**
-     * V7包原生的SearchView在UI上有限不符  所以做了些修改
+     * V7包原生的SearchView在UI上有些不符  所以做了些修改
      * 可参考: https://tanjundang.github.io/2016/11/17/SearchView/
      *
      * @param searchView searchView
@@ -114,10 +138,16 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
 
     @Override
     public void addCallBack() {
+        mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.loadDataByNet();
+            }
+        });
         mContactsAdapter.addItemClickListener(new ContactsAdapter.OnItemClickListener() {
             @Override
             public void itemClick(View view, int position) {
-                showItemClickResult(view, position);
+                presenter.getItemData(position);
             }
         });
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -173,7 +203,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 hideSoftInput();
-                return true;
+                return false;
             }
 
         });
@@ -231,9 +261,8 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     }
 
     @Override
-    public void showItemClickResult(View view, int position) {
-        // TODO: 2018/3/13  item点击后的响应事件
-        Toast.makeText(this.getContext(), "position:: " + position, Toast.LENGTH_SHORT).show();
+    public void showItemClickResult(ContactsPlayerBean memberInfo) {
+        Toast.makeText(this.getContext(), "position:: " + memberInfo.getName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -269,12 +298,33 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
 
     @Override
     public void showLoadingView() {
-        // TODO: 2018/3/16
+        mRootView.showLoadingView();
     }
 
     @Override
     public void hideLoadingView() {
-        // TODO: 2018/3/16
+        mRootView.finish();
+    }
+
+    @Override
+    public void showDataErrorView(String errorMessage) {
+        mRootView.showOtherErrorView(errorMessage);
+    }
+
+
+    @Override
+    public void showNoDataView() {
+        mRootView.showOtherErrorView("通讯录为空");
+    }
+
+    @Override
+    public void showNetError() {
+        mRootView.showNetErrorView();
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(this.getActivity().getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
 
