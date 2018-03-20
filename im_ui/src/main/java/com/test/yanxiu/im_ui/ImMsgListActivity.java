@@ -106,7 +106,7 @@ public class ImMsgListActivity extends FragmentActivity {
             @Override
             public void run() {
                 if (mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
-                    mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
             }
         });
@@ -134,8 +134,19 @@ public class ImMsgListActivity extends FragmentActivity {
             }
         });
 
-        // 点击外部收起键盘
-        mMsgListRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+        // 弹出键盘后处理
+        KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
+        keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
+            @Override
+            public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+                if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
+                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+                }
+            }
+        });
+
+        // pull to refresh，由于覆盖了OnTouchListener，所以需要在这里处理点击外部键盘收起
+        ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView, new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 InputMethodManager imm =  (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
@@ -144,20 +155,6 @@ public class ImMsgListActivity extends FragmentActivity {
                 return false;
             }
         });
-
-        // 弹出键盘后处理
-        KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
-        keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
-            @Override
-            public void onKeyboardChange(boolean isShow, int keyboardHeight) {
-                if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
-                    mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
-                }
-            }
-        });
-
-        // pull to refresh
-        ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView);
         ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 

@@ -115,8 +115,8 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         Glide.with(mContext)
                                 .load(member.getAvatar())
                                 .into(mAvatarImageView);
-                        // 2, 显示对方昵称
-                        mSenderTextView.setText(member.getName());
+                        // 2, 显示对方昵称(班级名)
+                        mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
                         break;
                     }
                 }
@@ -133,18 +133,20 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 // 1, 显示班级默认图片
                 mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
                 if (latestMsg != null) {
-                    // 2, 显示最后消息者的昵称
-                    for (DbMember member : topic.getMembers()) {
-                        if (member.getImId() == latestMsg.getSenderId()) {
-                            mSenderTextView.setText(member.getName());
-                            break;
-                        }
-                    }
+                    // 2, 显示班级群聊(班级名)
+                    mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
+
+
 
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
                     // 4, 显示消息内容
-                    mMsgTextView.setText(latestMsg.getMsg());
+                    for (DbMember member : topic.getMembers()) {
+                        if (member.getImId() == latestMsg.getSenderId()) {
+                            mMsgTextView.setText(member.getName() + ":" + latestMsg.getMsg());
+                            break;
+                        }
+                    }
                 }
             }
 
