@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">common_base</string>
+    <!--publicloadlayout start-->
+    <string name="no_wrong_data">暂无课程</string>
+    <string name="net_data_error">无网络数据，请点击刷新</string>
+    <string name="retry">点击重试</string>
+    <string name="no_notify">暂无通知</string>
+
+    <!--publicloadlayout end-->
 </resources>

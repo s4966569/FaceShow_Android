@@ -1,5 +1,7 @@
 package com.test.yanxiu.im_ui.contacts.bean;
 
+import com.test.yanxiu.im_core.http.GetContactsResponse;
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbPrimaryKey;
 import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 
 /**
@@ -9,17 +11,24 @@ import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 public class ContactsPlayerBean {
 
     private Integer id;
+    private Integer bizSource;
+    private Integer memberType;
+    @DbPrimaryKey
+    private Integer userId;
     private String name;
-    private String phoneName;
-    private String hardImgPath;
+    private String avatar;
+    private Integer state;
 
     private Integer classId;
 
-    public ContactsPlayerBean(Integer id, String name, String phoneName, String hardImgPath, Integer classId) {
-        this.id = id;
-        this.name = name;
-        this.phoneName = phoneName;
-        this.hardImgPath = hardImgPath;
+    public ContactsPlayerBean(GetContactsResponse.MemberInfoBean memberInfoBean, Integer classId) {
+        this.id = memberInfoBean.getId();
+        this.bizSource = memberInfoBean.getBizSource();
+        this.memberType = memberInfoBean.getMemberType();
+        this.userId = memberInfoBean.getUserId();
+        this.name = memberInfoBean.getMemberName();
+        this.avatar = memberInfoBean.getAvatar();
+        this.state = memberInfoBean.getState();
         this.classId = classId;
     }
 
@@ -34,6 +43,30 @@ public class ContactsPlayerBean {
         this.id = id;
     }
 
+    public Integer getBizSource() {
+        return bizSource;
+    }
+
+    public void setBizSource(Integer bizSource) {
+        this.bizSource = bizSource;
+    }
+
+    public Integer getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(Integer memberType) {
+        this.memberType = memberType;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     public String getName() {
         return name;
     }
@@ -42,20 +75,20 @@ public class ContactsPlayerBean {
         this.name = name;
     }
 
-    public String getPhoneName() {
-        return phoneName;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setPhoneName(String phoneName) {
-        this.phoneName = phoneName;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public String getHardImgPath() {
-        return hardImgPath;
+    public Integer getState() {
+        return state;
     }
 
-    public void setHardImgPath(String hardImgPath) {
-        this.hardImgPath = hardImgPath;
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     public Integer getClassId() {

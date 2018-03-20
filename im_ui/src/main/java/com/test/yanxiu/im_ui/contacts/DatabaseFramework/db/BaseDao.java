@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 
 import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbField;
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbPrimaryKey;
 import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 
 import java.lang.reflect.Field;
@@ -118,7 +119,11 @@ public class BaseDao<T> implements IBaseDao<T> {
                 if (type == String.class) {
                     stringBuffer.append(field.getAnnotation(DbField.class).value() + " TEXT,");
                 } else if (type == Integer.class) {
-                    stringBuffer.append(field.getAnnotation(DbField.class).value() + " INTEGER,");
+                    if (field.getAnnotation(DbPrimaryKey.class) != null) {
+                        stringBuffer.append(field.getAnnotation(DbField.class).value() + " INTEGER PRIMARY KEY,");
+                    } else {
+                        stringBuffer.append(field.getAnnotation(DbField.class).value() + " INTEGER;");
+                    }
                 } else if (type == Long.class) {
                     stringBuffer.append(field.getAnnotation(DbField.class).value() + " BIGINT,");
                 } else if (type == Double.class) {
@@ -129,11 +134,17 @@ public class BaseDao<T> implements IBaseDao<T> {
                     //不支持的类型
                     continue;
                 }
+
             } else {
                 if (type == String.class) {
                     stringBuffer.append(field.getName() + " TEXT,");
                 } else if (type == Integer.class) {
-                    stringBuffer.append(field.getName() + " INTEGER,");
+                    if (field.getAnnotation(DbPrimaryKey.class) != null) {
+                        stringBuffer.append(field.getName() + " INTEGER PRIMARY KEY,");
+                    } else {
+                        stringBuffer.append(field.getName() + " INTEGER,");
+
+                    }
                 } else if (type == Long.class) {
                     stringBuffer.append(field.getName() + " BIGINT,");
                 } else if (type == Double.class) {
@@ -315,8 +326,14 @@ public class BaseDao<T> implements IBaseDao<T> {
                 String key = (String) iterator.next();
                 String value = whereCasue.get(key);
                 if (value != null) {
-                    stringBuilder.append(" and " + key + " like ?");
-                    list.add("%"+value+"%");
+                    if (key.equals("classId")) {
+                        stringBuilder.append(" and " + key + "=?");
+                        list.add(value);
+                    } else {
+                        stringBuilder.append(" and " + key + " like ?");
+                        list.add("%" + value + "%");
+                    }
+
                 }
 
             }

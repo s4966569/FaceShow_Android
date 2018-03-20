@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui.contacts.bean;
 
+import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbPrimaryKey;
 import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 
 /**
@@ -7,7 +8,7 @@ import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
  */
 @DbTable("yxClass")
 public class ClassBean {
-
+    @DbPrimaryKey
     private Integer classId;
 
     private String className;

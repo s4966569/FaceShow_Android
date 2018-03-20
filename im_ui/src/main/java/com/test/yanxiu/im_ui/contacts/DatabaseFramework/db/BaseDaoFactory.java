@@ -32,7 +32,6 @@ public class BaseDaoFactory {
         try {
             sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dbPath, null);
         } catch (Exception e) {
-            Log.e("frc", e.getMessage());
             e.printStackTrace();
         }
 
