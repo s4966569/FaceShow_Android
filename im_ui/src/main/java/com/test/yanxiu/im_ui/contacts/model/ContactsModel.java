@@ -56,7 +56,7 @@ public class ContactsModel {
             classDao.insert(classBean);
             //存储班级下成员信息
             for (GetContactsResponse.ContactsBean contactsBean : groupsBean.getContacts()) {
-                ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean(contactsBean.getMemberInfo(), groupsBean.getGroupId());
+                ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean(contactsBean.getMemberInfo(), groupsBean.getGroupId(),groupsBean.getGroupName());
                 contactsDao.insert(contactsPlayerBean);
             }
         }

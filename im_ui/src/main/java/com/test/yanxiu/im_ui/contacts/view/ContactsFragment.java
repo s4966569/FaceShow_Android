@@ -1,6 +1,7 @@
 package com.test.yanxiu.im_ui.contacts.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,12 +22,15 @@ import android.widget.Toast;
 
 import com.test.yanxiu.common_base.ui.InputMethodUtil;
 import com.test.yanxiu.common_base.ui.PublicLoadLayout;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
 import com.test.yanxiu.im_ui.contacts.ContactsAdapter;
 import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
 import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
 import com.test.yanxiu.im_ui.contacts.presenter.ContactsPresenter;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -262,7 +266,14 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
 
     @Override
     public void showItemClickResult(ContactsPlayerBean memberInfo) {
-        Toast.makeText(this.getContext(), "position:: " + memberInfo.getName(), Toast.LENGTH_SHORT).show();
+        DbMember member = new DbMember();
+        member.setImId(memberInfo.getId());
+        member.setName(memberInfo.getName());
+        member.setAvatar(memberInfo.getAvatar());
+        member.setGroupId(memberInfo.getClassId());
+        member.setGroupName(memberInfo.getClassName());
+        EventBus.getDefault().post(member);
+        getActivity().finish();
     }
 
     @Override

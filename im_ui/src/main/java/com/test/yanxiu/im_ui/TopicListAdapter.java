@@ -116,7 +116,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                                 .load(member.getAvatar())
                                 .into(mAvatarImageView);
                         // 2, 显示对方昵称(班级名)
-                        mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
+                        //mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
+                        // 私聊不显示（班级）
+                        mSenderTextView.setText(member.getName());
                         break;
                     }
                 }
