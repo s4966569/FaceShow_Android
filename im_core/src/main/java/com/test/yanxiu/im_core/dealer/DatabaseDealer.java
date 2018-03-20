@@ -303,6 +303,7 @@ public class DatabaseDealer {
         dbTopic.setName(topic.topicName);
         dbTopic.setType(topic.topicType);
         dbTopic.setChange(topic.topicChange);
+        dbTopic.setGroup(topic.topicGroup);
 
         for (ImTopic.Member member : topic.members) {
             ImMember imMember = member.memberInfo;

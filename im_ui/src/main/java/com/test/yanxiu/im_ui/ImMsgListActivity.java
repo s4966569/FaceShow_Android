@@ -106,7 +106,7 @@ public class ImMsgListActivity extends FragmentActivity {
             @Override
             public void run() {
                 if (mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
-                    mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
             }
         });
@@ -134,8 +134,19 @@ public class ImMsgListActivity extends FragmentActivity {
             }
         });
 
-        // 点击外部收起键盘
-        mMsgListRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+        // 弹出键盘后处理
+        KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
+        keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
+            @Override
+            public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+                if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
+                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+                }
+            }
+        });
+
+        // pull to refresh，由于覆盖了OnTouchListener，所以需要在这里处理点击外部键盘收起
+        ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView, new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 InputMethodManager imm =  (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
@@ -144,20 +155,6 @@ public class ImMsgListActivity extends FragmentActivity {
                 return false;
             }
         });
-
-        // 弹出键盘后处理
-        KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
-        keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
-            @Override
-            public void onKeyboardChange(boolean isShow, int keyboardHeight) {
-                if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
-                    mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
-                }
-            }
-        });
-
-        // pull to refresh
-        ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView);
         ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
@@ -235,7 +232,7 @@ public class ImMsgListActivity extends FragmentActivity {
         @Override
         public void onItemClick(int position, DbMsg dbMsg) {
             if (dbMsg instanceof DbMyMsg) {
-                DbMyMsg myMsg = (DbMyMsg) dbMsg;
+                final DbMyMsg myMsg = (DbMyMsg) dbMsg;
                 if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
                     // 重新发送
                     topic.mergedMsgs.remove(myMsg);
@@ -245,6 +242,26 @@ public class ImMsgListActivity extends FragmentActivity {
                     topic.mergedMsgs.add(0, myMsg);
                     mMsgListAdapter.setmDatas(topic.mergedMsgs);
                     mMsgListAdapter.notifyDataSetChanged();
+
+                    SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
+                    saveTextMsgRequest.imToken = Constants.imToken;
+                    saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
+                    saveTextMsgRequest.msg = myMsg.getMsg();
+                    httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
+                        @Override
+                        public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                            myMsg.setState(DbMyMsg.State.Success.ordinal());
+                            myMsg.save();
+                            mMsgListAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onFail(RequestBase request, Error error) {
+                            myMsg.setState(DbMyMsg.State.Failed.ordinal());
+                            myMsg.save();
+                            mMsgListAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             }
         }

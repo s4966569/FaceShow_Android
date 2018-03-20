@@ -20,6 +20,7 @@ public class DbTopic extends DataSupport {
     private List<DbMember> members = new ArrayList<>();
     private boolean showDot = false;
 
+    private String group;
 
     // 只为UI显示用，不做数据库存储用
     @Column(ignore = true)
@@ -76,6 +77,14 @@ public class DbTopic extends DataSupport {
 
     public void setShowDot(boolean showDot) {
         this.showDot = showDot;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     //endregion

@@ -120,12 +120,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviRightTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 2018/3/16 通讯录入口
-                startActivity(new Intent(ImTopicListFragment.this.getContext(), ContactsActivity.class));
-                if (topics != null) {
-                    topics.clear();
-                    setupData();
-                }
+                Intent intent = new Intent(ImTopicListFragment.this.getContext(), ContactsActivity.class);
+                getActivity().startActivityForResult(intent, Constants.IM_REQUEST_CODE_CONTACT);
             }
         });
         mTitleLayout.setRightView(mNaviRightTextView);
@@ -430,7 +426,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
     };
 
-    private void goChatWith(final DbMember member) {
+
+    @Subscribe
+    public void onChatWithContact(DbMember contact) {
+        final DbMember member = contact;
         long memberId = member.getImId();
         boolean privateChatExist = false;
 
@@ -501,6 +500,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         });
     }
+
     //endregion
 
     private void rearrangeTopics() {

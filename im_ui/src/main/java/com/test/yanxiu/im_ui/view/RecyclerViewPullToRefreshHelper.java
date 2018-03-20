@@ -27,12 +27,14 @@ public class RecyclerViewPullToRefreshHelper {
     private float startY;
     boolean isPullDown;
 
-    public RecyclerViewPullToRefreshHelper(Context context, final RecyclerView v) {
+    public RecyclerViewPullToRefreshHelper(Context context, final RecyclerView v, final View.OnTouchListener onTouchListener) {
         RecyclerView.OnScrollListener listener;
 
         v.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                onTouchListener.onTouch(view, motionEvent);
+
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         startY = motionEvent.getY();

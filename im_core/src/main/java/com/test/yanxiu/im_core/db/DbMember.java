@@ -16,6 +16,9 @@ public class DbMember extends DataSupport {
     private String name;
     private String avatar;
 
+    private long groupId;
+    private String groupName;
+
     private List<DbTopic> topics = new ArrayList<>();   // 表明此用户加入了哪些topic
 
     //region getter setter
@@ -50,5 +53,22 @@ public class DbMember extends DataSupport {
     public void setTopics(List<DbTopic> topics) {
         this.topics = topics;
     }
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
     //endregion
 }

@@ -13,6 +13,9 @@ public class ImTopic {
     public long topicId;
     public String topicName;
     public String topicType;    // 1-私聊，2-群聊
+
+    public String topicGroup;
+
     public int state;
     public String createTime;   // 格式 2017-12-27 20:15:17
     public String topicChange;  // 见DbTopic::change

@@ -20,8 +20,9 @@ public class ContactsPlayerBean {
     private Integer state;
 
     private Integer classId;
+    private String className;
 
-    public ContactsPlayerBean(GetContactsResponse.MemberInfoBean memberInfoBean, Integer classId) {
+    public ContactsPlayerBean(GetContactsResponse.MemberInfoBean memberInfoBean, Integer classId,String className) {
         this.id = memberInfoBean.getId();
         this.bizSource = memberInfoBean.getBizSource();
         this.memberType = memberInfoBean.getMemberType();
@@ -30,6 +31,7 @@ public class ContactsPlayerBean {
         this.avatar = memberInfoBean.getAvatar();
         this.state = memberInfoBean.getState();
         this.classId = classId;
+        this.className=className;
     }
 
     public ContactsPlayerBean() {
@@ -97,5 +99,13 @@ public class ContactsPlayerBean {
 
     public void setClassId(Integer classId) {
         this.classId = classId;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 }
