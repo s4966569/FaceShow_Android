@@ -46,6 +46,8 @@ import org.litepal.LitePal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -141,7 +143,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     private void setupData() {
         updateTopicsFromDb();
-        updateTopicsFromHttpWithoutMembers();
+        // 为了重连等机制，放到mqtt connected以后做http拉取
+        // updateTopicsFromHttpWithoutMembers();
     }
 
     // 1，从DB列表生成
@@ -293,6 +296,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     //region MQTT
+    private Timer reconnectTimer = new Timer();
     private MqttService.MqttBinder binder = null;
     private DbTopic curTopic = null;    // 当前
     private void startMqttService() {
@@ -306,11 +310,33 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
                     @Override
                     public void onDisconnect() {
+                        // 每30秒重试一次
+                        if (reconnectTimer != null) {
+                            reconnectTimer.cancel();
+                            reconnectTimer.purge();
+                            reconnectTimer = null;
+                        }
 
+                        reconnectTimer = new Timer();
+                        reconnectTimer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                binder.connect();
+                            }
+                        }, 0, 30 *1000);
                     }
 
                     @Override
                     public void onConnect() {
+                        if (reconnectTimer != null) {
+                            reconnectTimer.cancel();
+                            reconnectTimer.purge();
+                            reconnectTimer = null;
+                        }
+
+                        // 为统一处理，移到此处
+                        updateTopicsFromHttpWithoutMembers();
+
                         binder.subscribeMember(Constants.imId);
 
                         for (DbTopic dbTopic : topics) {
