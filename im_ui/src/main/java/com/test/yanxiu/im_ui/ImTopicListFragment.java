@@ -483,6 +483,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             return;
         }
 
+
+
+        // TBD:cailei 此处应该推延到，发送第一条消息后
+
         // 如果之前没有和member的chat记录则新创建一个
         TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
         createTopicRequest.imToken = Constants.imToken;

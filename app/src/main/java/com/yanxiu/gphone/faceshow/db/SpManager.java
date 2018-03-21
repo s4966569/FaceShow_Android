@@ -164,7 +164,7 @@ public class SpManager {
         String userInfoStr = mySharedPreferences.getString(USER_INFO, "");
 
         UserInfo.Info info = RequestBase.getGson().fromJson(userInfoStr, UserInfo.Info.class);
-        if (info != null) {
+        if (info.imTokenInfo != null) {
             Constants.imId = info.imTokenInfo.imMember.imId;
             Constants.imToken = info.imTokenInfo.imToken;
             Constants.imAvatar = info.imTokenInfo.imMember.avatar;
