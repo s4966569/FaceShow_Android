@@ -9,6 +9,7 @@ import com.facebook.stetho.Stetho;
 import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.tendcloud.tenddata.TCAgent;
+import com.test.yanxiu.common_base.utils.ChannelUtil;
 import com.test.yanxiu.common_base.utils.EnvConfigBean;
 import com.test.yanxiu.common_base.utils.UrlBean;
 import com.test.yanxiu.common_base.utils.UrlRepository;
@@ -60,7 +61,7 @@ public class FaceShowApplication extends LitePalApplication {
         LBSManager.init(getApplicationContext());
 
         TCAgent.LOG_ON = true;
-        TCAgent.init(this, "37E19B68638D4FF5B7AF00360317BA71", "");
+        TCAgent.init(this);
         TCAgent.setReportUncaughtExceptions(true);
 
         FrcLogUtils.init();

@@ -63,6 +63,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="TD_APP_ID" android:value="37E19B68638D4FF5B7AF00360317BA71" />
+        <meta-data android:name="TD_CHANNEL_ID" android:value="test" />
+
         <activity
             android:name=".homepage.activity.WelcomeActivity"
             android:screenOrientation="portrait"
