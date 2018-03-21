@@ -357,7 +357,7 @@ public class DatabaseDealer {
                     .where("reqid = ?", msg.reqId)
                     .findFirst(DbMsg.class);
             if (dbMsg == null) {
-                dbMsg = new DbMyMsg();
+                dbMsg = new DbMsg();
             }
 
             theMsg = dbMsg;
