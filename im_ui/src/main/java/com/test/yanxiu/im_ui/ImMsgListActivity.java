@@ -24,6 +24,7 @@ import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -33,7 +34,10 @@ import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
 import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
+import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
+import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.common.ImMsg;
+import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
@@ -60,9 +64,15 @@ public class ImMsgListActivity extends FragmentActivity {
     private EditText mMsgEditText;
     private ImageView mTakePicImageView;
 
+    private String memberIds = null;
+    private String memberName = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        memberIds = getIntent().getStringExtra(Constants.kCreateTopicMemberIds);
+        memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
+
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
 
         topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
@@ -90,7 +100,12 @@ public class ImMsgListActivity extends FragmentActivity {
                 finish();
             }
         });
-        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
+
+        if (topic == null) {
+            mTitleLayout.setTitle(memberName);
+        } else {
+            mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
+        }
 
         mMsgListRecyclerView = findViewById(R.id.msg_list_recyclerview);
         mMsgListRecyclerView.setLayoutManager(new LinearLayoutManager(this,
@@ -98,7 +113,13 @@ public class ImMsgListActivity extends FragmentActivity {
                 false));
         mMsgListAdapter = new MsgListAdapter(this);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+
+        if (topic != null) {
+            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        } else {
+            mMsgListAdapter.setmDatas(new ArrayList<DbMsg>());
+        }
+
         mMsgListAdapter.notifyDataSetChanged();
 
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
@@ -162,8 +183,12 @@ public class ImMsgListActivity extends FragmentActivity {
     }
 
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
-    private void doSend()
-    {
+    public class NewTopicCreatedEvent {
+        public DbTopic dbTopic;
+    }
+
+
+    private void doSendMsg() {
         String msg = mMsgEditText.getText().toString();
         String trimMsg = msg.trim();
         if (trimMsg.length() == 0) {
@@ -210,6 +235,43 @@ public class ImMsgListActivity extends FragmentActivity {
         });
 
         mMsgEditText.setText("");
+    }
+
+    private void doSend()
+    {
+        if (memberIds != null) {
+            // 是新建的Topic，需要先create topic
+            TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
+            createTopicRequest.imToken = Constants.imToken;
+            createTopicRequest.topicType = "1"; // 私聊
+            createTopicRequest.imMemberIds = memberIds;
+            createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+                @Override
+                public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                    for (ImTopic imTopic : ret.data.topic) {
+                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
+                        dbTopic.save();
+
+                        NewTopicCreatedEvent event = new NewTopicCreatedEvent();
+                        event.dbTopic = dbTopic;
+                        EventBus.getDefault().post(event);
+
+                        topic = dbTopic;
+                        doSendMsg();
+                    }
+                }
+
+                @Override
+                public void onFail(RequestBase request, Error error) {
+                    // TBD:cailei 这里需要弹个toast
+                }
+            });
+        } else {
+            // 已经有对话，直接发送即可
+            doSendMsg();
+        }
     }
 
     private void doTakePic() {
@@ -362,6 +424,11 @@ public class ImMsgListActivity extends FragmentActivity {
         }
 
         topic.mergedMsgs.add(0, dbMsg);
+        if (dbMsg.getMsgId() > topic.latestMsgId) {
+            topic.latestMsgId = dbMsg.getMsgId();
+            topic.latestMsgTime = dbMsg.getSendTime();
+        }
+
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);

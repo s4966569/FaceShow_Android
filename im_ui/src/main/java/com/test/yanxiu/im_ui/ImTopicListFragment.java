@@ -81,6 +81,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public void onMsgListActivityReturned() {
+        if (curTopic == null) {
+            // 没有新建topic
+            return;
+        }
+
         // 如果curTopic中有新msg则将此topic排到最前
         long latestMsgTime = curTopic.latestMsgTime;
         for (DbMsg dbMsg : curTopic.mergedMsgs) {
@@ -167,6 +172,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // 3
+                for (ImTopic imTopic : ret.data.topic) {
+                    binder.subscribeTopic(Long.toString(imTopic.topicId));
+                }
+
                 updateTopicsFromHttpAddMembers(ret);
             }
 
@@ -210,6 +219,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             return;
         }
 
+        /*
         // 组成,分割的字符串
         StringBuilder sb = new StringBuilder();
         String sep = ",";
@@ -222,6 +232,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
         // 抽出方法，与mqtt公用
         updateTopicsWithMembers(strTopicIds);
+        */
+
+        for(String topicId : idTopicsNeedUpdateMember){
+            // 由于server限制，改成一个个取
+            updateTopicsWithMembers(topicId);
+        }
     }
 
     // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
@@ -483,54 +499,27 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             return;
         }
 
-
-
-        // TBD:cailei 此处应该推延到，发送第一条消息后
-
-        // 如果之前没有和member的chat记录则新创建一个
-        TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
-        createTopicRequest.imToken = Constants.imToken;
-        createTopicRequest.topicType = "1"; // 私聊
-        createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + memberId;
-        createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
-                for (ImTopic imTopic : ret.data.topic) {
-                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                    dbTopic.latestMsgId = imTopic.latestMsgId;
-
-                    // 更新数据库
-                    // TBD:cailei 需要填充自己的头像地址
-                    DbMember dbMyself = new DbMember();
-                    dbMyself.setImId(Constants.imId);
-                    // dbMyself.setAvatar();
-
-                    dbTopic.getMembers().add(dbMyself);
-                    dbTopic.getMembers().add(member);
-                    dbTopic.save();
-
-                    // 更新UI
-                    topics.add(dbTopic);
-                    rearrangeTopics();
-                    mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-                    curTopic = dbTopic;
-                    SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
-                    Intent i = new Intent(getActivity(), ImMsgListActivity.class);
-                    getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
-                    curTopic.setShowDot(false);
-                    curTopic.save();
-                    return;
-                }
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                // TBD:cailei 这里需要弹个toast
-            }
-        });
+        curTopic = null;
+        SharedSingleton.getInstance().set(Constants.kShareTopic, null);
+        Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+        i.putExtra(Constants.kCreateTopicMemberIds, Long.toString(Constants.imId) + "," + memberId);
+        i.putExtra(Constants.kCreateTopicMemberName, member.getName());
+        getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
     }
 
+    @Subscribe
+    public void onNewTopicCreated(ImMsgListActivity.NewTopicCreatedEvent event) {
+        DbTopic dbTopic = event.dbTopic;
+        binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
+        curTopic = dbTopic;
+        SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
+
+        topics.add(dbTopic);
+        rearrangeTopics();
+        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+        dbTopic.setShowDot(false);
+        dbTopic.save();
+    }
     //endregion
 
     private void rearrangeTopics() {
