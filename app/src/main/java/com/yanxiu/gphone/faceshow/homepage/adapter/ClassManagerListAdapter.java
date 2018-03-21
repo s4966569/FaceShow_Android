@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.course.GetStudentClazsesResponse;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
 
@@ -40,6 +41,7 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
         String end = data.get(position).getEndTime().split(" ")[0];
         viewHolder.classmanger_item_time.setText(start + " 至 " + end);
         viewHolder.classmanger_item_content.setText(data.get(position).getProjectName());
+        /**???? 这是干啥的？*/
         if (!views.contains(holder.itemView)) {
             views.add(holder.itemView);
         }
@@ -53,14 +55,25 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
                         views.get(i).setSelected(false);
                     }
                 }
+                holder.itemView.setSelected(true);
                 if (mIRecyclerViewItemClick != null) {
                     mIRecyclerViewItemClick.onItemClick(view, holder.getAdapterPosition());
                 }
             }
         });
-        if (mSelectedPosition != -1 && mSelectedPosition == position) {
-            views.get(position).setSelected(true);
+
+        if (String.valueOf(data.get(position).getId()).equals( SpManager.getUserInfo().getClassId())) {
+            holder.itemView.setSelected(true);
+        }else {
+            holder.itemView.setSelected(false);
         }
+
+//        if (mSelectedPosition != -1 && mSelectedPosition == position) {
+//            views.get(position).setSelected(true);
+//        }else{
+//            //选择班级界面 出现个多个被选班级
+//            views.get(position).setSelected(false);
+//        }
     }
 
     public void setIRecyclerViewItemClick(IRecyclerViewItemClick iRecyclerViewItemClick) {
