@@ -336,7 +336,8 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        signUpRequest(phone, username, md5Psw, clazsId);
+//                        signUpRequest(phone, username, md5Psw, clazsId);
+                        mRootView.hiddenNetErrorView();
                     }
                 });
             }
