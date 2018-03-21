@@ -128,7 +128,7 @@ public class MqttService extends Service {
     }
 
     private void doConnect() {
-        if (mClient != null) {
+        if ((mClient != null) && (!mClient.isConnected())) {
             try {
                 mClient.connect(mMqttConnectOptions, null, new IMqttActionListener() {
                     @Override
