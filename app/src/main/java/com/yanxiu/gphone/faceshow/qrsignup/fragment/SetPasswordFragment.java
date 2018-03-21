@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -333,6 +336,7 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
             @Override
             public void onFail(RequestBase request, Error error) {
                 mRootView.showNetErrorView();
+                hideSoftInput(usernameEditText);
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -440,6 +444,10 @@ public class SetPasswordFragment extends FaceShowBaseFragment {
         });
 
         alertDialog = builder.create();
+    }
+    private void hideSoftInput(EditText editText) {
+        InputMethodManager inputMethodManager= (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
     }
 
 

@@ -1,6 +1,7 @@
 package com.yanxiu.gphone.faceshow.qrsignup.fragment;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +11,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -341,10 +344,12 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 // TODO: 2018/3/6 验证失败 弹出提示
                 mRootView.hiddenLoadingView();
                 mRootView.showNetErrorView();
+                hideSoftInput(verifyCodeEditText);
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        userTypeCheckRequest(phone, verifycode, clazsID);
+//                        userTypeCheckRequest(phone, verifycode, clazsID);
+                        mRootView.hiddenNetErrorView();
                     }
                 });
 
@@ -454,17 +459,23 @@ public class CheckPhoneFragment extends FaceShowBaseFragment {
                 disableNextStepBtn();
                 cancelTimer();
                 mRootView.showNetErrorView();
+                hideSoftInput(phoneEditText);
+
                 /*设置重试按钮监听*/
                 mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        verfifyCodeRequest(number, clazsId);
+//                        verfifyCodeRequest(number, clazsId);
+                        mRootView.hiddenNetErrorView();
                     }
                 });
             }
         });
     }
-
+    private void hideSoftInput(EditText editText) {
+        InputMethodManager inputMethodManager= (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
+    }
     /**
      * 根据返回值 获取错误信息
      */
