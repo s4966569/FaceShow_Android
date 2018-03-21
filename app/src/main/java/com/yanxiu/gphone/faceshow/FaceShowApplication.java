@@ -61,7 +61,7 @@ public class FaceShowApplication extends LitePalApplication {
         LBSManager.init(getApplicationContext());
 
         TCAgent.LOG_ON = true;
-        TCAgent.init(this, "37E19B68638D4FF5B7AF00360317BA71", ChannelUtil.getChannel(this.getApplicationContext()));
+        TCAgent.init(this);
         TCAgent.setReportUncaughtExceptions(true);
 
         FrcLogUtils.init();
