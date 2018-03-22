@@ -308,7 +308,9 @@ public class DatabaseDealer {
         for (ImTopic.Member member : topic.members) {
             ImMember imMember = member.memberInfo;
             DbMember dbMember = updateDbMemberWithImMember(imMember);
+            dbTopic.getMembers().clear();
             dbTopic.getMembers().add(dbMember);
+
             dbMember.getTopics().add(dbTopic);
             dbMember.save();
         }
