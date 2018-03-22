@@ -20,6 +20,8 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import java.util.UUID;
+
 /**
  * Created by cailei on 05/03/2018.
  */
@@ -41,11 +43,10 @@ public class MqttService extends Service {
         }
 
         // host为null时，采用默认
-        public void init(String host, String user, String pwd, String clientId) {
+        public void init(String host, String user, String pwd) {
             MqttService.this.host = host;
             MqttService.this.userName = user;
             MqttService.this.passWord = pwd;
-            MqttService.this.clientId = clientId;
             doInit();
         }
 
@@ -79,7 +80,7 @@ public class MqttService extends Service {
     private String host = "tcp://orz.yanxiu.com:7914";
     private String userName = "admin";
     private String passWord = "public";
-    private String clientId = "android";
+    private String clientId = "android01";
 
     protected MqttAndroidClient mClient;
     protected MqttConnectOptions mMqttConnectOptions;
@@ -108,7 +109,10 @@ public class MqttService extends Service {
         }
     };
 
+    private int uuid = 0;
     private void doInit() {
+        clientId = "android" + uuid++ + UUID.randomUUID().toString();
+
         if (TextUtils.isEmpty(host) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(passWord) || TextUtils.isEmpty(clientId)) {
             throw new NullPointerException("please call method setClientMessage(String host, String userName, String passWord, String clientId) first");
         }
@@ -133,6 +137,7 @@ public class MqttService extends Service {
                 mClient.connect(mMqttConnectOptions, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
+
                         SrtLogger.log("immqtt", "mqtt connectted");
                         if (mMqttServiceCallback != null) {
                             mMqttServiceCallback.onConnect();
@@ -168,12 +173,12 @@ public class MqttService extends Service {
                 mClient.subscribe("im/v1.0/topic/" + topicId, 1, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.d("Tag", "mqtt subscribeTopic successfully");
+                        SrtLogger.log("immqtt", "mqtt subscribe topic successfully");
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.d("Tag", "mqtt subscribeTopic failed");
+                        SrtLogger.log("immqtt", "mqtt subscribe topic failed");
                     }
                 });
             } catch (MqttException e) {
@@ -188,12 +193,12 @@ public class MqttService extends Service {
                 mClient.subscribe("im/v1.0/member/" + Long.toString(memberId), 1, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        Log.d("Tag", "mqtt subscribeTopic successfully");
+                        SrtLogger.log("immqtt", "mqtt subscribe member successfully");
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.d("Tag", "mqtt subscribeTopic failed");
+                        SrtLogger.log("immqtt", "mqtt subscribe member failed");
                     }
                 });
             } catch (MqttException e) {

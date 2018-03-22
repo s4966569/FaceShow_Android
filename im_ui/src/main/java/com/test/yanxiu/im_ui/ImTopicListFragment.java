@@ -337,9 +337,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         reconnectTimer.schedule(new TimerTask() {
                             @Override
                             public void run() {
+                                // 重连必须重新给一个clientId，否则直接失败
+                                binder.init();
                                 binder.connect();
                             }
-                        }, 0, 30 *1000);
+                        }, 30 *1000);
                     }
 
                     @Override
