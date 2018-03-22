@@ -76,6 +76,9 @@ public class ImMsgListActivity extends FragmentActivity {
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
 
         topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
+        if (topic.mergedMsgs.size() == 0 ) {
+            hasMoreMsgs = false;
+        }
 
         setContentView(R.layout.activity_msg_list);
         setupView();
