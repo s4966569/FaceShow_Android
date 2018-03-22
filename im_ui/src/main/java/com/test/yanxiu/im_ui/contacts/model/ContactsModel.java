@@ -1,16 +1,15 @@
 package com.test.yanxiu.im_ui.contacts.model;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import com.test.yanxiu.im_core.http.GetContactsResponse;
+import com.test.yanxiu.im_ui.Constants;
 import com.test.yanxiu.im_ui.contacts.DatabaseFramework.db.BaseDaoFactory;
 import com.test.yanxiu.im_ui.contacts.db.ClassDao;
 import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
 import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
 import com.test.yanxiu.im_ui.contacts.db.ContactsDao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
  */
 
 public class ContactsModel {
-    private final String dbPath = "/data/data/com.yanxiu.gphone.faceshow/databases/yx.db";
+    private final String dbPath = "/data/data/com.yanxiu.gphone.faceshow/databases/db_"+ Constants.imId +"_db.db";
     private ClassDao classDao;
     private ContactsDao contactsDao;
     private ClassBean mCurrentClass;
@@ -125,6 +124,9 @@ public class ContactsModel {
         mCurrentQueryKey = "";
     }
 
+    public void cloaseDao(){
+
+    }
 
 //    private void createMockData() {
 //
