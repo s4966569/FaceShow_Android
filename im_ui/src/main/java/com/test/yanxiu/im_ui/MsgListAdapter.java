@@ -13,8 +13,11 @@ import com.bumptech.glide.Glide;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
+import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,12 +37,23 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         LOADING,
         DATETIME,
         DBMSG,
-        DBMYMSG
+        DBMYMSG,
+
+        BOTTOM
     }
 
     private Context mContext;
     private List<DbMsg> mDatas;
     private List<Item> mUiDatas;
+    private DbTopic topic;
+
+    public DbTopic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(DbTopic topic) {
+        this.topic = topic;
+    }
 
     public MsgListAdapter(Context context) {
         mContext = context;
@@ -105,11 +119,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mUiDatas.add(0, timeItem);
             }
         }
+
+        // 最后一条消息插入时间
+        if ((mDatas != null)  && (mDatas.size() > 0)) {
+            Item timeItem = new Item();
+            timeItem.setType(ItemType.DATETIME);
+            timeItem.setTimestamp(mDatas.get(0).getSendTime());
+            mUiDatas.add(0, timeItem);
+        }
+
+        // 底下留白
+        Item bottomItem = new Item();
+        bottomItem.setType(ItemType.BOTTOM);
+        mUiDatas.add(bottomItem);
     }
 
 
     // 加载更多时需要滚动到相应的位置
-    public int uiPositionForMsg(DbMsg msg) {
+    public int uiAddedNumberForMsg(DbMsg msg) {
         int position = 0;
         for (Item uiItem : mUiDatas) {
             if ((uiItem.getMsg() == msg) || (uiItem.getMyMsg() == msg)) {
@@ -119,7 +146,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
 
-        return position;
+        return position == 1 ? 0: position; // 因为为最初的一个消息时，本来之前就插入了一个Datetime
     }
 
 
@@ -149,6 +176,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         if (viewType == ItemType.DBMYMSG.ordinal()) {
             View v = LayoutInflater.from(mContext).inflate(R.layout.item_msg_dbmymsg, parent, false);
             return new MyMsgViewHolder(v);
+        }
+
+        if (viewType == ItemType.BOTTOM.ordinal()) {
+            View v = LayoutInflater.from(mContext).inflate(R.layout.recyclerview_padding_layout, parent, false);
+            return new BottomViewHolder(v);
         }
         return null;
     }
@@ -181,6 +213,17 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
         public abstract void setData(Item item);
+    }
+
+    public class BottomViewHolder extends  MsgListItemViewHolder {
+        public BottomViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        public void setData(Item item) {
+
+        }
     }
 
     public class LoadingViewHolder extends MsgListItemViewHolder {
@@ -257,6 +300,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
+            mMsgTextView.setTextIsSelectable(true);
         }
 
         @Override
@@ -265,7 +309,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView.setText("");
-            DbMember sender = DatabaseDealer.getMemberById(msg.getSenderId());
+            final DbMember sender = DatabaseDealer.getMemberById(msg.getSenderId());
             if (sender != null) {
                 Glide.with(mContext)
                         .load(sender.getAvatar())
@@ -274,6 +318,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             mMsgTextView.setText(msg.getMsg());
+
+            mAvatarImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if ((topic != null) && (topic.getType().equals("2"))) {
+                        // 群聊点击头像
+                        EventBus.getDefault().post(sender);
+                    }
+                }
+            });
         }
     }
 
@@ -286,6 +340,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             super(itemView);
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
+            mMsgTextView.setTextIsSelectable(true);
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
         }

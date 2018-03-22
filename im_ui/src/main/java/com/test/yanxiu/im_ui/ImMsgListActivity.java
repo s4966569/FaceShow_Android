@@ -112,6 +112,7 @@ public class ImMsgListActivity extends FragmentActivity {
                 LinearLayoutManager.VERTICAL,
                 false));
         mMsgListAdapter = new MsgListAdapter(this);
+        mMsgListAdapter.setTopic(topic);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
         if (topic != null) {
@@ -371,8 +372,10 @@ public class ImMsgListActivity extends FragmentActivity {
                         }
 
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                        int position = mMsgListAdapter.uiPositionForMsg(theRefreshingMsg);
-                        mMsgListAdapter.notifyItemRangeInserted(0, position);
+                        int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
+                        if (num > 0) {
+                            mMsgListAdapter.notifyItemRangeInserted(0, num);
+                        }
                     }
 
                     @Override
@@ -393,8 +396,10 @@ public class ImMsgListActivity extends FragmentActivity {
                         }
                         topic.mergedMsgs.addAll(msgs);
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                        int position = mMsgListAdapter.uiPositionForMsg(theRefreshingMsg);
-                        mMsgListAdapter.notifyItemRangeInserted(0, position);
+                        int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
+                        if (num > 0) {
+                            mMsgListAdapter.notifyItemRangeInserted(0, num);
+                        }
                     }
                 });
             }

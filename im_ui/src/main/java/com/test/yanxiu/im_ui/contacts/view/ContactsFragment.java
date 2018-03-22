@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.test.yanxiu.common_base.ui.InputMethodUtil;
 import com.test.yanxiu.common_base.ui.PublicLoadLayout;
 import com.test.yanxiu.im_core.db.DbMember;
+import com.test.yanxiu.im_ui.Constants;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
 import com.test.yanxiu.im_ui.contacts.ContactsAdapter;
@@ -66,6 +67,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         mLlChangeClass = rootView.findViewById(R.id.ll_change_class);
         mChangeClassBackView = rootView.findViewById(R.id.back_view);
         mTvSureChangeClass = rootView.findViewById(R.id.tv_sure_change_class);
+        mTvSureChangeClass.setVisibility(View.GONE);
         mSearchView = rootView.findViewById(R.id.searchView);
         modifySearchViewStyle(mSearchView);
         /*初始化通讯录列表*/
@@ -195,6 +197,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
             @Override
             public void itemClick(View view, int position) {
                 mCurrentItemClassSelected = position;
+                presenter.changeClass(mCurrentItemClassSelected);
             }
         });
         mTvSureChangeClass.setOnClickListener(new View.OnClickListener() {
@@ -266,6 +269,12 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
 
     @Override
     public void showItemClickResult(ContactsPlayerBean memberInfo) {
+        if (memberInfo.getId() == Constants.imId) {
+            // 不能给自己发消息
+            Toast.makeText(getActivity(), "不能给自己发消息", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         DbMember member = new DbMember();
         member.setImId(memberInfo.getId());
         member.setName(memberInfo.getName());
@@ -273,7 +282,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         member.setGroupId(memberInfo.getClassId());
         member.setGroupName(memberInfo.getClassName());
         EventBus.getDefault().post(member);
-        getActivity().finish();
+        //getActivity().finish();
     }
 
     @Override
