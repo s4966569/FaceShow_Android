@@ -246,13 +246,17 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateEachTopicMsgs(List<DbTopic> topics) {
         totalRetryTimes = 10;
         for (final DbTopic dbTopic : topics) {
-            // 对于已经有最新消息在数据库的
-            long dbLastMsgId = DatabaseDealer.getLatestMsgIdForTopic(dbTopic.getTopicId());
-            if (dbTopic.latestMsgId <= dbLastMsgId) {
-                continue;
+            if (dbTopic.mergedMsgs.size() == 0) {
+                // 获得了members，消息需要重新获得
+                doGetTopicMsgsRequest(dbTopic);
+            } else {
+                // 没有更新members的，但数据库中最新消息已经过期的需要重新获取
+                // 对于已经有最新消息在数据库的
+                long dbLastMsgId = DatabaseDealer.getLatestMsgIdForTopic(dbTopic.getTopicId());
+                if (dbTopic.latestMsgId > dbLastMsgId) {
+                    doGetTopicMsgsRequest(dbTopic);
+                }
             }
-
-            doGetTopicMsgsRequest(dbTopic);
         }
     };
 
