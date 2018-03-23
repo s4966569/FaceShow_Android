@@ -243,7 +243,7 @@ public class ImMsgListActivity extends FragmentActivity {
 
     private void doSend()
     {
-        if (memberIds != null) {
+        if ((memberIds != null) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
             createTopicRequest.imToken = Constants.imToken;
@@ -421,15 +421,6 @@ public class ImMsgListActivity extends FragmentActivity {
         if (msg.topicId != topic.getTopicId()) {
             // 不是本topic的直接抛弃
             return;
-        }
-
-        if (msg.senderId == Constants.imId) {
-            for (DbMsg theDbMsg : topic.mergedMsgs) {
-                if (theDbMsg.getReqId().equals(msg.reqId)) {
-                    // 已经有了, 不去动UI
-                    return;
-                }
-            }
         }
 
         //topic.mergedMsgs.add(0, dbMsg);
