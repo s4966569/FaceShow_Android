@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
+import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.im_ui.ImTopicListFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -757,6 +758,15 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        MqttService.MqttBinder mqttBinder = mNaviFragmentFactory.getImFragment().getBinder();
+        if (mqttBinder != null) {
+            mqttBinder.disconnect();
+        }
+
+        unbindService(mNaviFragmentFactory.getImFragment().mqttServiceConnection);
+        mNaviFragmentFactory.getImFragment().mqttServiceConnection = null;
+
         if (mGetHasNotificationsNeedReadRequestUUID != null) {
             RequestBase.cancelRequestWithUUID(mGetHasNotificationsNeedReadRequestUUID);
         }
@@ -767,8 +777,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
         }
-
     }
+
     private void getClassListData() {
         mRootView.showLoadingView();
         GetSudentClazsesRequest getSudentClazsesRequest = new GetSudentClazsesRequest();

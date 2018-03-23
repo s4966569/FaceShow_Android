@@ -304,13 +304,12 @@ public class DatabaseDealer {
         dbTopic.setType(topic.topicType);
         dbTopic.setChange(topic.topicChange);
         dbTopic.setGroup(topic.topicGroup);
+        dbTopic.getMembers().clear();
 
         for (ImTopic.Member member : topic.members) {
             ImMember imMember = member.memberInfo;
             DbMember dbMember = updateDbMemberWithImMember(imMember);
-            dbTopic.getMembers().clear();
             dbTopic.getMembers().add(dbMember);
-
             dbMember.getTopics().add(dbTopic);
             dbMember.save();
         }

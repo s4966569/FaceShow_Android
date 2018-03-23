@@ -377,6 +377,7 @@ public class ImMsgListActivity extends FragmentActivity {
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
                         int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
                         if (num > 0) {
+                            mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
                             mMsgListAdapter.notifyItemRangeInserted(0, num);
                         }
                     }
@@ -401,6 +402,7 @@ public class ImMsgListActivity extends FragmentActivity {
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
                         int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
                         if (num > 0) {
+                            mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
                             mMsgListAdapter.notifyItemRangeInserted(0, num);
                         }
                     }

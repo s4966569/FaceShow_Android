@@ -89,6 +89,11 @@ public class MqttService extends Service {
     protected MqttCallback mCallback = new MqttCallback() {
         @Override
         public void connectionLost(Throwable cause) {
+            if (cause == null) {
+                // 手动停止
+                return;
+            }
+
             SrtLogger.log("immqtt", "connection lost");
             if (mMqttServiceCallback != null) {
                 mMqttServiceCallback.onDisconnect();

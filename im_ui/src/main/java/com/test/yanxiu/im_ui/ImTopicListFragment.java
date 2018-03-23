@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -62,6 +63,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private List<DbTopic> topics = new ArrayList<>();
     public ImTopicListFragment() {
         // Required empty public constructor
+    }
+
+    public MqttService.MqttBinder getBinder() {
+        return binder;
     }
 
     @Override
@@ -315,72 +320,75 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         });
     }
 
+    public ServiceConnection mqttServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            SrtLogger.log("im mqtt", "mqtt connectted");
+            binder = (MqttService.MqttBinder) iBinder;
+
+            binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
+                @Override
+                public void onDisconnect() {
+                    // 每30秒重试一次
+                    if (reconnectTimer != null) {
+                        reconnectTimer.cancel();
+                        reconnectTimer.purge();
+                        reconnectTimer = null;
+                    }
+
+                    reconnectTimer = new Timer();
+                    reconnectTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            // 重连必须重新给一个clientId，否则直接失败
+                            binder.init();
+                            binder.connect();
+                        }
+                    }, 30 *1000);
+                }
+
+                @Override
+                public void onConnect() {
+                    if (reconnectTimer != null) {
+                        reconnectTimer.cancel();
+                        reconnectTimer.purge();
+                        reconnectTimer = null;
+                    }
+
+                    // 为统一处理，移到此处
+                    updateTopicsFromHttpWithoutMembers();
+
+                    binder.subscribeMember(Constants.imId);
+
+                    for (DbTopic dbTopic : topics) {
+                        binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
+                    }
+                }
+            });
+            binder.init();
+            binder.connect();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            SrtLogger.log("im mqtt", "mqtt disconnectted");
+        }
+    };
     //region MQTT
     private Timer reconnectTimer = new Timer();
     private MqttService.MqttBinder binder = null;
     private DbTopic curTopic = null;    // 当前
     private void startMqttService() {
         Intent intent = new Intent(getActivity(), MqttService.class);
-        getActivity().bindService(intent, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                SrtLogger.log("im mqtt", "mqtt connectted");
-                binder = (MqttService.MqttBinder) iBinder;
-
-                binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
-                    @Override
-                    public void onDisconnect() {
-                        // 每30秒重试一次
-                        if (reconnectTimer != null) {
-                            reconnectTimer.cancel();
-                            reconnectTimer.purge();
-                            reconnectTimer = null;
-                        }
-
-                        reconnectTimer = new Timer();
-                        reconnectTimer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                // 重连必须重新给一个clientId，否则直接失败
-                                binder.init();
-                                binder.connect();
-                            }
-                        }, 30 *1000);
-                    }
-
-                    @Override
-                    public void onConnect() {
-                        if (reconnectTimer != null) {
-                            reconnectTimer.cancel();
-                            reconnectTimer.purge();
-                            reconnectTimer = null;
-                        }
-
-                        // 为统一处理，移到此处
-                        updateTopicsFromHttpWithoutMembers();
-
-                        binder.subscribeMember(Constants.imId);
-
-                        for (DbTopic dbTopic : topics) {
-                            binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
-                        }
-                    }
-                });
-                binder.init();
-                binder.connect();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                SrtLogger.log("im mqtt", "mqtt disconnectted");
-            }
-        }, BIND_AUTO_CREATE);
+        //mqttServiceConnection =
+        getActivity().bindService(intent, mqttServiceConnection, BIND_AUTO_CREATE);
 
         EventBus.getDefault().register(this);
     }
 
     private void stopMqttService() {
         // TBD:cailei 这里需要仔细研究下unbind service时机，直接加上会crash
+
     }
 
     @Subscribe
