@@ -323,7 +323,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public ServiceConnection mqttServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            SrtLogger.log("im mqtt", "mqtt connectted");
+            SrtLogger.log("im mqtt", "service connectted");
             binder = (MqttService.MqttBinder) iBinder;
 
             binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
@@ -365,13 +365,19 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     }
                 }
             });
+
             binder.init();
             binder.connect();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            SrtLogger.log("im mqtt", "mqtt disconnectted");
+            SrtLogger.log("im mqtt", "service disconnectted");
+            if (reconnectTimer != null) {
+                reconnectTimer.cancel();
+                reconnectTimer.purge();
+                reconnectTimer = null;
+            }
         }
     };
     //region MQTT

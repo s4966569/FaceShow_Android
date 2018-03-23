@@ -758,12 +758,6 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        MqttService.MqttBinder mqttBinder = mNaviFragmentFactory.getImFragment().getBinder();
-        if (mqttBinder != null) {
-            mqttBinder.disconnect();
-        }
-
         unbindService(mNaviFragmentFactory.getImFragment().mqttServiceConnection);
         mNaviFragmentFactory.getImFragment().mqttServiceConnection = null;
 

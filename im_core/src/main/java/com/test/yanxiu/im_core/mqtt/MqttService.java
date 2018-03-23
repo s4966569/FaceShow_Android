@@ -71,12 +71,6 @@ public class MqttService extends Service {
         }
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new MqttBinder();
-    }
-
     private String host = "tcp://orz.yanxiu.com:7914";
     private String userName = "admin";
     private String passWord = "public";
@@ -178,12 +172,12 @@ public class MqttService extends Service {
                 mClient.subscribe("im/v1.0/topic/" + topicId, 1, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        SrtLogger.log("immqtt", "mqtt subscribe topic successfully");
+                        //SrtLogger.log("immqtt", "mqtt subscribe topic successfully");
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        SrtLogger.log("immqtt", "mqtt subscribe topic failed");
+                        //SrtLogger.log("immqtt", "mqtt subscribe topic failed");
                     }
                 });
             } catch (MqttException e) {
@@ -198,12 +192,12 @@ public class MqttService extends Service {
                 mClient.subscribe("im/v1.0/member/" + Long.toString(memberId), 1, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
-                        SrtLogger.log("immqtt", "mqtt subscribe member successfully");
+                        //SrtLogger.log("immqtt", "mqtt subscribe member successfully");
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        SrtLogger.log("immqtt", "mqtt subscribe member failed");
+                        //SrtLogger.log("immqtt", "mqtt subscribe member failed");
                     }
                 });
             } catch (MqttException e) {
@@ -211,4 +205,28 @@ public class MqttService extends Service {
             }
         }
     }
+
+    private MqttBinder binder;
+    @Override
+    public IBinder onBind(Intent intent) {
+        SrtLogger.log("im service", "bind");
+        binder = new MqttBinder();
+        return binder;
+    }
+
+    @Override
+    public void onRebind (Intent intent) {
+        SrtLogger.log("im service", "rebind");
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        SrtLogger.log("im service", "unbind");
+        if (binder != null) {
+            binder.disconnect();
+        }
+        return true;
+    }
+
+
 }
