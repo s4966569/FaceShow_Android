@@ -173,9 +173,9 @@ public class BaseDao<T> implements IBaseDao<T> {
         ContentValues contentValues = getContentValues(map);
         //开始插入数据
         long result = sqLiteDatabase.insert(tableName, null, contentValues);
-
         return result;
     }
+
 
     public void execute(String sql) {
         sqLiteDatabase.execSQL(sql);
@@ -197,6 +197,11 @@ public class BaseDao<T> implements IBaseDao<T> {
         Map map = getValues(where);
         Condition co = new Condition(map);
         return sqLiteDatabase.delete(tableName, co.whereCasue, co.whereArgs);
+    }
+
+    @Override
+    public void deleteTable() {
+        sqLiteDatabase.execSQL("DROP TABLE " + tableName);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class ContactsPresenter<V extends IContactsView> extends BasePresenter<V>
         getContactsRequest.startRequest(GetContactsResponse.class, new HttpCallback<GetContactsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetContactsResponse ret) {
-                view.hideLoadingView();
+
                 if (ret.code == 0) {
                     if (ret.getData().getContacts() == null && ret.getData().getContacts().getGroups() == null || ret.getData().getContacts().getGroups().size() < 1) {
                         if (getClassList() != null && getClassList().size() > 0) {
@@ -63,6 +63,7 @@ public class ContactsPresenter<V extends IContactsView> extends BasePresenter<V>
                     }
 
                 }
+                view.hideLoadingView();
 
 
             }
