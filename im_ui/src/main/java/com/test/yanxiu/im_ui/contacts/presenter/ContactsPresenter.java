@@ -1,8 +1,6 @@
 package com.test.yanxiu.im_ui.contacts.presenter;
 
-import android.content.Context;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.test.yanxiu.im_core.http.GetContactsRequest;
 import com.test.yanxiu.im_core.http.GetContactsResponse;

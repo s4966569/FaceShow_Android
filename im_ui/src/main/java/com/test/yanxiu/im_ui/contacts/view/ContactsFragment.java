@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +52,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     public ContactsAdapter mContactsAdapter;
     private ChangeClassAdapter mChangeClassAdapter;
     private RecyclerView mContactsList;
+    private RelativeLayout mRlChangeClass;
     private int mCurrentItemClassSelected;
     private View rootView;
     public PublicLoadLayout mRootView;
@@ -63,6 +65,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         mRootView.setContentView(rootView);
         mImgBack = rootView.findViewById(R.id.img_back);
         mImgChangeClass = rootView.findViewById(R.id.img_change_class);
+        mRlChangeClass=rootView.findViewById(R.id.rl_change_class);
         mTvCurrentClassName = rootView.findViewById(R.id.tv_current_class_name);
         mLlChangeClass = rootView.findViewById(R.id.ll_change_class);
         mChangeClassBackView = rootView.findViewById(R.id.back_view);
@@ -168,7 +171,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
                 return false;
             }
         });
-        mImgChangeClass.setOnClickListener(new View.OnClickListener() {
+        mRlChangeClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hideSoftInput();
