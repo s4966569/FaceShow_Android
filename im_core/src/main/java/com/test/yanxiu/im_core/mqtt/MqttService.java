@@ -158,11 +158,10 @@ public class MqttService extends Service {
 
     private void doDisconnect() {
         if ((mClient != null) && mClient.isConnected()) {
-            try {
-                mClient.disconnect();
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
+            //mClient.disconnect();
+            mClient.unregisterResources();
+            mClient.close();
+            mClient = null;
         }
     }
 
@@ -206,12 +205,10 @@ public class MqttService extends Service {
         }
     }
 
-    private MqttBinder binder;
     @Override
     public IBinder onBind(Intent intent) {
         SrtLogger.log("im service", "bind");
-        binder = new MqttBinder();
-        return binder;
+        return new MqttBinder();
     }
 
     @Override
@@ -222,9 +219,7 @@ public class MqttService extends Service {
     @Override
     public boolean onUnbind(Intent intent) {
         SrtLogger.log("im service", "unbind");
-        if (binder != null) {
-            binder.disconnect();
-        }
+        doDisconnect();
         return true;
     }
 

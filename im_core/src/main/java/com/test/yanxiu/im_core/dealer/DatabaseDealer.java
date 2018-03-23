@@ -440,7 +440,7 @@ public class DatabaseDealer {
             }
         }
 
-        topic.mergedMsgs.add(msg);
+        topic.mergedMsgs.add(0, msg);
     }
     //endregion
 }

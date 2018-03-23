@@ -86,25 +86,33 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public void onMsgListActivityReturned() {
-        if (curTopic == null) {
-            // 没有新建topic
-            return;
-        }
+        for (DbTopic topic : msgShownTopics) {
+            // 最多保留20条
+            topic.setShowDot(false);
+            topic.mergedMsgs = topic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, topic.mergedMsgs.size()));
 
-        // 如果curTopic中有新msg则将此topic排到最前
-        long latestMsgTime = curTopic.latestMsgTime;
-        for (DbMsg dbMsg : curTopic.mergedMsgs) {
-            if (dbMsg.getSendTime() > latestMsgTime) {
-                topics.remove(curTopic);
-                topics.add(0, curTopic);
+            // 有新消息则要放置到最前
+            long latestMsgTime = topic.latestMsgTime;
+
+            // 因为mqtt新增topic，和http新增topic，不确定哪个先返回，所以需要用msg activity里的topic替换掉topic fragment的
+            for (DbTopic dbTopic : topics) {
+                if (dbTopic.getTopicId() == topic.getTopicId()) {
+                    topics.set(topics.indexOf(dbTopic), topic);
+                }
+            }
+
+
+            for (DbMsg msg : topic.mergedMsgs) {
+                if (msg.getSendTime() > latestMsgTime) {
+                    // 放置到最前
+                    topics.remove(topic);
+                    topics.add(0, topic);
+                }
             }
         }
+        rearrangeTopics(); // 重新排列群聊、私聊
 
-        // 保留最多pagesize条
-        curTopic.mergedMsgs = curTopic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, curTopic.mergedMsgs.size()));
         curTopic = null;
-
-        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -383,7 +391,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     //region MQTT
     private Timer reconnectTimer = new Timer();
     private MqttService.MqttBinder binder = null;
-    private DbTopic curTopic = null;    // 当前
+    private DbTopic curTopic = null;                                    // 当前界面上开启msgs的topic，curTopic为空说明是新建私聊
+    private ArrayList<DbTopic> msgShownTopics = new ArrayList<>();      // 因为需要可以从群聊点击头像进入私聊，多级msgs界面
+
     private void startMqttService() {
         Intent intent = new Intent(getActivity(), MqttService.class);
         //mqttServiceConnection =
@@ -401,11 +411,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
-
-        // 如果是当前topic，不在这里更新，而在msgs界面更新
-        if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {
-            return;
-        }
 
         // mqtt上的实时消息，按照接收顺序写入ui的datalist
         // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
@@ -480,12 +485,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
         @Override
         public void onItemClick(int position, DbTopic dbTopic) {
+
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
-            curTopic = dbTopic;
             dbTopic.setShowDot(false);
             dbTopic.save();
+
+            curTopic = dbTopic;
+            msgShownTopics.add(dbTopic);
         }
     };
 
@@ -517,6 +525,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             curTopic.setShowDot(false);
             curTopic.save();
+            msgShownTopics.add(curTopic);
             return;
         }
 
@@ -530,16 +539,19 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onNewTopicCreated(ImMsgListActivity.NewTopicCreatedEvent event) {
+        // 新建topic成功，curTopic由null转为实际生成的topic
         DbTopic dbTopic = event.dbTopic;
-        binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
+        dbTopic.setShowDot(false);
+        dbTopic.save();
+
         curTopic = dbTopic;
         SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
-
+        msgShownTopics.add(curTopic);
         topics.add(dbTopic);
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-        dbTopic.setShowDot(false);
-        dbTopic.save();
+
+        binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
     }
     //endregion
 

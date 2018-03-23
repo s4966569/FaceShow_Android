@@ -257,12 +257,11 @@ public class ImMsgListActivity extends FragmentActivity {
                         dbTopic.latestMsgTime = imTopic.latestMsgTime;
                         dbTopic.latestMsgId = imTopic.latestMsgId;
                         dbTopic.save();
+                        topic = dbTopic;
 
                         NewTopicCreatedEvent event = new NewTopicCreatedEvent();
                         event.dbTopic = dbTopic;
                         EventBus.getDefault().post(event);
-
-                        topic = dbTopic;
                         doSendMsg();
                     }
                 }
