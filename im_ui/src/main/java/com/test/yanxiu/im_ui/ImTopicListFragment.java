@@ -403,8 +403,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private void stopMqttService() {
-        // TBD:cailei 这里需要仔细研究下unbind service时机，直接加上会crash
-
+        // 已经在MqttService的unbind中处理
     }
 
     @Subscribe

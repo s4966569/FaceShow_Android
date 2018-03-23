@@ -268,7 +268,7 @@ public class ImMsgListActivity extends FragmentActivity {
 
                 @Override
                 public void onFail(RequestBase request, Error error) {
-                    // TBD:cailei 这里需要弹个toast
+                    // TBD:cailei 这里需要弹个toast？
                 }
             });
         } else {
