@@ -272,43 +272,43 @@ public class GetContactsResponse extends ImResponseBase {
     public static class MemberInfoBean {
 
 
-        private int id;
-        private int bizSource;
-        private int memberType;
-        private int userId;
+        private Long id;
+        private Long bizSource;
+        private Long memberType;
+        private Long userId;
         private String memberName;
         private String avatar;
-        private int state;
+        private Long state;
 
-        public int getId() {
+        public Long getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(Long id) {
             this.id = id;
         }
 
-        public int getBizSource() {
+        public Long getBizSource() {
             return bizSource;
         }
 
-        public void setBizSource(int bizSource) {
+        public void setBizSource(Long bizSource) {
             this.bizSource = bizSource;
         }
 
-        public int getMemberType() {
+        public Long getMemberType() {
             return memberType;
         }
 
-        public void setMemberType(int memberType) {
+        public void setMemberType(Long memberType) {
             this.memberType = memberType;
         }
 
-        public int getUserId() {
+        public Long getUserId() {
             return userId;
         }
 
-        public void setUserId(int userId) {
+        public void setUserId(Long userId) {
             this.userId = userId;
         }
 
@@ -328,11 +328,11 @@ public class GetContactsResponse extends ImResponseBase {
             this.avatar = avatar;
         }
 
-        public int getState() {
+        public Long getState() {
             return state;
         }
 
-        public void setState(int state) {
+        public void setState(Long state) {
             this.state = state;
         }
     }
@@ -348,10 +348,10 @@ public class GetContactsResponse extends ImResponseBase {
          */
 
         private Object id;
-        private int bizSource;
-        private int memberId;
-        private int contactId;
-        private int contactType;
+        private Long bizSource;
+        private Long memberId;
+        private Long contactId;
+        private Long contactType;
         private MemberInfoBean memberInfo;
 
         public Object getId() {
@@ -362,35 +362,35 @@ public class GetContactsResponse extends ImResponseBase {
             this.id = id;
         }
 
-        public int getBizSource() {
+        public Long getBizSource() {
             return bizSource;
         }
 
-        public void setBizSource(int bizSource) {
+        public void setBizSource(Long bizSource) {
             this.bizSource = bizSource;
         }
 
-        public int getMemberId() {
+        public Long getMemberId() {
             return memberId;
         }
 
-        public void setMemberId(int memberId) {
+        public void setMemberId(Long memberId) {
             this.memberId = memberId;
         }
 
-        public int getContactId() {
+        public Long getContactId() {
             return contactId;
         }
 
-        public void setContactId(int contactId) {
+        public void setContactId(Long contactId) {
             this.contactId = contactId;
         }
 
-        public int getContactType() {
+        public Long getContactType() {
             return contactType;
         }
 
-        public void setContactType(int contactType) {
+        public void setContactType(Long contactType) {
             this.contactType = contactType;
         }
 
@@ -401,22 +401,20 @@ public class GetContactsResponse extends ImResponseBase {
         public void setMemberInfo(MemberInfoBean memberInfo) {
             this.memberInfo = memberInfo;
         }
-
-
     }
 
     public static class GroupsBean {
 
 
-        private int groupId;
+        private Long groupId;
         private String groupName;
         private List<ContactsBean> contacts;
 
-        public int getGroupId() {
+        public Long getGroupId() {
             return groupId;
         }
 
-        public void setGroupId(int groupId) {
+        public void setGroupId(Long groupId) {
             this.groupId = groupId;
         }
 

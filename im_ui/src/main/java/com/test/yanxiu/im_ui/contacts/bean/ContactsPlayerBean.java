@@ -10,19 +10,19 @@ import com.test.yanxiu.im_ui.contacts.DatabaseFramework.annotation.DbTable;
 @DbTable("contacts")
 public class ContactsPlayerBean {
 
-    private Integer id;
-    private Integer bizSource;
-    private Integer memberType;
+    private Long id;
+    private Long bizSource;
+    private Long memberType;
     @DbPrimaryKey
-    private Integer userId;
+    private Long userId;
     private String name;
     private String avatar;
-    private Integer state;
+    private Long state;
 
-    private Integer classId;
+    private Long classId;
     private String className;
 
-    public ContactsPlayerBean(GetContactsResponse.MemberInfoBean memberInfoBean, Integer classId,String className) {
+    public ContactsPlayerBean(GetContactsResponse.MemberInfoBean memberInfoBean, Long classId,String className) {
         this.id = memberInfoBean.getId();
         this.bizSource = memberInfoBean.getBizSource();
         this.memberType = memberInfoBean.getMemberType();
@@ -37,35 +37,35 @@ public class ContactsPlayerBean {
     public ContactsPlayerBean() {
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getBizSource() {
+    public Long getBizSource() {
         return bizSource;
     }
 
-    public void setBizSource(Integer bizSource) {
+    public void setBizSource(Long bizSource) {
         this.bizSource = bizSource;
     }
 
-    public Integer getMemberType() {
+    public Long getMemberType() {
         return memberType;
     }
 
-    public void setMemberType(Integer memberType) {
+    public void setMemberType(Long memberType) {
         this.memberType = memberType;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -85,19 +85,19 @@ public class ContactsPlayerBean {
         this.avatar = avatar;
     }
 
-    public Integer getState() {
+    public Long getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(Long state) {
         this.state = state;
     }
 
-    public Integer getClassId() {
+    public Long getClassId() {
         return classId;
     }
 
-    public void setClassId(Integer classId) {
+    public void setClassId(Long classId) {
         this.classId = classId;
     }
 

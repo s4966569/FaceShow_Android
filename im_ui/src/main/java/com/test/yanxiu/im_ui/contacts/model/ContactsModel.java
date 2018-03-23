@@ -37,7 +37,7 @@ public class ContactsModel {
     }
 
     private ArrayList<ClassBean> mClassBeanArrayList = new ArrayList<>();
-    private HashMap<Integer, ArrayList<ContactsPlayerBean>> mContactsPlayers = new HashMap<>();
+    private HashMap<Long, ArrayList<ContactsPlayerBean>> mContactsPlayers = new HashMap<>();
 
 
     public void setData(GetContactsResponse mData) {
@@ -84,8 +84,8 @@ public class ContactsModel {
             //存储班级下成员信息
             for (GetContactsResponse.ContactsBean contactsBean : groupsBean.getContacts()) {
                 ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean(contactsBean.getMemberInfo(), groupsBean.getGroupId(), groupsBean.getGroupName());
-                contactsDao.insert(contactsPlayerBean);
                 contactsPlayerBeanArrayList.add(contactsPlayerBean);
+                contactsDao.insert(contactsPlayerBean);
             }
             mContactsPlayers.put(classBean.getClassId(), contactsPlayerBeanArrayList);
         }
@@ -94,21 +94,20 @@ public class ContactsModel {
 
     public List<ContactsPlayerBean> getPlayersDataByClass(ClassBean classData) {
         mCurrentClass = classData;
-        if (mContactsPlayers != null && mContactsPlayers.size() > 0) {
-            return mContactsPlayers.get(classData.getClassId());
-        }
-
-        if (contactsDao == null) {
-            contactsDao = BaseDaoFactory.getOutInstance(dbPath).getBaseDao(ContactsDao.class, ContactsPlayerBean.class);
-        }
-        ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean();
-        contactsPlayerBean.setClassId(classData.getClassId());
         if (TextUtils.isEmpty(mCurrentQueryKey)) {
+            if (mContactsPlayers != null && mContactsPlayers.size() > 0) {
+                return mContactsPlayers.get(classData.getClassId());
+            }
+            if (contactsDao == null) {
+                contactsDao = BaseDaoFactory.getOutInstance(dbPath).getBaseDao(ContactsDao.class, ContactsPlayerBean.class);
+            }
+            ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean();
+            contactsPlayerBean.setClassId(classData.getClassId());
             return contactsDao.query(contactsPlayerBean);
         } else {
-            contactsPlayerBean.setName(mCurrentQueryKey);
-            return contactsDao.fuzzyQuery(contactsPlayerBean);
+            return getQueryResult(mCurrentQueryKey);
         }
+
     }
 
 
