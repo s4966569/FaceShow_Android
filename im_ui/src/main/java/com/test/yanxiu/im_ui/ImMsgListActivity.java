@@ -433,7 +433,8 @@ public class ImMsgListActivity extends FragmentActivity {
             }
         }
 
-        topic.mergedMsgs.add(0, dbMsg);
+        //topic.mergedMsgs.add(0, dbMsg);
+        DatabaseDealer.pendingMsgToTopic(dbMsg, topic);
         if (dbMsg.getMsgId() > topic.latestMsgId) {
             topic.latestMsgId = dbMsg.getMsgId();
             topic.latestMsgTime = dbMsg.getSendTime();

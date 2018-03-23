@@ -411,7 +411,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
         for (DbTopic dbTopic : topics) {
             if (dbTopic.getTopicId() == msg.topicId) {
-                dbTopic.mergedMsgs.add(0, dbMsg);
+                //dbTopic.mergedMsgs.add(0, dbMsg);
+                DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
                 dbTopic.setShowDot(true);
                 dbTopic.save();
                 break;

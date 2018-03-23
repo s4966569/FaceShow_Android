@@ -431,5 +431,16 @@ public class DatabaseDealer {
         }
         return ret;
     }
+
+    public static void pendingMsgToTopic(DbMsg msg, DbTopic topic) {
+        for (DbMsg m : topic.mergedMsgs) {
+            if (m.getReqId().equals(msg.getReqId())) {
+                // 已经存在了，不理了
+                return;
+            }
+        }
+
+        topic.mergedMsgs.add(msg);
+    }
     //endregion
 }
