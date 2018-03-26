@@ -94,7 +94,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         for (int i = 0; i < mDatas.size(); i++) {
             DbMsg curDbMsg = mDatas.get(i);
             // 最后一条跟当前时间比较，其余的跟前一条时间比较
-            long nextSendTime = new Date().getTime();
+            long nextSendTime = Long.MAX_VALUE;
             if (i != (mDatas.size() - 1)) {
                 DbMsg nextDbMsg = mDatas.get(i+1);
                 nextSendTime = nextDbMsg.getSendTime();
