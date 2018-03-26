@@ -546,6 +546,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         curTopic = dbTopic;
         SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
         msgShownTopics.add(curTopic);
+
+        // 更新uiTopics
+        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+            DbTopic uiTopic = i.next();
+            if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                i.remove();
+            }
+        }
         topics.add(dbTopic);
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
