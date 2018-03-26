@@ -1,6 +1,5 @@
 package com.test.yanxiu.im_ui;
 
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -9,6 +8,7 @@ import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +26,6 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
-import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
-import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
@@ -291,7 +289,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                // 有新消息，UI上应该显示红点
+                // 有新消息，UI上应该显示红点       -- 这里 1290
                 dbTopic.setShowDot(true);
                 dbTopic.save();
 
@@ -312,6 +310,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         dbTopic.latestMsgId = dbMsg.getMsgId();
                     }
                 }
+//                //判断获取的消息数量是否为0 或空  此时 不显示红点
+//                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
+//                    dbTopic.setShowDot(false);
+//                    dbTopic.save();
+//                }
 
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
@@ -409,6 +412,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
+        Log.i(TAG, "onMqttMsg: new msg");
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
 
@@ -423,7 +427,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 break;
             }
         }
-
+//        //1192  需要将最新修改的 topic 放置在群聊或私聊的首位
+//        Collections.sort(topics,DatabaseDealer.topicComparator);
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -431,9 +436,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.TopicChangeEvent event) {
         // 目前只处理AddTo
+        Log.i(TAG, "onMqttMsg: topic change ");
         if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
             updateTopicsWithMembers(Long.toString(event.topicId));
         }
+        rearrangeTopics();
+        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     // http, mqtt 公用
