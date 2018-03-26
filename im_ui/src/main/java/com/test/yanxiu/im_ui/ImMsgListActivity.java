@@ -309,6 +309,7 @@ public class ImMsgListActivity extends FragmentActivity {
                     mMsgListAdapter.notifyDataSetChanged();
 
                     SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
+                    saveTextMsgRequest.reqId = myMsg.getReqId();
                     saveTextMsgRequest.imToken = Constants.imToken;
                     saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
                     saveTextMsgRequest.msg = myMsg.getMsg();
