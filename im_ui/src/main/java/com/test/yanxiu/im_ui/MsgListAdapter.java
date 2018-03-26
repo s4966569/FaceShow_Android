@@ -124,7 +124,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         if ((mDatas != null)  && (mDatas.size() > 0)) {
             Item timeItem = new Item();
             timeItem.setType(ItemType.DATETIME);
-            timeItem.setTimestamp(mDatas.get(0).getSendTime());
+            timeItem.setTimestamp(mDatas.get(mDatas.size()-1).getSendTime());
             mUiDatas.add(0, timeItem);
         }
 
