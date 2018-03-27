@@ -12,7 +12,7 @@
 //import com.test.yanxiu.network.HttpCallback;
 //import com.test.yanxiu.network.RequestBase;
 //import com.yanxiu.gphone.faceshow.R;
-//import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
+//import com.yanxiu.gphone.faceshow.base.ImBaseActivity;
 //import com.yanxiu.gphone.faceshow.course.adapter.VoteResultAdapter;
 //import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 //import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
@@ -24,7 +24,7 @@
 ///**
 // * 投票结果页面
 // */
-//public class VoteResultActivity extends FaceShowBaseActivity implements View.OnClickListener {
+//public class VoteResultActivity extends ImBaseActivity implements View.OnClickListener {
 //
 //    private PublicLoadLayout mRootView;
 //    private ImageView mBackView;

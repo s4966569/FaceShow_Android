@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util.anim;
+package com.test.yanxiu.common_base.utils.anim;
 
 import android.content.Context;
 import android.support.annotation.DimenRes;
@@ -8,7 +8,6 @@ import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import com.yanxiu.gphone.faceshow.util.Logger;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
 
 /**
@@ -175,7 +174,6 @@ public class TranslationYAnimUtil {
                 if (mListener!=null){
                     float ratio=((float) Math.abs(mTranslationY) - (float) Math.abs(translationY))/ (float) Math.abs(mTranslationY);
                     mWindowView.setAlpha((mStart - mEnd) * ratio + mEnd);
-                        Logger.d("anim",(mEnd - mStart) * ratio + mStart+"");
                 }else {
                     float ratio = ((float) Math.abs(mTranslationY) - (float) Math.abs(translationY)) / (float) Math.abs(mTranslationY);
                     mWindowView.setAlpha((mEnd - mStart) * ratio + mStart);

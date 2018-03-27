@@ -3,12 +3,12 @@ package com.test.yanxiu.im_ui;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
+import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,13 +18,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.facebook.stetho.inspector.protocol.module.Database;
+import com.lzy.imagepicker.ImagePicker;
+import com.lzy.imagepicker.bean.ImageItem;
+import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
-import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
+import com.test.yanxiu.common_base.utils.permission.OnPermissionCallback;
+import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
+import com.test.yanxiu.faceshow_ui_base.imagePicker.GlideImageLoader;
 import com.test.yanxiu.im_core.RequestQueueHelper;
-import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -41,6 +44,7 @@ import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.view.ChoosePicsDialog;
 import com.test.yanxiu.im_ui.view.RecyclerViewPullToRefreshHelper;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -49,14 +53,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-public class ImMsgListActivity extends FragmentActivity {
+public class ImMsgListActivity extends ImBaseActivity {
     private DbTopic topic;
-
+    private static final int IMAGE_PICKER = 0x03;
+    private static final int REQUEST_CODE_SELECT = 0x04;
     private ImTitleLayout mTitleLayout;
     private RecyclerView mMsgListRecyclerView;
     private MsgListAdapter mMsgListAdapter;
@@ -83,7 +86,7 @@ public class ImMsgListActivity extends FragmentActivity {
         setContentView(R.layout.activity_msg_list);
         setupView();
         setupData();
-
+        initImagePicker();
         EventBus.getDefault().register(this);
     }
 
@@ -140,7 +143,10 @@ public class ImMsgListActivity extends FragmentActivity {
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SrtLogger.log("imui", "TBD: 拍照");
+                //发送照片入口
+
+                showChoosePicsDialog();
+
             }
         });
 
@@ -174,7 +180,7 @@ public class ImMsgListActivity extends FragmentActivity {
         ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView, new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                InputMethodManager imm =  (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 mMsgListRecyclerView.clearFocus();
                 return false;
@@ -187,6 +193,7 @@ public class ImMsgListActivity extends FragmentActivity {
     }
 
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
+
     public class NewTopicCreatedEvent {
         public DbTopic dbTopic;
     }
@@ -241,8 +248,7 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgEditText.setText("");
     }
 
-    private void doSend()
-    {
+    private void doSend() {
         if ((memberIds != null) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
@@ -390,7 +396,7 @@ public class ImMsgListActivity extends FragmentActivity {
                         mMsgListAdapter.notifyItemRangeRemoved(0, 1);
 
                         final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
-                        
+
                         List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
                                 earliestMsg.getMsgId(),
                                 DatabaseDealer.pagesize);
@@ -448,4 +454,100 @@ public class ImMsgListActivity extends FragmentActivity {
         return latestMsgId;
     }
     //endregion
+
+
+    /*-------------------------------  发送图片逻辑     ------------------------------------*/
+    private ImagePicker imagePicker;
+
+    private void initImagePicker() {
+        GlideImageLoader glideImageLoader = new GlideImageLoader();
+        imagePicker = ImagePicker.getInstance();
+        imagePicker.setImageLoader(glideImageLoader);
+        //显示拍照按钮
+        imagePicker.setShowCamera(true);
+        //允许裁剪（单选才有效）
+        imagePicker.setCrop(false);
+        //选中数量限制
+        imagePicker.setSelectLimit(9);
+        //裁剪框的形状
+    }
+
+    private ChoosePicsDialog mClassCircleDialog;
+
+    private void showChoosePicsDialog() {
+        if (mClassCircleDialog == null) {
+            mClassCircleDialog = new ChoosePicsDialog(ImMsgListActivity.this);
+            mClassCircleDialog.setClickListener(new ChoosePicsDialog.OnViewClickListener() {
+                @Override
+                public void onAlbumClick() {
+                    ImMsgListActivity.requestWriteAndReadPermission(new OnPermissionCallback() {
+                        @Override
+                        public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+                            Intent intent = new Intent(ImMsgListActivity.this, ImageGridActivity.class);
+                            startActivityForResult(intent, IMAGE_PICKER);
+                        }
+
+                        @Override
+                        public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
+                            Toast.makeText(ImMsgListActivity.this, R.string.no_storage_permissions, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onCameraClick() {
+                    ImMsgListActivity.requestCameraPermission(new OnPermissionCallback() {
+                        @Override
+                        public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+
+                            Intent intent = new Intent(ImMsgListActivity.this, ImageGridActivity.class);
+                            // 是否是直接打开相机
+                            intent.putExtra(ImageGridActivity.EXTRAS_TAKE_PICKERS, true);
+                            startActivityForResult(intent, REQUEST_CODE_SELECT);
+                        }
+
+                        @Override
+                        public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
+                            Toast.makeText(ImMsgListActivity.this, R.string.no_storage_permissions, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
+        mClassCircleDialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case IMAGE_PICKER:
+                createSelectedImagesList(data, false);
+                break;
+            case REQUEST_CODE_SELECT:
+                createSelectedImagesList(data, true);
+            default:
+                break;
+        }
+
+    }
+
+    /**
+     * 构造需要的图片数据
+     * @param data
+     * @param isReSize
+     */
+    private void createSelectedImagesList(Intent data, boolean isReSize) {
+        ArrayList<ImageItem> images = null;
+        try {
+            images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+        } catch (Exception e) {
+
+        }
+        if (images == null) {
+            return;
+        }
+
+
+    }
 }

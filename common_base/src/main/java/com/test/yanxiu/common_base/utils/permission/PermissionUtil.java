@@ -1,10 +1,9 @@
-package com.yanxiu.gphone.faceshow.permission;
+package com.test.yanxiu.common_base.utils.permission;
 
 import android.hardware.Camera;
 import android.os.Environment;
 
 import com.test.yanxiu.common_base.utils.CameraManager;
-import com.yanxiu.gphone.faceshow.constant.Constants;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,8 +17,11 @@ import java.io.InputStreamReader;
  */
 
 public class PermissionUtil {
+    public static final String DIR_ROOT = "/FaceShow";
+    public static final String DIR_APP = "/app";
+    public static final String DIR_IMAGE = "/image";
     public static final String ROOT_DIRECTORY_NAME = "faceshow";
-    public static final String SDCARD_DIR = Environment.getExternalStorageDirectory().getPath() + Constants.DIR_ROOT;
+    public static final String SDCARD_DIR = Environment.getExternalStorageDirectory().getPath() + DIR_ROOT;
     public static final String TESTFILE_NAME = "/testPermission.txt";
 
     /**
@@ -30,8 +32,8 @@ public class PermissionUtil {
     public static boolean cameraIsCanUse() {
         boolean isCanUse = true;
         Camera mCamera = CameraManager.getInstence().getCamera();
-        if (mCamera==null){
-            isCanUse=false;
+        if (mCamera == null) {
+            isCanUse = false;
         }
         return isCanUse;
     }
@@ -39,23 +41,25 @@ public class PermissionUtil {
     /**
      * 创建file
      * 为了解决6.0一下某些机型创建file失败
+     *
      * @return
      */
-    private static File createFile(){
+    private static File createFile() {
         File dir = new File(SDCARD_DIR);
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdirs();
         }
-        File dirApp = new File(SDCARD_DIR+Constants.DIR_APP);
-        if(!dirApp.exists()){
+        File dirApp = new File(SDCARD_DIR + DIR_APP);
+        if (!dirApp.exists()) {
             dirApp.mkdirs();
         }
-        File file = new File(SDCARD_DIR+Constants.DIR_APP+Constants.DIR_IMAGE);
-        if(!file.exists()){
+        File file = new File(SDCARD_DIR + DIR_APP + DIR_IMAGE);
+        if (!file.exists()) {
             file.mkdirs();
         }
         return file;
     }
+
     /**
      * 检测读取权限
      *

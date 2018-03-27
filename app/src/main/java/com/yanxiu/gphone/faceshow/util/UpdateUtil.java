@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
+import com.test.yanxiu.common_base.utils.ActivityManger;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -158,7 +159,7 @@ public class UpdateUtil {
 //         mUpdateDialog = new UpdateDialog(context, data.upgradetype, new UpdateDialog.UpdateDialogCallBack() {
 //             @Override
 //             public void update() {
-//                 FaceShowBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));
+//                 ImBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));
 //             }
 //
 //             @Override

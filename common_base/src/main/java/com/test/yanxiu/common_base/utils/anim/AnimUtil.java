@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util.anim;
+package com.test.yanxiu.common_base.utils.anim;
 
 import android.animation.ObjectAnimator;
 import android.view.View;

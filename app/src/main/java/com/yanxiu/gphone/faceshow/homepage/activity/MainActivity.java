@@ -19,8 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
+import com.test.yanxiu.common_base.utils.ActivityManger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
-import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.im_ui.ImTopicListFragment;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -48,7 +48,6 @@ import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.user.FeedBackActivity;
 import com.yanxiu.gphone.faceshow.user.ProfileActivity;
-import com.yanxiu.gphone.faceshow.util.ActivityManger;
 import com.yanxiu.gphone.faceshow.util.SystemUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.UpdateUtil;
