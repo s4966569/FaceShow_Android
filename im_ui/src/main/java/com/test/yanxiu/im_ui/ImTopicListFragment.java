@@ -43,6 +43,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -310,11 +311,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         dbTopic.latestMsgId = dbMsg.getMsgId();
                     }
                 }
-//                //判断获取的消息数量是否为0 或空  此时 不显示红点
-//                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
-//                    dbTopic.setShowDot(false);
-//                    dbTopic.save();
-//                }
+                //判断获取的消息数量是否为0 或空  此时 不显示红点
+                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
+                    dbTopic.setShowDot(false);
+                    dbTopic.save();
+                }
 
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
@@ -426,8 +427,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 break;
             }
         }
-//        //1192  需要将最新修改的 topic 放置在群聊或私聊的首位
-//        Collections.sort(topics,DatabaseDealer.topicComparator);
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -571,6 +570,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     //endregion
 
     private void rearrangeTopics() {
+        //首先按照 最新消息时间进行排序
+        Collections.sort(topics,DatabaseDealer.topicComparator);
+
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
         for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
