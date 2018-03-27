@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.gson.Gson;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -34,6 +35,8 @@ import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
 import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
 import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
+import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
+import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
 import com.test.yanxiu.im_core.http.common.ImDataForUpdateMemberInfo;
 import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
@@ -186,7 +189,50 @@ public class ImMsgListActivity extends FragmentActivity {
 
     private void setupData() {
 
-        updateMemberInfoRequest(topic);
+//        updateMemberInfoRequest(topic);
+        updateTopicFromHttp(topic.getTopicId()+"");
+    }
+
+    private void updateTopicFromHttp(final String topicId) {
+        // http, mqtt 公用
+        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
+        getTopicsRequest.imToken = Constants.imToken;
+        getTopicsRequest.topicIds = topicId;
+//        Log.i(TAG, "updateTopicFromHttp: "+new Gson().toJson(getTopicsRequest));
+        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
+                //正确的长度 为1
+                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+                for (ImTopic imTopic : ret.data.topic) {
+                    //更新数据库 topic 信息
+                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+//                    Log.i(TAG, "onSuccess: "+new Gson().toJson(imTopic));
+                    //请求成功 消除红点
+                    dbTopic.setShowDot(false);
+                    dbTopic.save();
+                    //保证 topic 的持有
+                    topic.setName(dbTopic.getName());
+                    topic.setChange(dbTopic.getChange());
+                    topic.setGroup(dbTopic.getGroup());
+                    topic.setType(dbTopic.getType());
+                    topic.setTopicId(dbTopic.getTopicId());
+                    topic.latestMsgId=dbTopic.latestMsgId;
+                    topic.latestMsgTime=dbTopic.latestMsgTime;
+                    topic.setShowDot(dbTopic.isShowDot());
+
+                    //请求当前topic 下的members 信息更新
+                    updateMemberInfoRequest(topic);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
 
     }
 
@@ -209,7 +255,7 @@ public class ImMsgListActivity extends FragmentActivity {
         topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
-//                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
+                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
                 //对 对话menmbers进行信息修正
                 for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
                     //转换数据
@@ -229,10 +275,13 @@ public class ImMsgListActivity extends FragmentActivity {
                             topic.setName(imMember.memberName);
                         }
                     }
+                    if (topic.getType().equals("2")){
+                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic,Constants.imId));
+                    }
 
                     //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
                     for (DbMember dbMember : topic.getMembers()) {
-                        if (dbMember.getImId()==updatedMember.getImId()) {
+                        if (dbMember.getImId() == updatedMember.getImId()) {
                             topic.getMembers().remove(dbMember);
                             topic.getMembers().add(updatedMember);
                             break;
