@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +33,8 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.GetQiNiuTokenRequest;
+import com.test.yanxiu.im_core.http.GetQiNiuTokenResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
@@ -52,9 +54,15 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.DelayQueue;
+
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
 
 public class ImMsgListActivity extends ImBaseActivity {
     private DbTopic topic;
@@ -69,6 +77,9 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     private String memberIds = null;
     private String memberName = null;
+    private String mQiniuToken;
+    private DelayQueue mReSizedPicPath;
+    private String mImagePaths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -522,22 +533,43 @@ public class ImMsgListActivity extends ImBaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMAGE_PICKER:
-                createSelectedImagesList(data, false);
-                break;
             case REQUEST_CODE_SELECT:
-                createSelectedImagesList(data, true);
+                List images = createSelectedImagesList(data);
+                createSelectedImagesList(data);
+                showReSizedPics(images);
+                uploadPicsByQiNiu(images);
             default:
+
                 break;
         }
 
     }
 
     /**
-     * 构造需要的图片数据
-     * @param data
-     * @param isReSize
+     * 通过七牛上传图片
+     *
+     * @param images
      */
-    private void createSelectedImagesList(Intent data, boolean isReSize) {
+    private void uploadPicsByQiNiu(List images) {
+        getQiNiuToken();
+        // TODO: 2018/3/27  
+    }
+
+    /**
+     * 先在列表中显示压缩后图片
+     *
+     * @param imgs 图片数据
+     */
+    private void showReSizedPics(List<String> imgs) {
+
+    }
+
+    /**
+     * 构造需要的图片数据
+     *
+     * @param data
+     */
+    private List<String> createSelectedImagesList(Intent data) {
         ArrayList<ImageItem> images = null;
         try {
             images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
@@ -545,9 +577,109 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         }
         if (images == null) {
-            return;
+            return null;
         }
 
+        return reSizePics(images);
 
+    }
+
+    /**
+     * 使用鲁班压缩图片至200kb左右
+     * @param imageItemArrayList
+     * @return
+     */
+    private List<String> reSizePics(ArrayList<ImageItem> imageItemArrayList) {
+        List<String> imagePathList = new ArrayList<>();
+        final List<String> imageReSizedPathList = new ArrayList<>();
+        for (ImageItem imageItem : imageItemArrayList) {
+            imagePathList.add(imageItem.path);
+        }
+        Luban.with(ImMsgListActivity.this)
+                .load(imagePathList)
+                .ignoreBy(200)
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        imageReSizedPathList.add(file.getAbsolutePath());
+                        Log.e("frc", file.getAbsolutePath());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("frc", "onError:   " + e.getMessage());
+                    }
+                });
+
+        return imageReSizedPathList;
+    }
+
+    UUID mGetQiNiuTokenUUID;
+
+    /**
+     * 获取七牛token
+     */
+    private void getQiNiuToken() {
+        GetQiNiuTokenRequest getQiNiuTokenRequest = new GetQiNiuTokenRequest();
+        getQiNiuTokenRequest.from = "100";
+        getQiNiuTokenRequest.dtype = "app";
+        mGetQiNiuTokenUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
+                mGetQiNiuTokenUUID = null;
+//                mCancelQiNiuUploadPics = false;
+                if (ret != null) {
+                    if (ret.code == 0) {
+                        mQiniuToken = ret.getData().getToken();
+                        mReSizedPicPath.clear();
+                        /**
+                         * 使用鲁班对图片进行压缩
+                         */
+                        Luban.with(ImMsgListActivity.this)
+                                .load(mImagePaths)
+                                .ignoreBy(100)
+                                .setCompressListener(new OnCompressListener() {
+                                    @Override
+                                    public void onStart() {
+                                    }
+
+                                    @Override
+                                    public void onSuccess(File file) {
+//                                        mReSizedPicPath.add(file.getPath());
+//                                        if (mReSizedPicPath.size() == mImagePaths.size()) {
+//                                            uploadPicListByQiNiu(mQiniuToken, mReSizedPicPath);
+//                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+//                                        rootView.hiddenLoadingView();
+//                                        ToastUtil.showToast(getApplicationContext(), "图片上传失败");
+                                    }
+                                }).launch();
+
+                    } else {
+//                        rootView.hiddenLoadingView();
+//                        ToastUtil.showToast(getApplicationContext(), ret.getError() != null ? ret.getError().getMessage() : getString(R.string.get_qiniu_token_error));
+                    }
+
+                } else {
+//                    rootView.hiddenLoadingView();
+//                    ToastUtil.showToast(getApplicationContext(), getString(R.string.get_qiniu_token_error));
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mGetQiNiuTokenUUID = null;
+//                rootView.hiddenLoadingView();
+//                ToastUtil.showToast(getApplicationContext(), error.getMessage());
+            }
+        });
     }
 }
