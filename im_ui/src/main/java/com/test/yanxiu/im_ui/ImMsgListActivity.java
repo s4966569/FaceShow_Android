@@ -1,14 +1,13 @@
 package com.test.yanxiu.im_ui;
 
-import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,11 +15,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.facebook.stetho.inspector.protocol.module.Database;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
-import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.RequestQueueHelper;
@@ -30,12 +26,16 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.GetTopicMembersInfoRequest;
+import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
 import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
 import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
+import com.test.yanxiu.im_core.http.common.ImDataForUpdateMemberInfo;
+import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
@@ -49,12 +49,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class ImMsgListActivity extends FragmentActivity {
+    private final String TAG = getClass().getSimpleName();
+
     private DbTopic topic;
 
     private ImTitleLayout mTitleLayout;
@@ -174,7 +174,7 @@ public class ImMsgListActivity extends FragmentActivity {
         ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView, new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                InputMethodManager imm =  (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 mMsgListRecyclerView.clearFocus();
                 return false;
@@ -183,10 +183,75 @@ public class ImMsgListActivity extends FragmentActivity {
         ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
+
     private void setupData() {
+
+        updateMemberInfoRequest(topic);
+
+    }
+
+    // HTTP请求 更新 当前topic 的members 信息
+    private void updateMemberInfoRequest(final DbTopic topic) {
+        GetTopicMembersInfoRequest topicMembersInfoRequest = new GetTopicMembersInfoRequest();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        int length = topic.getMembers().size();
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(topic.getMembers().get(i).getImId());
+            if (i != length - 1) {
+                stringBuilder.append(",");
+            }
+        }
+
+        topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
+        topicMembersInfoRequest.imToken = Constants.imToken;
+//        Log.i("updatemember", "updateMemberInfoRequest: "+new Gson().toJson(topicMembersInfoRequest));
+        topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
+//                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
+                //对 对话menmbers进行信息修正
+                for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
+                    //转换数据
+                    ImMember imMember = new ImMember();
+                    imMember.avatar = member.getAvatar();
+                    imMember.imId = member.getId();
+                    imMember.memberName = member.getMemberName();
+                    imMember.memberType = member.getMemberType();
+                    imMember.state = member.getState();
+                    imMember.userId = member.getUserId();
+                    DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
+
+                    //对私聊topic 的 title 进行修正
+                    if (topic.getType().equals("1")) {
+                        if (imMember.imId != Constants.imId) {
+                            mTitleLayout.setTitle(imMember.memberName);
+                            topic.setName(imMember.memberName);
+                        }
+                    }
+
+                    //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
+                    for (DbMember dbMember : topic.getMembers()) {
+                        if (dbMember.getImId()==updatedMember.getImId()) {
+                            topic.getMembers().remove(dbMember);
+                            topic.getMembers().add(updatedMember);
+                            break;
+                        }
+                    }
+                }
+
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                Log.i("updatemember", "onFail: ");
+            }
+        });
     }
 
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
+
     public class NewTopicCreatedEvent {
         public DbTopic dbTopic;
     }
@@ -241,8 +306,7 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgEditText.setText("");
     }
 
-    private void doSend()
-    {
+    private void doSend() {
         if ((memberIds != null) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
@@ -390,7 +454,7 @@ public class ImMsgListActivity extends FragmentActivity {
                         mMsgListAdapter.notifyItemRangeRemoved(0, 1);
 
                         final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
-                        
+
                         List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
                                 earliestMsg.getMsgId(),
                                 DatabaseDealer.pagesize);
