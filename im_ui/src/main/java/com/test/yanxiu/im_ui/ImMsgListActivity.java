@@ -1,8 +1,10 @@
 package com.test.yanxiu.im_ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,11 +17,18 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.lzy.imagepicker.ImagePicker;
+import com.lzy.imagepicker.bean.ImageItem;
+import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
+import com.test.yanxiu.common_base.utils.permission.OnPermissionCallback;
+import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
+import com.test.yanxiu.faceshow_ui_base.imagePicker.GlideImageLoader;
 import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
@@ -27,6 +36,8 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
+import com.test.yanxiu.im_core.http.GetQiNiuTokenRequest;
+import com.test.yanxiu.im_core.http.GetQiNiuTokenResponse;
 import com.test.yanxiu.im_core.http.GetTopicMembersInfoRequest;
 import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
@@ -44,6 +55,7 @@ import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.view.ChoosePicsDialog;
 import com.test.yanxiu.im_ui.view.RecyclerViewPullToRefreshHelper;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -51,15 +63,25 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.DelayQueue;
 
-public class ImMsgListActivity extends FragmentActivity {
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
+
+public class ImMsgListActivity extends ImBaseActivity {
     private final String TAG = getClass().getSimpleName();
 
-    private DbTopic topic;
+//    private DbTopic topic;
 
+
+    private DbTopic topic;
+    private static final int IMAGE_PICKER = 0x03;
+    private static final int REQUEST_CODE_SELECT = 0x04;
     private ImTitleLayout mTitleLayout;
     private RecyclerView mMsgListRecyclerView;
     private MsgListAdapter mMsgListAdapter;
@@ -69,6 +91,9 @@ public class ImMsgListActivity extends FragmentActivity {
 
     private String memberIds = null;
     private String memberName = null;
+    private String mQiniuToken;
+    private DelayQueue mReSizedPicPath;
+    private String mImagePaths;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +111,7 @@ public class ImMsgListActivity extends FragmentActivity {
         setContentView(R.layout.activity_msg_list);
         setupView();
         setupData();
-
+        initImagePicker();
         EventBus.getDefault().register(this);
     }
 
@@ -143,7 +168,10 @@ public class ImMsgListActivity extends FragmentActivity {
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SrtLogger.log("imui", "TBD: 拍照");
+                //发送照片入口
+
+                showChoosePicsDialog();
+
             }
         });
 
@@ -561,4 +589,221 @@ public class ImMsgListActivity extends FragmentActivity {
         return latestMsgId;
     }
     //endregion
+
+
+    /*-------------------------------  发送图片逻辑     ------------------------------------*/
+    private ImagePicker imagePicker;
+
+    private void initImagePicker() {
+        GlideImageLoader glideImageLoader = new GlideImageLoader();
+        imagePicker = ImagePicker.getInstance();
+        imagePicker.setImageLoader(glideImageLoader);
+        //显示拍照按钮
+        imagePicker.setShowCamera(true);
+        //允许裁剪（单选才有效）
+        imagePicker.setCrop(false);
+        //选中数量限制
+        imagePicker.setSelectLimit(9);
+        //裁剪框的形状
+    }
+
+    private ChoosePicsDialog mClassCircleDialog;
+
+    private void showChoosePicsDialog() {
+        if (mClassCircleDialog == null) {
+            mClassCircleDialog = new ChoosePicsDialog(ImMsgListActivity.this);
+            mClassCircleDialog.setClickListener(new ChoosePicsDialog.OnViewClickListener() {
+                @Override
+                public void onAlbumClick() {
+                    ImMsgListActivity.requestWriteAndReadPermission(new OnPermissionCallback() {
+                        @Override
+                        public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+                            Intent intent = new Intent(ImMsgListActivity.this, ImageGridActivity.class);
+                            startActivityForResult(intent, IMAGE_PICKER);
+                        }
+
+                        @Override
+                        public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
+                            Toast.makeText(ImMsgListActivity.this, R.string.no_storage_permissions, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onCameraClick() {
+                    ImMsgListActivity.requestCameraPermission(new OnPermissionCallback() {
+                        @Override
+                        public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+
+                            Intent intent = new Intent(ImMsgListActivity.this, ImageGridActivity.class);
+                            // 是否是直接打开相机
+                            intent.putExtra(ImageGridActivity.EXTRAS_TAKE_PICKERS, true);
+                            startActivityForResult(intent, REQUEST_CODE_SELECT);
+                        }
+
+                        @Override
+                        public void onPermissionsDenied(@Nullable List<String> deniedPermissions) {
+                            Toast.makeText(ImMsgListActivity.this, R.string.no_storage_permissions, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
+        mClassCircleDialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case IMAGE_PICKER:
+            case REQUEST_CODE_SELECT:
+                List images = createSelectedImagesList(data);
+                createSelectedImagesList(data);
+                showReSizedPics(images);
+                uploadPicsByQiNiu(images);
+            default:
+
+                break;
+        }
+
+    }
+
+    /**
+     * 通过七牛上传图片
+     *
+     * @param images
+     */
+    private void uploadPicsByQiNiu(List images) {
+        getQiNiuToken();
+        // TODO: 2018/3/27  
+    }
+
+    /**
+     * 先在列表中显示压缩后图片
+     *
+     * @param imgs 图片数据
+     */
+    private void showReSizedPics(List<String> imgs) {
+
+    }
+
+    /**
+     * 构造需要的图片数据
+     *
+     * @param data
+     */
+    private List<String> createSelectedImagesList(Intent data) {
+        ArrayList<ImageItem> images = null;
+        try {
+            images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+        } catch (Exception e) {
+
+        }
+        if (images == null) {
+            return null;
+        }
+
+        return reSizePics(images);
+
+    }
+
+    /**
+     * 使用鲁班压缩图片至200kb左右
+     * @param imageItemArrayList
+     * @return
+     */
+    private List<String> reSizePics(ArrayList<ImageItem> imageItemArrayList) {
+        List<String> imagePathList = new ArrayList<>();
+        final List<String> imageReSizedPathList = new ArrayList<>();
+        for (ImageItem imageItem : imageItemArrayList) {
+            imagePathList.add(imageItem.path);
+        }
+        Luban.with(ImMsgListActivity.this)
+                .load(imagePathList)
+                .ignoreBy(200)
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        imageReSizedPathList.add(file.getAbsolutePath());
+                        Log.e("frc", file.getAbsolutePath());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("frc", "onError:   " + e.getMessage());
+                    }
+                });
+
+        return imageReSizedPathList;
+    }
+
+    UUID mGetQiNiuTokenUUID;
+
+    /**
+     * 获取七牛token
+     */
+    private void getQiNiuToken() {
+        GetQiNiuTokenRequest getQiNiuTokenRequest = new GetQiNiuTokenRequest();
+        getQiNiuTokenRequest.from = "100";
+        getQiNiuTokenRequest.dtype = "app";
+        mGetQiNiuTokenUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
+                mGetQiNiuTokenUUID = null;
+//                mCancelQiNiuUploadPics = false;
+                if (ret != null) {
+                    if (ret.code == 0) {
+                        mQiniuToken = ret.getData().getToken();
+                        mReSizedPicPath.clear();
+                        /**
+                         * 使用鲁班对图片进行压缩
+                         */
+                        Luban.with(ImMsgListActivity.this)
+                                .load(mImagePaths)
+                                .ignoreBy(100)
+                                .setCompressListener(new OnCompressListener() {
+                                    @Override
+                                    public void onStart() {
+                                    }
+
+                                    @Override
+                                    public void onSuccess(File file) {
+//                                        mReSizedPicPath.add(file.getPath());
+//                                        if (mReSizedPicPath.size() == mImagePaths.size()) {
+//                                            uploadPicListByQiNiu(mQiniuToken, mReSizedPicPath);
+//                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+//                                        rootView.hiddenLoadingView();
+//                                        ToastUtil.showToast(getApplicationContext(), "图片上传失败");
+                                    }
+                                }).launch();
+
+                    } else {
+//                        rootView.hiddenLoadingView();
+//                        ToastUtil.showToast(getApplicationContext(), ret.getError() != null ? ret.getError().getMessage() : getString(R.string.get_qiniu_token_error));
+                    }
+
+                } else {
+//                    rootView.hiddenLoadingView();
+//                    ToastUtil.showToast(getApplicationContext(), getString(R.string.get_qiniu_token_error));
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                mGetQiNiuTokenUUID = null;
+//                rootView.hiddenLoadingView();
+//                ToastUtil.showToast(getApplicationContext(), error.getMessage());
+            }
+        });
+    }
 }

@@ -15,4 +15,11 @@
         <!--<item name="colorPrimaryDarcolorolor/colorPrimaryDark</item>-->
         <!--<item name="colorAccencolorolor/colorAccent</item>-->
     </style>
+    <style name="ChoosePicDialog" parent="android:style/Theme.Dialog">
+        <item name="android:background">#00000000</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
 </resources>

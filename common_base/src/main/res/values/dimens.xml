@@ -13,5 +13,6 @@
     <dimen name="wavesRadius">5dp</dimen>
 
     <!--publicLoadLayout end-->
+    <dimen name="dialog_choose_pics">167dp</dimen>
 
 </resources>

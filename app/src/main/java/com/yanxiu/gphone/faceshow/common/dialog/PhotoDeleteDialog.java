@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.util.anim.TranslationYAnimUtil;
+import com.test.yanxiu.common_base.utils.anim.TranslationYAnimUtil;
 
 /**
  * Created by Canghaixiao.

@@ -334,6 +334,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public ServiceConnection mqttServiceConnection = new ServiceConnection() {
+
+
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             SrtLogger.log("im mqtt", "service connectted");
@@ -386,6 +388,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             SrtLogger.log("im mqtt", "service disconnectted");
+
             if (reconnectTimer != null) {
                 reconnectTimer.cancel();
                 reconnectTimer.purge();

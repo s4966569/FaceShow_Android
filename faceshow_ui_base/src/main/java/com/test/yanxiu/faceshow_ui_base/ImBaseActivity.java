@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.base;
+package com.test.yanxiu.faceshow_ui_base;
 
 import android.Manifest;
 import android.content.Context;
@@ -7,27 +7,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.tendcloud.tenddata.TCAgent;
-import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.constant.Constants;
-import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
-import com.yanxiu.gphone.faceshow.permission.PermissionUtil;
+
 import com.test.yanxiu.common_base.utils.ActivityManger;
-import com.yanxiu.gphone.faceshow.util.talkingdata.ActivityNameUtils;
+import com.test.yanxiu.common_base.utils.permission.OnPermissionCallback;
+import com.test.yanxiu.common_base.utils.permission.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.magicwindow.Session;
 import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by 戴延枫 on 2017/9/13.
  */
-public class FaceShowBaseActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks {
+public class ImBaseActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks {
     private final String TAG = "ImBaseActivity";
     private static final int RC_CAMERA_PERM = 123;
     private static final int RC_WRITE_READ_PERM = 124;
@@ -41,20 +36,14 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFaceShowLocalName= ActivityNameUtils.getActivityName(this.getClass().getSimpleName());
         ActivityManger.addActicity(this);
     }
 
     @Override
     protected void onResume() {
-        Session.onPause(this);
         super.onResume();
-        Log.i(Constants.TAG, this.getClass().getName());
         if (!isActive) {
             isActive = true;
-        }
-        if (!TextUtils.isEmpty(mFaceShowLocalName)) {
-            TCAgent.onPageStart(this, mFaceShowLocalName);
         }
     }
 
@@ -68,11 +57,8 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
 
     @Override
     protected void onPause() {
-        Session.onPause(this);
         super.onPause();
-        if (!TextUtils.isEmpty(mFaceShowLocalName)) {
-            TCAgent.onPageEnd(this, mFaceShowLocalName);
-        }
+
 
     }
 
@@ -142,7 +128,7 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
     /**
      * 请求权限
      *
-     * @param perms {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CONTACTS};
+     * @param  {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_CONTACTS};
      */
     public static void requestPermissions(String[] perms, OnPermissionCallback onPermissionCallback) {
         mPermissionCallback = onPermissionCallback;
@@ -168,7 +154,7 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         Log.d(TAG, "onPermissionsGranted:" + requestCode + ":" + perms.size());
-        mPermissionCallback.onPermissionsGranted(perms);
+//        mPermissionCallback.onPermissionsGranted(perms);
     }
 
     @Override
@@ -179,7 +165,7 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
 //        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
 //            new AppSettingsDialog.Builder(this).build().show();
 //        }
-        mPermissionCallback.onPermissionsDenied(perms);
+//        mPermissionCallback.onPermissionsDenied(perms);
     }
 
     public boolean isAppOnForeground() {

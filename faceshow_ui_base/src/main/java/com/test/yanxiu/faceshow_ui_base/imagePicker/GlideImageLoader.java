@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util.imagePicker;
+package com.test.yanxiu.faceshow_ui_base.imagePicker;
 
 import android.app.Activity;
 import android.widget.ImageView;
