@@ -98,7 +98,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         for (int i = 0; i < mDatas.size(); i++) {
             DbMsg curDbMsg = mDatas.get(i);
             // 最后一条跟当前时间比较，其余的跟前一条时间比较
-            long nextSendTime = new Date().getTime();
+            long nextSendTime = Long.MAX_VALUE;
             if (i != (mDatas.size() - 1)) {
                 DbMsg nextDbMsg = mDatas.get(i+1);
                 nextSendTime = nextDbMsg.getSendTime();
@@ -129,9 +129,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         if ((mDatas != null)  && (mDatas.size() > 0)) {
             Item timeItem = new Item();
             timeItem.setType(ItemType.DATETIME);
-            //时间戳 第一条与最后一条 时间相同 1191
             timeItem.setTimestamp(mDatas.get(mDatas.size()-1).getSendTime());
-//            timeItem.setTimestamp(mDatas.get(0).getSendTime());
+
             mUiDatas.add(0, timeItem);
         }
 

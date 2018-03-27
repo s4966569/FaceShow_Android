@@ -406,8 +406,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private void stopMqttService() {
-        // TBD:cailei 这里需要仔细研究下unbind service时机，直接加上会crash
-
+        // 已经在MqttService的unbind中处理
     }
 
     @Subscribe
@@ -555,6 +554,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         curTopic = dbTopic;
         SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
         msgShownTopics.add(curTopic);
+
+        // 更新uiTopics
+        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+            DbTopic uiTopic = i.next();
+            if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                i.remove();
+            }
+        }
         topics.add(dbTopic);
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
