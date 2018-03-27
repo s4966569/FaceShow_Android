@@ -1,6 +1,5 @@
 package com.test.yanxiu.im_ui;
 
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -9,6 +8,7 @@ import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +26,6 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
-import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
-import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
@@ -45,6 +43,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -86,25 +85,33 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public void onMsgListActivityReturned() {
-        if (curTopic == null) {
-            // 没有新建topic
-            return;
-        }
+        for (DbTopic topic : msgShownTopics) {
+            // 最多保留20条
+            topic.setShowDot(false);
+            topic.mergedMsgs = topic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, topic.mergedMsgs.size()));
 
-        // 如果curTopic中有新msg则将此topic排到最前
-        long latestMsgTime = curTopic.latestMsgTime;
-        for (DbMsg dbMsg : curTopic.mergedMsgs) {
-            if (dbMsg.getSendTime() > latestMsgTime) {
-                topics.remove(curTopic);
-                topics.add(0, curTopic);
+            // 有新消息则要放置到最前
+            long latestMsgTime = topic.latestMsgTime;
+
+            // 因为mqtt新增topic，和http新增topic，不确定哪个先返回，所以需要用msg activity里的topic替换掉topic fragment的
+            for (DbTopic dbTopic : topics) {
+                if (dbTopic.getTopicId() == topic.getTopicId()) {
+                    topics.set(topics.indexOf(dbTopic), topic);
+                }
+            }
+
+
+            for (DbMsg msg : topic.mergedMsgs) {
+                if (msg.getSendTime() > latestMsgTime) {
+                    // 放置到最前
+                    topics.remove(topic);
+                    topics.add(0, topic);
+                }
             }
         }
+        rearrangeTopics(); // 重新排列群聊、私聊
 
-        // 保留最多pagesize条
-        curTopic.mergedMsgs = curTopic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, curTopic.mergedMsgs.size()));
         curTopic = null;
-
-        rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -283,7 +290,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                // 有新消息，UI上应该显示红点
+                // 有新消息，UI上应该显示红点       -- 这里 1290
                 dbTopic.setShowDot(true);
                 dbTopic.save();
 
@@ -303,6 +310,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
                         dbTopic.latestMsgId = dbMsg.getMsgId();
                     }
+                }
+                //判断获取的消息数量是否为0 或空  此时 不显示红点
+                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
+                    dbTopic.setShowDot(false);
+                    dbTopic.save();
                 }
 
                 rearrangeTopics();
@@ -386,7 +398,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     //region MQTT
     private Timer reconnectTimer = new Timer();
     private MqttService.MqttBinder binder = null;
-    private DbTopic curTopic = null;    // 当前
+    private DbTopic curTopic = null;                                    // 当前界面上开启msgs的topic，curTopic为空说明是新建私聊
+    private ArrayList<DbTopic> msgShownTopics = new ArrayList<>();      // 因为需要可以从群聊点击头像进入私聊，多级msgs界面
+
     private void startMqttService() {
         Intent intent = new Intent(getActivity(), MqttService.class);
         //mqttServiceConnection =
@@ -396,31 +410,26 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     private void stopMqttService() {
-        // TBD:cailei 这里需要仔细研究下unbind service时机，直接加上会crash
-
+        // 已经在MqttService的unbind中处理
     }
 
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
+        Log.i(TAG, "onMqttMsg: new msg");
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
-
-        // 如果是当前topic，不在这里更新，而在msgs界面更新
-        if ((curTopic != null) && (curTopic.getTopicId() == msg.topicId)) {
-            return;
-        }
 
         // mqtt上的实时消息，按照接收顺序写入ui的datalist
         // mqtt不更新latestMsg，只有从http确认的消息才更新latestMsg，所以下次进来还是回去http拉取最新页消息
         for (DbTopic dbTopic : topics) {
             if (dbTopic.getTopicId() == msg.topicId) {
-                dbTopic.mergedMsgs.add(0, dbMsg);
+                //dbTopic.mergedMsgs.add(0, dbMsg);
+                DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
                 dbTopic.setShowDot(true);
                 dbTopic.save();
                 break;
             }
         }
-
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -428,9 +437,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.TopicChangeEvent event) {
         // 目前只处理AddTo
+        Log.i(TAG, "onMqttMsg: topic change ");
         if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
             updateTopicsWithMembers(Long.toString(event.topicId));
         }
+        rearrangeTopics();
+        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     // http, mqtt 公用
@@ -482,12 +494,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
         @Override
         public void onItemClick(int position, DbTopic dbTopic) {
+
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
-            curTopic = dbTopic;
             dbTopic.setShowDot(false);
             dbTopic.save();
+
+            curTopic = dbTopic;
+            msgShownTopics.add(dbTopic);
         }
     };
 
@@ -519,6 +534,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             curTopic.setShowDot(false);
             curTopic.save();
+            msgShownTopics.add(curTopic);
             return;
         }
 
@@ -532,20 +548,34 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onNewTopicCreated(ImMsgListActivity.NewTopicCreatedEvent event) {
+        // 新建topic成功，curTopic由null转为实际生成的topic
         DbTopic dbTopic = event.dbTopic;
-        binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
+        dbTopic.setShowDot(false);
+        dbTopic.save();
+
         curTopic = dbTopic;
         SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
+        msgShownTopics.add(curTopic);
 
+        // 更新uiTopics
+        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+            DbTopic uiTopic = i.next();
+            if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                i.remove();
+            }
+        }
         topics.add(dbTopic);
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-        dbTopic.setShowDot(false);
-        dbTopic.save();
+
+        binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
     }
     //endregion
 
     private void rearrangeTopics() {
+        //首先按照 最新消息时间进行排序
+        Collections.sort(topics,DatabaseDealer.topicComparator);
+
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
         for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {

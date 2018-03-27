@@ -22,8 +22,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +31,8 @@ import java.util.Locale;
  */
 
 public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListItemViewHolder> {
+    private final String TAG=getClass().getSimpleName();
+
     enum ItemType {
         LOADING,
         DATETIME,
@@ -91,10 +91,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     // 从现有的mDatas，生成mUiDatas
     private void generateUiDatas() {
         mUiDatas = new ArrayList<>();
+
+//        for (int i = 0; i < mDatas.size(); i++) {
+//            Log.i(TAG, "generateUiDatas: "+new Gson().toJson(mDatas.get(i)));
+//        }
         for (int i = 0; i < mDatas.size(); i++) {
             DbMsg curDbMsg = mDatas.get(i);
             // 最后一条跟当前时间比较，其余的跟前一条时间比较
-            long nextSendTime = new Date().getTime();
+            long nextSendTime = Long.MAX_VALUE;
             if (i != (mDatas.size() - 1)) {
                 DbMsg nextDbMsg = mDatas.get(i+1);
                 nextSendTime = nextDbMsg.getSendTime();
@@ -118,13 +122,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 timeItem.setTimestamp(curDbMsg.getSendTime());
                 mUiDatas.add(0, timeItem);
             }
+
         }
 
         // 最后一条消息插入时间
         if ((mDatas != null)  && (mDatas.size() > 0)) {
             Item timeItem = new Item();
             timeItem.setType(ItemType.DATETIME);
-            timeItem.setTimestamp(mDatas.get(0).getSendTime());
+            timeItem.setTimestamp(mDatas.get(mDatas.size()-1).getSendTime());
+
             mUiDatas.add(0, timeItem);
         }
 
@@ -188,6 +194,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     @Override
     public void onBindViewHolder(MsgListItemViewHolder holder, final int position) {
         final Item item = mUiDatas.get(position);
+
         holder.setData(item);
 
         if (holder instanceof MyMsgViewHolder) {

@@ -243,7 +243,7 @@ public class ImMsgListActivity extends FragmentActivity {
 
     private void doSend()
     {
-        if (memberIds != null) {
+        if ((memberIds != null) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
             createTopicRequest.imToken = Constants.imToken;
@@ -257,19 +257,18 @@ public class ImMsgListActivity extends FragmentActivity {
                         dbTopic.latestMsgTime = imTopic.latestMsgTime;
                         dbTopic.latestMsgId = imTopic.latestMsgId;
                         dbTopic.save();
+                        topic = dbTopic;
 
                         NewTopicCreatedEvent event = new NewTopicCreatedEvent();
                         event.dbTopic = dbTopic;
                         EventBus.getDefault().post(event);
-
-                        topic = dbTopic;
                         doSendMsg();
                     }
                 }
 
                 @Override
                 public void onFail(RequestBase request, Error error) {
-                    // TBD:cailei 这里需要弹个toast
+                    // TBD:cailei 这里需要弹个toast？
                 }
             });
         } else {
@@ -310,6 +309,7 @@ public class ImMsgListActivity extends FragmentActivity {
                     mMsgListAdapter.notifyDataSetChanged();
 
                     SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
+                    saveTextMsgRequest.reqId = myMsg.getReqId();
                     saveTextMsgRequest.imToken = Constants.imToken;
                     saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
                     saveTextMsgRequest.msg = myMsg.getMsg();
@@ -424,16 +424,8 @@ public class ImMsgListActivity extends FragmentActivity {
             return;
         }
 
-        if (msg.senderId == Constants.imId) {
-            for (DbMsg theDbMsg : topic.mergedMsgs) {
-                if (theDbMsg.getReqId().equals(msg.reqId)) {
-                    // 已经有了, 不去动UI
-                    return;
-                }
-            }
-        }
-
-        topic.mergedMsgs.add(0, dbMsg);
+        //topic.mergedMsgs.add(0, dbMsg);
+        DatabaseDealer.pendingMsgToTopic(dbMsg, topic);
         if (dbMsg.getMsgId() > topic.latestMsgId) {
             topic.latestMsgId = dbMsg.getMsgId();
             topic.latestMsgTime = dbMsg.getSendTime();
