@@ -1,13 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
 
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 26
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
@@ -41,4 +42,9 @@ dependencies {
     // 图片缓存
     compile "com.github.bumptech.glide:glide:$rootProject.glideLibraryVersion"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+
+    //权限处理
+    compile 'pub.devrel:easypermissions:0.4.2'
+
+
 }

@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util;
+package com.test.yanxiu.common_base.utils;
 
 import android.hardware.Camera;
 

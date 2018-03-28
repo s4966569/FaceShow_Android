@@ -1,8 +1,7 @@
-package com.yanxiu.gphone.faceshow.util;
+package com.test.yanxiu.common_base.utils;
 
 import android.app.Activity;
 
-import com.yanxiu.gphone.faceshow.homepage.activity.MainActivity;
 
 import java.util.ArrayList;
 
@@ -66,18 +65,6 @@ public class ActivityManger {
         }
     }
 
-    /**
-     * finish掉除了MainActivity之外的所有Activity
-     */
-    public static void destoryAllActivity() {
-        if (activityList != null && activityList.size() > 0) {
-            for (Activity activity : activityList) {
-                if (!(activity instanceof MainActivity)) {
-                    activity.finish();
-                }
-            }
-        }
-    }
 
     /**
      * 清楚list中最上面的几个Activity
@@ -104,16 +91,5 @@ public class ActivityManger {
         }
         return null;
     }
-    /**
-     * finish掉MainActivity-- （切换班级时需要刷新首页数据时，可以调用）
-     */
-    public static void finishMainActivity() {
-        if (activityList != null && activityList.size() > 0) {
-            for (Activity activity : activityList) {
-                if (activity instanceof MainActivity) {
-                    activity.finish();
-                }
-            }
-        }
-    }
+
 }

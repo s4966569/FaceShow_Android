@@ -5,10 +5,12 @@
     <application>
         <activity
             android:name=".contacts.ContactsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/im_ui"
             android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ImMsgListActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
     </application>
 

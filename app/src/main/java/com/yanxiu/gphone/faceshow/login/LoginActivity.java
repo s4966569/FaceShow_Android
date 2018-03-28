@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.igexin.sdk.PushManager;
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.im_ui.Constants;
-import com.test.yanxiu.im_ui.contacts.ContactsActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -43,7 +42,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.activity.QRCodeSignUpActivity;
 
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
-import com.yanxiu.gphone.faceshow.util.anim.AnimUtil;
+import com.test.yanxiu.common_base.utils.anim.AnimUtil;
 
 import java.util.UUID;
 

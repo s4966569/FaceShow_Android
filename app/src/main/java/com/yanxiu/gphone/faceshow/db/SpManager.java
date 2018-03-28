@@ -168,6 +168,7 @@ public class SpManager {
             Constants.imId = info.imTokenInfo.imMember.imId;
             Constants.imToken = info.imTokenInfo.imToken;
             Constants.imAvatar = info.imTokenInfo.imMember.avatar;
+            Constants.token = getToken();
         }
 
         return info;

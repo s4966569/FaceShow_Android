@@ -37,6 +37,7 @@ public class RequestQueueHelper {
 
             @Override
             public void onFail(RequestBase request, Error error) {
+
                 hasOngoingRequest = false;
                 ongoingRequest = null;
                 removeFromQueue(request);

@@ -2,6 +2,7 @@ package com.test.yanxiu.im_ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -27,6 +27,7 @@ import java.util.Locale;
  */
 
 public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.TopicViewHolder> {
+    private final String TAG=getClass().getSimpleName();
     private Context mContext;
     private List<DbTopic> mDatas;
     private OnRecyclerViewItemClickCallback mOnItemClickCallback;
@@ -118,6 +119,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         // 2, 显示对方昵称(班级名)
                         //mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
                         // 私聊不显示（班级）
+                        Log.i(TAG, "setData: "+member.getName());
                         mSenderTextView.setText(member.getName());
                         break;
                     }
@@ -136,6 +138,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
                 if (latestMsg != null) {
                     // 2, 显示班级群聊(班级名)
+                    Log.i(TAG, "setData: "+topic.getGroup());
                     mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
 
 

@@ -1,7 +1,6 @@
 package com.yanxiu.gphone.faceshow.classcircle.activity;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,6 +35,7 @@ import com.qiniu.android.storage.UpCompletionHandler;
 import com.qiniu.android.storage.UpProgressHandler;
 import com.qiniu.android.storage.UploadManager;
 import com.qiniu.android.storage.UploadOptions;
+import com.test.yanxiu.faceshow_ui_base.imagePicker.GlideImageLoader;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -55,7 +54,6 @@ import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.yanxiu.gphone.faceshow.util.imagePicker.GlideImageLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -594,7 +592,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     }
 
 
-    private void uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
+    private void  uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
         position++;
         /**
          * 本段代码  预防
