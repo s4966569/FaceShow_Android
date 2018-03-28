@@ -373,6 +373,8 @@ public class DatabaseDealer {
         theMsg.setMsg(msg.contentData.msg);
         theMsg.setThumbnail(msg.contentData.thumbnail);
         theMsg.setViewUrl(msg.contentData.viewUrl);
+        theMsg.setWith(msg.contentData.width);
+        theMsg.setHeight(msg.contentData.height);
         theMsg.setFrom(from);
         theMsg.save();
         return theMsg;

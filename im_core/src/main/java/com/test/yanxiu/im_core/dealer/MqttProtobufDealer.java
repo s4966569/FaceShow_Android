@@ -73,7 +73,10 @@ public class MqttProtobufDealer {
                 msg.contentData = new ImMsg.ContentData();
                 msg.contentData.msg = msgProto.getContentData().getMsg();
                 msg.contentData.viewUrl = msgProto.getContentData().getViewUrl();
-                msg.contentData.with = msgProto.getContentData().getWidth();
+                Log.e("frc","msgProto  width:"+msgProto.getContentData().getWidth());
+                Log.e("frc","msgProto  height:"+msgProto.getContentData().getHeight());
+
+                msg.contentData.width = msgProto.getContentData().getWidth();
                 msg.contentData.height = msgProto.getContentData().getHeight();
 
                 // EventBus发现topic更新

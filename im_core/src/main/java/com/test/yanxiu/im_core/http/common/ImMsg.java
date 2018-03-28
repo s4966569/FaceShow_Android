@@ -20,7 +20,7 @@ public class ImMsg {
         public String msg;
         public String thumbnail;
         public String viewUrl;
-        public int with;
+        public int width;
         public int height;
     }
 }

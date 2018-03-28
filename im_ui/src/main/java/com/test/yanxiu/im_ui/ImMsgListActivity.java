@@ -1,6 +1,8 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -395,17 +397,19 @@ public class ImMsgListActivity extends ImBaseActivity {
     /**
      * 发送图片
      */
-    private void doSendImage(String imagePath, String rid, String with, String height) {
+    private void doSendImage(String imagePath, String rid, int width, int height) {
         if (TextUtils.isEmpty(rid)) {
             return;
         }
+        Log.e("frc", "doSendImage width:   " + width);
+        Log.e("frc", "doSendImage height:   " + height);
 
         SaveImageMsgRequest saveImageMsgRequest = new SaveImageMsgRequest();
         saveImageMsgRequest.imToken = Constants.imToken;
         saveImageMsgRequest.topicId = Long.toString(topic.getTopicId());
         saveImageMsgRequest.rid = rid;
-        saveImageMsgRequest.height = height;
-        saveImageMsgRequest.width = with;
+        saveImageMsgRequest.height = String.valueOf(height);
+        saveImageMsgRequest.width = String.valueOf(width);
 
 
         final DbMyMsg myMsg = new DbMyMsg();
@@ -420,7 +424,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         myMsg.setFrom("local");
         myMsg.setViewUrl(imagePath);
         myMsg.setHeight(height);
-        myMsg.setWith(with);
+        myMsg.setWith(width);
         myMsg.save();
         topic.mergedMsgs.add(0, myMsg);
 
@@ -435,6 +439,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
                 Log.e("frc", "onSuccess:: ");
+                Log.e("frc", "onSuccess:: w   " + ret.data.topicMsg.get(0).contentData.width);
+                Log.e("frc", "onSuccess:: h   " + ret.data.topicMsg.get(0).contentData.height);
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
@@ -488,7 +494,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
     }
 
-    private void doSendImgMsg(final String imagePath, final String rid, final String with, final String height) {
+    private void doSendImgMsg(final String imagePath, final String rid, final int with, final int height) {
         if ((memberIds != null) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
@@ -666,7 +672,9 @@ public class ImMsgListActivity extends ImBaseActivity {
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
-
+        Log.e("frc", "picW  :" + dbMsg.getWith());
+        Log.e("frc", "picH :" + dbMsg.getHeight());
+        Log.e("frc", "picV :" + dbMsg.getViewUrl());
         if (msg.topicId != topic.getTopicId()) {
             // 不是本topic的直接抛弃
             return;
@@ -911,7 +919,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
                 try {
-                    doSendImgMsg(picPath, jsonObject.getString("key"), "0", "0");
+                    Integer[] widthAndHeight = getPicWithAndHeight(picPath);
+                    doSendImgMsg(picPath, jsonObject.getString("key"), widthAndHeight[0], widthAndHeight[1]);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -930,5 +939,16 @@ public class ImMsgListActivity extends ImBaseActivity {
         }));
     }
 
-
+    /**
+     * 计算图片的宽高
+     *
+     * @param imgPath 图片路径
+     * @return String【】 第一个参数表示width 第二个参数表示height
+     */
+    private Integer[] getPicWithAndHeight(String imgPath) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
+        return new Integer[]{options.outWidth, options.outHeight};
+    }
 }

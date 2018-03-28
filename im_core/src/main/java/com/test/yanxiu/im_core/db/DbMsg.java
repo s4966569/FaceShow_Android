@@ -20,8 +20,8 @@ public class DbMsg extends DataSupport {
     protected String msg;          // txt怎插入msg，pic插入
     protected String thumbnail;
     protected String viewUrl;
-    protected String with;
-    protected String height;
+    protected int with;
+    protected int height;
 
     protected String from; // mqtt, http, local
 
@@ -106,20 +106,21 @@ public class DbMsg extends DataSupport {
         this.from = from;
     }
 
-    public String getWith() {
+    public int getWith() {
         return with;
     }
 
-    public void setWith(String with) {
+    public void setWith(int with) {
         this.with = with;
     }
 
-    public String getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(String height) {
+    public void setHeight(int height) {
         this.height = height;
     }
-//endregion
+
+    //endregion
 }
