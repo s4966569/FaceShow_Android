@@ -10,7 +10,7 @@ public class SaveImageMsgRequest extends ImRequestBase {
     public String topicId;
     public String rid;
     public String width;
-    public String heigh;
+    public String height;
 
     @Override
     protected HttpType httpType() {

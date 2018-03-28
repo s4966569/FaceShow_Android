@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -24,6 +23,13 @@ import com.google.gson.Gson;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.Configuration;
+import com.qiniu.android.storage.UpCancellationSignal;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
+import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
 import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -44,6 +50,7 @@ import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveImageMsgRequest;
+import com.test.yanxiu.im_core.http.SaveImageMsgResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
 import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
 import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
@@ -64,13 +71,14 @@ import com.test.yanxiu.network.RequestBase;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.DelayQueue;
 
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
@@ -94,6 +102,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     private String memberIds = null;
     private String memberName = null;
     private String mQiniuToken;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,7 +179,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             public void onClick(View view) {
                 //发送照片入口
 
-//                showChoosePicsDialog();
+                showChoosePicsDialog();
 
             }
         });
@@ -183,7 +192,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     SrtLogger.log("imui", "TBD: 发送");
-                    doSend();
+                    doSendTextMsg();
                     return true;
                 }
                 return false;
@@ -218,7 +227,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     private void setupData() {
 
 //        updateMemberInfoRequest(topic);
-        updateTopicFromHttp(topic.getTopicId()+"");
+        updateTopicFromHttp(topic.getTopicId() + "");
     }
 
     private void updateTopicFromHttp(final String topicId) {
@@ -231,7 +240,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
-                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
                 for (ImTopic imTopic : ret.data.topic) {
                     //更新数据库 topic 信息
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
@@ -247,8 +256,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                     topic.setGroup(dbTopic.getGroup());
                     topic.setType(dbTopic.getType());
                     topic.setTopicId(dbTopic.getTopicId());
-                    topic.latestMsgId=dbTopic.latestMsgId;
-                    topic.latestMsgTime=dbTopic.latestMsgTime;
+                    topic.latestMsgId = dbTopic.latestMsgId;
+                    topic.latestMsgTime = dbTopic.latestMsgTime;
                     topic.setShowDot(dbTopic.isShowDot());
 
                     //请求当前topic 下的members 信息更新
@@ -303,8 +312,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                             topic.setName(imMember.memberName);
                         }
                     }
-                    if (topic.getType().equals("2")){
-                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic,Constants.imId));
+                    if (topic.getType().equals("2")) {
+                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
                     }
 
                     //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
@@ -395,7 +404,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         saveImageMsgRequest.imToken = Constants.imToken;
         saveImageMsgRequest.topicId = Long.toString(topic.getTopicId());
         saveImageMsgRequest.rid = rid;
-        saveImageMsgRequest.heigh = height;
+        saveImageMsgRequest.height = height;
         saveImageMsgRequest.width = with;
 
 
@@ -420,9 +429,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
 
         // 数据存储，UI显示都完成后，http发送
-        httpQueueHelper.addRequest(saveImageMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
+
+
+        httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
             @Override
-            public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+            public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
+                Log.e("frc", "onSuccess:: ");
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
@@ -430,6 +442,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
             @Override
             public void onFail(RequestBase request, Error error) {
+                Log.e("frc", "Error:: " + error.getMessage());
                 myMsg.setState(DbMyMsg.State.Failed.ordinal());
                 myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
@@ -439,7 +452,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgEditText.setText("");
     }
 
-    private void doSend() {
+    private void doSendTextMsg() {
         if ((memberIds != null) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
@@ -459,6 +472,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         NewTopicCreatedEvent event = new NewTopicCreatedEvent();
                         event.dbTopic = dbTopic;
                         EventBus.getDefault().post(event);
+
                         doSendMsg();
                     }
                 }
@@ -471,6 +485,43 @@ public class ImMsgListActivity extends ImBaseActivity {
         } else {
             // 已经有对话，直接发送即可
             doSendMsg();
+        }
+    }
+
+    private void doSendImgMsg(final String imagePath, final String rid, final String with, final String height) {
+        if ((memberIds != null) && (topic == null)) {
+            // 是新建的Topic，需要先create topic
+            TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
+            createTopicRequest.imToken = Constants.imToken;
+            createTopicRequest.topicType = "1"; // 私聊
+            createTopicRequest.imMemberIds = memberIds;
+            createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+                @Override
+                public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                    for (ImTopic imTopic : ret.data.topic) {
+                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
+                        dbTopic.save();
+                        topic = dbTopic;
+
+                        NewTopicCreatedEvent event = new NewTopicCreatedEvent();
+                        event.dbTopic = dbTopic;
+                        EventBus.getDefault().post(event);
+
+                        doSendImage(imagePath, rid, with, height);
+                    }
+                }
+
+                @Override
+                public void onFail(RequestBase request, Error error) {
+                    // TBD:cailei 这里需要弹个toast？
+                }
+            });
+        } else {
+            // 已经有对话，直接发送即可
+            doSendImage(imagePath, rid, with, height);
+
         }
     }
 
@@ -725,15 +776,6 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     }
 
-    /**
-     * 通过七牛上传图片
-     *
-     * @param images
-     */
-    private void uploadPicsByQiNiu(List images) {
-//        getQiNiuToken(images);
-        // TODO: 2018/3/27  
-    }
 
     /**
      * 先在列表中显示压缩后图片
@@ -788,8 +830,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                     @Override
                     public void onSuccess(File file) {
                         imageReSizedPathList.add(file.getAbsolutePath());
+                        uploadPicByQiNiu(file.getAbsolutePath());
 
-                        Log.e("frc", "Luban onSuccess "+file.getAbsolutePath());
+                        Log.e("frc", "Luban onSuccess " + file.getAbsolutePath());
                     }
 
                     @Override
@@ -843,4 +886,49 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
     }
+
+    private UploadManager uploadManager = null;
+    /**
+     * 此参数设置为true时 则正在执行的七牛上传图片将被停止
+     */
+    private boolean mCancelQiNiuUploadPics = false;
+    private Configuration config = new Configuration.Builder()
+            // 分片上传时，每片的大小。 默认256K
+            .chunkSize(2 * 1024 * 1024)
+            // 启用分片上传阀值。默认512K
+            .putThreshhold(4 * 1024 * 1024)
+            // 链接超时。默认10秒
+            .connectTimeout(10)
+            // 服务器响应超时。默认60秒
+            .responseTimeout(60)
+            .build();
+
+    private void uploadPicByQiNiu(final String picPath) {
+        if (uploadManager == null) {
+            uploadManager = new UploadManager(config);
+        }
+        uploadManager.put(picPath, null, mQiniuToken, new UpCompletionHandler() {
+            @Override
+            public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
+                try {
+                    doSendImgMsg(picPath, jsonObject.getString("key"), "0", "0");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new UploadOptions(null, null, false, new UpProgressHandler() {
+            @Override
+            public void progress(String s, double v) {
+                Log.e("frc", "progress   s:" + s);
+                Log.e("frc", "progress   v:" + v);
+            }
+        }, new UpCancellationSignal() {
+            @Override
+            public boolean isCancelled() {
+                return mCancelQiNiuUploadPics;
+            }
+        }));
+    }
+
+
 }

@@ -592,7 +592,7 @@ public class SendClassCircleActivity extends FaceShowBaseActivity implements Vie
     }
 
 
-    private void uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
+    private void  uploadPicByQiNiu(final List<String> filePathList, int position, String key, final String token) {
         position++;
         /**
          * 本段代码  预防
