@@ -17,17 +17,18 @@
             android:id="@+id/avatar_imageview"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:scaleType="centerCrop"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             />
-
         <com.test.yanxiu.im_ui.view.RoundCornerMaskView
-            im:mask_color="#dfe3e5"
-            im:corner_radius="5dp"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true" />
+            im:corner_radius="5dp"
+            im:mask_color="#dfe3e5" />
+
 
         <TextView
             android:gravity="center_vertical"
@@ -45,6 +46,22 @@
             android:paddingLeft="10dp"
             android:paddingRight="16dp"
             android:background="@drawable/bg_msg_blue"
+            android:layout_marginLeft="64dp"/>
+        <ImageView
+            android:gravity="center_vertical"
+            android:minHeight="40dp"
+            android:id="@+id/msg_imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:textColor="#ffffff"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/avatar_imageview"
+            android:layout_marginRight="5dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="16dp"
             android:layout_marginLeft="64dp"/>
 
         <ProgressBar
