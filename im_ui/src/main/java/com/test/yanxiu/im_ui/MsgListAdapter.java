@@ -347,19 +347,19 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mNameTextView.setText(sender.getName());
             }
 
-            if (msg.getContentType() == 20) {
-                mMsgTextView.setVisibility(View.GONE);
-                mMsgImageView.setVisibility(View.VISIBLE);
-                Glide.with(itemView.getContext()).load(msg.getViewUrl()).into(mMsgImageView);
-            } else if (msg.getContentType() == 30) {
-                mMsgTextView.setVisibility(View.GONE);
-
-            } else {
+//            if (msg.getContentType() == 20) {
+//                mMsgTextView.setVisibility(View.GONE);
+//                mMsgImageView.setVisibility(View.VISIBLE);
+//                Glide.with(itemView.getContext()).load(msg.getViewUrl()).into(mMsgImageView);
+//            } else if (msg.getContentType() == 30) {
+//                mMsgTextView.setVisibility(View.GONE);
+//
+//            } else {
                 mMsgTextView.setVisibility(View.VISIBLE);
                 mMsgImageView.setVisibility(View.GONE);
 
                 mMsgTextView.setText(msg.getMsg());
-            }
+//            }
 
             mAvatarImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -406,23 +406,21 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             // 设置消息内容
-            if (myMsg.getContentType() == 20) {
-                mMsgTextView.setVisibility(View.GONE);
-                mMsgImageView.setVisibility(View.VISIBLE);
-                Glide.with(itemView.getContext())
-                        .load(myMsg.getViewUrl())
-                        .placeholder(R.drawable.icon_chat_unknown)
-                        .error(R.drawable.icon_chat_unknown)
-                        .into(mMsgImageView);
-            } else if (myMsg.getContentType() == 30) {
-                mMsgTextView.setVisibility(View.GONE);
-
-            } else {
+//            if (myMsg.getContentType() == 20) {
+//                mMsgTextView.setVisibility(View.GONE);
+//                mMsgImageView.setVisibility(View.VISIBLE);
+//                Glide.with(itemView.getContext())
+//                        .load(myMsg.getViewUrl())
+//                        .into(mMsgImageView);
+//            } else if (myMsg.getContentType() == 30) {
+//                mMsgTextView.setVisibility(View.GONE);
+//
+//            } else {
                 mMsgTextView.setVisibility(View.VISIBLE);
                 mMsgImageView.setVisibility(View.GONE);
 
                 mMsgTextView.setText(myMsg.getMsg());
-            }
+//            }
 
             // 设置状态
             mStateSendingProgressBar.setVisibility(View.GONE);

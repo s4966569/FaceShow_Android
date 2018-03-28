@@ -181,7 +181,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             public void onClick(View view) {
                 //发送照片入口
 
-                showChoosePicsDialog();
+//                showChoosePicsDialog();
 
             }
         });
