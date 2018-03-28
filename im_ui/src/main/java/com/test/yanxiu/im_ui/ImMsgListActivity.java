@@ -104,6 +104,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     private long memberId = -1;
     private String memberName = null;
     private String mQiniuToken;
+    private boolean mKeyBoardShown;//键盘已经显示了
 
 
     @Override
@@ -150,7 +151,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
 
         mMsgListRecyclerView = findViewById(R.id.msg_list_recyclerview);
-        mMsgListRecyclerView.setLayoutManager(new LinearLayoutManager(this,
+        mMsgListRecyclerView.setLayoutManager(new FoucsLinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
                 false));
         mMsgListAdapter = new MsgListAdapter(this);
@@ -215,6 +216,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
             @Override
             public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+                mKeyBoardShown = isShow;
                 if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
                     mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
@@ -225,9 +227,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView, new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                mMsgListRecyclerView.clearFocus();
+                if(mKeyBoardShown){
+                    InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    mMsgListRecyclerView.clearFocus();
+                }
                 return false;
             }
         });
