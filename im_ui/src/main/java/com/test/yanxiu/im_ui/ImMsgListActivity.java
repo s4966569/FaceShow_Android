@@ -1,10 +1,11 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
@@ -29,6 +31,7 @@ import com.test.yanxiu.common_base.utils.permission.OnPermissionCallback;
 import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
 import com.test.yanxiu.faceshow_ui_base.imagePicker.GlideImageLoader;
 import com.test.yanxiu.im_core.RequestQueueHelper;
+import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -36,6 +39,8 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenRequest;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenResponse;
+import com.test.yanxiu.im_core.http.GetTopicMembersInfoRequest;
+import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveImageMsgRequest;
@@ -43,6 +48,10 @@ import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
 import com.test.yanxiu.im_core.http.SaveTextMsgResponse;
 import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
+import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
+import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
+import com.test.yanxiu.im_core.http.common.ImDataForUpdateMemberInfo;
+import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
@@ -67,6 +76,11 @@ import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
 public class ImMsgListActivity extends ImBaseActivity {
+    private final String TAG = getClass().getSimpleName();
+
+//    private DbTopic topic;
+
+
     private DbTopic topic;
     private static final int IMAGE_PICKER = 0x03;
     private static final int REQUEST_CODE_SELECT = 0x04;
@@ -200,7 +214,117 @@ public class ImMsgListActivity extends ImBaseActivity {
         ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
+
     private void setupData() {
+
+//        updateMemberInfoRequest(topic);
+        updateTopicFromHttp(topic.getTopicId()+"");
+    }
+
+    private void updateTopicFromHttp(final String topicId) {
+        // http, mqtt 公用
+        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
+        getTopicsRequest.imToken = Constants.imToken;
+        getTopicsRequest.topicIds = topicId;
+//        Log.i(TAG, "updateTopicFromHttp: "+new Gson().toJson(getTopicsRequest));
+        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
+                //正确的长度 为1
+                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+                for (ImTopic imTopic : ret.data.topic) {
+                    //更新数据库 topic 信息
+                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                    dbTopic.latestMsgId = imTopic.latestMsgId;
+//                    Log.i(TAG, "onSuccess: "+new Gson().toJson(imTopic));
+                    //请求成功 消除红点
+                    dbTopic.setShowDot(false);
+                    dbTopic.save();
+                    //保证 topic 的持有
+                    topic.setName(dbTopic.getName());
+                    topic.setChange(dbTopic.getChange());
+                    topic.setGroup(dbTopic.getGroup());
+                    topic.setType(dbTopic.getType());
+                    topic.setTopicId(dbTopic.getTopicId());
+                    topic.latestMsgId=dbTopic.latestMsgId;
+                    topic.latestMsgTime=dbTopic.latestMsgTime;
+                    topic.setShowDot(dbTopic.isShowDot());
+
+                    //请求当前topic 下的members 信息更新
+                    updateMemberInfoRequest(topic);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+
+    }
+
+    // HTTP请求 更新 当前topic 的members 信息
+    private void updateMemberInfoRequest(final DbTopic topic) {
+        GetTopicMembersInfoRequest topicMembersInfoRequest = new GetTopicMembersInfoRequest();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        int length = topic.getMembers().size();
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(topic.getMembers().get(i).getImId());
+            if (i != length - 1) {
+                stringBuilder.append(",");
+            }
+        }
+
+        topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
+        topicMembersInfoRequest.imToken = Constants.imToken;
+//        Log.i("updatemember", "updateMemberInfoRequest: "+new Gson().toJson(topicMembersInfoRequest));
+        topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
+                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
+                //对 对话menmbers进行信息修正
+                for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
+                    //转换数据
+                    ImMember imMember = new ImMember();
+                    imMember.avatar = member.getAvatar();
+                    imMember.imId = member.getId();
+                    imMember.memberName = member.getMemberName();
+                    imMember.memberType = member.getMemberType();
+                    imMember.state = member.getState();
+                    imMember.userId = member.getUserId();
+                    DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
+
+                    //对私聊topic 的 title 进行修正
+                    if (topic.getType().equals("1")) {
+                        if (imMember.imId != Constants.imId) {
+                            mTitleLayout.setTitle(imMember.memberName);
+                            topic.setName(imMember.memberName);
+                        }
+                    }
+                    if (topic.getType().equals("2")){
+                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic,Constants.imId));
+                    }
+
+                    //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
+                    for (DbMember dbMember : topic.getMembers()) {
+                        if (dbMember.getImId() == updatedMember.getImId()) {
+                            topic.getMembers().remove(dbMember);
+                            topic.getMembers().add(updatedMember);
+                            break;
+                        }
+                    }
+                }
+
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                Log.i("updatemember", "onFail: ");
+            }
+        });
     }
 
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();

@@ -175,6 +175,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
+
     // 2，从Http获取用户的topic列表，不包含members，完成后继续从Http获取需要更新的topic的信息
     private void updateTopicsFromHttpWithoutMembers() {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
@@ -468,7 +469,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             i.remove();
                         }
                     }
-
                     topics.add(dbTopic);
                     topicsNeedUpdateMember.add(dbTopic);
                 }

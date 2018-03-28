@@ -126,7 +126,7 @@ android {
 
 
 dependencies {
-    implementation 'com.android.support:support-v4:25.4.0'
+    implementation 'com.android.support:support-v4:26.1.0'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -153,14 +153,11 @@ dependencies {
     //    }
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
     compile 'com.just.agentweb:agentweb:3.1.0'
-
-
     //    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
     //        transitive = true;
     //    }
     compile project(path: ':faceshow_ui_base')
     compile project(path: ':im_ui')
     compile project(path: ':common_base')
-
-
+    compile project(':imagepicker')
 }
