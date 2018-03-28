@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
@@ -255,29 +254,30 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
-                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
-                for (ImTopic imTopic : ret.data.topic) {
-                    //更新数据库 topic 信息
-                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                    dbTopic.latestMsgId = imTopic.latestMsgId;
+                if (ret.code==0) {
+                    for (ImTopic imTopic : ret.data.topic) {
+                        //更新数据库 topic 信息
+                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
+                        //请求成功 消除红点
+                        dbTopic.setShowDot(false);
+                        dbTopic.save();
+                        //保证 topic 的持有
+                        topic.setName(dbTopic.getName());
+                        topic.setChange(dbTopic.getChange());
+                        topic.setGroup(dbTopic.getGroup());
+                        topic.setType(dbTopic.getType());
+                        topic.setTopicId(dbTopic.getTopicId());
+                        topic.latestMsgId = dbTopic.latestMsgId;
+                        topic.latestMsgTime = dbTopic.latestMsgTime;
+                        topic.setShowDot(dbTopic.isShowDot());
 
-                    //请求成功 消除红点
-                    dbTopic.setShowDot(false);
-                    dbTopic.save();
-                    //保证 topic 的持有
-                    topic.setName(dbTopic.getName());
-                    topic.setChange(dbTopic.getChange());
-                    topic.setGroup(dbTopic.getGroup());
-                    topic.setType(dbTopic.getType());
-                    topic.setTopicId(dbTopic.getTopicId());
-                    topic.latestMsgId = dbTopic.latestMsgId;
-                    topic.latestMsgTime = dbTopic.latestMsgTime;
-                    topic.setShowDot(dbTopic.isShowDot());
-
-                    //请求当前topic 下的members 信息更新
-                    updateMemberInfoRequest(topic);
+                        //请求当前topic 下的members 信息更新
+                        updateMemberInfoRequest(topic);
+                    }
                 }
+
             }
 
             @Override
@@ -303,45 +303,43 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
         topicMembersInfoRequest.imToken = Constants.imToken;
-//        Log.i("updatemember", "updateMemberInfoRequest: "+new Gson().toJson(topicMembersInfoRequest));
         topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
-                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
                 //对 对话menmbers进行信息修正
-                for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
-                    //转换数据
-                    ImMember imMember = new ImMember();
-                    imMember.avatar = member.getAvatar();
-                    imMember.imId = member.getId();
-                    imMember.memberName = member.getMemberName();
-                    imMember.memberType = member.getMemberType();
-                    imMember.state = member.getState();
-                    imMember.userId = member.getUserId();
-                    DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
-
-                    //对私聊topic 的 title 进行修正
-                    if (topic.getType().equals("1")) {
-                        if (imMember.imId != Constants.imId) {
-                            mTitleLayout.setTitle(imMember.memberName);
-                            topic.setName(imMember.memberName);
+                if (ret.code==0) {
+                    for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
+                        //转换数据
+                        ImMember imMember = new ImMember();
+                        imMember.avatar = member.getAvatar();
+                        imMember.imId = member.getId();
+                        imMember.memberName = member.getMemberName();
+                        imMember.memberType = member.getMemberType();
+                        imMember.state = member.getState();
+                        imMember.userId = member.getUserId();
+                        DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
+                        //对私聊topic 的 title 进行修正
+                        if (topic.getType().equals("1")) {
+                            if (imMember.imId != Constants.imId) {
+                                mTitleLayout.setTitle(imMember.memberName);
+                                topic.setName(imMember.memberName);
+                            }
+                        }
+                        //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
+                        for (DbMember dbMember : topic.getMembers()) {
+                            if (dbMember.getImId() == updatedMember.getImId()) {
+                                topic.getMembers().remove(dbMember);
+                                topic.getMembers().add(updatedMember);
+                                break;
+                            }
                         }
                     }
+                    //使用最新的 成员信息
                     if (topic.getType().equals("2")) {
-                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
+                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
                     }
-
-                    //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
-                    for (DbMember dbMember : topic.getMembers()) {
-                        if (dbMember.getImId() == updatedMember.getImId()) {
-                            topic.getMembers().remove(dbMember);
-                            topic.getMembers().add(updatedMember);
-                            break;
-                        }
-                    }
+                    mMsgListAdapter.notifyDataSetChanged();
                 }
-
-                mMsgListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -627,6 +625,9 @@ public class ImMsgListActivity extends ImBaseActivity {
             topic.latestMsgId = dbMsg.getMsgId();
             topic.latestMsgTime = dbMsg.getSendTime();
         }
+        //在对话内收到消息 默认取消红点的显示  bug1307
+        topic.setShowDot(false);
+        topic.save();
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
