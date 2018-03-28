@@ -41,6 +41,7 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,9 +110,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
             }
         }
+
         rearrangeTopics(); // 重新排列群聊、私聊
 
         curTopic = null;
+        msgShownTopics.clear();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -491,9 +494,21 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
         @Override
         public void onItemClick(int position, DbTopic dbTopic) {
-
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
+
+            DbMember member = null;
+            if (DatabaseDealer.isMockTopic(dbTopic)) {
+                // 私聊但topic没有创建成功
+                for (DbMember m : dbTopic.getMembers()) {
+                    if (m.getImId() != Constants.imId) {
+                        member = m;
+                    }
+                }
+                i.putExtra(Constants.kCreateTopicMemberId, member.getImId());
+                i.putExtra(Constants.kCreateTopicMemberName, member.getName());
+            }
+
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             dbTopic.setShowDot(false);
             dbTopic.save();
@@ -538,9 +553,21 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         curTopic = null;
         SharedSingleton.getInstance().set(Constants.kShareTopic, null);
         Intent i = new Intent(getActivity(), ImMsgListActivity.class);
-        i.putExtra(Constants.kCreateTopicMemberIds, Long.toString(Constants.imId) + "," + memberId);
+        i.putExtra(Constants.kCreateTopicMemberId, memberId);
         i.putExtra(Constants.kCreateTopicMemberName, member.getName());
         getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
+    }
+
+    @Subscribe
+    public void onMockTopicRemoved(ImMsgListActivity.MockTopicRemovedEvent event) {
+        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+            DbTopic uiTopic = i.next();
+            if (uiTopic.getTopicId()  == event.dbTopic.getTopicId()) {
+                i.remove();
+                DatabaseDealer.removeMockTopic(uiTopic);
+                msgShownTopics.remove(event.dbTopic);
+            }
+        }
     }
 
     @Subscribe

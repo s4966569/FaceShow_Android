@@ -16,7 +16,7 @@ public class Constants {
 
 
     public static final String kShareTopic = "Share Topic";
-    public static final String kCreateTopicMemberIds = "Create Topic Member Ids";
+    public static final String kCreateTopicMemberId = "Create Topic Member Id";
     public static final String kCreateTopicMemberName = "Create Topic Member Name";
 
     public static final int IM_REQUEST_CODE_BASE = 800;

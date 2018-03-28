@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class ImMsgListActivity extends FragmentActivity {
     private DbTopic topic;
@@ -64,13 +65,13 @@ public class ImMsgListActivity extends FragmentActivity {
     private EditText mMsgEditText;
     private ImageView mTakePicImageView;
 
-    private String memberIds = null;
+    private long memberId = -1;
     private String memberName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        memberIds = getIntent().getStringExtra(Constants.kCreateTopicMemberIds);
+        memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
 
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
@@ -152,7 +153,13 @@ public class ImMsgListActivity extends FragmentActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     SrtLogger.log("imui", "TBD: 发送");
-                    doSend();
+                    String msg = mMsgEditText.getText().toString();
+                    String trimMsg = msg.trim();
+                    if (trimMsg.length() == 0) {
+                        return true;
+                    }
+
+                    doSend(msg, null);
                     return true;
                 }
                 return false;
@@ -187,35 +194,35 @@ public class ImMsgListActivity extends FragmentActivity {
     }
 
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
+
     public class NewTopicCreatedEvent {
         public DbTopic dbTopic;
     }
 
+    public class MockTopicRemovedEvent {
+        public DbTopic dbTopic;
+    }
 
-    private void doSendMsg() {
-        String msg = mMsgEditText.getText().toString();
-        String trimMsg = msg.trim();
-        if (trimMsg.length() == 0) {
-            return;
-        }
 
+    private void doSendMsg(final String msg, final String reqId) {
         SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
         saveTextMsgRequest.imToken = Constants.imToken;
         saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
         saveTextMsgRequest.msg = msg;
 
-        final DbMyMsg myMsg = new DbMyMsg();
-        myMsg.setState(DbMyMsg.State.Sending.ordinal());
-        myMsg.setReqId(saveTextMsgRequest.reqId);
-        myMsg.setMsgId(latestMsgId());
-        myMsg.setTopicId(topic.getTopicId());
-        myMsg.setSenderId(Constants.imId);
-        myMsg.setSendTime(new Date().getTime());
-        myMsg.setContentType(10);
-        myMsg.setMsg(msg);
-        myMsg.setFrom("local");
-        myMsg.save();
-        topic.mergedMsgs.add(0, myMsg);
+        if (reqId != null) {
+            // resend需要走相同的路径，但是msg已经有reqId了
+            saveTextMsgRequest.reqId = reqId;
+        }
+
+        // 我发送的必然已经存在于队列
+        DbMyMsg sendMsg = null;
+        for (DbMsg m : topic.mergedMsgs) {
+            if (m.getReqId().equals(reqId)) {
+                sendMsg = (DbMyMsg) m;
+            }
+        }
+        final DbMyMsg myMsg = sendMsg;
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
@@ -241,39 +248,98 @@ public class ImMsgListActivity extends FragmentActivity {
         mMsgEditText.setText("");
     }
 
-    private void doSend()
+
+    private void doSend(final String msg, final String reqId)
     {
-        if ((memberIds != null) && (topic == null)) {
+        final String msgReqId = (reqId == null ? UUID.randomUUID().toString() : reqId);
+
+
+        // 预先插入mock topic
+        if ((memberId > 0) && (topic == null)) {
+            // 私聊尚且没有topic，需要创建mock topic
+            DbTopic mockTopic = DatabaseDealer.mockTopic();
+            DbMember myself = DatabaseDealer.getMemberById(Constants.imId);
+            DbMember member = DatabaseDealer.getMemberById(memberId);
+            mockTopic.getMembers().add(myself);
+            mockTopic.getMembers().add(member);
+            mockTopic.save();
+            topic = mockTopic;
+            mMsgListAdapter.setTopic(topic);
+
+            NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
+            newTopicEvent.dbTopic = mockTopic;
+            EventBus.getDefault().post(newTopicEvent);
+        }
+
+        // 预先插入mock msg
+        //if (DatabaseDealer.isMockTopic(topic)) {
+            DbMyMsg myMsg = new DbMyMsg();
+            myMsg.setState(DbMyMsg.State.Sending.ordinal());
+            myMsg.setReqId(msgReqId);
+            myMsg.setMsgId(-1);
+            myMsg.setTopicId(topic.getTopicId());
+            myMsg.setSenderId(Constants.imId);
+            myMsg.setSendTime(new Date().getTime());
+            myMsg.setContentType(10);
+            myMsg.setMsg(msg);
+            myMsg.setFrom("local");
+            myMsg.save();
+            topic.mergedMsgs.add(0, myMsg);
+            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+            mMsgListAdapter.notifyDataSetChanged();
+        //}
+
+        // 对于是mock topic的需要先创建topic
+        if (DatabaseDealer.isMockTopic(topic)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
             createTopicRequest.imToken = Constants.imToken;
             createTopicRequest.topicType = "1"; // 私聊
-            createTopicRequest.imMemberIds = memberIds;
+            createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + Long.toString(memberId);
             createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
-                    for (ImTopic imTopic : ret.data.topic) {
-                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                        dbTopic.latestMsgId = imTopic.latestMsgId;
-                        dbTopic.save();
-                        topic = dbTopic;
-
-                        NewTopicCreatedEvent event = new NewTopicCreatedEvent();
-                        event.dbTopic = dbTopic;
-                        EventBus.getDefault().post(event);
-                        doSendMsg();
+                    ImTopic imTopic = null;
+                    for (ImTopic topic : ret.data.topic) {
+                        imTopic = topic;
                     }
+                    // 应该只有一个imTopic
+
+                    // 1，通知移除mock topic
+                    DbTopic mockTopic = topic;
+                    MockTopicRemovedEvent mockRemoveEvent = new MockTopicRemovedEvent();
+                    mockRemoveEvent.dbTopic = mockTopic;
+                    EventBus.getDefault().post(mockRemoveEvent);
+
+
+                    // 2，添加server返回的real topic
+                    DbTopic realTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    realTopic.latestMsgTime = imTopic.latestMsgTime;
+                    realTopic.latestMsgId = imTopic.latestMsgId;
+                    realTopic.save();
+                    topic = realTopic;
+
+                    // 3，做mock topic 和 real topic间msgs的转换
+                    DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
+
+                    // 4, 通知新增real topic
+                    NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
+                    newTopicEvent.dbTopic = realTopic;
+                    EventBus.getDefault().post(newTopicEvent);
+
+                    mMsgListAdapter.notifyDataSetChanged();
+                    doSendMsg(msg, msgReqId);
                 }
 
                 @Override
                 public void onFail(RequestBase request, Error error) {
-                    // TBD:cailei 这里需要弹个toast？
+                    DatabaseDealer.topicCreateFailed(topic);
+                    mMsgListAdapter.notifyDataSetChanged();
                 }
             });
         } else {
             // 已经有对话，直接发送即可
-            doSendMsg();
+            doSendMsg(msg, msgReqId);
         }
     }
 
@@ -304,30 +370,9 @@ public class ImMsgListActivity extends FragmentActivity {
                     // 1, 先更新数据库中
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
                     myMsg.setMsgId(latestMsgId());
-                    topic.mergedMsgs.add(0, myMsg);
-                    mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                    mMsgListAdapter.notifyDataSetChanged();
+                    myMsg.save();
 
-                    SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
-                    saveTextMsgRequest.reqId = myMsg.getReqId();
-                    saveTextMsgRequest.imToken = Constants.imToken;
-                    saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
-                    saveTextMsgRequest.msg = myMsg.getMsg();
-                    httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
-                        @Override
-                        public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
-                            myMsg.setState(DbMyMsg.State.Success.ordinal());
-                            myMsg.save();
-                            mMsgListAdapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onFail(RequestBase request, Error error) {
-                            myMsg.setState(DbMyMsg.State.Failed.ordinal());
-                            myMsg.save();
-                            mMsgListAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    doSend(myMsg.getMsg(), myMsg.getReqId());
                 }
             }
         }

@@ -16,6 +16,7 @@ import org.litepal.LitePalDB;
 import org.litepal.crud.ClusterQuery;
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -443,4 +444,89 @@ public class DatabaseDealer {
         topic.mergedMsgs.add(0, msg);
     }
     //endregion
+
+    public static DbTopic mockTopic() {
+        DbTopic topic = DataSupport
+                .order("topicid asc")
+                .findFirst(DbTopic.class);
+
+        DbTopic ret = new DbTopic();
+        if (topic == null) {
+            ret.setTopicId(-1);
+        } else if (topic.getTopicId() >= 0) {
+            ret.setTopicId(-1);
+        } else {
+            ret.setTopicId(topic.getTopicId() - 1);
+        }
+
+        ret.setName("mock name");
+        ret.setType("1");
+        ret.setChange("mock change");
+        ret.setGroup("mock group");
+
+        return ret;
+    }
+
+    // 负数为临时topic，为了保留无网络状态下发送的msg用
+    public static boolean isMockTopic(DbTopic topic) {
+        if (topic == null) {
+            return true;
+        }
+
+        return topic.getTopicId() < 0 ? true : false;
+    }
+
+    public static void removeMockTopic(DbTopic topic) {
+        if (topic == null) {
+            return;
+        }
+
+        if (!isMockTopic(topic)) {
+            return;
+        }
+
+        topic.delete();
+    }
+
+    public static void migrateMsgsForMockTopic(DbTopic mockTopic, DbTopic realTopic) {
+        // 对于DB处理
+        List<DbMyMsg> myMsgs = DataSupport
+                .where("topicid = ?", Long.toString(mockTopic.getTopicId()))
+                .find(DbMyMsg.class);
+
+        for (DbMyMsg myMsg : myMsgs) {
+            myMsg.setTopicId(realTopic.getTopicId());
+            myMsg.save();
+        }
+
+        // 对于UI处理
+        realTopic.mergedMsgs.addAll(mockTopic.mergedMsgs);
+        for (DbMsg msg : mockTopic.mergedMsgs) {
+            if (msg instanceof DbMyMsg) {
+                DbMyMsg myMsg = (DbMyMsg) msg;
+                myMsg.setTopicId(realTopic.getTopicId());
+            }
+        }
+    }
+
+    // 将mock topicz中的msg都设置为发送失败
+    public static void topicCreateFailed(DbTopic mockTopic) {
+        // 对于DB处理
+        List<DbMyMsg> myMsgs = DataSupport
+                .where("topicid = ?", Long.toString(mockTopic.getTopicId()))
+                .find(DbMyMsg.class);
+
+        for (DbMyMsg myMsg : myMsgs) {
+            myMsg.setState(DbMyMsg.State.Failed.ordinal());
+            myMsg.save();
+        }
+
+        // 对于UI处理
+        for (DbMsg msg : mockTopic.mergedMsgs) {
+            if (msg instanceof DbMyMsg) {
+                DbMyMsg myMsg = (DbMyMsg) msg;
+                myMsg.setState(DbMyMsg.State.Failed.ordinal());
+            }
+        }
+    }
 }
