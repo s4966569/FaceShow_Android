@@ -558,16 +558,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             curTopic.setShowDot(false);
+
+            curTopic.setFromTopic(Long.toString(contact.fromTopicId));
+
             curTopic.save();
             msgShownTopics.add(curTopic);
             return;
         }
 
         curTopic = null;
-        SharedSingleton.getInstance().set(Constants.kShareTopic, null);
+        SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
         Intent i = new Intent(getActivity(), ImMsgListActivity.class);
         i.putExtra(Constants.kCreateTopicMemberId, memberId);
         i.putExtra(Constants.kCreateTopicMemberName, member.getName());
+        i.putExtra(Constants.kFromTopicId, member.fromTopicId);
         getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
     }
 

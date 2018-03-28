@@ -101,6 +101,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     private long memberId = -1;
     private String memberName = null;
+    private long fromTopicId = -1;
     private String mQiniuToken;
     private boolean mKeyBoardShown;//键盘已经显示了
 
@@ -110,6 +111,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         super.onCreate(savedInstanceState);
         memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
+        fromTopicId = getIntent().getLongExtra(Constants.kFromTopicId, -1);
 
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
 
@@ -408,7 +410,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     private void doSend(final String msg, final String reqId) {
         final String msgReqId = (reqId == null ? UUID.randomUUID().toString() : reqId);
 
-
         // 预先插入mock topic
         if ((memberId > 0) && (topic == null)) {
             // 私聊尚且没有topic，需要创建mock topic
@@ -417,6 +418,9 @@ public class ImMsgListActivity extends ImBaseActivity {
             DbMember member = DatabaseDealer.getMemberById(memberId);
             mockTopic.getMembers().add(myself);
             mockTopic.getMembers().add(member);
+            if (fromTopicId > 0) { // 来自群聊点击的私聊
+                mockTopic.setFromTopic(Long.toString(fromTopicId));
+            }
             mockTopic.save();
             topic = mockTopic;
             mMsgListAdapter.setTopic(topic);
@@ -450,6 +454,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             createTopicRequest.imToken = Constants.imToken;
             createTopicRequest.topicType = "1"; // 私聊
             createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + Long.toString(memberId);
+            createTopicRequest.fromGroupTopicId = topic.getFromTopic();
             createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
