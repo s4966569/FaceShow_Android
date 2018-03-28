@@ -439,6 +439,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         // 目前只处理AddTo
         Log.i(TAG, "onMqttMsg: topic change ");
         if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
+            binder.subscribeTopic(Long.toString(event.topicId));
             updateTopicsWithMembers(Long.toString(event.topicId));
         }
         rearrangeTopics();
