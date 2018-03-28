@@ -142,9 +142,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                 false));
         mMsgListAdapter = new MsgListAdapter(this);
         mMsgListAdapter.setTopic(topic);
+
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
         if (topic != null) {
+//            Log.i(TAG, "setupView: "+new Gson().toJson(topic));
             mMsgListAdapter.setmDatas(topic.mergedMsgs);
         } else {
             mMsgListAdapter.setmDatas(new ArrayList<DbMsg>());
@@ -219,6 +221,9 @@ public class ImMsgListActivity extends ImBaseActivity {
         updateTopicFromHttp(topic.getTopicId() + "");
     }
 
+    /**
+     * 从服务器获取最新的topic 信息 并更新本地数据库
+     */
     private void updateTopicFromHttp(final String topicId) {
         // http, mqtt 公用
         TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
@@ -261,7 +266,9 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     }
 
-    // HTTP请求 更新 当前topic 的members 信息
+    /**
+     * HTTP请求 更新 当前topic 的members 信息
+     */
     private void updateMemberInfoRequest(final DbTopic topic) {
         GetTopicMembersInfoRequest topicMembersInfoRequest = new GetTopicMembersInfoRequest();
         StringBuilder stringBuilder = new StringBuilder();
@@ -292,6 +299,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         imMember.memberType = member.getMemberType();
                         imMember.state = member.getState();
                         imMember.userId = member.getUserId();
+                        //数据库更新
                         DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
 
                         //对私聊topic 的 title 进行修正
@@ -301,7 +309,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                                 topic.setName(imMember.memberName);
                             }
                         }
-
 
                         //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
                         for (DbMember dbMember : topic.getMembers()) {
@@ -576,6 +583,10 @@ public class ImMsgListActivity extends ImBaseActivity {
             topic.latestMsgId = dbMsg.getMsgId();
             topic.latestMsgTime = dbMsg.getSendTime();
         }
+
+        //1307   当在聊天页收到消息时 不提示红点
+        topic.setShowDot(false);
+        topic.save();
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
