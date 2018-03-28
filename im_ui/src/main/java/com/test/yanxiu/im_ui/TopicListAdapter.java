@@ -188,8 +188,8 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 return ret;
             }
 
-            // 星期三
-            SimpleDateFormat formatter2 = new SimpleDateFormat("EEE", Locale.CHINA);
+            // 星期三 周三->星期三
+            SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE ", Locale.CHINA);
             ret = formatter2.format(date);
             return ret;
         }
