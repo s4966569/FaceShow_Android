@@ -183,7 +183,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateTopicsFromHttpWithoutMembers() {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
         getMemberTopicsRequest.imToken = Constants.imToken;
-        getMemberTopicsRequest.bizId = null;
         getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
             @Override
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
