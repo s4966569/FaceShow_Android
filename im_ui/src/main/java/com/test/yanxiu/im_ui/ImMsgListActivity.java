@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -218,7 +217,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     private void setupData() {
 
 //        updateMemberInfoRequest(topic);
-        updateTopicFromHttp(topic.getTopicId()+"");
+        updateTopicFromHttp(topic.getTopicId() + "");
     }
 
     private void updateTopicFromHttp(final String topicId) {
@@ -231,7 +230,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
-                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
+                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
                 for (ImTopic imTopic : ret.data.topic) {
                     //更新数据库 topic 信息
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
@@ -246,9 +245,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                     topic.setChange(dbTopic.getChange());
                     topic.setGroup(dbTopic.getGroup());
                     topic.setType(dbTopic.getType());
-                    topic.setTopicId(dbTopic.getTopicId());
-                    topic.latestMsgId=dbTopic.latestMsgId;
-                    topic.latestMsgTime=dbTopic.latestMsgTime;
+//                    topic.setTopicId(dbTopic.getTopicId());
+                    topic.latestMsgId = dbTopic.latestMsgId;
+                    topic.latestMsgTime = dbTopic.latestMsgTime;
                     topic.setShowDot(dbTopic.isShowDot());
 
                     //请求当前topic 下的members 信息更新
@@ -284,37 +283,45 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
                 Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
-                //对 对话menmbers进行信息修正
-                for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
-                    //转换数据
-                    ImMember imMember = new ImMember();
-                    imMember.avatar = member.getAvatar();
-                    imMember.imId = member.getId();
-                    imMember.memberName = member.getMemberName();
-                    imMember.memberType = member.getMemberType();
-                    imMember.state = member.getState();
-                    imMember.userId = member.getUserId();
-                    DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
+                if (ret.code == 0) {
+                    //对 对话menmbers进行信息修正
+                    for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
+                        //转换数据
+                        ImMember imMember = new ImMember();
+                        imMember.avatar = member.getAvatar();
+                        imMember.imId = member.getId();
+                        imMember.memberName = member.getMemberName();
+                        imMember.memberType = member.getMemberType();
+                        imMember.state = member.getState();
+                        imMember.userId = member.getUserId();
+                        DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
 
-                    //对私聊topic 的 title 进行修正
-                    if (topic.getType().equals("1")) {
-                        if (imMember.imId != Constants.imId) {
-                            mTitleLayout.setTitle(imMember.memberName);
-                            topic.setName(imMember.memberName);
+                        //对私聊topic 的 title 进行修正
+                        if (topic.getType().equals("1")) {
+                            if (imMember.imId != Constants.imId) {
+                                mTitleLayout.setTitle(imMember.memberName);
+                                topic.setName(imMember.memberName);
+                            }
+                        }
+
+
+                        //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
+                        for (DbMember dbMember : topic.getMembers()) {
+                            if (dbMember.getImId() == updatedMember.getImId()) {
+                                topic.getMembers().remove(dbMember);
+                                topic.getMembers().add(updatedMember);
+                                break;
+                            }
                         }
                     }
-                    if (topic.getType().equals("2")){
-                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic,Constants.imId));
+                    //对群聊的 title 进行设置
+                    if (topic.getType().equals("2")) {
+                        //
+//                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
+                        //
+                        mTitleLayout.setTitle("班级群聊 (" + ret.getData().getMembers().size() + ")");
                     }
 
-                    //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
-                    for (DbMember dbMember : topic.getMembers()) {
-                        if (dbMember.getImId() == updatedMember.getImId()) {
-                            topic.getMembers().remove(dbMember);
-                            topic.getMembers().add(updatedMember);
-                            break;
-                        }
-                    }
                 }
 
                 mMsgListAdapter.notifyDataSetChanged();
@@ -710,6 +717,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     /**
      * 使用鲁班压缩图片至200kb左右
+     *
      * @param imageItemArrayList
      * @return
      */
