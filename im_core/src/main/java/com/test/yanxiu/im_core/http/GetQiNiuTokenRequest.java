@@ -13,6 +13,7 @@ public class GetQiNiuTokenRequest extends ImRequestBase {
     public String type;
     public String size;
     public String name;
+    public String token;
     public String lastModifiedDate;
     public String shareType;
     //必填
