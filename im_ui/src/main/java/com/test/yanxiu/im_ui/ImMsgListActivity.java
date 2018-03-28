@@ -304,11 +304,9 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
         topicMembersInfoRequest.imToken = Constants.imToken;
-//        Log.i("updatemember", "updateMemberInfoRequest: "+new Gson().toJson(topicMembersInfoRequest));
         topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
-                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
                 //对 对话menmbers进行信息修正
                 for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
                     //转换数据
@@ -328,9 +326,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                             topic.setName(imMember.memberName);
                         }
                     }
-                    if (topic.getType().equals("2")) {
-                        mTitleLayout.setTitle(DatabaseDealer.getTopicTitle(topic, Constants.imId));
-                    }
+
 
                     //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
                     for (DbMember dbMember : topic.getMembers()) {
@@ -341,7 +337,10 @@ public class ImMsgListActivity extends ImBaseActivity {
                         }
                     }
                 }
-
+                //使用最新的 成员信息
+                if (topic.getType().equals("2")) {
+                    mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+                }
                 mMsgListAdapter.notifyDataSetChanged();
             }
 
@@ -735,6 +734,9 @@ public class ImMsgListActivity extends ImBaseActivity {
             topic.latestMsgId = dbMsg.getMsgId();
             topic.latestMsgTime = dbMsg.getSendTime();
         }
+        //在对话内收到消息 默认取消红点的显示  bug1307
+        topic.setShowDot(false);
+        topic.save();
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
