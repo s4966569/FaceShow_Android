@@ -189,6 +189,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // 3
                 for (ImTopic imTopic : ret.data.topic) {
+                    if (imTopic.latestMsgId == 0) {
+                        // 群聊但是里面却没有消息
+                        continue;
+                    }
                     binder.subscribeTopic(Long.toString(imTopic.topicId));
                 }
 
@@ -294,11 +298,17 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                // 有新消息，UI上应该显示红点       -- 这里 1290
+                // 新建topic成功后topicMsg.size为0
+                if (ret.data.topicMsg==null || ret.data.topicMsg.size()==0) {
+                    return;
+                }
+
+                // 有新消息，UI上应该显示红点
                 dbTopic.setShowDot(true);
                 dbTopic.save();
 
-                // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
+                // 用最新一页，取代之前的mergedMsgs，
+                // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
                 for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
                     DbMsg uiMsg = i.next();
                     if (uiMsg.getFrom().equals("mqtt")) {
@@ -312,7 +322,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                                 i.remove();
                             }
                         }
-                        // TODO: 2018/3/28  如果 请求的列表中不包含上次的mqtt 信息，
                         continue;
                     }
                     i.remove();
@@ -325,11 +334,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
                         dbTopic.latestMsgId = dbMsg.getMsgId();
                     }
-                }
-                //判断获取的消息数量是否为0 或空  此时 不显示红点
-                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
-                    dbTopic.setShowDot(false);
-                    dbTopic.save();
                 }
 
                 rearrangeTopics();
@@ -623,6 +627,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         List<DbTopic> privateTopics = new ArrayList<>();
         for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
             DbTopic topic = i.next();
+
             if (topic.getType().equals("1")) {
                 // 私聊
                 i.remove();
