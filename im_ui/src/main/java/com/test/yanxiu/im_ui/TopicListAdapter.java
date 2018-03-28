@@ -136,13 +136,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             if (topic.getType().equals("2")) { // 群聊
                 // 1, 显示班级默认图片
                 mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
+                // 2, 显示班级群聊(班级名) 在消息判断外侧，保证列表 显示群组名称
+                mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
                 if (latestMsg != null) {
-                    // 2, 显示班级群聊(班级名)
-                    Log.i(TAG, "setData: "+topic.getGroup());
-                    mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
-
-
-
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
                     // 4, 显示消息内容
