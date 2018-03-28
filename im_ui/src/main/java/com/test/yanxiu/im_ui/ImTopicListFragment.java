@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -169,10 +170,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
-
-
         topics.addAll(DatabaseDealer.topicsFromDb());
-
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -205,7 +203,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateTopicsFromHttpAddMembers(TopicGetMemberTopicsResponse ret) {
         List<String> idTopicsNeedUpdateMember = new ArrayList<>(); // 因为可能有新的，所以只能用topicId
         List<DbTopic> topicsNotNeedUpdateMember = new ArrayList<>();
-
         // 所有不在DB中的，以及所有在DB中但change不等于topicChange的topics
         for (ImTopic imTopic : ret.data.topic) {
             boolean needUpdateMembers = true;
@@ -218,10 +215,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         topicsNotNeedUpdateMember.add(dbTopic);
                         break;
                     }
-
                 }
             }
-
             if (needUpdateMembers) {
                 idTopicsNeedUpdateMember.add(Long.toString(imTopic.topicId));
             }
@@ -329,6 +324,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
                     dbTopic.setShowDot(false);
                     dbTopic.save();
+                }else {
+                    //http 请求 需要展示红点  通知 homeFragment 展示红点
+                    noticeShowRedDot();
                 }
 
                 rearrangeTopics();
@@ -441,11 +439,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
                 dbTopic.setShowDot(true);
                 dbTopic.save();
+                //回调给 主页  显示 新消息红点
+                noticeShowRedDot();
                 break;
             }
         }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+
     }
 
     @Subscribe
@@ -458,6 +459,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+        //回调给 主页  显示 新消息红点
+        noticeShowRedDot();
     }
 
     // http, mqtt 公用
@@ -607,11 +610,13 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
         binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
+
     }
     //endregion
 
     private void rearrangeTopics() {
         //首先按照 最新消息时间进行排序
+        Log.i(TAG, "rearrangeTopics: ");
         Collections.sort(topics,DatabaseDealer.topicComparator);
 
         // 只区分开群聊、私聊，不改变以前里面的顺序
@@ -628,7 +633,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         topics.addAll(privateTopics);
     }
 
-
+    /**
+     * title 点击回调
+     *
+     * */
     private TitleActionCallback titleActionCallback;
 
     public void setTitleActionCallback(TitleActionCallback titleActionCallback) {
@@ -636,8 +644,26 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public interface TitleActionCallback{
-
         void onLeftImgClicked();
+    }
 
+
+    /**
+     * 新消息红点 监听
+     * */
+    private NewMessageListener newMessageListener;
+
+    private void noticeShowRedDot(){
+        Toast.makeText(getActivity(),"show red", Toast.LENGTH_SHORT).show();
+        if (newMessageListener != null&&ImTopicListFragment.this.isHidden()) {
+            newMessageListener.onGetNewMessage();
+        }
+    }
+    public void setNewMessageListener(NewMessageListener newMessageListener) {
+        this.newMessageListener = newMessageListener;
+    }
+
+    public interface NewMessageListener{
+        void onGetNewMessage();
     }
 }
