@@ -169,10 +169,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
-
-
         topics.addAll(DatabaseDealer.topicsFromDb());
-
+        for (DbTopic topic : topics) {
+            for (DbMsg msg : topic.mergedMsgs) {
+                msg.setFrom("http");
+            }
+        }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
