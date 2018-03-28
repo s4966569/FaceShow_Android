@@ -41,7 +41,6 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
-import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -302,6 +301,13 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
                     DbMsg uiMsg = i.next();
                     if (uiMsg.getFrom().equals("mqtt")) {
+                        // 数据库中记录的来自mqtt的消息
+                        for (ImMsg imMsg : ret.data.topicMsg) {
+                            //如果 http请求中包含此条消息 在UImsg 列表中将其删除
+                            if (imMsg.reqId.equals(uiMsg.getReqId())) {
+                                i.remove();
+                            }
+                        }
                         continue;
                     }
                     i.remove();
