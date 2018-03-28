@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
@@ -230,13 +229,12 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
-                Log.i(TAG, "onSuccess: " + new Gson().toJson(ret));
                 for (ImTopic imTopic : ret.data.topic) {
                     //更新数据库 topic 信息
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
                     dbTopic.latestMsgTime = imTopic.latestMsgTime;
                     dbTopic.latestMsgId = imTopic.latestMsgId;
-//                    Log.i(TAG, "onSuccess: "+new Gson().toJson(imTopic));
+
                     //请求成功 消除红点
                     dbTopic.setShowDot(false);
                     dbTopic.save();
@@ -278,11 +276,11 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
         topicMembersInfoRequest.imToken = Constants.imToken;
-//        Log.i("updatemember", "updateMemberInfoRequest: "+new Gson().toJson(topicMembersInfoRequest));
+
         topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
-                Log.i("updatemember", "onSuccess: " + new Gson().toJson(ret));
+
                 if (ret.code == 0) {
                     //对 对话menmbers进行信息修正
                     for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {

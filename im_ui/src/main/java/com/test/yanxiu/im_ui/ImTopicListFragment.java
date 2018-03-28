@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +59,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private List<DbTopic> topics = new ArrayList<>();
+
     public ImTopicListFragment() {
         // Required empty public constructor
     }
@@ -247,7 +247,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         updateTopicsWithMembers(strTopicIds);
         */
 
-        for(String topicId : idTopicsNeedUpdateMember){
+        for (String topicId : idTopicsNeedUpdateMember) {
             // 由于server限制，改成一个个取
             updateTopicsWithMembers(topicId);
         }
@@ -256,6 +256,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
     private int totalRetryTimes;
     private RequestQueueHelper rqHelper = new RequestQueueHelper();
+
     private void updateEachTopicMsgs(List<DbTopic> topics) {
         totalRetryTimes = 10;
         for (final DbTopic dbTopic : topics) {
@@ -271,7 +272,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
             }
         }
-    };
+    }
+
+    ;
 
     private void doGetTopicMsgsRequest(final DbTopic dbTopic) {
         if ((dbTopic.mergedMsgs != null) && (dbTopic.mergedMsgs.size() > 0)) {
@@ -294,9 +297,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 // 有新消息，UI上应该显示红点       -- 这里 1290
                 dbTopic.setShowDot(true);
                 dbTopic.save();
-
                 // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
-                for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
+                for (Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext(); ) {
                     DbMsg uiMsg = i.next();
                     if (uiMsg.getFrom().equals("mqtt")) {
                         continue;
@@ -313,7 +315,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     }
                 }
                 //判断获取的消息数量是否为0 或空  此时 不显示红点
-                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
+                if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     dbTopic.setShowDot(false);
                     dbTopic.save();
                 }
@@ -359,7 +361,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             binder.init();
                             binder.connect();
                         }
-                    }, 30 *1000);
+                    }, 30 * 1000);
                 }
 
                 @Override
@@ -416,7 +418,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
-        Log.i(TAG, "onMqttMsg: new msg");
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
 
@@ -438,7 +439,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.TopicChangeEvent event) {
         // 目前只处理AddTo
-        Log.i(TAG, "onMqttMsg: topic change ");
+
         if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
             updateTopicsWithMembers(Long.toString(event.topicId));
         }
@@ -463,9 +464,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     dbTopic.latestMsgId = imTopic.latestMsgId;
 
                     // 更新uiTopics
-                    for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+                    for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
                         DbTopic uiTopic = i.next();
-                        if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                        if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
                             i.remove();
                         }
                     }
@@ -558,9 +559,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         msgShownTopics.add(curTopic);
 
         // 更新uiTopics
-        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+        for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
             DbTopic uiTopic = i.next();
-            if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+            if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
                 i.remove();
             }
         }
@@ -574,11 +575,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     private void rearrangeTopics() {
         //首先按照 最新消息时间进行排序
-        Collections.sort(topics,DatabaseDealer.topicComparator);
+        Collections.sort(topics, DatabaseDealer.topicComparator);
 
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
-        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+        for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
             DbTopic topic = i.next();
             if (topic.getType().equals("1")) {
                 // 私聊
@@ -597,7 +598,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         this.titleActionCallback = titleActionCallback;
     }
 
-    public interface TitleActionCallback{
+    public interface TitleActionCallback {
 
         void onLeftImgClicked();
 

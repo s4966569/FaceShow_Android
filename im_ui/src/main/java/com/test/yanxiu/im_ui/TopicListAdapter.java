@@ -2,7 +2,6 @@ package com.test.yanxiu.im_ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +118,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         // 2, 显示对方昵称(班级名)
                         //mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
                         // 私聊不显示（班级）
-                        Log.i(TAG, "setData: "+member.getName());
                         mSenderTextView.setText(member.getName());
                         break;
                     }
@@ -136,13 +134,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             if (topic.getType().equals("2")) { // 群聊
                 // 1, 显示班级默认图片
                 mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
+                // 2, 显示班级群聊(班级名)   1289 将群聊名称移到判断外 保证 有名称
+                mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
                 if (latestMsg != null) {
-                    // 2, 显示班级群聊(班级名)
-                    Log.i(TAG, "setData: "+topic.getGroup());
-                    mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
-
-
-
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
                     // 4, 显示消息内容
@@ -154,7 +148,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                     }
                 }
             }
-
             mRedDotCircleView.setVisibility(View.INVISIBLE);
             if (topic.isShowDot()) {
                 mRedDotCircleView.setVisibility(View.VISIBLE);
