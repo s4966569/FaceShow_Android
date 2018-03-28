@@ -303,11 +303,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     if (uiMsg.getFrom().equals("mqtt")) {
                         // 数据库中记录的来自mqtt的消息
                         for (ImMsg imMsg : ret.data.topicMsg) {
-                            //如果 http请求中包含此条消息 在UImsg 列表中将其删除
+                            //如果 http请求中包含此条消息
                             if (imMsg.reqId.equals(uiMsg.getReqId())) {
+                                //对数据库内容进行 更新 将消息来源更新为 http
+                                DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+                                //在UImsg 列表中将其删除
                                 i.remove();
                             }
                         }
+                        // TODO: 2018/3/28  如果 请求的列表中不包含上次的mqtt 信息，
                         continue;
                     }
                     i.remove();
