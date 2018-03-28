@@ -631,6 +631,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
 
         topics.addAll(privateTopics);
+        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     /**
