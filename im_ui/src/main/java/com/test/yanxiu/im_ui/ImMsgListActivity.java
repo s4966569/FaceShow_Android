@@ -100,15 +100,16 @@ public class ImMsgListActivity extends ImBaseActivity {
     private RecyclerViewPullToRefreshHelper ptrHelper;
     private EditText mMsgEditText;
 
-    private String memberIds = null;
+    private long memberId = -1;
     private String memberName = null;
     private String mQiniuToken;
+    private boolean mKeyBoardShown;//键盘已经显示了
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        memberIds = getIntent().getStringExtra(Constants.kCreateTopicMemberIds);
+        memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
 
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
@@ -149,7 +150,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
 
         mMsgListRecyclerView = findViewById(R.id.msg_list_recyclerview);
-        mMsgListRecyclerView.setLayoutManager(new LinearLayoutManager(this,
+        mMsgListRecyclerView.setLayoutManager(new FoucsLinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
                 false));
         mMsgListAdapter = new MsgListAdapter(this);
@@ -193,7 +194,16 @@ public class ImMsgListActivity extends ImBaseActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     SrtLogger.log("imui", "TBD: 发送");
-                    doSendTextMsg();
+
+                    String msg = mMsgEditText.getText().toString();
+                    mMsgEditText.setText("");
+                    String trimMsg = msg.trim();
+                    if (trimMsg.length() == 0) {
+                        return true;
+                    }
+
+                    doSend(msg, null);
+
                     return true;
                 }
                 return false;
@@ -205,6 +215,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
             @Override
             public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+                mKeyBoardShown = isShow;
                 if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
                     mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
@@ -215,9 +226,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         ptrHelper = new RecyclerViewPullToRefreshHelper(this, mMsgListRecyclerView, new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                mMsgListRecyclerView.clearFocus();
+                if (mKeyBoardShown) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    mMsgListRecyclerView.clearFocus();
+                }
                 return false;
             }
         });
@@ -226,9 +239,10 @@ public class ImMsgListActivity extends ImBaseActivity {
 
 
     private void setupData() {
-
-//        updateMemberInfoRequest(topic);
-        updateTopicFromHttp(topic.getTopicId() + "");
+        if (topic != null) {
+            // 每次进入话题更新用户信息
+            updateTopicFromHttp(topic.getTopicId() + "");
+        }
     }
 
     private void updateTopicFromHttp(final String topicId) {
@@ -236,7 +250,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
         getTopicsRequest.imToken = Constants.imToken;
         getTopicsRequest.topicIds = topicId;
-//        Log.i(TAG, "updateTopicFromHttp: "+new Gson().toJson(getTopicsRequest));
+
         getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
@@ -247,7 +261,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
                     dbTopic.latestMsgTime = imTopic.latestMsgTime;
                     dbTopic.latestMsgId = imTopic.latestMsgId;
-//                    Log.i(TAG, "onSuccess: "+new Gson().toJson(imTopic));
+
                     //请求成功 消除红点
                     dbTopic.setShowDot(false);
                     dbTopic.save();
@@ -343,31 +357,30 @@ public class ImMsgListActivity extends ImBaseActivity {
         public DbTopic dbTopic;
     }
 
+    public class MockTopicRemovedEvent {
+        public DbTopic dbTopic;
+    }
 
-    private void doSendMsg() {
-        String msg = mMsgEditText.getText().toString();
-        String trimMsg = msg.trim();
-        if (trimMsg.length() == 0) {
-            return;
-        }
 
+    private void doSendMsg(final String msg, final String reqId) {
         SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
         saveTextMsgRequest.imToken = Constants.imToken;
         saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
         saveTextMsgRequest.msg = msg;
 
-        final DbMyMsg myMsg = new DbMyMsg();
-        myMsg.setState(DbMyMsg.State.Sending.ordinal());
-        myMsg.setReqId(saveTextMsgRequest.reqId);
-        myMsg.setMsgId(latestMsgId());
-        myMsg.setTopicId(topic.getTopicId());
-        myMsg.setSenderId(Constants.imId);
-        myMsg.setSendTime(new Date().getTime());
-        myMsg.setContentType(10);
-        myMsg.setMsg(msg);
-        myMsg.setFrom("local");
-        myMsg.save();
-        topic.mergedMsgs.add(0, myMsg);
+        if (reqId != null) {
+            // resend需要走相同的路径，但是msg已经有reqId了
+            saveTextMsgRequest.reqId = reqId;
+        }
+
+        // 我发送的必然已经存在于队列
+        DbMyMsg sendMsg = null;
+        for (DbMsg m : topic.mergedMsgs) {
+            if (m.getReqId().equals(reqId)) {
+                sendMsg = (DbMyMsg) m;
+            }
+        }
+        final DbMyMsg myMsg = sendMsg;
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
@@ -394,39 +407,95 @@ public class ImMsgListActivity extends ImBaseActivity {
     }
 
 
-    private void doSendTextMsg() {
-        if ((memberIds != null) && (topic == null)) {
-            // 是新建的Topic，需要先create topic
+    private void doSend(final String msg, final String reqId) {
+        final String msgReqId = (reqId == null ? UUID.randomUUID().toString() : reqId);
+
+
+        // 预先插入mock topic
+        if ((memberId > 0) && (topic == null)) {
+            // 私聊尚且没有topic，需要创建mock topic
+            DbTopic mockTopic = DatabaseDealer.mockTopic();
+            DbMember myself = DatabaseDealer.getMemberById(Constants.imId);
+            DbMember member = DatabaseDealer.getMemberById(memberId);
+            mockTopic.getMembers().add(myself);
+            mockTopic.getMembers().add(member);
+            mockTopic.save();
+            topic = mockTopic;
+            mMsgListAdapter.setTopic(topic);
+
+            NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
+            newTopicEvent.dbTopic = mockTopic;
+            EventBus.getDefault().post(newTopicEvent);
+        }
+
+        // 预先插入mock msg
+        //if (DatabaseDealer.isMockTopic(topic)) {
+        DbMyMsg myMsg = new DbMyMsg();
+        myMsg.setState(DbMyMsg.State.Sending.ordinal());
+        myMsg.setReqId(msgReqId);
+        myMsg.setMsgId(-1);
+        myMsg.setTopicId(topic.getTopicId());
+        myMsg.setSenderId(Constants.imId);
+        myMsg.setSendTime(new Date().getTime());
+        myMsg.setContentType(10);
+        myMsg.setMsg(msg);
+        myMsg.setFrom("local");
+        myMsg.save();
+        topic.mergedMsgs.add(0, myMsg);
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+        //}
+
+        // 对于是mock topic的需要先创建topic
+        if (DatabaseDealer.isMockTopic(topic)) {
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
             createTopicRequest.imToken = Constants.imToken;
             createTopicRequest.topicType = "1"; // 私聊
-            createTopicRequest.imMemberIds = memberIds;
+            createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + Long.toString(memberId);
             createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
-                    for (ImTopic imTopic : ret.data.topic) {
-                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                        dbTopic.latestMsgId = imTopic.latestMsgId;
-                        dbTopic.save();
-                        topic = dbTopic;
-
-                        NewTopicCreatedEvent event = new NewTopicCreatedEvent();
-                        event.dbTopic = dbTopic;
-                        EventBus.getDefault().post(event);
-
-                        doSendMsg();
+                    ImTopic imTopic = null;
+                    for (ImTopic topic : ret.data.topic) {
+                        imTopic = topic;
                     }
+                    // 应该只有一个imTopic
+
+                    // 1，通知移除mock topic
+                    DbTopic mockTopic = topic;
+                    MockTopicRemovedEvent mockRemoveEvent = new MockTopicRemovedEvent();
+                    mockRemoveEvent.dbTopic = mockTopic;
+                    EventBus.getDefault().post(mockRemoveEvent);
+
+
+                    // 2，添加server返回的real topic
+                    DbTopic realTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                    realTopic.latestMsgTime = imTopic.latestMsgTime;
+                    realTopic.latestMsgId = imTopic.latestMsgId;
+                    realTopic.save();
+                    topic = realTopic;
+
+                    // 3，做mock topic 和 real topic间msgs的转换
+                    DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
+
+                    // 4, 通知新增real topic
+                    NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
+                    newTopicEvent.dbTopic = realTopic;
+                    EventBus.getDefault().post(newTopicEvent);
+
+                    mMsgListAdapter.notifyDataSetChanged();
+                    doSendMsg(msg, msgReqId);
                 }
 
                 @Override
                 public void onFail(RequestBase request, Error error) {
-                    // TBD:cailei 这里需要弹个toast？
+                    DatabaseDealer.topicCreateFailed(topic);
+                    mMsgListAdapter.notifyDataSetChanged();
                 }
             });
         } else {
             // 已经有对话，直接发送即可
-            doSendMsg();
+            doSendMsg(msg, msgReqId);
         }
     }
 
@@ -454,30 +523,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                     // 1, 先更新数据库中
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
                     myMsg.setMsgId(latestMsgId());
-                    topic.mergedMsgs.add(0, myMsg);
-                    mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                    mMsgListAdapter.notifyDataSetChanged();
+                    myMsg.save();
 
-                    SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
-                    saveTextMsgRequest.reqId = myMsg.getReqId();
-                    saveTextMsgRequest.imToken = Constants.imToken;
-                    saveTextMsgRequest.topicId = Long.toString(topic.getTopicId());
-                    saveTextMsgRequest.msg = myMsg.getMsg();
-                    httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
-                        @Override
-                        public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
-                            myMsg.setState(DbMyMsg.State.Success.ordinal());
-                            myMsg.save();
-                            mMsgListAdapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onFail(RequestBase request, Error error) {
-                            myMsg.setState(DbMyMsg.State.Failed.ordinal());
-                            myMsg.save();
-                            mMsgListAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    doSend(myMsg.getMsg(), myMsg.getReqId());
                 }
             }
         }
@@ -839,13 +887,14 @@ public class ImMsgListActivity extends ImBaseActivity {
         return new Integer[]{options.outWidth, options.outHeight};
     }
 
+
     private void doSendImgMsg(final String imagePath, final String rid, final int with, final int height) {
-        if ((memberIds != null) && (topic == null)) {
+        if ((memberId > 0) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
             createTopicRequest.imToken = Constants.imToken;
             createTopicRequest.topicType = "1"; // 私聊
-            createTopicRequest.imMemberIds = memberIds;
+            createTopicRequest.imMemberIds = Long.toString(Constants.imId) + Long.toString(memberId);
             createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
@@ -874,6 +923,10 @@ public class ImMsgListActivity extends ImBaseActivity {
             doSendImage(imagePath, rid, with, height);
 
         }
+    }
+
+    private void doTakePic() {
+
     }
 
 
