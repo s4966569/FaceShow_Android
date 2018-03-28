@@ -157,6 +157,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         return position == 1 ? 0 : position; // 因为为最初的一个消息时，本来之前就插入了一个Datetime
     }
 
+    /**
+     * 获取当前数据对应RecyclerView中的positon
+     *
+     * @param msg
+     * @return
+     */
+    public int getCurrentDbMsgPosition(DbMsg msg) {
+        int position = 0;
+        for (Item uiItem : mUiDatas) {
+            if ((uiItem.getMsg() == msg) || (uiItem.getMyMsg() == msg)) {
+                position = mUiDatas.indexOf(uiItem);
+                break;
+            }
+        }
+        return position;
+
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -311,7 +329,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
-            mMsgImageView =itemView.findViewById(R.id.msg_imageView);
+            mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mMsgTextView.setTextIsSelectable(true);
         }
 
@@ -368,7 +386,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
             mMsgTextView.setTextIsSelectable(true);
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
-            mMsgImageView =itemView.findViewById(R.id.msg_imageView);
+            mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
         }
 
@@ -382,6 +400,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (sender != null) {
                 Glide.with(mContext)
                         .load(sender.getAvatar())
+                        .placeholder(R.drawable.icon_chat_unknown)
+                        .error(R.drawable.icon_chat_unknown)
                         .into(mAvatarImageView);
             }
 
@@ -389,7 +409,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (myMsg.getContentType() == 20) {
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
-                Glide.with(itemView.getContext()).load(myMsg.getViewUrl()).into(mMsgImageView);
+                Glide.with(itemView.getContext())
+                        .load(myMsg.getViewUrl())
+                        .placeholder(R.drawable.icon_chat_unknown)
+                        .error(R.drawable.icon_chat_unknown)
+                        .into(mMsgImageView);
             } else if (myMsg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
 
