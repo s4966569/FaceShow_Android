@@ -18,6 +18,7 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.view.RoundCornerMaskView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -324,6 +325,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private TextView mNameTextView;
         private TextView mMsgTextView;
         private ImageView mMsgImageView;
+        private RoundCornerMaskView mMsgImageViewRound;
 
         public MsgViewHolder(View itemView) {
             super(itemView);
@@ -331,6 +333,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
+            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
             mMsgTextView.setTextIsSelectable(true);
         }
 
@@ -351,12 +354,17 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (msg.getContentType() == 20) {
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
-                Integer[] wh= getPicShowWH(itemView.getContext(),msg.getWith(),msg.getHeight());
+                Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
 
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
-                        .override(wh[0],wh[1])
+                        .override(wh[0], wh[1])
                         .into(mMsgImageView);
+                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
+                layoutParams.height = wh[1];
+                layoutParams.width = wh[0];
+                mMsgImageViewRound.setLayoutParams(layoutParams);
+
             } else if (msg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
 
@@ -385,6 +393,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
         private ImageView mMsgImageView;
+        private RoundCornerMaskView mMsgImageViewRound;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -394,6 +403,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
+            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
         }
 
         @Override
@@ -409,17 +419,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .placeholder(R.drawable.icon_chat_unknown)
                         .error(R.drawable.icon_chat_unknown)
                         .into(mAvatarImageView);
+
             }
 
             // 设置消息内容
             if (myMsg.getContentType() == 20) {
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
-               Integer[] wh= getPicShowWH(itemView.getContext(),myMsg.getWith(),myMsg.getHeight());
+                Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
                 Glide.with(itemView.getContext())
                         .load(myMsg.getViewUrl())
-                        .override(wh[0],wh[1])
+                        .override(wh[0], wh[1])
                         .into(mMsgImageView);
+
+                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
+                layoutParams.height = wh[1];
+                layoutParams.width = wh[0];
+                mMsgImageViewRound.setLayoutParams(layoutParams);
+
             } else if (myMsg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
 
@@ -516,7 +533,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             iResultWidth = width * scaleSize;
         }
 
-        return new Integer[]{(int)iResultWidth, (int)iResultHeight};
+        return new Integer[]{(int) iResultWidth, (int) iResultHeight};
 
 
     }

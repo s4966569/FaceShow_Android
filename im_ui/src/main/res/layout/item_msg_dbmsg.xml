@@ -12,9 +12,9 @@
         android:id="@+id/avatar_imageview"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:scaleType="centerCrop"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop" />
 
     <com.test.yanxiu.im_ui.view.RoundCornerMaskView
         android:layout_width="40dp"
@@ -53,21 +53,33 @@
         android:textColor="#333333"
         android:textSize="14dp" />
 
+
     <ImageView
         android:id="@+id/msg_imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/name_textview"
-        android:layout_marginLeft="5dp"
         android:layout_marginTop="6dp"
-        android:layout_toRightOf="@id/avatar_imageview"
+        android:layout_toEndOf="@+id/avatar_imageview"
         android:gravity="center_vertical"
-        android:minHeight="40dp"
         android:paddingBottom="10dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="8dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp" />
+
+    <com.test.yanxiu.im_ui.view.RoundCornerMaskView
+        android:id="@+id/msg_imageView_round"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name_textview"
+        android:layout_marginTop="6dp"
+        android:layout_toEndOf="@+id/avatar_imageview"
+        android:gravity="center_vertical"
+        android:paddingBottom="10dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="16dp"
         android:paddingTop="10dp"
-        android:textColor="#333333"
-        android:textSize="14dp" />
+        im:corner_radius="5dp"
+        im:mask_color="#dfe3e5" />
 
 </RelativeLayout>
