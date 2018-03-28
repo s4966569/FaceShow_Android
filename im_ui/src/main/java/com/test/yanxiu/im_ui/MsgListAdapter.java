@@ -290,7 +290,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             // 星期三
-            SimpleDateFormat formatter2 = new SimpleDateFormat("EEE", Locale.CHINA);
+            SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
             ret = formatter2.format(date) + " " + timeFormatter.format(date);
 
             return ret;
