@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
@@ -347,19 +348,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mNameTextView.setText(sender.getName());
             }
 
-//            if (msg.getContentType() == 20) {
-//                mMsgTextView.setVisibility(View.GONE);
-//                mMsgImageView.setVisibility(View.VISIBLE);
-//                Glide.with(itemView.getContext()).load(msg.getViewUrl()).into(mMsgImageView);
-//            } else if (msg.getContentType() == 30) {
-//                mMsgTextView.setVisibility(View.GONE);
-//
-//            } else {
+            if (msg.getContentType() == 20) {
+                mMsgTextView.setVisibility(View.GONE);
+                mMsgImageView.setVisibility(View.VISIBLE);
+                Integer[] wh= getPicShowWH(itemView.getContext(),msg.getWith(),msg.getHeight());
+
+                Glide.with(itemView.getContext())
+                        .load(msg.getViewUrl())
+                        .override(wh[0],wh[1])
+                        .into(mMsgImageView);
+            } else if (msg.getContentType() == 30) {
+                mMsgTextView.setVisibility(View.GONE);
+
+            } else {
                 mMsgTextView.setVisibility(View.VISIBLE);
                 mMsgImageView.setVisibility(View.GONE);
 
                 mMsgTextView.setText(msg.getMsg());
-//            }
+            }
 
             mAvatarImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -406,21 +412,23 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             // 设置消息内容
-//            if (myMsg.getContentType() == 20) {
-//                mMsgTextView.setVisibility(View.GONE);
-//                mMsgImageView.setVisibility(View.VISIBLE);
-//                Glide.with(itemView.getContext())
-//                        .load(myMsg.getViewUrl())
-//                        .into(mMsgImageView);
-//            } else if (myMsg.getContentType() == 30) {
-//                mMsgTextView.setVisibility(View.GONE);
-//
-//            } else {
+            if (myMsg.getContentType() == 20) {
+                mMsgTextView.setVisibility(View.GONE);
+                mMsgImageView.setVisibility(View.VISIBLE);
+               Integer[] wh= getPicShowWH(itemView.getContext(),myMsg.getWith(),myMsg.getHeight());
+                Glide.with(itemView.getContext())
+                        .load(myMsg.getViewUrl())
+                        .override(wh[0],wh[1])
+                        .into(mMsgImageView);
+            } else if (myMsg.getContentType() == 30) {
+                mMsgTextView.setVisibility(View.GONE);
+
+            } else {
                 mMsgTextView.setVisibility(View.VISIBLE);
                 mMsgImageView.setVisibility(View.GONE);
 
                 mMsgTextView.setText(myMsg.getMsg());
-//            }
+            }
 
             // 设置状态
             mStateSendingProgressBar.setVisibility(View.GONE);
@@ -481,5 +489,35 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         public void setTimestamp(long timestamp) {
             this.timestamp = timestamp;
         }
+    }
+
+
+    /**
+     * 获取图片应该显示的长和宽
+     *
+     * @param width  真实宽度
+     * @param height 真实长度
+     * @return
+     */
+    private Integer[] getPicShowWH(Context context, int width, int height) {
+        float baseSize = ScreenUtils.dpToPx(context, 140);
+        float iResultWidth = baseSize;
+        float iResultHeight = baseSize;
+        //水平显示
+        if (width > height) {
+            float scaleSize = width / baseSize;
+            iResultWidth = baseSize;
+            iResultHeight = height * scaleSize;
+        }
+        //垂直显示
+        if (width < height) {
+            float scaleSize = height / baseSize;
+            iResultHeight = baseSize;
+            iResultWidth = width * scaleSize;
+        }
+
+        return new Integer[]{(int)iResultWidth, (int)iResultHeight};
+
+
     }
 }
