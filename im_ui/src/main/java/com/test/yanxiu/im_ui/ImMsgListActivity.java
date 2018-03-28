@@ -276,7 +276,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.setShowDot(dbTopic.isShowDot());
 
                         //请求当前topic 下的members 信息更新
-                        updateMemberInfoRequest(topic);
+                        //updateMemberInfoRequest(topic);
                     }
                 }
 
