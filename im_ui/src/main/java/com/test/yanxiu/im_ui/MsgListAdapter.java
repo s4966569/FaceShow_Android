@@ -1,6 +1,7 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,7 @@ import java.util.Locale;
  */
 
 public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListItemViewHolder> {
-    private final String TAG=getClass().getSimpleName();
+    private final String TAG = getClass().getSimpleName();
 
     enum ItemType {
         LOADING,
@@ -67,6 +68,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
     private boolean isLoading;
     private Item loadingItem = new Item(ItemType.LOADING);
+
     public void setIsLoading(boolean loading) {
         if (isLoading == loading) {
             return;
@@ -100,7 +102,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             // 最后一条跟当前时间比较，其余的跟前一条时间比较
             long nextSendTime = Long.MAX_VALUE;
             if (i != (mDatas.size() - 1)) {
-                DbMsg nextDbMsg = mDatas.get(i+1);
+                DbMsg nextDbMsg = mDatas.get(i + 1);
                 nextSendTime = nextDbMsg.getSendTime();
             }
 
@@ -116,7 +118,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mUiDatas.add(0, msgItem);
 
             // 如果超过5分钟，则插入时间
-            if ((curDbMsg.getSendTime() - nextSendTime) > 5*60*1000) {
+            if ((curDbMsg.getSendTime() - nextSendTime) > 5 * 60 * 1000) {
                 Item timeItem = new Item();
                 timeItem.setType(ItemType.DATETIME);
                 timeItem.setTimestamp(curDbMsg.getSendTime());
@@ -126,10 +128,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
         // 最后一条消息插入时间
-        if ((mDatas != null)  && (mDatas.size() > 0)) {
+        if ((mDatas != null) && (mDatas.size() > 0)) {
             Item timeItem = new Item();
             timeItem.setType(ItemType.DATETIME);
-            timeItem.setTimestamp(mDatas.get(mDatas.size()-1).getSendTime());
+            timeItem.setTimestamp(mDatas.get(mDatas.size() - 1).getSendTime());
 
             mUiDatas.add(0, timeItem);
         }
@@ -152,7 +154,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
 
-        return position == 1 ? 0: position; // 因为为最初的一个消息时，本来之前就插入了一个Datetime
+        return position == 1 ? 0 : position; // 因为为最初的一个消息时，本来之前就插入了一个Datetime
     }
 
 
@@ -222,7 +224,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         public abstract void setData(Item item);
     }
 
-    public class BottomViewHolder extends  MsgListItemViewHolder {
+    public class BottomViewHolder extends MsgListItemViewHolder {
         public BottomViewHolder(View itemView) {
             super(itemView);
         }
@@ -246,6 +248,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
     public class DatetimeViewHolder extends MsgListItemViewHolder {
         private TextView mDatetimeTextView;
+
         public DatetimeViewHolder(View itemView) {
             super(itemView);
             mDatetimeTextView = itemView.findViewById(R.id.datetime_textview);
@@ -301,12 +304,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ImageView mAvatarImageView;
         private TextView mNameTextView;
         private TextView mMsgTextView;
+        private ImageView mMsgImageView;
 
         public MsgViewHolder(View itemView) {
             super(itemView);
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
+            mMsgImageView =itemView.findViewById(R.id.msg_imageView);
             mMsgTextView.setTextIsSelectable(true);
         }
 
@@ -324,7 +329,19 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mNameTextView.setText(sender.getName());
             }
 
-            mMsgTextView.setText(msg.getMsg());
+            if (msg.getContentType() == 20) {
+                mMsgTextView.setVisibility(View.GONE);
+                mMsgImageView.setVisibility(View.VISIBLE);
+                Glide.with(itemView.getContext()).load(msg.getViewUrl()).into(mMsgImageView);
+            } else if (msg.getContentType() == 30) {
+                mMsgTextView.setVisibility(View.GONE);
+
+            } else {
+                mMsgTextView.setVisibility(View.VISIBLE);
+                mMsgImageView.setVisibility(View.GONE);
+
+                mMsgTextView.setText(msg.getMsg());
+            }
 
             mAvatarImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -343,12 +360,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private TextView mMsgTextView;
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
+        private ImageView mMsgImageView;
+
         public MyMsgViewHolder(View itemView) {
             super(itemView);
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
             mMsgTextView.setTextIsSelectable(true);
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
+            mMsgImageView =itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
         }
 
@@ -366,7 +386,19 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             // 设置消息内容
-            mMsgTextView.setText(myMsg.getMsg());
+            if (myMsg.getContentType() == 20) {
+                mMsgTextView.setVisibility(View.GONE);
+                mMsgImageView.setVisibility(View.VISIBLE);
+                Glide.with(itemView.getContext()).load(myMsg.getViewUrl()).into(mMsgImageView);
+            } else if (myMsg.getContentType() == 30) {
+                mMsgTextView.setVisibility(View.GONE);
+
+            } else {
+                mMsgTextView.setVisibility(View.VISIBLE);
+                mMsgImageView.setVisibility(View.GONE);
+
+                mMsgTextView.setText(myMsg.getMsg());
+            }
 
             // 设置状态
             mStateSendingProgressBar.setVisibility(View.GONE);

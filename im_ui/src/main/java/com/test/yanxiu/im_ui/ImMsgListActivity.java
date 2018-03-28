@@ -99,7 +99,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     private MsgListAdapter mMsgListAdapter;
     private RecyclerViewPullToRefreshHelper ptrHelper;
     private EditText mMsgEditText;
-    private ImageView mTakePicImageView;
 
     private String memberIds = null;
     private String memberName = null;
@@ -175,7 +174,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
 
-        mTakePicImageView = findViewById(R.id.takepic_imageview);
+        ImageView mTakePicImageView = findViewById(R.id.takepic_imageview);
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -394,69 +393,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgEditText.setText("");
     }
 
-    /**
-     * 发送图片
-     */
-    private void doSendImage(String imagePath, String rid, int width, int height) {
-        if (TextUtils.isEmpty(rid)) {
-            return;
-        }
-        Log.e("frc", "doSendImage width:   " + width);
-        Log.e("frc", "doSendImage height:   " + height);
-
-        SaveImageMsgRequest saveImageMsgRequest = new SaveImageMsgRequest();
-        saveImageMsgRequest.imToken = Constants.imToken;
-        saveImageMsgRequest.topicId = Long.toString(topic.getTopicId());
-        saveImageMsgRequest.rid = rid;
-        saveImageMsgRequest.height = String.valueOf(height);
-        saveImageMsgRequest.width = String.valueOf(width);
-
-
-        final DbMyMsg myMsg = new DbMyMsg();
-        myMsg.setState(DbMyMsg.State.Sending.ordinal());
-        myMsg.setReqId(saveImageMsgRequest.reqId);
-        myMsg.setMsgId(latestMsgId());
-        myMsg.setTopicId(topic.getTopicId());
-        myMsg.setSenderId(Constants.imId);
-        myMsg.setSendTime(new Date().getTime());
-        //type==20 为图片
-        myMsg.setContentType(20);
-        myMsg.setFrom("local");
-        myMsg.setViewUrl(imagePath);
-        myMsg.setHeight(height);
-        myMsg.setWith(width);
-        myMsg.save();
-        topic.mergedMsgs.add(0, myMsg);
-
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
-        mMsgListAdapter.notifyDataSetChanged();
-        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-
-        // 数据存储，UI显示都完成后，http发送
-
-
-        httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
-                Log.e("frc", "onSuccess:: ");
-                Log.e("frc", "onSuccess:: w   " + ret.data.topicMsg.get(0).contentData.width);
-                Log.e("frc", "onSuccess:: h   " + ret.data.topicMsg.get(0).contentData.height);
-                myMsg.setState(DbMyMsg.State.Success.ordinal());
-                myMsg.save();
-                mMsgListAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                Log.e("frc", "Error:: " + error.getMessage());
-                myMsg.setState(DbMyMsg.State.Failed.ordinal());
-                myMsg.save();
-                mMsgListAdapter.notifyDataSetChanged();
-            }
-        });
-
-        mMsgEditText.setText("");
-    }
 
     private void doSendTextMsg() {
         if ((memberIds != null) && (topic == null)) {
@@ -494,46 +430,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
     }
 
-    private void doSendImgMsg(final String imagePath, final String rid, final int with, final int height) {
-        if ((memberIds != null) && (topic == null)) {
-            // 是新建的Topic，需要先create topic
-            TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
-            createTopicRequest.imToken = Constants.imToken;
-            createTopicRequest.topicType = "1"; // 私聊
-            createTopicRequest.imMemberIds = memberIds;
-            createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
-                @Override
-                public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
-                    for (ImTopic imTopic : ret.data.topic) {
-                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                        dbTopic.latestMsgId = imTopic.latestMsgId;
-                        dbTopic.save();
-                        topic = dbTopic;
-
-                        NewTopicCreatedEvent event = new NewTopicCreatedEvent();
-                        event.dbTopic = dbTopic;
-                        EventBus.getDefault().post(event);
-
-                        doSendImage(imagePath, rid, with, height);
-                    }
-                }
-
-                @Override
-                public void onFail(RequestBase request, Error error) {
-                    // TBD:cailei 这里需要弹个toast？
-                }
-            });
-        } else {
-            // 已经有对话，直接发送即可
-            doSendImage(imagePath, rid, with, height);
-
-        }
-    }
-
-    private void doTakePic() {
-
-    }
 
     // region handler
     Handler handler = new Handler() {
@@ -672,9 +568,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
-        Log.e("frc", "picW  :" + dbMsg.getWith());
-        Log.e("frc", "picH :" + dbMsg.getHeight());
-        Log.e("frc", "picV :" + dbMsg.getViewUrl());
         if (msg.topicId != topic.getTopicId()) {
             // 不是本topic的直接抛弃
             return;
@@ -832,7 +725,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                 .setCompressListener(new OnCompressListener() {
                     @Override
                     public void onStart() {
-                        Log.e("frc", "Luban   onStart");
                     }
 
                     @Override
@@ -840,12 +732,10 @@ public class ImMsgListActivity extends ImBaseActivity {
                         imageReSizedPathList.add(file.getAbsolutePath());
                         uploadPicByQiNiu(file.getAbsolutePath());
 
-                        Log.e("frc", "Luban onSuccess " + file.getAbsolutePath());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e("frc", "Luban onError: " + e.getMessage());
                     }
                 }).launch();
 
@@ -868,11 +758,10 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
                 mGetQiNiuTokenUUID = null;
-//                mCancelQiNiuUploadPics = false;
+                mCancelQiNiuUploadPics = false;
                 if (ret != null) {
                     if (ret.code == 0) {
                         mQiniuToken = ret.getData().getToken();
-                        Log.e("frc", "token is :" + mQiniuToken);
                         reSizePics(imageItemArrayList);
 
                     } else {
@@ -928,8 +817,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         }, new UploadOptions(null, null, false, new UpProgressHandler() {
             @Override
             public void progress(String s, double v) {
-                Log.e("frc", "progress   s:" + s);
-                Log.e("frc", "progress   v:" + v);
             }
         }, new UpCancellationSignal() {
             @Override
@@ -943,12 +830,105 @@ public class ImMsgListActivity extends ImBaseActivity {
      * 计算图片的宽高
      *
      * @param imgPath 图片路径
-     * @return String【】 第一个参数表示width 第二个参数表示height
+     * @return Integer【】 第一个参数表示width 第二个参数表示height
      */
     private Integer[] getPicWithAndHeight(String imgPath) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
         return new Integer[]{options.outWidth, options.outHeight};
+    }
+
+    private void doSendImgMsg(final String imagePath, final String rid, final int with, final int height) {
+        if ((memberIds != null) && (topic == null)) {
+            // 是新建的Topic，需要先create topic
+            TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
+            createTopicRequest.imToken = Constants.imToken;
+            createTopicRequest.topicType = "1"; // 私聊
+            createTopicRequest.imMemberIds = memberIds;
+            createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
+                @Override
+                public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
+                    for (ImTopic imTopic : ret.data.topic) {
+                        DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
+                        dbTopic.save();
+                        topic = dbTopic;
+
+                        NewTopicCreatedEvent event = new NewTopicCreatedEvent();
+                        event.dbTopic = dbTopic;
+                        EventBus.getDefault().post(event);
+
+                        doSendImage(imagePath, rid, with, height);
+                    }
+                }
+
+                @Override
+                public void onFail(RequestBase request, Error error) {
+                    // TBD:cailei 这里需要弹个toast？
+                }
+            });
+        } else {
+            // 已经有对话，直接发送即可
+            doSendImage(imagePath, rid, with, height);
+
+        }
+    }
+
+
+    /**
+     * 发送图片
+     */
+    private void doSendImage(String imagePath, String rid, int width, int height) {
+        if (TextUtils.isEmpty(rid)) {
+            return;
+        }
+
+        SaveImageMsgRequest saveImageMsgRequest = new SaveImageMsgRequest();
+        saveImageMsgRequest.imToken = Constants.imToken;
+        saveImageMsgRequest.topicId = Long.toString(topic.getTopicId());
+        saveImageMsgRequest.rid = rid;
+        saveImageMsgRequest.height = String.valueOf(height);
+        saveImageMsgRequest.width = String.valueOf(width);
+
+
+        final DbMyMsg myMsg = new DbMyMsg();
+        myMsg.setState(DbMyMsg.State.Sending.ordinal());
+        myMsg.setReqId(saveImageMsgRequest.reqId);
+        myMsg.setMsgId(latestMsgId());
+        myMsg.setTopicId(topic.getTopicId());
+        myMsg.setSenderId(Constants.imId);
+        myMsg.setSendTime(new Date().getTime());
+        //type==20 为图片
+        myMsg.setContentType(20);
+        myMsg.setFrom("local");
+        myMsg.setViewUrl(imagePath);
+        myMsg.setHeight(height);
+        myMsg.setWith(width);
+        myMsg.save();
+        topic.mergedMsgs.add(0, myMsg);
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+
+        // 数据存储，UI显示都完成后，http发送
+        httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
+                myMsg.setState(DbMyMsg.State.Success.ordinal());
+                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                myMsg.setState(DbMyMsg.State.Failed.ordinal());
+                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+            }
+        });
+
+        mMsgEditText.setText("");
     }
 }
