@@ -275,9 +275,22 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.latestMsgTime = dbTopic.latestMsgTime;
                         topic.setShowDot(dbTopic.isShowDot());
 
+                        //对私聊topic 的 title 进行修正
+                        if (topic.getType().equals("1")) {
+                            for (DbMember member : topic.getMembers()) {
+                                if ( member.getImId()!= Constants.imId) {
+                                    mTitleLayout.setTitle(member.getName());
+                                }
+                            }
+                        }
                         //请求当前topic 下的members 信息更新
                         //updateMemberInfoRequest(topic);
                     }
+                    //使用最新的 成员信息 并对群聊情况下的 title 进行更新
+                    if (topic.getType().equals("2")) {
+                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+                    }
+                    mMsgListAdapter.notifyDataSetChanged();
                 }
 
             }
