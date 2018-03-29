@@ -35,7 +35,8 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
     private VoteInfoBean mData;
     private ArrayList<String> mAnswerList;//保存选项结果
 
-    private final String[] mEms = new String[]{" A.", " B.", " C.", " D.", " E.", " F.", " G.", " H.", " I.", " J.", " K.", " L.", " M.", " N."};
+    private final String[] mEms = new String[]{" A.", " B.", " C.", " D.", " E.", " F.", " G.", " H.", " I.", " J.", " K.", " L.", " M.", " N.",
+            " O.", " P.", " Q.", " R.", " S.", " T.", " U.", " V.", " W.", " X.", " Y.", " Z."};
 
 
     public interface onItemClickListener {
