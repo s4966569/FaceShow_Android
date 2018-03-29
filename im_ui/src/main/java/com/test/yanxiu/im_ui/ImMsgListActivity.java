@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -133,6 +134,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         super.onDestroy();
     }
 
+    private void hideSoftInput(EditText editText) {
+        InputMethodManager inputMethodManager= (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
+    }
     private void setupView() {
         mTitleLayout = findViewById(R.id.title_layout);
         mTitleLayout.setTitle("");
@@ -140,6 +145,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         mTitleLayout.setOnNaviLeftBackCallback(new OnNaviLeftBackCallback() {
             @Override
             public void onNaviBack() {
+                //收起软键盘
+                hideSoftInput(mMsgEditText);
                 finish();
             }
         });
