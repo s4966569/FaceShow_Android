@@ -305,18 +305,65 @@ public class DatabaseDealer {
         dbTopic.setType(topic.topicType);
         dbTopic.setChange(topic.topicChange);
         dbTopic.setGroup(topic.topicGroup);
-        dbTopic.getMembers().clear();
+//        dbTopic.getMembers().clear();
+//
+//        for (ImTopic.Member member : topic.members) {
+//            ImMember imMember = member.memberInfo;
+//            DbMember dbMember = updateDbMemberWithImMember(imMember);
+//            dbTopic.getMembers().add(dbMember);
+//            dbMember.getTopics().add(dbTopic);
+//            dbMember.save();
+//        }
 
-        for (ImTopic.Member member : topic.members) {
-            ImMember imMember = member.memberInfo;
-            DbMember dbMember = updateDbMemberWithImMember(imMember);
-            dbTopic.getMembers().add(dbMember);
-            dbMember.getTopics().add(dbTopic);
-            dbMember.save();
-        }
-
+        updateMembersThatNeedUpdate(dbTopic, topic);
         dbTopic.save();
         return dbTopic;
+    }
+
+    // 将topic新增的member，和有信息改变的member，存DB
+    private static void updateMembersThatNeedUpdate(DbTopic dbTopic, ImTopic imTopic) {
+        List<DbMember> ret = new ArrayList<>();
+
+        for (ImTopic.Member member : imTopic.members) {
+            ImMember imMember = member.memberInfo;
+            DbMember dbMember = null;
+            for (DbMember m : dbTopic.getMembers()) {
+                if (m.getImId() == imMember.imId) {
+                    dbMember = m;
+                    break;
+                }
+            }
+
+            if (dbMember == null) {
+                // 此member为新增人员
+                dbMember = updateDbMemberWithImMember(imMember);
+                dbTopic.getMembers().add(dbMember);
+                dbMember.getTopics().add(dbTopic);
+                dbMember.save();
+            } else {
+                // 此member为已有人员
+                if (hasMemberUpdate(dbMember, imMember)) {
+                    // 且此member有更新信息
+                    dbMember.setName(imMember.memberName);
+                    dbMember.setAvatar(imMember.avatar);
+                    dbMember.save();
+                }
+            }
+        }
+    }
+
+    // 判断相比于DB中的dbMember,HTTP返回的imMember是否有改动
+    private static boolean hasMemberUpdate(DbMember dbMember, ImMember imMember) {
+        boolean ret = false;
+        if (!dbMember.getName().equals(imMember.memberName)) {
+            ret = true;
+        }
+
+        if (!dbMember.getAvatar().equals(imMember.avatar)) {
+            ret = true;
+        }
+
+        return ret;
     }
 
     public static DbMember updateDbMemberWithImMember(ImMember member) {
