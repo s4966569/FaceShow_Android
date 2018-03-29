@@ -1,6 +1,8 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
@@ -18,6 +22,7 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.view.NewRoundCornerMaskView;
 import com.test.yanxiu.im_ui.view.RoundCornerMaskView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -325,7 +330,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private TextView mNameTextView;
         private TextView mMsgTextView;
         private ImageView mMsgImageView;
-        private RoundCornerMaskView mMsgImageViewRound;
+//        private RoundCornerMaskView mMsgImageViewRound;
 
         public MsgViewHolder(View itemView) {
             super(itemView);
@@ -333,7 +338,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mNameTextView = itemView.findViewById(R.id.name_textview);
             mMsgTextView = itemView.findViewById(R.id.msg_textview);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
-            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
+//            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
             mMsgTextView.setTextIsSelectable(true);
         }
 
@@ -360,10 +365,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .load(msg.getViewUrl())
                         .override(wh[0], wh[1])
                         .into(mMsgImageView);
-                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
-                layoutParams.height = wh[1];
-                layoutParams.width = wh[0];
-                mMsgImageViewRound.setLayoutParams(layoutParams);
+//                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
+//                layoutParams.height = wh[1];
+//                layoutParams.width = wh[0];
+//                mMsgImageViewRound.setLayoutParams(layoutParams);
 
             } else if (msg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
@@ -393,7 +398,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
         private ImageView mMsgImageView;
-        private RoundCornerMaskView mMsgImageViewRound;
+//        private RoundCornerMaskView mMsgImageViewRound;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -403,7 +408,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
-            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
+//            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
         }
 
         @Override
@@ -427,15 +432,23 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
                 Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
+
                 Glide.with(itemView.getContext())
                         .load(myMsg.getViewUrl())
+                        .asBitmap()
+//                        .into(new SimpleTarget<Bitmap>() {
+//                            @Override
+//                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+//                                mMsgImageView.setImageBitmap(resource);
+//                            }
+//                        });
                         .override(wh[0], wh[1])
                         .into(mMsgImageView);
 
-                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
-                layoutParams.height = wh[1];
-                layoutParams.width = wh[0];
-                mMsgImageViewRound.setLayoutParams(layoutParams);
+//                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
+//                layoutParams.height = wh[1];
+//                layoutParams.width = wh[0];
+//                mMsgImageViewRound.setLayoutParams(layoutParams);
 
             } else if (myMsg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
@@ -448,15 +461,21 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             // 设置状态
-            mStateSendingProgressBar.setVisibility(View.GONE);
-            mStateFailedImageView.setVisibility(View.GONE);
+//            mStateSendingProgressBar.setVisibility(View.GONE);
+//            mStateFailedImageView.setVisibility(View.GONE);
 
             if (myMsg.getState() == DbMyMsg.State.Sending.ordinal()) {
                 mStateSendingProgressBar.setVisibility(View.VISIBLE);
+                mStateFailedImageView.setVisibility(View.GONE);
             }
 
             if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
+                mStateSendingProgressBar.setVisibility(View.GONE);
                 mStateFailedImageView.setVisibility(View.VISIBLE);
+            }
+            if (myMsg.getState() ==DbMyMsg.State.Success.ordinal()){
+                mStateSendingProgressBar.setVisibility(View.GONE);
+                mStateFailedImageView.setVisibility(View.GONE);
             }
         }
     }

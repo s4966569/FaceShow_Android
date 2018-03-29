@@ -29,48 +29,37 @@
             im:corner_radius="5dp"
             im:mask_color="#dfe3e5" />
 
-        <TextView
-            android:id="@+id/msg_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="64dp"
-            android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@id/avatar_imageview"
-            android:background="@drawable/bg_msg_blue"
-            android:gravity="center_vertical"
-            android:minHeight="40dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="16dp"
-            android:paddingTop="10dp"
-            android:textColor="#ffffff"
-            android:textSize="14dp" />
-
         <RelativeLayout
+            android:id="@+id/rl_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="64dp"
             android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@id/avatar_imageview"
-            android:paddingBottom="10dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="16dp"
-            android:paddingTop="10dp">
+            android:layout_toLeftOf="@id/avatar_imageview">
+
+            <TextView
+                android:id="@+id/msg_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_msg_blue"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="16dp"
+                android:paddingTop="10dp"
+                android:textColor="#ffffff"
+                android:textSize="14dp" />
 
             <ImageView
                 android:id="@+id/msg_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:background="@color/colorPrimary" />
 
-            <com.test.yanxiu.im_ui.view.RoundCornerMaskView
-                android:id="@+id/msg_imageView_round"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                im:corner_radius="5dp"
-                im:mask_color="#dfe3e5" />
+
         </RelativeLayout>
 
 
@@ -79,7 +68,7 @@
             style="@android:style/Widget.ProgressBar.Small"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_alignLeft="@id/msg_textview"
+            android:layout_alignLeft="@id/rl_msg"
             android:layout_centerVertical="true"
             android:layout_marginLeft="-34dp"
             android:layout_marginTop="15dp" />
@@ -88,7 +77,7 @@
             android:id="@+id/state_fail_imageview"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_alignLeft="@id/msg_textview"
+            android:layout_alignLeft="@id/rl_msg"
             android:layout_centerVertical="true"
             android:layout_marginLeft="-34dp"
             android:layout_marginTop="15dp"

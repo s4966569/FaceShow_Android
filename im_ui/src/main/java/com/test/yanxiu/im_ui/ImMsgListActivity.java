@@ -50,6 +50,7 @@ import com.test.yanxiu.im_core.http.GetTopicMembersInfoRequest;
 import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
+import com.test.yanxiu.im_core.http.ImRequestBase;
 import com.test.yanxiu.im_core.http.SaveImageMsgRequest;
 import com.test.yanxiu.im_core.http.SaveImageMsgResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
@@ -254,7 +255,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
-                if (ret.code==0) {
+                if (ret.code == 0) {
                     for (ImTopic imTopic : ret.data.topic) {
                         //更新数据库 topic 信息
                         DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
@@ -307,7 +308,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
                 //对 对话menmbers进行信息修正
-                if (ret.code==0) {
+                if (ret.code == 0) {
                     for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
                         //转换数据
                         ImMember imMember = new ImMember();
@@ -716,8 +717,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
 
-                getQiNiuToken(createSelectedImagesList(data));
 
+                reSizePics(createSelectedImagesList(data));
 //                uploadPicsByQiNiu(images);
                 break;
             default:
@@ -764,7 +765,7 @@ public class ImMsgListActivity extends ImBaseActivity {
      */
     private List<String> reSizePics(List<ImageItem> imageItemArrayList) {
         List<String> imagePathList = new ArrayList<>();
-        final List<String> imageReSizedPathList = new ArrayList<>();
+//        final List<String> imageReSizedPathList = new ArrayList<>();
         for (ImageItem imageItem : imageItemArrayList) {
             imagePathList.add(imageItem.path);
         }
@@ -774,12 +775,15 @@ public class ImMsgListActivity extends ImBaseActivity {
                 .setCompressListener(new OnCompressListener() {
                     @Override
                     public void onStart() {
+
                     }
 
                     @Override
                     public void onSuccess(File file) {
-                        imageReSizedPathList.add(file.getAbsolutePath());
-                        uploadPicByQiNiu(file.getAbsolutePath());
+//                        imageReSizedPathList.add(file.getAbsolutePath());
+//                        final DbMyMsg myMsg = new DbMyMsg();
+                        getQiNiuToken(file.getAbsolutePath());
+
 
                     }
 
@@ -788,49 +792,45 @@ public class ImMsgListActivity extends ImBaseActivity {
                     }
                 }).launch();
 
-        return imageReSizedPathList;
+        return null;
     }
 
     UUID mGetQiNiuTokenUUID;
 
     /**
      * 获取七牛token
-     *
-     * @param imageItemArrayList
      */
-    private void getQiNiuToken(final ArrayList<ImageItem> imageItemArrayList) {
-        GetQiNiuTokenRequest getQiNiuTokenRequest = new GetQiNiuTokenRequest();
-        getQiNiuTokenRequest.from = "100";
-        getQiNiuTokenRequest.dtype = "app";
-        getQiNiuTokenRequest.token = Constants.token;
-        mGetQiNiuTokenUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
-                mGetQiNiuTokenUUID = null;
-                mCancelQiNiuUploadPics = false;
-                if (ret != null) {
-                    if (ret.code == 0) {
-                        mQiniuToken = ret.getData().getToken();
-                        reSizePics(imageItemArrayList);
+    private void getQiNiuToken(final String picPath) {
+        if (!TextUtils.isEmpty(mQiniuToken)) {
+            uploadPicByQiNiu(picPath);
+        } else {
+            GetQiNiuTokenRequest getQiNiuTokenRequest = new GetQiNiuTokenRequest();
+            getQiNiuTokenRequest.from = "100";
+            getQiNiuTokenRequest.dtype = "app";
+            getQiNiuTokenRequest.token = Constants.token;
+            mGetQiNiuTokenUUID = getQiNiuTokenRequest.startRequest(GetQiNiuTokenResponse.class, new HttpCallback<GetQiNiuTokenResponse>() {
+                @Override
+                public void onSuccess(RequestBase request, GetQiNiuTokenResponse ret) {
+                    mGetQiNiuTokenUUID = null;
+                    mCancelQiNiuUploadPics = false;
+                    if (ret != null) {
+                        if (ret.code == 0) {
+                            mQiniuToken = ret.getData().getToken();
+                            uploadPicByQiNiu(picPath);
+                        } else {
+                            // TODO: 2018/3/29 error
+                        }
 
-                    } else {
-//                        rootView.hiddenLoadingView();
-//                        ToastUtil.showToast(getApplicationContext(), ret.getError() != null ? ret.getError().getMessage() : getString(R.string.get_qiniu_token_error));
                     }
-
-                } else {
-//                    rootView.hiddenLoadingView();
-//                    ToastUtil.showToast(getApplicationContext(), getString(R.string.get_qiniu_token_error));
                 }
-            }
 
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                mGetQiNiuTokenUUID = null;
-//                rootView.hiddenLoadingView();
-//                ToastUtil.showToast(getApplicationContext(), error.getMessage());
-            }
-        });
+                @Override
+                public void onFail(RequestBase request, Error error) {
+                    // TODO: 2018/3/29 error
+                    mGetQiNiuTokenUUID = null;
+                }
+            });
+        }
     }
 
     private UploadManager uploadManager = null;
@@ -850,15 +850,37 @@ public class ImMsgListActivity extends ImBaseActivity {
             .build();
 
     private void uploadPicByQiNiu(final String picPath) {
+
         if (uploadManager == null) {
             uploadManager = new UploadManager(config);
         }
+
+        final Integer[] widthAndHeight = getPicWithAndHeight(picPath);
+
+        final DbMyMsg myMsg = new DbMyMsg();
+        myMsg.setState(DbMyMsg.State.Sending.ordinal());
+        myMsg.setMsgId(latestMsgId());
+        myMsg.setTopicId(topic.getTopicId());
+        myMsg.setSenderId(Constants.imId);
+        myMsg.setSendTime(new Date().getTime());
+        //type==20 为图片
+        myMsg.setContentType(20);
+        myMsg.setFrom("local");
+        myMsg.setViewUrl(picPath);
+        myMsg.setHeight(widthAndHeight[0]);
+        myMsg.setWith(widthAndHeight[1]);
+        myMsg.save();
+        topic.mergedMsgs.add(0, myMsg);
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
         uploadManager.put(picPath, null, mQiniuToken, new UpCompletionHandler() {
             @Override
             public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {
                 try {
-                    Integer[] widthAndHeight = getPicWithAndHeight(picPath);
-                    doSendImgMsg(picPath, jsonObject.getString("key"), widthAndHeight[0], widthAndHeight[1]);
+
+                    doSendImgMsg(jsonObject.getString("key"), widthAndHeight[0], widthAndHeight[1], myMsg);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -889,7 +911,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     }
 
 
-    private void doSendImgMsg(final String imagePath, final String rid, final int with, final int height) {
+    private void doSendImgMsg(final String rid, final int with, final int height, final DbMyMsg dbMyMsg) {
         if ((memberId > 0) && (topic == null)) {
             // 是新建的Topic，需要先create topic
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
@@ -910,7 +932,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         event.dbTopic = dbTopic;
                         EventBus.getDefault().post(event);
 
-                        doSendImage(imagePath, rid, with, height);
+                        doSendImage(rid, with, height, dbMyMsg);
                     }
                 }
 
@@ -921,7 +943,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             });
         } else {
             // 已经有对话，直接发送即可
-            doSendImage(imagePath, rid, with, height);
+            doSendImage(rid, with, height, dbMyMsg);
 
         }
     }
@@ -934,7 +956,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     /**
      * 发送图片
      */
-    private void doSendImage(String imagePath, String rid, int width, int height) {
+    private void doSendImage(String rid, int width, int height, final DbMyMsg myMsg) {
         if (TextUtils.isEmpty(rid)) {
             return;
         }
@@ -946,26 +968,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         saveImageMsgRequest.height = String.valueOf(height);
         saveImageMsgRequest.width = String.valueOf(width);
 
-
-        final DbMyMsg myMsg = new DbMyMsg();
-        myMsg.setState(DbMyMsg.State.Sending.ordinal());
         myMsg.setReqId(saveImageMsgRequest.reqId);
-        myMsg.setMsgId(latestMsgId());
-        myMsg.setTopicId(topic.getTopicId());
-        myMsg.setSenderId(Constants.imId);
-        myMsg.setSendTime(new Date().getTime());
-        //type==20 为图片
-        myMsg.setContentType(20);
-        myMsg.setFrom("local");
-        myMsg.setViewUrl(imagePath);
-        myMsg.setHeight(height);
-        myMsg.setWith(width);
-        myMsg.save();
-        topic.mergedMsgs.add(0, myMsg);
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
-        mMsgListAdapter.notifyDataSetChanged();
-        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
             @Override
@@ -973,6 +976,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
+                // TODO: 2018/3/29 防止替换url后图片重新刷新 页面一闪下所以放在下面
+                myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
+                myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
+                myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
+                myMsg.save();
             }
 
             @Override
