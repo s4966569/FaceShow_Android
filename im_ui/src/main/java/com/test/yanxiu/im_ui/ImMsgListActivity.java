@@ -79,6 +79,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -456,7 +457,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         DbMyMsg myMsg = new DbMyMsg();
         myMsg.setState(DbMyMsg.State.Sending.ordinal());
         myMsg.setReqId(msgReqId);
-        myMsg.setMsgId(-1);
+        myMsg.setMsgId(latestMsgId());
         myMsg.setTopicId(topic.getTopicId());
         myMsg.setSenderId(Constants.imId);
         myMsg.setSendTime(new Date().getTime());
@@ -616,6 +617,14 @@ public class ImMsgListActivity extends ImBaseActivity {
                         List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
                                 earliestMsg.getMsgId(),
                                 DatabaseDealer.pagesize);
+
+                        // 从数据库取回的消息，包含了startIndex这一条，而对于未发送成功的MyMsg则可能有多条
+                        for(Iterator<DbMsg> i = msgs.iterator(); i.hasNext();) {
+                            DbMsg uiMsg = i.next();
+                            if (uiMsg.getMsgId() == earliestMsg.getMsgId()) {
+                                i.remove();
+                            }
+                        }
 
                         if (msgs.size() < DatabaseDealer.pagesize) {
                             hasMoreMsgs = false;
