@@ -102,6 +102,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     private long memberId = -1;
     private String memberName = null;
+    private long fromTopicId = -1;
     private String mQiniuToken;
     private boolean mKeyBoardShown;//键盘已经显示了
 
@@ -111,6 +112,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         super.onCreate(savedInstanceState);
         memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
+        fromTopicId = getIntent().getLongExtra(Constants.kFromTopicId, -1);
 
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
 
@@ -274,9 +276,22 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.latestMsgTime = dbTopic.latestMsgTime;
                         topic.setShowDot(dbTopic.isShowDot());
 
+                        //对私聊topic 的 title 进行修正
+                        if (topic.getType().equals("1")) {
+                            for (DbMember member : topic.getMembers()) {
+                                if ( member.getImId()!= Constants.imId) {
+                                    mTitleLayout.setTitle(member.getName());
+                                }
+                            }
+                        }
                         //请求当前topic 下的members 信息更新
-                        updateMemberInfoRequest(topic);
+                        //updateMemberInfoRequest(topic);
                     }
+                    //使用最新的 成员信息 并对群聊情况下的 title 进行更新
+                    if (topic.getType().equals("2")) {
+                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+                    }
+                    mMsgListAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -409,7 +424,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     private void doSend(final String msg, final String reqId) {
         final String msgReqId = (reqId == null ? UUID.randomUUID().toString() : reqId);
 
-
         // 预先插入mock topic
         if ((memberId > 0) && (topic == null)) {
             // 私聊尚且没有topic，需要创建mock topic
@@ -418,6 +432,9 @@ public class ImMsgListActivity extends ImBaseActivity {
             DbMember member = DatabaseDealer.getMemberById(memberId);
             mockTopic.getMembers().add(myself);
             mockTopic.getMembers().add(member);
+            if (fromTopicId > 0) { // 来自群聊点击的私聊
+                mockTopic.setFromTopic(Long.toString(fromTopicId));
+            }
             mockTopic.save();
             topic = mockTopic;
             mMsgListAdapter.setTopic(topic);
@@ -451,6 +468,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             createTopicRequest.imToken = Constants.imToken;
             createTopicRequest.topicType = "1"; // 私聊
             createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + Long.toString(memberId);
+            createTopicRequest.fromGroupTopicId = topic.getFromTopic();
             createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {

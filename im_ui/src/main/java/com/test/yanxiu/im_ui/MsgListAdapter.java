@@ -385,6 +385,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 public void onClick(View view) {
                     if ((topic != null) && (topic.getType().equals("2"))) {
                         // 群聊点击头像
+                        sender.fromTopicId = topic.getTopicId();
                         EventBus.getDefault().post(sender);
                     }
                 }

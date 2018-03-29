@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -169,10 +170,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
-
-
         topics.addAll(DatabaseDealer.topicsFromDb());
-
+        for (DbTopic topic : topics) {
+            for (DbMsg msg : topic.mergedMsgs) {
+                msg.setFrom("http");
+            }
+        }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -182,12 +185,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateTopicsFromHttpWithoutMembers() {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
         getMemberTopicsRequest.imToken = Constants.imToken;
-        getMemberTopicsRequest.bizId = null;
         getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
             @Override
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // 3
                 for (ImTopic imTopic : ret.data.topic) {
+                    if (imTopic.latestMsgId == 0) {
+                        // 群聊但是里面却没有消息
+                        continue;
+                    }
                     binder.subscribeTopic(Long.toString(imTopic.topicId));
                 }
 
@@ -205,7 +211,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateTopicsFromHttpAddMembers(TopicGetMemberTopicsResponse ret) {
         List<String> idTopicsNeedUpdateMember = new ArrayList<>(); // 因为可能有新的，所以只能用topicId
         List<DbTopic> topicsNotNeedUpdateMember = new ArrayList<>();
-
         // 所有不在DB中的，以及所有在DB中但change不等于topicChange的topics
         for (ImTopic imTopic : ret.data.topic) {
             boolean needUpdateMembers = true;
@@ -218,10 +223,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         topicsNotNeedUpdateMember.add(dbTopic);
                         break;
                     }
-
                 }
             }
-
             if (needUpdateMembers) {
                 idTopicsNeedUpdateMember.add(Long.toString(imTopic.topicId));
             }
@@ -293,11 +296,17 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                // 有新消息，UI上应该显示红点       -- 这里 1290
+                // 新建topic成功后topicMsg.size为0
+                if (ret.data.topicMsg==null || ret.data.topicMsg.size()==0) {
+                    return;
+                }
+
+                // 有新消息，UI上应该显示红点
                 dbTopic.setShowDot(true);
                 dbTopic.save();
 
-                // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
+                // 用最新一页，取代之前的mergedMsgs，
+                // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
                 for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
                     DbMsg uiMsg = i.next();
                     if (uiMsg.getFrom().equals("mqtt")) {
@@ -311,7 +320,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                                 i.remove();
                             }
                         }
-                        // TODO: 2018/3/28  如果 请求的列表中不包含上次的mqtt 信息，
                         continue;
                     }
                     i.remove();
@@ -329,6 +337,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
                     dbTopic.setShowDot(false);
                     dbTopic.save();
+                }else {
+                    //http 请求 需要展示红点  通知 homeFragment 展示红点
+                    noticeShowRedDot();
                 }
 
                 rearrangeTopics();
@@ -441,11 +452,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
                 dbTopic.setShowDot(true);
                 dbTopic.save();
+                //回调给 主页  显示 新消息红点
+                noticeShowRedDot();
                 break;
             }
         }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+
     }
 
     @Subscribe
@@ -458,6 +472,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+        //回调给 主页  显示 新消息红点
+        noticeShowRedDot();
     }
 
     // http, mqtt 公用
@@ -559,16 +575,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             curTopic.setShowDot(false);
+
+            curTopic.setFromTopic(Long.toString(contact.fromTopicId));
+
             curTopic.save();
             msgShownTopics.add(curTopic);
             return;
         }
 
         curTopic = null;
-        SharedSingleton.getInstance().set(Constants.kShareTopic, null);
+        SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
         Intent i = new Intent(getActivity(), ImMsgListActivity.class);
         i.putExtra(Constants.kCreateTopicMemberId, memberId);
         i.putExtra(Constants.kCreateTopicMemberName, member.getName());
+        i.putExtra(Constants.kFromTopicId, member.fromTopicId);
         getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
     }
 
@@ -607,17 +627,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
         binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
+
     }
     //endregion
 
     private void rearrangeTopics() {
         //首先按照 最新消息时间进行排序
+        Log.i(TAG, "rearrangeTopics: ");
         Collections.sort(topics,DatabaseDealer.topicComparator);
 
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
         for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
             DbTopic topic = i.next();
+
             if (topic.getType().equals("1")) {
                 // 私聊
                 i.remove();
@@ -626,9 +649,13 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         }
 
         topics.addAll(privateTopics);
+        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
-
+    /**
+     * title 点击回调
+     *
+     * */
     private TitleActionCallback titleActionCallback;
 
     public void setTitleActionCallback(TitleActionCallback titleActionCallback) {
@@ -636,8 +663,26 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public interface TitleActionCallback{
-
         void onLeftImgClicked();
+    }
 
+
+    /**
+     * 新消息红点 监听
+     * */
+    private NewMessageListener newMessageListener;
+
+    private void noticeShowRedDot(){
+        Toast.makeText(getActivity(),"show red", Toast.LENGTH_SHORT).show();
+        if (newMessageListener != null&&ImTopicListFragment.this.isHidden()) {
+            newMessageListener.onGetNewMessage();
+        }
+    }
+    public void setNewMessageListener(NewMessageListener newMessageListener) {
+        this.newMessageListener = newMessageListener;
+    }
+
+    public interface NewMessageListener{
+        void onGetNewMessage();
     }
 }
