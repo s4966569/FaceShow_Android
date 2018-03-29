@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.db.SpManager;
 import com.yanxiu.gphone.faceshow.http.course.GetStudentClazsesResponse;
 import com.yanxiu.gphone.faceshow.util.recyclerView.IRecyclerViewItemClick;
 
@@ -53,13 +54,17 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
                         views.get(i).setSelected(false);
                     }
                 }
+                holder.itemView.setSelected(true);
                 if (mIRecyclerViewItemClick != null) {
                     mIRecyclerViewItemClick.onItemClick(view, holder.getAdapterPosition());
                 }
             }
         });
-        if (mSelectedPosition != -1 && mSelectedPosition == position) {
-            views.get(position).setSelected(true);
+
+        if (String.valueOf(data.get(position).getId()).equals( SpManager.getUserInfo().getClassId())) {
+            holder.itemView.setSelected(true);
+        }else {
+            holder.itemView.setSelected(false);
         }
     }
 

@@ -21,6 +21,8 @@ public class DbTopic extends DataSupport {
     private boolean showDot = false;
 
     private String group;
+    private String fromTopic;   // 从哪个topic来的私聊
+
 
     // 只为UI显示用，不做数据库存储用
     @Column(ignore = true)
@@ -85,6 +87,14 @@ public class DbTopic extends DataSupport {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public String getFromTopic() {
+        return fromTopic;
+    }
+
+    public void setFromTopic(String fromTopic) {
+        this.fromTopic = fromTopic;
     }
 
     //endregion

@@ -12,4 +12,6 @@ public class TopicCreateTopicRequest extends ImRequestBase {
     public String topicName;
     public String yxUsers;
     public String imMemberIds;
+
+    public String fromGroupTopicId;
 }

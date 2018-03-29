@@ -16,7 +16,6 @@ import com.yanxiu.gphone.faceshow.course.bean.VoteItemBean;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
@@ -26,7 +25,6 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
  * dyf
  */
 public class ChooseLayout extends LinearLayout implements View.OnClickListener {
-
     private Context mContext;
     private onItemClickListener mOnItemClickListener;
     private int mChooseType = TYPE_SINGLE;
@@ -35,7 +33,9 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
     private VoteInfoBean mData;
     private ArrayList<String> mAnswerList;//保存选项结果
 
-    private final String[] mEms = new String[]{" A.", " B.", " C.", " D.", " E.", " F.", " G.", " H.", " I.", " J.", " K.", " L.", " M.", " N."};
+    private final String[] mEms = new String[]{" A.", " B.", " C.", " D.", " E.", " F.", " G.", " H.", " I.", " J."
+            , " K.", " L.", " M.", " N.", " O.", " P.", " Q.", " R.", " S.", " T.", " U.", " V.", " W."
+            , " X.", " Y.", " Z."};
 
 
     public interface onItemClickListener {
@@ -82,13 +82,17 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
             int position = Integer.parseInt(mAnswerList.get(i));
             setSelect(position);
         }
+
+        for (int i=0;i<mAnswerList.size();i++){
+            int pos=Integer.parseInt(mAnswerList.get(i));
+        }
     }
 
 
     private void addChildView(final VoteInfoBean data) {
         this.removeAllViews();
         ArrayList<VoteItemBean> list = data.getVoteItems();
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0;i < mEms.length && i < list.size(); i++) {
             VoteItemBean bean = list.get(i);
             View view = LayoutInflater.from(mContext).inflate(R.layout.layout_choose_item, this, false);
             final ViewHolder holder = new ViewHolder();
@@ -192,7 +196,8 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                             onClick(i, true);
                         }
                     } else {
-                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
+                        if (mData.getMaxSelectNum() >= mAnswerList.size() ) {
+//                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
                             setItemSelect(holder);
                             if (isCallBack) {
                                 //没有，添加
@@ -221,6 +226,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
         holder.mSelect = false;
         if (mChooseType == TYPE_MULTI) {
             ViewCompat.setBackground(holder.mQuestionSelectView, ContextCompat.getDrawable(mContext, R.drawable.multi_unselect));
+
         } else {
             ViewCompat.setBackground(holder.mQuestionSelectView, ContextCompat.getDrawable(mContext, R.drawable.single_unselect));
         }

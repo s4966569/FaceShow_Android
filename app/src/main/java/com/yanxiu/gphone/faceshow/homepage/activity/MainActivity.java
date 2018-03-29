@@ -299,15 +299,22 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
     private void initFragment() {
         mFragmentManager = getSupportFragmentManager();
         mNaviFragmentFactory = new NaviFragmentFactory(mFragmentManager);
+        //消息界面的 抽屉按键监听
         mNaviFragmentFactory.getImFragment().setTitleActionCallback(new ImTopicListFragment.TitleActionCallback() {
             @Override
             public void onLeftImgClicked() {
                 openLeftDrawer();
             }
         });
+        //消息界面的红点监听
+        mNaviFragmentFactory.getImFragment().setNewMessageListener(new ImTopicListFragment.NewMessageListener() {
 
+            @Override
+            public void onGetNewMessage() {
+                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.VISIBLE);
+            }
+        });
         showCurrentFragment(0);
-
     }
 
     private void initListener() {
@@ -477,6 +484,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[1].setEnabled(true);
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(false);
+                //点击 聊聊  清空 红点
+                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.INVISIBLE);
                 break;
             case R.id.title_layout_right_img:
                 ToastUtil.showToast(getApplicationContext(), "扫描");
