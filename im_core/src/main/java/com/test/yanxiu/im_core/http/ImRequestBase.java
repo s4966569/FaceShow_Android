@@ -14,7 +14,6 @@ import java.util.UUID;
 /**
  * Created by cailei on 02/03/2018.
  */
-
 public class ImRequestBase extends RequestBase {
     public String bizSource;  // 来源，移动端用1
     public String bizId;      // 业务id，研修宝用1
@@ -24,7 +23,7 @@ public class ImRequestBase extends RequestBase {
 
     ImRequestBase() {
         bizSource = "22";
-        bizId = "1";
+        bizId = null;
         reqId = UUID.randomUUID().toString();
     }
 
