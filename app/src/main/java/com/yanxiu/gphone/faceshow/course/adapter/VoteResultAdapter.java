@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.course.bean.QusetionBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
@@ -27,7 +28,6 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
  */
 
 public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
     private Context mContext;
 
     private VoteBean mVoteBean;
@@ -87,7 +87,6 @@ public class VoteResultAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //             //需要加入对用户已选选项的判断
                 holder1.voteResult_Layout.setUserAnswer(data.getUserAnswer().getQuestionAnswers());
                 holder1.voteResult_Layout.setData(data.getVoteInfo());
-                data.getUserAnswer().getQuestionAnswers();
                 if(position >= (mList.size() -1))
                     holder1.line.setVisibility(View.GONE);
                 if (position == 0 && !TextUtils.isEmpty(mTitle)) {

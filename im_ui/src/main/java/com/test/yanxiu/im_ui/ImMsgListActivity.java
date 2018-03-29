@@ -281,7 +281,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.latestMsgId = dbTopic.latestMsgId;
                         topic.latestMsgTime = dbTopic.latestMsgTime;
                         topic.setShowDot(dbTopic.isShowDot());
-
+                        //member 持有的更新
+                        topic.setMembers(dbTopic.getMembers());
                         //对私聊topic 的 title 进行修正
                         if (topic.getType().equals("1")) {
                             for (DbMember member : topic.getMembers()) {

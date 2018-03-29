@@ -16,7 +16,6 @@ import com.yanxiu.gphone.faceshow.course.bean.VoteItemBean;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_MULTI;
 import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
@@ -26,7 +25,6 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_SINGLE;
  * dyf
  */
 public class ChooseLayout extends LinearLayout implements View.OnClickListener {
-
     private Context mContext;
     private onItemClickListener mOnItemClickListener;
     private int mChooseType = TYPE_SINGLE;
@@ -81,6 +79,10 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
             //adapter复用时，恢复数据
             int position = Integer.parseInt(mAnswerList.get(i));
             setSelect(position);
+        }
+
+        for (int i=0;i<mAnswerList.size();i++){
+            int pos=Integer.parseInt(mAnswerList.get(i));
         }
     }
 
@@ -192,7 +194,8 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                             onClick(i, true);
                         }
                     } else {
-                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
+                        if (mData.getMaxSelectNum() >= mAnswerList.size() ) {
+//                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
                             setItemSelect(holder);
                             if (isCallBack) {
                                 //没有，添加
@@ -221,6 +224,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
         holder.mSelect = false;
         if (mChooseType == TYPE_MULTI) {
             ViewCompat.setBackground(holder.mQuestionSelectView, ContextCompat.getDrawable(mContext, R.drawable.multi_unselect));
+
         } else {
             ViewCompat.setBackground(holder.mQuestionSelectView, ContextCompat.getDrawable(mContext, R.drawable.single_unselect));
         }

@@ -29,7 +29,6 @@ import static com.yanxiu.gphone.faceshow.course.bean.EvaluationBean.TYPE_TEXT;
  */
 
 public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ChooseLayout.onItemClickListener {
-
     private Context mContext;
 
     private ArrayList<QusetionBean> mList;
@@ -96,6 +95,7 @@ public class EvaluationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 holder1.evaluation_title.setText(position + 1 + "、" + data.getTitle() + "(" + data.getQuestionTypeName() + ")");
                 holder1.chooseLayout.setChooseType(getItemViewType(position));
                 holder1.chooseLayout.setIsClick(!mIsAnswer);
+                //
                 holder1.chooseLayout.setData(data.getVoteInfo());
                 if (mIsAnswer) {
                     holder1.chooseLayout.setSaveChooceResultList(data.getUserAnswer().getQuestionAnswers());

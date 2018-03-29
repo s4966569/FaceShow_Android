@@ -29,7 +29,6 @@ import static com.yanxiu.gphone.faceshow.course.bean.VoteBean.TYPE_TEXT;
  */
 
 public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ChooseLayout.onItemClickListener {
-
     private Context mContext;
 
     private VoteBean mVoteBean;
@@ -45,6 +44,7 @@ public class VoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     public void setData(VoteBean voteBean) {
+
         mVoteBean = voteBean;
         mList = mVoteBean.getQuestionGroup().getQuestions();
     }
