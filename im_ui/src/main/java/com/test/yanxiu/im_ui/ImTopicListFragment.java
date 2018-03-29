@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
@@ -673,7 +672,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private NewMessageListener newMessageListener;
 
     private void noticeShowRedDot(){
-        Toast.makeText(getActivity(),"show red", Toast.LENGTH_SHORT).show();
         if (newMessageListener != null&&ImTopicListFragment.this.isHidden()) {
             newMessageListener.onGetNewMessage();
         }
