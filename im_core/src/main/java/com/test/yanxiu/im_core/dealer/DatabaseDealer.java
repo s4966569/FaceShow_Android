@@ -444,6 +444,8 @@ public class DatabaseDealer {
         }
 
         topic.mergedMsgs.add(0, msg);
+        topic.latestMsgId = msg.getMsgId();
+        topic.latestMsgTime = msg.getSendTime();
     }
     //endregion
 

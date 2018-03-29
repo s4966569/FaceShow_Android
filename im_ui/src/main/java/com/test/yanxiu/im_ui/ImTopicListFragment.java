@@ -171,6 +171,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
         topics.addAll(DatabaseDealer.topicsFromDb());
+        for (DbTopic topic : topics) {
+            for (DbMsg msg : topic.mergedMsgs) {
+                msg.setFrom("http");
+            }
+        }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -180,12 +185,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void updateTopicsFromHttpWithoutMembers() {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
         getMemberTopicsRequest.imToken = Constants.imToken;
-        getMemberTopicsRequest.bizId = null;
         getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
             @Override
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // 3
                 for (ImTopic imTopic : ret.data.topic) {
+                    if (imTopic.latestMsgId == 0) {
+                        // 群聊但是里面却没有消息
+                        continue;
+                    }
                     binder.subscribeTopic(Long.toString(imTopic.topicId));
                 }
 
@@ -288,11 +296,17 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         rqHelper.addRequest(getTopicMsgsRequest, GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                // 有新消息，UI上应该显示红点       -- 这里 1290
+                // 新建topic成功后topicMsg.size为0
+                if (ret.data.topicMsg==null || ret.data.topicMsg.size()==0) {
+                    return;
+                }
+
+                // 有新消息，UI上应该显示红点
                 dbTopic.setShowDot(true);
                 dbTopic.save();
 
-                // 用最新一页，取代之前的mergedMsgs，来自mqtt的消息不应该删除
+                // 用最新一页，取代之前的mergedMsgs，
+                // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
                 for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
                     DbMsg uiMsg = i.next();
                     if (uiMsg.getFrom().equals("mqtt")) {
@@ -306,7 +320,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                                 i.remove();
                             }
                         }
-                        // TODO: 2018/3/28  如果 请求的列表中不包含上次的mqtt 信息，
                         continue;
                     }
                     i.remove();
@@ -562,16 +575,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             curTopic.setShowDot(false);
+
+            curTopic.setFromTopic(Long.toString(contact.fromTopicId));
+
             curTopic.save();
             msgShownTopics.add(curTopic);
             return;
         }
 
         curTopic = null;
-        SharedSingleton.getInstance().set(Constants.kShareTopic, null);
+        SharedSingleton.getInstance().set(Constants.kShareTopic, curTopic);
         Intent i = new Intent(getActivity(), ImMsgListActivity.class);
         i.putExtra(Constants.kCreateTopicMemberId, memberId);
         i.putExtra(Constants.kCreateTopicMemberName, member.getName());
+        i.putExtra(Constants.kFromTopicId, member.fromTopicId);
         getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
     }
 
@@ -623,6 +640,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         List<DbTopic> privateTopics = new ArrayList<>();
         for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
             DbTopic topic = i.next();
+
             if (topic.getType().equals("1")) {
                 // 私聊
                 i.remove();

@@ -21,6 +21,10 @@ public class DbMember extends DataSupport {
 
     private List<DbTopic> topics = new ArrayList<>();   // 表明此用户加入了哪些topic
 
+    // 只为UI显示用，不做数据库存储用
+    @Column(ignore = true)
+    public long fromTopicId = -1;
+
     //region getter setter
     public long getImId() {
         return imId;
