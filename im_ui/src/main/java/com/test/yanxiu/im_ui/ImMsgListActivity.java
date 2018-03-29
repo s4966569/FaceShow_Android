@@ -413,6 +413,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
+                topic.setShowDot(false);
                 myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
             }

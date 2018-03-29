@@ -189,10 +189,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // 3
                 for (ImTopic imTopic : ret.data.topic) {
-                    if (imTopic.latestMsgId == 0) {
-                        // 群聊但是里面却没有消息
-                        continue;
-                    }
                     binder.subscribeTopic(Long.toString(imTopic.topicId));
                 }
 
