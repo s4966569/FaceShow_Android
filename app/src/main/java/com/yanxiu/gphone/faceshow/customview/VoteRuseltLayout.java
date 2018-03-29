@@ -9,12 +9,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.course.bean.VoteBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteInfoBean;
 import com.yanxiu.gphone.faceshow.course.bean.VoteItemBean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 投票结果控件
@@ -50,6 +48,10 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
         this.setOrientation(LinearLayout.VERTICAL);
     }
 
+    private ArrayList<String> myAnswers;
+    public void setUserAnswer(ArrayList<String> answers){
+        myAnswers=answers;
+    }
     public void setData(VoteInfoBean data) {
         mData = data;
         addChildView(data);
@@ -65,6 +67,21 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
             holder.position = i;
             holder.mVote_title = (TextView) view.findViewById(R.id.vote_title);
             holder.mVoteResult_count = (TextView) view.findViewById(R.id.voteResult_count);
+            //高亮设置  需要 用户选择信息
+            if (myAnswers != null) {
+                for (String myAnswer : myAnswers) {
+                    if (bean.getItemId().equals(myAnswer)) {
+                        holder.mVote_title.setTextColor(getResources().getColor(R.color.color_1da1f2));
+                        holder.mVoteResult_count.setTextColor(getResources().getColor(R.color.color_1da1f2));
+                        break;
+                    }else {
+                        holder.mVote_title.setTextColor(getResources().getColor(R.color.color_666666));
+                        holder.mVoteResult_count.setTextColor(getResources().getColor(R.color.color_666666));
+                    }
+                }
+            }
+
+
             holder.mVoteResult_progress = (VoteProgressView) view.findViewById(R.id.voteResult_progress);
 //            holder.mVoteResult_progress.setMaxCount(100);
 //            holder.mVoteResult_progress.updateProgress((int)(100*Float.valueOf(bean.getPercent())));
