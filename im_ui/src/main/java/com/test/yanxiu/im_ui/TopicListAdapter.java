@@ -50,6 +50,11 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
     @Override
     public void onBindViewHolder(TopicViewHolder holder, final int position) {
         final DbTopic topic = mDatas.get(position);
+        if (topic.latestMsgId == 0){
+            holder.itemView.setVisibility(View.GONE);
+        }else {
+            holder.itemView.setVisibility(View.VISIBLE);
+        }
         holder.setData(topic);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
