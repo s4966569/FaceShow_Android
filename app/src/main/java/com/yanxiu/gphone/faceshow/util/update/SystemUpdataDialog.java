@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util;
+package com.yanxiu.gphone.faceshow.util.update;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 /**
  * Created by Canghaixiao.
