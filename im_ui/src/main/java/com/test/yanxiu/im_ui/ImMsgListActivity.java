@@ -282,6 +282,11 @@ public class ImMsgListActivity extends ImBaseActivity {
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
                 if (ret.code==0) {
+                    //当 用户被移除 目标群组时 data=null
+                    if (ret.data == null||ret.data.topic==null) {
+                        Toast.makeText(ImMsgListActivity.this,"【已被移出此班】",Toast.LENGTH_SHORT).show();
+                        return ;
+                    }
                     for (ImTopic imTopic : ret.data.topic) {
                         //更新数据库 topic 信息
                         DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
