@@ -420,6 +420,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
             public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                if (ret.data.topicMsg.size() > 0) {
+                    ImMsg imMsg = ret.data.topicMsg.get(0);
+                    myMsg.setMsgId(imMsg.msgId); // 由于和mqtt异步，这样能保证更新msgId
+                }
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
                 myMsg.save();
