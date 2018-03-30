@@ -1,7 +1,6 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -16,6 +16,7 @@ import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
+import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,6 +48,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     private List<DbMsg> mDatas;
     private List<Item> mUiDatas;
     private DbTopic topic;
+    /**
+     * 当前群成员列表 不包含聊天记录中有但是被删除的成员
+     * 用于判断 点击头像进行私聊的判断
+     * */
+    private List<ImTopic.Member> remainMemberList;
+
+    public void setRemainMemberList(List<ImTopic.Member> remainMemberList) {
+        this.remainMemberList = remainMemberList;
+    }
 
     public DbTopic getTopic() {
         return topic;
@@ -335,7 +345,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
         @Override
         public void setData(Item item) {
-            DbMsg msg = item.getMsg();
+            final DbMsg msg = item.getMsg();
 
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView.setText("");
@@ -367,11 +377,35 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                     if ((topic != null) && (topic.getType().equals("2"))) {
                         // 群聊点击头像
                         sender.fromTopicId = topic.getTopicId();
-                        EventBus.getDefault().post(sender);
+                        
+                        //判断成员是否依然在群组中
+                        if (isRemainMember(sender.getImId())) {
+                            EventBus.getDefault().post(sender);
+                        }else {
+                            // TODO: 2018/3/30  提示用户
+                            if (mContext != null) {
+                                Toast.makeText(mContext,"【已被移出此班】",Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                       
                     }
                 }
             });
         }
+    }
+    /**
+     * 通过imId 判断被点击头像的成员是否还在群组中
+     * */
+    private boolean isRemainMember(long imId){
+        if (remainMemberList != null) {
+            for (ImTopic.Member member : remainMemberList) {
+                if (member.memberInfo.imId==imId) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public class MyMsgViewHolder extends MsgListItemViewHolder {

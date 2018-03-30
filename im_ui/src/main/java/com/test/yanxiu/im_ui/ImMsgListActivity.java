@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
@@ -103,6 +104,11 @@ public class ImMsgListActivity extends ImBaseActivity {
     private String mQiniuToken;
     private boolean mKeyBoardShown;//键盘已经显示了
 
+    /**
+     * 最新的成员列表
+     * 由于存在移除成员的消息，为了对成员存在性进行判断
+     * */
+    private List<ImTopic.Member> memberList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,14 +220,21 @@ public class ImMsgListActivity extends ImBaseActivity {
                 return false;
             }
         });
-        //新增的 发送按钮
-//        TextView sendTv=findViewById(R.id.tv_sure);
-//        sendTv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                doSend();
-//            }
-//        });
+        //新增的 发送按钮 发送逻辑与 按键发送一样
+        TextView sendTv=findViewById(R.id.tv_sure);
+        sendTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SrtLogger.log("imui", "TBD: 发送");
+                String msg = mMsgEditText.getText().toString();
+                mMsgEditText.setText("");
+                String trimMsg = msg.trim();
+                if (trimMsg.length() == 0) {
+                    return ;
+                }
+                doSend(msg, null);
+            }
+        });
 
         // 弹出键盘后处理
         KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
@@ -301,8 +314,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                     }
                     //使用最新的 成员信息 并对群聊情况下的 title 进行更新
                     if (topic.getType().equals("2")) {
-                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+//                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+                        mTitleLayout.setTitle("班级群聊 (" + ret.data.topic.get(0).members.size() + ")");
                     }
+                    //持有最新的成员列表
+                    memberList=ret.data.topic.get(0).members;
                     mMsgListAdapter.notifyDataSetChanged();
                 }
 
