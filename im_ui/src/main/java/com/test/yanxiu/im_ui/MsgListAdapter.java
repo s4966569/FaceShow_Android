@@ -376,7 +376,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 @Override
                 public void onClick(View view) {
                     //事件统计 点击群聊 头像
-                    EventUpdate.onClickGroupAvatarEvent(mContext);
+                    if (mContext != null) {
+                        EventUpdate.onClickGroupAvatarEvent(mContext);
+                    }
+
                     if ((topic != null) && (topic.getType().equals("2"))) {
                         // 群聊点击头像
                         sender.fromTopicId = topic.getTopicId();
