@@ -214,6 +214,14 @@ public class ImMsgListActivity extends ImBaseActivity {
                 return false;
             }
         });
+        //新增的 发送按钮
+//        TextView sendTv=findViewById(R.id.tv_sure);
+//        sendTv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                doSend();
+//            }
+//        });
 
         // 弹出键盘后处理
         KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
