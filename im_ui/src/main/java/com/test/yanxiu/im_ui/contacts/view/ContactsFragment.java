@@ -1,7 +1,5 @@
 package com.test.yanxiu.im_ui.contacts.view;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +22,7 @@ import com.test.yanxiu.common_base.ui.InputMethodUtil;
 import com.test.yanxiu.common_base.ui.PublicLoadLayout;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_ui.Constants;
+import com.test.yanxiu.im_ui.ImMsgListActivity;
 import com.test.yanxiu.im_ui.R;
 import com.test.yanxiu.im_ui.contacts.ChangeClassAdapter;
 import com.test.yanxiu.im_ui.contacts.ContactsAdapter;
@@ -33,6 +31,7 @@ import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
 import com.test.yanxiu.im_ui.contacts.presenter.ContactsPresenter;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -106,6 +105,8 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         changeClassList.setAdapter(mChangeClassAdapter);
         addCallBack();
         presenter.loadDataByNet();
+        //订阅 eventbus 消息接收 由聊天界面 获取的最新联系人信息
+        EventBus.getDefault().register(this);
         return mRootView;
     }
 
@@ -116,9 +117,29 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         hideChangeClassWindow();
     }
 
+    /**
+     * member infor
+     * 用户点击的 联系人信息
+     * 创建这个引用是为了在 聊天界面 返回eventbus 信息更新后更新列表信息
+     * */
+    private ContactsPlayerBean targetMemberInfo;
+    /**
+     *EventBus 监听 获取 聊天界面 得到的最新的member 信息
+     * */
+    @Subscribe
+    public void onContactUpdate(ImMsgListActivity.MemberInfoUpdateEvent memberInfo){
+        if (targetMemberInfo != null) {
+            targetMemberInfo.setAvatar(memberInfo.getAvatar());
+            targetMemberInfo.setName(memberInfo.getName());
+            mContactsAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        //取消eventbus 订阅
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -270,6 +291,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         hideChangeClassWindow();
     }
 
+
     @Override
     public void showItemClickResult(ContactsPlayerBean memberInfo) {
         if (memberInfo.getId() == Constants.imId) {
@@ -285,6 +307,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         member.setGroupId(memberInfo.getClassId());
         member.setGroupName(memberInfo.getClassName());
         EventBus.getDefault().post(member);
+        targetMemberInfo=memberInfo;
         //getActivity().finish();
     }
 

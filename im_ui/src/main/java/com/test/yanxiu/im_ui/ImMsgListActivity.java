@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,8 +46,6 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenRequest;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenResponse;
-import com.test.yanxiu.im_core.http.GetTopicMembersInfoRequest;
-import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.SaveImageMsgRequest;
@@ -59,8 +56,6 @@ import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
-import com.test.yanxiu.im_core.http.common.ImDataForUpdateMemberInfo;
-import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
@@ -77,6 +72,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -288,12 +284,12 @@ public class ImMsgListActivity extends ImBaseActivity {
                         if (topic.getType().equals("1")) {
                             for (DbMember member : topic.getMembers()) {
                                 if ( member.getImId()!= Constants.imId) {
+                                    //如果 是 由联系人界面跳转进来  需要通知联系人界面进行信息更新
+                                    EventBus.getDefault().post(new MemberInfoUpdateEvent(member.getImId(),member.getName(),member.getAvatar()));
                                     mTitleLayout.setTitle(member.getName());
                                 }
                             }
                         }
-                        //请求当前topic 下的members 信息更新
-                        //updateMemberInfoRequest(topic);
                     }
                     //使用最新的 成员信息 并对群聊情况下的 title 进行更新
                     if (topic.getType().equals("2")) {
@@ -312,67 +308,6 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     }
 
-    // HTTP请求 更新 当前topic 的members 信息
-    private void updateMemberInfoRequest(final DbTopic topic) {
-        GetTopicMembersInfoRequest topicMembersInfoRequest = new GetTopicMembersInfoRequest();
-        StringBuilder stringBuilder = new StringBuilder();
-
-        int length = topic.getMembers().size();
-        for (int i = 0; i < length; i++) {
-            stringBuilder.append(topic.getMembers().get(i).getImId());
-            if (i != length - 1) {
-                stringBuilder.append(",");
-            }
-        }
-
-        topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
-        topicMembersInfoRequest.imToken = Constants.imToken;
-        topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
-                //对 对话menmbers进行信息修正
-                if (ret.code==0) {
-                    for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
-                        //转换数据
-                        ImMember imMember = new ImMember();
-                        imMember.avatar = member.getAvatar();
-                        imMember.imId = member.getId();
-                        imMember.memberName = member.getMemberName();
-                        imMember.memberType = member.getMemberType();
-                        imMember.state = member.getState();
-                        imMember.userId = member.getUserId();
-                        DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
-                        //对私聊topic 的 title 进行修正
-                        if (topic.getType().equals("1")) {
-                            if (imMember.imId != Constants.imId) {
-                                mTitleLayout.setTitle(imMember.memberName);
-                                topic.setName(imMember.memberName);
-                            }
-                        }
-                        //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
-                        for (DbMember dbMember : topic.getMembers()) {
-                            if (dbMember.getImId() == updatedMember.getImId()) {
-                                topic.getMembers().remove(dbMember);
-                                topic.getMembers().add(updatedMember);
-                                break;
-                            }
-                        }
-                    }
-                    //使用最新的 成员信息
-                    if (topic.getType().equals("2")) {
-                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
-                    }
-                    mMsgListAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                Log.i("updatemember", "onFail: ");
-            }
-        });
-    }
-
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
 
     public class NewTopicCreatedEvent {
@@ -383,6 +318,50 @@ public class ImMsgListActivity extends ImBaseActivity {
         public DbTopic dbTopic;
     }
 
+
+    /**
+     *
+     * 用于传递 member消息更新的类
+     * 发送者是 ImMsgListActivity
+     * 接受者是 ContactsFragment
+     * */
+    public static class MemberInfoUpdateEvent implements Serializable{
+        public MemberInfoUpdateEvent(long imId,String name, String avatar) {
+            this.name = name;
+            this.avatar = avatar;
+            this.imId=imId;
+        }
+
+        /**
+         * member id
+         * */
+        long imId;
+        /**
+         * member name
+         * */
+        String name;
+        /**
+         * member 头像
+         * */
+        String avatar;
+
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+    }
 
     private void doSendMsg(final String msg, final String reqId) {
         SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
