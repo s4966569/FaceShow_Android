@@ -382,11 +382,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         if (isRemainMember(sender.getImId())) {
                             EventBus.getDefault().post(sender);
                         }else {
-                            // TODO: 2018/3/30  提示用户
                             if (mContext != null) {
                                 Toast.makeText(mContext,"【已被移出此班】",Toast.LENGTH_SHORT).show();
                             }
-
                         }
                        
                     }
