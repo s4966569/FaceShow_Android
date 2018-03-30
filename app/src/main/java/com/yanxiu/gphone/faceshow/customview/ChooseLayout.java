@@ -83,8 +83,8 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
             setSelect(position);
         }
 
-        for (int i=0;i<mAnswerList.size();i++){
-            int pos=Integer.parseInt(mAnswerList.get(i));
+        for (int i = 0; i < mAnswerList.size(); i++) {
+            int pos = Integer.parseInt(mAnswerList.get(i));
         }
     }
 
@@ -92,7 +92,7 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
     private void addChildView(final VoteInfoBean data) {
         this.removeAllViews();
         ArrayList<VoteItemBean> list = data.getVoteItems();
-        for (int i = 0;i < mEms.length && i < list.size(); i++) {
+        for (int i = 0; i < mEms.length && i < list.size(); i++) {
             VoteItemBean bean = list.get(i);
             View view = LayoutInflater.from(mContext).inflate(R.layout.layout_choose_item, this, false);
             final ViewHolder holder = new ViewHolder();
@@ -196,31 +196,52 @@ public class ChooseLayout extends LinearLayout implements View.OnClickListener {
                             onClick(i, true);
                         }
                     } else {
-                        if (mData.getMaxSelectNum() >= mAnswerList.size() ) {
-//                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
-                            setItemSelect(holder);
-                            if (isCallBack) {
-                                //没有，添加
-                                if (!mAnswerList.contains(String.valueOf(position))) {
-                                    mAnswerList.add(String.valueOf(position));
-                                }
-                                onClick(i, true);
-                            }
-                        } else {
+                        //首先判断 答案数量是否超出限制
+                        if (mAnswerList.size() >= mData.getMaxSelectNum()) {
+                            //如果 已经达到 最大选择数量 提示不能再选择
                             if (isCallBack) {
                                 ToastUtil.showToast(getContext(), "本题最多只能选择" + mData.getMaxSelectNum() + "项（如需修改先取消之前的选择)");
+                                return;
                             }
                         }
-                    }
+                        //如果可以继续选择
+                        setItemSelect(holder);
+                        if (isCallBack) {
+                            //没有，添加
+                            if (!mAnswerList.contains(String.valueOf(position))) {
+                                mAnswerList.add(String.valueOf(position));
+                            }
+                            onClick(i, true);
+                        }
 
+
+//                        if (mData.getMaxSelectNum() >= mAnswerList.size() ) {
+////                        if (mData.getMaxSelectNum() >= mAnswerList.size() + 1) {
+//                            setItemSelect(holder);
+//                            if (isCallBack) {
+//                                //没有，添加
+//                                if (!mAnswerList.contains(String.valueOf(position))) {
+//                                    mAnswerList.add(String.valueOf(position));
+//                                }
+//                                onClick(i, true);
+//                            }
+//                        } else {
+//                            if (isCallBack) {
+//                        ToastUtil.showToast(getContext(), "本题最多只能选择" + mData.getMaxSelectNum() + "项（如需修改先取消之前的选择)");
+//                        return ;
+//                    }
+//                        }
                 }
-            } else {
-                if (mChooseType == TYPE_SINGLE) {
-                    setItemUnSelect(holder);
-                }
+
+            }
+        } else{
+            if (mChooseType == TYPE_SINGLE) {
+                setItemUnSelect(holder);
             }
         }
     }
+
+}
 
     private void setItemUnSelect(ViewHolder holder) {
         holder.mSelect = false;
