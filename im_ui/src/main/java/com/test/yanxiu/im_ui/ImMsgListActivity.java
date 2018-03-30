@@ -244,7 +244,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
 
     private void setupData() {
-        if (topic != null) {
+        if (topic != null&&!DatabaseDealer.isMockTopic(topic)) {
             // 每次进入话题更新用户信息
             updateTopicFromHttp(topic.getTopicId() + "");
         }
