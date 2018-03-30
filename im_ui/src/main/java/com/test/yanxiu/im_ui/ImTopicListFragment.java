@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -141,6 +142,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviRightTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //事件统计 点击通讯录
+                EventUpdate.onClickContactEvent(getActivity());
                 Intent intent = new Intent(ImTopicListFragment.this.getContext(), ContactsActivity.class);
                 getActivity().startActivityForResult(intent, Constants.IM_REQUEST_CODE_CONTACT);
             }
@@ -519,6 +522,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
         @Override
         public void onItemClick(int position, DbTopic dbTopic) {
+
+            //事件统计  点击班级群聊
+            if (dbTopic != null&&dbTopic.getType().equals("2")) {
+                EventUpdate.onClickGroupTopicEvent(getActivity());
+            }
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
 

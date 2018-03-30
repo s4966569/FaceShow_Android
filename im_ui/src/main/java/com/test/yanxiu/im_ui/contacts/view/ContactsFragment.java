@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.test.yanxiu.common_base.ui.InputMethodUtil;
 import com.test.yanxiu.common_base.ui.PublicLoadLayout;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_ui.Constants;
 import com.test.yanxiu.im_ui.ImMsgListActivity;
@@ -192,10 +193,20 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
                 return false;
             }
         });
+        //事件统计 点击搜索框
+        mSearchView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                EventUpdate.onClickMsgContactSearchEvent(getActivity());
+                return false;
+            }
+        });
         mRlChangeClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hideSoftInput();
+                //事件统计 点击聊聊搜索框
+                EventUpdate.onClickMsgContactSearchEvent(getActivity());
                 if (mLlChangeClass.getVisibility() == View.GONE) {
                     openChangeClassWindow();
                 } else {
@@ -294,6 +305,8 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
 
     @Override
     public void showItemClickResult(ContactsPlayerBean memberInfo) {
+        //事件统计 点击通讯录中的头像
+        EventUpdate.onClickMsgContactImageEvent(getActivity());
         if (memberInfo.getId() == Constants.imId) {
             // 不能给自己发消息
             Toast.makeText(getActivity(), "不能给自己发消息", Toast.LENGTH_SHORT).show();

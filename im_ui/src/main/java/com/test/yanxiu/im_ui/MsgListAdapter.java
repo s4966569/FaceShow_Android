@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
@@ -374,6 +375,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mAvatarImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //事件统计 点击群聊 头像
+                    EventUpdate.onClickGroupAvatarEvent(mContext);
                     if ((topic != null) && (topic.getType().equals("2"))) {
                         // 群聊点击头像
                         sender.fromTopicId = topic.getTopicId();

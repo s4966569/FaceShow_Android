@@ -1,6 +1,5 @@
 package com.yanxiu.gphone.faceshow.homepage.activity.checkIn;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +18,7 @@ import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInDetailResponse;
 import com.yanxiu.gphone.faceshow.http.checkin.GetCheckInNotesResponse;
 import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

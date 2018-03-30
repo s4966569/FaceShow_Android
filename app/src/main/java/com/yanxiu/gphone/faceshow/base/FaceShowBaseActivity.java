@@ -10,13 +10,14 @@ import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.tendcloud.tenddata.TCAgent;
+
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.constant.Constants;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.permission.PermissionUtil;
 import com.test.yanxiu.common_base.utils.ActivityManger;
-import com.yanxiu.gphone.faceshow.util.talkingdata.ActivityNameUtils;
+import com.test.yanxiu.common_base.utils.talkingdata.ActivityNameUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,8 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
             isActive = true;
         }
         if (!TextUtils.isEmpty(mFaceShowLocalName)) {
-            TCAgent.onPageStart(this, mFaceShowLocalName);
+            //jar 包冲突
+            EventUpdate.onPageStart(this,mFaceShowLocalName);
         }
     }
 
@@ -71,7 +73,7 @@ public class FaceShowBaseActivity extends FragmentActivity implements EasyPermis
         Session.onPause(this);
         super.onPause();
         if (!TextUtils.isEmpty(mFaceShowLocalName)) {
-            TCAgent.onPageEnd(this, mFaceShowLocalName);
+            EventUpdate.onPageEnd(this,mFaceShowLocalName);
         }
 
     }
