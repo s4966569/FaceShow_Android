@@ -34,6 +34,7 @@ import com.yanxiu.gphone.faceshow.http.course.CourseDetailRequest;
 import com.yanxiu.gphone.faceshow.http.course.CourseDetailResponse;
 import com.yanxiu.gphone.faceshow.util.DateFormatUtil;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public class CourseDetailActivity extends FaceShowBaseActivity {
 
     }
     private void toCourseMessage() {
+        EventUpdate.onCourseDetailButton(this);
         Intent intent = new Intent(this, CourseMessageActivity.class);
         intent.putExtra("data", courseDetailBean!=null?courseDetailBean.getCourse():null);
         startActivity(intent);

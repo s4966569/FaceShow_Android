@@ -33,7 +33,7 @@ import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
 import com.yanxiu.gphone.faceshow.http.base.ResponseConfig;
 import com.yanxiu.gphone.faceshow.http.course.DiscussSaveRequest;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 
 import java.util.ArrayList;
 import java.util.List;

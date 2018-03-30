@@ -36,6 +36,7 @@ import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.common_base.utils.permission.OnPermissionCallback;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
 import com.test.yanxiu.faceshow_ui_base.imagePicker.GlideImageLoader;
 import com.test.yanxiu.im_core.RequestQueueHelper;
@@ -113,6 +114,8 @@ public class ImMsgListActivity extends ImBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
         fromTopicId = getIntent().getLongExtra(Constants.kFromTopicId, -1);
@@ -124,11 +127,49 @@ public class ImMsgListActivity extends ImBaseActivity {
             hasMoreMsgs = false;
         }
 
+
         setContentView(R.layout.activity_msg_list);
         setupView();
         setupData();
         initImagePicker();
         EventBus.getDefault().register(this);
+    }
+
+    /**
+     *
+     * 为了埋点
+     * */
+    private boolean isPrivatePage=false;
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        埋点
+        if (topic != null) {
+            //  判断topic type
+            if (topic.getType().equals("1")) {
+                isPrivatePage=true;
+               EventUpdate.onPrivatePageStart(this);
+            }else if (topic.getType().equals("2")){
+                //群聊
+                isPrivatePage=false;
+               EventUpdate.onGroupPageStart(this);
+            }
+        }else {
+            //topic 为空 确定为私聊
+            isPrivatePage=true;
+           EventUpdate.onPrivatePageStart(this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isPrivatePage) {
+            EventUpdate.onPrivatePageEnd(this);
+        }else {
+            EventUpdate.onGroupPageEnd(this);
+        }
     }
 
     @Override
@@ -191,7 +232,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onClick(View view) {
                 //发送照片入口
-
+                //事件统计  点击聊聊相机
+                EventUpdate.onClickMsgCameraEvent(ImMsgListActivity.this);
 //                showChoosePicsDialog();
 
             }
@@ -205,7 +247,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     SrtLogger.log("imui", "TBD: 发送");
-
+                    //统计
+                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
                     String msg = mMsgEditText.getText().toString();
                     mMsgEditText.setText("");
                     String trimMsg = msg.trim();
@@ -226,6 +269,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onClick(View view) {
                 SrtLogger.log("imui", "TBD: 发送");
+                //统计
+                EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
                 String msg = mMsgEditText.getText().toString();
                 mMsgEditText.setText("");
                 String trimMsg = msg.trim();
