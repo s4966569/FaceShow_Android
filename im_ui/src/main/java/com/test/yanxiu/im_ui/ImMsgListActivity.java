@@ -369,6 +369,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     }
                     //持有最新的成员列表
                     memberList=ret.data.topic.get(0).members;
+                    mMsgListAdapter.setRemainMemberList(memberList);
                     mMsgListAdapter.notifyDataSetChanged();
                 }
 
