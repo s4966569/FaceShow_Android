@@ -59,6 +59,8 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
         mRootView.setRetryButtonOnclickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mRootView.hiddenNetErrorView();
+                mRootView.hiddenOtherErrorView();
                 getClassListData();
             }
         });
@@ -118,7 +120,8 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
             public void onFail(RequestBase request, Error error) {
                 mRootView.finish();
                 mUUID = null;
-                mRootView.showOtherErrorView(error.getMessage());
+                mRootView.showNetErrorView();
+//                mRootView.showOtherErrorView(error.getMessage());
             }
         });
     }
@@ -138,13 +141,18 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
                 this.finish();
                 break;
             case R.id.title_layout_right_txt:
-                UserInfo.Info info = SpManager.getUserInfo();
-                info.setClassId(String.valueOf(data.get(mSelcetPosition).getId()));
-                info.setClassName(data.get(mSelcetPosition).getClazsName());
-                info.setProjectName(data.get(mSelcetPosition).getProjectName());
-                SpManager.saveUserInfo(info);
-                this.setResult(RESULT_OK);
-                this.finish();
+                if (data != null&&data.size()>0) {
+                    UserInfo.Info info = SpManager.getUserInfo();
+                    info.setClassId(String.valueOf(data.get(mSelcetPosition).getId()));
+                    info.setClassName(data.get(mSelcetPosition).getClazsName());
+                    info.setProjectName(data.get(mSelcetPosition).getProjectName());
+                    SpManager.saveUserInfo(info);
+                    this.setResult(RESULT_OK);
+                    this.finish();
+                }else {
+                    this.setResult(RESULT_CANCELED);
+                    this.finish();
+                }
                 break;
             default:
         }
