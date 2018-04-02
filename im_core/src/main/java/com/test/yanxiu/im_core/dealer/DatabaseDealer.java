@@ -1,6 +1,6 @@
 package com.test.yanxiu.im_core.dealer;
 
-import android.util.Log;
+import android.content.ContentValues;
 
 import com.orhanobut.logger.Logger;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -380,6 +380,32 @@ public class DatabaseDealer {
         dbMember.setAvatar(member.avatar);
         dbMember.save();
         return dbMember;
+    }
+
+    /**
+     * 更新 重发消息的数据库状态
+     * 由于直接采用save()方法 会出现 失败的异常
+     * 采用数据库更新对已经存在数据库中的 未发送成功的数据进行状态参数的更新
+     */
+    public static DbMyMsg updateResendMsg(DbMyMsg dbMsg, String from) {
+        DbMyMsg theMsg = DataSupport
+                .where("reqid = ?", dbMsg.getReqId())
+                .findFirst(DbMyMsg.class);
+        if (theMsg == null) {
+            //如果 数据库中还没有保存这条信息  进行保存并返回
+            dbMsg.save();
+            return dbMsg;
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("from", from);
+        contentValues.put("msgId", dbMsg.getMsgId());
+        contentValues.put("sendTime", dbMsg.getSendTime());
+        contentValues.put("state", dbMsg.getState());
+        DataSupport.updateAll(DbMyMsg.class, contentValues, "reqid = ?", dbMsg.getReqId());
+       theMsg = DataSupport
+                .where("reqid = ?", dbMsg.getReqId())
+                .findFirst(DbMyMsg.class);
+        return theMsg;
     }
 
     /**

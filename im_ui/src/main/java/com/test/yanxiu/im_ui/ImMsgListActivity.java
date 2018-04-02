@@ -472,14 +472,18 @@ public class ImMsgListActivity extends ImBaseActivity {
                 }
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
-                myMsg.save();
+                //新的更新方法
+                DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+//                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 myMsg.setState(DbMyMsg.State.Failed.ordinal());
-                myMsg.save();
+                //更新数据库的方法
+                DatabaseDealer.updateResendMsg(myMsg, "local");
+//                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
             }
         });
@@ -523,8 +527,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         myMsg.setContentType(10);
         myMsg.setMsg(msg);
         myMsg.setFrom("local");
-        myMsg.save();
-        topic.mergedMsgs.add(0, myMsg);
+        //新的更新数据库的方法 如果数据库没有这条数据  内部进行save 操作
+        DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
+//        myMsg.save();
+        topic.mergedMsgs.add(0, dbMyMsg);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
         //}
@@ -604,10 +610,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                 if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
                     // 重新发送
                     topic.mergedMsgs.remove(myMsg);
-                    // 1, 先更新数据库中
+                    // 1, 先更新数据库中 数据库中 一定存在此条
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
                     myMsg.setMsgId(latestMsgId());
-                    myMsg.save();
+                    DatabaseDealer.updateResendMsg(myMsg,"local");
+//                    myMsg.save();
 
                     doSend(myMsg.getMsg(), myMsg.getReqId());
                 }
