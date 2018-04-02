@@ -40,7 +40,7 @@ import com.yanxiu.gphone.faceshow.user.request.UpdataUserMessageRequest;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 
 import java.io.File;
 import java.io.FileInputStream;

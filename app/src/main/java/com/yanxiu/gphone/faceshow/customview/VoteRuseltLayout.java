@@ -19,7 +19,6 @@ import java.util.ArrayList;
  * dyf
  */
 public class VoteRuseltLayout extends LinearLayout implements View.OnClickListener {
-
     private Context mContext;
     private VoteInfoBean mData;
 
@@ -67,16 +66,14 @@ public class VoteRuseltLayout extends LinearLayout implements View.OnClickListen
             holder.position = i;
             holder.mVote_title = (TextView) view.findViewById(R.id.vote_title);
             holder.mVoteResult_count = (TextView) view.findViewById(R.id.voteResult_count);
-            //高亮设置  需要 用户选择信息
+            //高亮设置  需要 用户选择信息  对比的是 数组的index  不是itemid
             if (myAnswers != null) {
-                for (String myAnswer : myAnswers) {
-                    if (bean.getItemId().equals(myAnswer)) {
+                //用户的答案中是否包含当前项
+                for (int j = 0; j < myAnswers.size(); j++) {
+                    if (i==Integer.valueOf(myAnswers.get(j))) {
                         holder.mVote_title.setTextColor(getResources().getColor(R.color.color_1da1f2));
                         holder.mVoteResult_count.setTextColor(getResources().getColor(R.color.color_1da1f2));
                         break;
-                    }else {
-                        holder.mVote_title.setTextColor(getResources().getColor(R.color.color_666666));
-                        holder.mVoteResult_count.setTextColor(getResources().getColor(R.color.color_666666));
                     }
                 }
             }

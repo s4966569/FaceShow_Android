@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util.talkingdata;
+package com.test.yanxiu.common_base.utils.talkingdata;
 
 /**
  * Created by Canghaixiao.

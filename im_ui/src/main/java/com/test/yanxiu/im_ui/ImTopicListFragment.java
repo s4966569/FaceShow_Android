@@ -14,10 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -142,6 +142,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         mNaviRightTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //事件统计 点击通讯录
+                EventUpdate.onClickContactEvent(getActivity());
                 Intent intent = new Intent(ImTopicListFragment.this.getContext(), ContactsActivity.class);
                 getActivity().startActivityForResult(intent, Constants.IM_REQUEST_CODE_CONTACT);
             }
@@ -190,10 +192,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // 3
                 for (ImTopic imTopic : ret.data.topic) {
-                    if (imTopic.latestMsgId == 0) {
-                        // 群聊但是里面却没有消息
-                        continue;
-                    }
                     binder.subscribeTopic(Long.toString(imTopic.topicId));
                 }
 
@@ -524,6 +522,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private OnRecyclerViewItemClickCallback<DbTopic> onDbTopicCallback = new OnRecyclerViewItemClickCallback<DbTopic>() {
         @Override
         public void onItemClick(int position, DbTopic dbTopic) {
+
+            //事件统计  点击班级群聊
+            if (dbTopic != null&&dbTopic.getType().equals("2")) {
+                EventUpdate.onClickGroupTopicEvent(getActivity());
+            }
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
             Intent i = new Intent(getActivity(), ImMsgListActivity.class);
 
@@ -673,7 +676,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private NewMessageListener newMessageListener;
 
     private void noticeShowRedDot(){
-        Toast.makeText(getActivity(),"show red", Toast.LENGTH_SHORT).show();
         if (newMessageListener != null&&ImTopicListFragment.this.isHidden()) {
             newMessageListener.onGetNewMessage();
         }

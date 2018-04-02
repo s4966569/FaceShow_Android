@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
@@ -35,6 +36,7 @@ import com.test.yanxiu.common_base.ui.KeyboardChangeListener;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.common_base.utils.permission.OnPermissionCallback;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
 import com.test.yanxiu.faceshow_ui_base.imagePicker.GlideImageLoader;
 import com.test.yanxiu.im_core.RequestQueueHelper;
@@ -46,8 +48,6 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenRequest;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenResponse;
-import com.test.yanxiu.im_core.http.GetTopicMembersInfoRequest;
-import com.test.yanxiu.im_core.http.GetTopicMembersInfoResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
 import com.test.yanxiu.im_core.http.ImRequestBase;
@@ -59,8 +59,6 @@ import com.test.yanxiu.im_core.http.TopicCreateTopicRequest;
 import com.test.yanxiu.im_core.http.TopicCreateTopicResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetTopicsResponse;
-import com.test.yanxiu.im_core.http.common.ImDataForUpdateMemberInfo;
-import com.test.yanxiu.im_core.http.common.ImMember;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
@@ -77,8 +75,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -106,10 +106,17 @@ public class ImMsgListActivity extends ImBaseActivity {
     private String mQiniuToken;
     private boolean mKeyBoardShown;//键盘已经显示了
 
+    /**
+     * 最新的成员列表
+     * 由于存在移除成员的消息，为了对成员存在性进行判断
+     * */
+    private List<ImTopic.Member> memberList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
         fromTopicId = getIntent().getLongExtra(Constants.kFromTopicId, -1);
@@ -121,11 +128,49 @@ public class ImMsgListActivity extends ImBaseActivity {
             hasMoreMsgs = false;
         }
 
+
         setContentView(R.layout.activity_msg_list);
         setupView();
         setupData();
         initImagePicker();
         EventBus.getDefault().register(this);
+    }
+
+    /**
+     *
+     * 为了埋点
+     * */
+    private boolean isPrivatePage=false;
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        埋点
+        if (topic != null) {
+            //  判断topic type
+            if (topic.getType().equals("1")) {
+                isPrivatePage=true;
+               EventUpdate.onPrivatePageStart(this);
+            }else if (topic.getType().equals("2")){
+                //群聊
+                isPrivatePage=false;
+               EventUpdate.onGroupPageStart(this);
+            }
+        }else {
+            //topic 为空 确定为私聊
+            isPrivatePage=true;
+           EventUpdate.onPrivatePageStart(this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isPrivatePage) {
+            EventUpdate.onPrivatePageEnd(this);
+        }else {
+            EventUpdate.onGroupPageEnd(this);
+        }
     }
 
     @Override
@@ -134,6 +179,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         super.onDestroy();
     }
 
+    private void hideSoftInput(EditText editText) {
+        InputMethodManager inputMethodManager= (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(),0);
+    }
     private void setupView() {
         mTitleLayout = findViewById(R.id.title_layout);
         mTitleLayout.setTitle("");
@@ -141,6 +190,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         mTitleLayout.setOnNaviLeftBackCallback(new OnNaviLeftBackCallback() {
             @Override
             public void onNaviBack() {
+                //收起软键盘
+                hideSoftInput(mMsgEditText);
                 finish();
             }
         });
@@ -182,8 +233,9 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onClick(View view) {
                 //发送照片入口
-
                 showChoosePicsDialog();
+                //事件统计  点击聊聊相机
+                EventUpdate.onClickMsgCameraEvent(ImMsgListActivity.this);
 
             }
         });
@@ -196,7 +248,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
                     SrtLogger.log("imui", "TBD: 发送");
-
+                    //统计
+                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
                     String msg = mMsgEditText.getText().toString();
                     mMsgEditText.setText("");
                     String trimMsg = msg.trim();
@@ -209,6 +262,23 @@ public class ImMsgListActivity extends ImBaseActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+        //新增的 发送按钮 发送逻辑与 按键发送一样
+        TextView sendTv=findViewById(R.id.tv_sure);
+        sendTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SrtLogger.log("imui", "TBD: 发送");
+                //统计
+                EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
+                String msg = mMsgEditText.getText().toString();
+                mMsgEditText.setText("");
+                String trimMsg = msg.trim();
+                if (trimMsg.length() == 0) {
+                    return ;
+                }
+                doSend(msg, null);
             }
         });
 
@@ -241,7 +311,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
 
     private void setupData() {
-        if (topic != null) {
+        if (topic != null&&!DatabaseDealer.isMockTopic(topic)) {
             // 每次进入话题更新用户信息
             updateTopicFromHttp(topic.getTopicId() + "");
         }
@@ -257,7 +327,12 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 //正确的长度 为1
-                if (ret.code == 0) {
+                if (ret.code==0) {
+                    //当 用户被移除 目标群组时 data=null
+                    if (ret.data == null||ret.data.topic==null) {
+                        Toast.makeText(ImMsgListActivity.this,"【已被移出此班】",Toast.LENGTH_SHORT).show();
+                        return ;
+                    }
                     for (ImTopic imTopic : ret.data.topic) {
                         //更新数据库 topic 信息
                         DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
@@ -275,22 +350,26 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.latestMsgId = dbTopic.latestMsgId;
                         topic.latestMsgTime = dbTopic.latestMsgTime;
                         topic.setShowDot(dbTopic.isShowDot());
-
+                        //member 持有的更新
+                        topic.setMembers(dbTopic.getMembers());
                         //对私聊topic 的 title 进行修正
                         if (topic.getType().equals("1")) {
                             for (DbMember member : topic.getMembers()) {
                                 if ( member.getImId()!= Constants.imId) {
+                                    //如果 是 由联系人界面跳转进来  需要通知联系人界面进行信息更新
+                                    EventBus.getDefault().post(new MemberInfoUpdateEvent(member.getImId(),member.getName(),member.getAvatar()));
                                     mTitleLayout.setTitle(member.getName());
                                 }
                             }
                         }
-                        //请求当前topic 下的members 信息更新
-                        //updateMemberInfoRequest(topic);
                     }
                     //使用最新的 成员信息 并对群聊情况下的 title 进行更新
                     if (topic.getType().equals("2")) {
-                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+//                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
+                        mTitleLayout.setTitle("班级群聊 (" + ret.data.topic.get(0).members.size() + ")");
                     }
+                    //持有最新的成员列表
+                    memberList=ret.data.topic.get(0).members;
                     mMsgListAdapter.notifyDataSetChanged();
                 }
 
@@ -303,68 +382,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         });
 
     }
-
-    // HTTP请求 更新 当前topic 的members 信息
-    private void updateMemberInfoRequest(final DbTopic topic) {
-        GetTopicMembersInfoRequest topicMembersInfoRequest = new GetTopicMembersInfoRequest();
-        StringBuilder stringBuilder = new StringBuilder();
-
-        int length = topic.getMembers().size();
-        for (int i = 0; i < length; i++) {
-            stringBuilder.append(topic.getMembers().get(i).getImId());
-            if (i != length - 1) {
-                stringBuilder.append(",");
-            }
-        }
-
-        topicMembersInfoRequest.imMemberIds = stringBuilder.toString();
-        topicMembersInfoRequest.imToken = Constants.imToken;
-        topicMembersInfoRequest.startRequest(GetTopicMembersInfoResponse.class, new HttpCallback<GetTopicMembersInfoResponse>() {
-            @Override
-            public void onSuccess(RequestBase request, GetTopicMembersInfoResponse ret) {
-                //对 对话menmbers进行信息修正
-                if (ret.code == 0) {
-                    for (ImDataForUpdateMemberInfo.MembersBean member : ret.getData().getMembers()) {
-                        //转换数据
-                        ImMember imMember = new ImMember();
-                        imMember.avatar = member.getAvatar();
-                        imMember.imId = member.getId();
-                        imMember.memberName = member.getMemberName();
-                        imMember.memberType = member.getMemberType();
-                        imMember.state = member.getState();
-                        imMember.userId = member.getUserId();
-                        DbMember updatedMember = DatabaseDealer.updateDbMemberWithImMember(imMember);
-                        //对私聊topic 的 title 进行修正
-                        if (topic.getType().equals("1")) {
-                            if (imMember.imId != Constants.imId) {
-                                mTitleLayout.setTitle(imMember.memberName);
-                                topic.setName(imMember.memberName);
-                            }
-                        }
-                        //对topic 的member进行更新 暂时不考虑  成员数量的变化 只考虑成员信息的变化
-                        for (DbMember dbMember : topic.getMembers()) {
-                            if (dbMember.getImId() == updatedMember.getImId()) {
-                                topic.getMembers().remove(dbMember);
-                                topic.getMembers().add(updatedMember);
-                                break;
-                            }
-                        }
-                    }
-                    //使用最新的 成员信息
-                    if (topic.getType().equals("2")) {
-                        mTitleLayout.setTitle("班级群聊 (" + topic.getMembers().size() + ")");
-                    }
-                    mMsgListAdapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onFail(RequestBase request, Error error) {
-                Log.i("updatemember", "onFail: ");
-            }
-        });
-    }
-
     private RequestQueueHelper httpQueueHelper = new RequestQueueHelper();
 
     public class NewTopicCreatedEvent {
@@ -375,6 +392,50 @@ public class ImMsgListActivity extends ImBaseActivity {
         public DbTopic dbTopic;
     }
 
+
+    /**
+     *
+     * 用于传递 member消息更新的类
+     * 发送者是 ImMsgListActivity
+     * 接受者是 ContactsFragment
+     * */
+    public static class MemberInfoUpdateEvent implements Serializable{
+        public MemberInfoUpdateEvent(long imId,String name, String avatar) {
+            this.name = name;
+            this.avatar = avatar;
+            this.imId=imId;
+        }
+
+        /**
+         * member id
+         * */
+        long imId;
+        /**
+         * member name
+         * */
+        String name;
+        /**
+         * member 头像
+         * */
+        String avatar;
+
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public void setAvatar(String avatar) {
+            this.avatar = avatar;
+        }
+    }
 
     private void doSendMsg(final String msg, final String reqId) {
         SaveTextMsgRequest saveTextMsgRequest = new SaveTextMsgRequest();
@@ -404,7 +465,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
             public void onSuccess(RequestBase request, SaveTextMsgResponse ret) {
+                if (ret.data.topicMsg.size() > 0) {
+                    ImMsg imMsg = ret.data.topicMsg.get(0);
+                    myMsg.setMsgId(imMsg.msgId); // 由于和mqtt异步，这样能保证更新msgId
+                }
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
+                topic.setShowDot(false);
                 myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
             }
@@ -449,7 +515,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         DbMyMsg myMsg = new DbMyMsg();
         myMsg.setState(DbMyMsg.State.Sending.ordinal());
         myMsg.setReqId(msgReqId);
-        myMsg.setMsgId(-1);
+        myMsg.setMsgId(latestMsgId());
         myMsg.setTopicId(topic.getTopicId());
         myMsg.setSenderId(Constants.imId);
         myMsg.setSendTime(new Date().getTime());
@@ -609,6 +675,14 @@ public class ImMsgListActivity extends ImBaseActivity {
                         List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
                                 earliestMsg.getMsgId(),
                                 DatabaseDealer.pagesize);
+
+                        // 从数据库取回的消息，包含了startIndex这一条，而对于未发送成功的MyMsg则可能有多条
+                        for(Iterator<DbMsg> i = msgs.iterator(); i.hasNext();) {
+                            DbMsg uiMsg = i.next();
+                            if (uiMsg.getMsgId() == earliestMsg.getMsgId()) {
+                                i.remove();
+                            }
+                        }
 
                         if (msgs.size() < DatabaseDealer.pagesize) {
                             hasMoreMsgs = false;

@@ -43,6 +43,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.activity.QRCodeSignUpActivity;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 import com.test.yanxiu.common_base.utils.anim.AnimUtil;
+import com.yanxiu.gphone.faceshow.util.update.UpdateUtil;
 
 import java.util.UUID;
 
@@ -191,6 +192,7 @@ public class LoginActivity extends FaceShowBaseActivity {
 //        FileUtils.writeFile(Constants.SDCARD_ROOT_NAME+"/xzz.txt", data,false);
 /*！~！~！~！~*/
 //    debugUserAccount();
+        UpdateUtil.checkUpdate(this);
     }
 
     private void debugUserAccount(){

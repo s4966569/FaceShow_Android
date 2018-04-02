@@ -18,7 +18,7 @@ import com.yanxiu.gphone.faceshow.course.bean.InteractStepsBean;
 import com.yanxiu.gphone.faceshow.course.bean.LecturerInfosBean;
 import com.yanxiu.gphone.faceshow.customview.MaxLineTextView;
 import com.yanxiu.gphone.faceshow.util.StringUtils;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 
 import java.util.ArrayList;
 

@@ -26,13 +26,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
     // 日志
     compile 'com.orhanobut:logger:2.1.1'
     // 发送、接收消息
@@ -42,9 +40,7 @@ dependencies {
     // 图片缓存
     compile "com.github.bumptech.glide:glide:$rootProject.glideLibraryVersion"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
-
     //权限处理
     compile 'pub.devrel:easypermissions:0.4.2'
-
-
+    provided files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.12.jar')
 }

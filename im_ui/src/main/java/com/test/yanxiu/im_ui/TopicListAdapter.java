@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.lzy.imagepicker.util.Utils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
@@ -50,8 +52,12 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
     @Override
     public void onBindViewHolder(TopicViewHolder holder, final int position) {
         final DbTopic topic = mDatas.get(position);
+        if (topic.latestMsgId == 0){
+            setVisibile(false,holder.itemView);
+        }else {
+            setVisibile(true,holder.itemView);
+        }
         holder.setData(topic);
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,6 +66,20 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 }
             }
         });
+    }
+
+    public void setVisibile(boolean isVisible,View view) {
+        RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) view.getLayoutParams();
+        if (isVisible) {
+            param.height = Utils.dp2px(mContext,71);// 这里注意使用自己布局的根布局类型
+            param.width = RelativeLayout.LayoutParams.MATCH_PARENT;// 这里注意使用自己布局的根布局类型
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+            param.height = 0;
+            param.width = 0;
+        }
+        view.setLayoutParams(param);
     }
 
     @Override

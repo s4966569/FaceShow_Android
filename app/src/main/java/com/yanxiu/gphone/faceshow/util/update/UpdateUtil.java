@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util;
+package com.yanxiu.gphone.faceshow.util.update;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -30,6 +30,12 @@ import com.yanxiu.gphone.faceshow.http.request.DownLoadRequest;
 import com.yanxiu.gphone.faceshow.http.request.InitializeRequest;
 import com.yanxiu.gphone.faceshow.http.response.InitializeReponse;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.service.UpdateService;
+import com.yanxiu.gphone.faceshow.util.DownloadThread;
+import com.yanxiu.gphone.faceshow.util.FileUtil;
+import com.yanxiu.gphone.faceshow.util.Logger;
+import com.yanxiu.gphone.faceshow.util.SystemUtil;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -54,15 +60,24 @@ public class UpdateUtil {
     private static NotificationCompat.Builder mNotificationBuilder;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private static List<com.yanxiu.gphone.faceshow.http.response.InitializeReponse.Data> mData;
+    private static boolean mIsUpgrade;
+
     public interface OnUpgradeCallBack {
         void onExit();
 
         void onDownloadApk(boolean isSuccess);
 
         void onInstallApk(boolean isSuccess);
+
+        void onCancle();
     }
 
-    public static void Initialize(final Context context, final boolean isFromUser) {
+    public interface OnUpdateFinishCallBack{
+        void onUpdateFinish(String state);
+    }
+
+    public static void Initialize(final Context context, final boolean isFromUser,final OnUpdateFinishCallBack onUpdateFinishCallBack) {
 //         if (!isFromUser && Constants.UPDATA_TYPE == 1) {
 //             return;
 //         }
@@ -75,35 +90,44 @@ public class UpdateUtil {
             @Override
             public void onSuccess(RequestBase request, InitializeReponse ret) {
                 if (ret.data != null && ret.data.size() > 0) {
-                    boolean isUpgrade = checkIsShouldUpdate(Constants.versionName, ret.data.get(0).version);
-                    if (isUpgrade) {
-                        if (!TextUtils.isEmpty(ret.data.get(0).fileURL)) {
-                            String[] str = ret.data.get(0).fileURL.split("\\.");
-                            if (str.length > 1 && "apk".equals(str[str.length - 1])) {
-//                                 if (true){
-                                showUpdateDialog(context, ret.data.get(0), new OnUpgradeCallBack() {
-                                    @Override
-                                    public void onExit() {
-                                        ActivityManger.destoryAll();
-                                        android.os.Process.killProcess(android.os.Process.myPid());
-                                        System.exit(-1);
-                                    }
-
-                                    @Override
-                                    public void onDownloadApk(boolean isSuccess) {
-                                    }
-
-                                    @Override
-                                    public void onInstallApk(boolean isSuccess) {
-
-                                    }
-                                });
-                            } else {
-//                                 ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
-                            }
-                        } else {
-//                             ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
-                        }
+                    mData = ret.data;
+                    mIsUpgrade = checkIsShouldUpdate(Constants.versionName, ret.data.get(0).version);
+                    if (mIsUpgrade) {
+//                        if (!TextUtils.isEmpty(ret.data.get(0).fileURL)) {
+//                            String[] str = ret.data.get(0).fileURL.split("\\.");
+//                            if (str.length > 1 && "apk".equals(str[str.length - 1])) {
+////                                 if (true){
+//                                showUpdateDialog(context, ret.data.get(0), new OnUpgradeCallBack() {
+//                                    @Override
+//                                    public void onExit() {
+//                                        ActivityManger.destoryAll();
+//                                        if(onUpdateFinishCallBack != null)
+//                                            onUpdateFinishCallBack.onUpdateFinish("onExit");
+//                                        android.os.Process.killProcess(android.os.Process.myPid());
+//                                        System.exit(-1);
+//                                    }
+//
+//                                    @Override
+//                                    public void onDownloadApk(boolean isSuccess) {
+//                                    }
+//
+//                                    @Override
+//                                    public void onInstallApk(boolean isSuccess) {
+//
+//                                    }
+//
+//                                    @Override
+//                                    public void onCancle() {
+//                                        if(onUpdateFinishCallBack != null)
+//                                            onUpdateFinishCallBack.onUpdateFinish("onCancle");
+//                                    }
+//                                });
+//                            } else {
+////                                 ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
+//                            }
+//                        } else {
+////                             ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
+//                        }
                     } else {
                         if (isFromUser) {
                             ToastUtil.showToast(context, R.string.update_new);
@@ -114,6 +138,8 @@ public class UpdateUtil {
                         ToastUtil.showToast(context, R.string.update_new);
                     }
                 }
+                if(onUpdateFinishCallBack != null)
+                    onUpdateFinishCallBack.onUpdateFinish("onSuccess");
             }
 
             @Override
@@ -121,8 +147,54 @@ public class UpdateUtil {
                 if (isFromUser) {
                     ToastUtil.showToast(context, error.getMessage());
                 }
+                if(onUpdateFinishCallBack != null)
+                    onUpdateFinishCallBack.onUpdateFinish("onFail");
             }
         });
+    }
+
+    public static void checkUpdate(Context context){
+        if(mIsUpgrade){
+            if (!TextUtils.isEmpty(mData.get(0).fileURL)) {
+                String[] str = mData.get(0).fileURL.split("\\.");
+                if (str.length > 1 && "apk".equals(str[str.length - 1])) {
+//                                 if (true){
+                    showUpdateDialog(context, mData.get(0), new OnUpgradeCallBack() {
+                        @Override
+                        public void onExit() {
+                            mIsUpgrade = false;
+                            mData = null;
+                            ActivityManger.destoryAll();
+//                            android.os.Process.killProcess(android.os.Process.myPid());
+//                            System.exit(-1);
+                        }
+
+                        @Override
+                        public void onDownloadApk(boolean isSuccess) {
+                            mIsUpgrade = false;
+                            mData = null;
+                        }
+
+                        @Override
+                        public void onInstallApk(boolean isSuccess) {
+                            mIsUpgrade = false;
+                            mData = null;
+                        }
+
+                        @Override
+                        public void onCancle() {
+                            mIsUpgrade = false;
+                            mData = null;
+                        }
+                    });
+                } else {
+//                                 ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
+                }
+            } else {
+//                             ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
+            }
+        }
+
     }
 
     private static class MyPermission implements OnPermissionCallback {
@@ -185,7 +257,9 @@ public class UpdateUtil {
 
             @Override
             public void cancel() {
-
+                if (callBack != null) {
+                    callBack.onCancle();
+                }
             }
 
             @Override

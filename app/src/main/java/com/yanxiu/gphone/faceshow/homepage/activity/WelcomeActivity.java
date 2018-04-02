@@ -38,6 +38,7 @@ import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.service.UpdateService;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
@@ -106,6 +107,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         requestPermissions(perms, new OnPermissionCallback() {
             @Override
             public void onPermissionsGranted(@Nullable List<String> deniedPermissions) {
+                startService(new Intent(getApplicationContext(), UpdateService.class));
                 /*欢迎页logo的动画效果*/
                 int ANIMATION_DURATION = 1000;//动画时长
                 mImgLogo.animate().translationY(-Utils.dip2px(FaceShowApplication.getContext(), 375)).setDuration(ANIMATION_DURATION).setListener(logoAnimatorListener);
@@ -124,7 +126,6 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         MWConfiguration config = new MWConfiguration(this);
         config.setLogEnable(false);//打开魔窗Log信息
         MagicWindowSDK.initSDK(config);
-
     }
 
     /**

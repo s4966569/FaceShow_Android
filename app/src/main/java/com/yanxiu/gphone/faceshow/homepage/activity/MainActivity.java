@@ -50,7 +50,7 @@ import com.yanxiu.gphone.faceshow.user.FeedBackActivity;
 import com.yanxiu.gphone.faceshow.user.ProfileActivity;
 import com.yanxiu.gphone.faceshow.util.SystemUtil;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.yanxiu.gphone.faceshow.util.UpdateUtil;
+import com.yanxiu.gphone.faceshow.util.update.UpdateUtil;
 
 import java.util.UUID;
 
@@ -139,7 +139,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         initView();
         initListener();
         getData();
-        UpdateUtil.Initialize(this, false);
+        UpdateUtil.checkUpdate(this);
 
         /*判断是否进入班级选择界面*/
         if (SpManager.isFristStartUp()) {

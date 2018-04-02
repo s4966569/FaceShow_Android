@@ -26,7 +26,7 @@ import com.yanxiu.gphone.faceshow.http.main.GetToolsResponse;
 import com.yanxiu.gphone.faceshow.http.main.MainRequest;
 import com.yanxiu.gphone.faceshow.http.main.MainResponse;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
-import com.yanxiu.gphone.faceshow.util.talkingdata.EventUpdate;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.yanxiu.gphone.faceshow.webView.FaceShowWebActivity;
 
 

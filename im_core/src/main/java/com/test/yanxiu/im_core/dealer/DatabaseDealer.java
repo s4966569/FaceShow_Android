@@ -399,7 +399,7 @@ public class DatabaseDealer {
                 dbMyMsg = new DbMyMsg();
             }
 
-            dbMyMsg.setState(0);    // http来的消息都是以完成的消息
+            dbMyMsg.setState(DbMyMsg.State.Success.ordinal());    // http来的消息都是以完成的消息
             theMsg = dbMyMsg;
         } else {
             DbMsg dbMsg = DataSupport
