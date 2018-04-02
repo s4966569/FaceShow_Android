@@ -1,9 +1,6 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +10,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
@@ -22,8 +17,6 @@ import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
-import com.test.yanxiu.im_ui.view.NewRoundCornerMaskView;
-import com.test.yanxiu.im_ui.view.RoundCornerMaskView;
 
 import org.greenrobot.eventbus.EventBus;
 
