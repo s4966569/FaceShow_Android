@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -308,7 +309,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
-
+    @Subscribe
+    public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+    }
     private void setupData() {
         if (topic != null&&!DatabaseDealer.isMockTopic(topic)) {
             // 每次进入话题更新用户信息
