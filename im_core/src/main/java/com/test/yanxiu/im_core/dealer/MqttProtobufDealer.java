@@ -110,4 +110,9 @@ public class MqttProtobufDealer {
         EventBus.getDefault().post(event);
 
     }
+
+    public static void onTopicUpdate() {
+        TopicUpdateEvent event = new TopicUpdateEvent();
+        EventBus.getDefault().post(event);
+    }
 }
