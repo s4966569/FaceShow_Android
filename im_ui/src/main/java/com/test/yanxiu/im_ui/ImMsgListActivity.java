@@ -10,8 +10,10 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -264,7 +266,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
         //新增的 发送按钮 发送逻辑与 按键发送一样
-        TextView sendTv=findViewById(R.id.tv_sure);
+        final TextView sendTv=findViewById(R.id.tv_sure);
         sendTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -280,6 +282,36 @@ public class ImMsgListActivity extends ImBaseActivity {
                 doSend(msg, null);
             }
         });
+        //添加监听 当有文字输入时 展示发送按钮可点击
+        mMsgEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence != null) {
+                    if (charSequence.length()>0) {
+                        //设置 enable 可点击状态
+                        sendTv.setEnabled(true);
+                        sendTv.setBackgroundResource(R.drawable.im_sendbtn_default);
+                        return;
+                    }
+                }
+                //设置颜色为 disable 与 按下颜色一样
+                sendTv.setEnabled(false);
+                sendTv.setBackgroundResource(R.drawable.im_sendbtn_pressed);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        //初始设置为 不可点击 当用户有输入 才进行使能设置
+        sendTv.setEnabled(false);
+        sendTv.setBackgroundResource(R.drawable.im_sendbtn_pressed);
 
         // 弹出键盘后处理
         KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);

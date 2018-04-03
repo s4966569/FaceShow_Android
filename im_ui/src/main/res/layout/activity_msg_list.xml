@@ -31,7 +31,7 @@
         android:minHeight="35dp"
         android:background="#f6fafd"
         android:paddingTop="6dp"
-        android:paddingEnd="5dp"
+        android:paddingEnd="10dp"
         android:paddingBottom="6dp">
 
         <EditText
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="10dp"
             android:paddingLeft="15dp"
             android:paddingRight="50dp"
             android:layout_centerInParent="true"
@@ -63,14 +63,15 @@
             android:layout_alignRight="@id/msg_edittext"
             android:layout_marginRight="10dp"/>
         <TextView
+
             android:id="@+id/tv_sure"
             android:layout_width="45dp"
-            android:layout_height="35dp"
+            android:layout_height="33dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/selector_send_btn"
-            android:enabled="true"
+            android:background="@drawable/selector_im_sendbtn_bg"
             android:gravity="center"
+            android:enabled="false"
             android:text="发送"
             android:textColor="@color/color_white"
             android:textSize="15sp" />
