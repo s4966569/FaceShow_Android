@@ -195,7 +195,7 @@ public abstract class RequestBase {
             response = response.replace("&lt;", "<");
         }
         if (response.contains("&gt;")) {
-            response = response.replace("&qt;", ">");
+            response = response.replace("&gt;", ">");
         }
 //        if (response.contains("&nbsp;")) {
 //            response = response.replace("&nbsp", "&");
