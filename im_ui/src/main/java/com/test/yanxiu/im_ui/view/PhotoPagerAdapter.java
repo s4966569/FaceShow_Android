@@ -63,7 +63,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         ZoomImageView imageView=mImageViews.get(position);
-        Glide.with(mContext).load(mPaths.get(position)).error(R.drawable.net_error_picture).into(imageView);
+        Glide.with(mContext).load(mPaths.get(position)).placeholder(R.drawable.bg_im_pic_holder_view).error(R.drawable.bg_im_pic_holder_view).into(imageView);
         container.addView(imageView);
         return imageView;
     }
