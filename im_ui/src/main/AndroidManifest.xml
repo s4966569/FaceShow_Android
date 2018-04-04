@@ -12,6 +12,9 @@
             android:name=".ImMsgListActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize" />
+        <activity android:name=".view.PhotoActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustResize"/>
     </application>
 
 </manifest>

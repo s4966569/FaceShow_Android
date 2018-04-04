@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.common.activity;
+package com.test.yanxiu.im_ui.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,24 +9,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yanxiu.gphone.faceshow.R;
-import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.common.adapter.PhotoPagerAdapter;
-import com.yanxiu.gphone.faceshow.common.bean.PhotoDeleteBean;
-import com.yanxiu.gphone.faceshow.common.dialog.PhotoDeleteDialog;
-import com.yanxiu.gphone.faceshow.customview.ZoomImageView;
+import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
+import com.test.yanxiu.im_ui.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 
 /**
  * Created by Canghaixiao.
  * Time : 2017/6/23 14:11.
  * Function :
  */
-public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
+public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
     private static final String PATH_LIST="paths";
     private static final String SELECTID="select";
@@ -74,9 +71,9 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
 
     private void initView() {
         mTopView=findViewById(R.id.include_top);
-        mBackView= (ImageView) findViewById(R.id.iv_left);
+        mBackView= (ImageView) findViewById(R.id.im_ui_iv_left);
         mTitleView= (TextView) findViewById(R.id.tv_title);
-        mDeleteView= (ImageView) findViewById(R.id.iv_right);
+        mDeleteView= (ImageView) findViewById(R.id.im_ui_iv_right);
 
         mImagePhotoView= (ViewPager) findViewById(R.id.vp_image_review);
         mAdapter=new PhotoPagerAdapter(mContext);
@@ -176,13 +173,12 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.iv_left:
-                PhotoActivity.this.finish();
-                break;
-            case R.id.iv_right:
-                showDialog();
-                break;
+        int i = v.getId();
+        if (i == R.id.im_ui_iv_left) {
+            PhotoActivity.this.finish();
+        } else if (i == R.id.im_ui_iv_right) {
+            showDialog();
+
         }
     }
 }

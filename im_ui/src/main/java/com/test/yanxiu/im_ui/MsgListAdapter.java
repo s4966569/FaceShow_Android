@@ -360,7 +360,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         @Override
         public void setData(Item item) {
             final DbMsg msg = item.getMsg();
-
+            mMsgImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (showPreviewPicListener != null) {
+                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView,msg.getViewUrl());
+                    }
+                }
+            });
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
             mNameTextView.setText("");
             final DbMember sender = DatabaseDealer.getMemberById(msg.getSenderId());
@@ -469,6 +476,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         @Override
         public void setData(final Item item) {
             myMsg = item.getMyMsg();
+
+            mMsgImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (showPreviewPicListener != null) {
+                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView,myMsg.getViewUrl());
+                    }
+                }
+            });
+
 
             // 设置头像
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
@@ -709,6 +726,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             this.type = type;
             this.data = data;
         }
+    }
+
+    private ShowPreviewPicListener showPreviewPicListener;
+
+    public void setShowPreviewPicListener(ShowPreviewPicListener showPreviewPicListener) {
+        this.showPreviewPicListener = showPreviewPicListener;
+    }
+
+    public interface ShowPreviewPicListener {
+        void picClick(int position, View view, String viewUrl);
     }
 
 

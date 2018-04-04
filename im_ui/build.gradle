@@ -34,4 +34,5 @@ dependencies {
     compile project(path: ':faceshow_ui_base')
     compile project(path: ':im_core')
     implementation project(':common_base')
+
 }

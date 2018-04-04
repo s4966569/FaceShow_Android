@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
+import com.lzy.imagepicker.ui.ImagePreviewActivity;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCancellationSignal;
@@ -69,6 +71,7 @@ import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
 import com.test.yanxiu.im_ui.callback.OnPullToRefreshCallback;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.im_ui.view.ChoosePicsDialog;
+import com.test.yanxiu.im_ui.view.PhotoActivity;
 import com.test.yanxiu.im_ui.view.RecyclerViewPullToRefreshHelper;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -342,6 +345,16 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
         ptrHelper.setmCallback(mOnLoadMoreCallback);
+
+
+        mMsgListAdapter.setShowPreviewPicListener(new MsgListAdapter.ShowPreviewPicListener() {
+            @Override
+            public void picClick(int position, View view,String url) {
+                ArrayList list = new ArrayList();
+                list.add(url);
+                PhotoActivity.LaunchActivity(ImMsgListActivity.this,list,0,0,1);
+            }
+        });
     }
 
     @Subscribe
