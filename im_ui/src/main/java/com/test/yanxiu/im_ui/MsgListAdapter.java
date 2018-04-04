@@ -374,21 +374,25 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (msg.getContentType() == 20) {
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
+                mMsgImageView.clearOverLayer();
+                Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
+                mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
-                        .into(new SimpleTarget<Bitmap>() {
+                        .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                Integer[] wh = getPicShowWH(itemView.getContext(), resource.getWidth(), resource.getHeight());
-                                Bitmap scaledBitmap = Bitmap.createScaledBitmap(resource, wh[0], wh[1], true);
-                                mMsgImageView.setImageBitmap(scaledBitmap);
-
+                                if (TextUtils.equals(msg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
+                                    mMsgImageView.setImageBitmap(resource);
+                                } else {
+                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                }
                             }
 
                             @Override
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                super.onLoadFailed(e, errorDrawable);
+                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                             }
                         });
 
@@ -450,7 +454,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
         private ProgressImageContainer mMsgImageView;
-//        private RoundCornerMaskView mMsgImageViewRound;
+        private DbMyMsg myMsg;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -460,12 +464,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
-//            mMsgImageViewRound = itemView.findViewById(R.id.msg_imageView_round);
         }
 
         @Override
         public void setData(final Item item) {
-            final DbMyMsg myMsg = item.getMyMsg();
+            myMsg = item.getMyMsg();
 
             // 设置头像
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
@@ -488,23 +491,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 Glide.with(itemView.getContext())
                         .load(myMsg.getViewUrl())
                         .asBitmap()
-                        .placeholder(R.drawable.ic_default_color)
                         .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
 
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 if (TextUtils.equals(myMsg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
+                                    mMsgImageView.clearOverLayer();
                                     mMsgImageView.setImageBitmap(resource);
-                                }else {
-                                    mMsgImageView.setImageResource(R.drawable.ic_default_color);
+                                } else {
+                                    mMsgImageView.clearOverLayer();
+                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                                 }
                             }
 
                             @Override
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                super.onLoadFailed(e, errorDrawable);
-                                mMsgImageView.setImageResource(R.drawable.ic_default_color);
+                                mMsgImageView.clearOverLayer();
+                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
 
                             }
                         });
@@ -646,9 +650,33 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
-            Log.e("frc", "payloads: " + payloads);
-            int progress = (int) (((Double) payloads.get(0)) * 100);
-            ((MyMsgViewHolder) holder).mMsgImageView.setProgress(progress);
+            Object payload = payloads.get(0);
+            if (payload instanceof PayLoad) {
+                switch (((PayLoad) payload).type) {
+                    case PayLoad.CHANG_SEND_PROGRESS:
+                        int progress = (int) (((Double) ((PayLoad) payload).data) * 100);
+                        ((MyMsgViewHolder) holder).mMsgImageView.setProgress(progress);
+                        break;
+                    case PayLoad.CHANG_SEND_STATUE:
+                        MyMsgViewHolder myMsgViewHolder = (MyMsgViewHolder) holder;
+                        if (myMsgViewHolder.myMsg.getState() == DbMyMsg.State.Sending.ordinal()) {
+                            myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.VISIBLE);
+                            myMsgViewHolder.mStateFailedImageView.setVisibility(View.GONE);
+                        }
+
+                        if (myMsgViewHolder.myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
+                            myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.GONE);
+                            myMsgViewHolder.mStateFailedImageView.setVisibility(View.VISIBLE);
+                        }
+                        if (myMsgViewHolder.myMsg.getState() == DbMyMsg.State.Success.ordinal()) {
+                            myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.GONE);
+                            myMsgViewHolder.mStateFailedImageView.setVisibility(View.GONE);
+                        }
+                        break;
+                }
+            }
+
+
         }
     }
 
@@ -664,5 +692,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
         return new Integer[]{options.outWidth, options.outHeight};
     }
+
+    public static class PayLoad {
+        static final int CHANG_SEND_STATUE = 0x01;
+        static final int CHANG_SEND_PROGRESS = 0x02;
+
+
+        int type;
+        Object data;
+
+        public PayLoad(int type) {
+            this.type = type;
+        }
+
+        public PayLoad(int type, Object data) {
+            this.type = type;
+            this.data = data;
+        }
+    }
+
 
 }

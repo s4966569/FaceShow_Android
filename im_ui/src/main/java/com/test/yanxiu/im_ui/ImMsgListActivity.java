@@ -270,7 +270,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
         //新增的 发送按钮 发送逻辑与 按键发送一样
-        final TextView sendTv=findViewById(R.id.tv_sure);
+        final TextView sendTv = findViewById(R.id.tv_sure);
         sendTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -296,7 +296,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence != null) {
-                    if (charSequence.length()>0) {
+                    if (charSequence.length() > 0) {
                         //设置 enable 可点击状态
                         sendTv.setEnabled(true);
                         sendTv.setBackgroundResource(R.drawable.im_sendbtn_default);
@@ -350,6 +350,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
     }
+
     private void setupData() {
         if (topic != null && !DatabaseDealer.isMockTopic(topic)) {
             // 每次进入话题更新用户信息
@@ -409,7 +410,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         mTitleLayout.setTitle("班级群聊 (" + ret.data.topic.get(0).members.size() + ")");
                     }
                     //持有最新的成员列表
-                    memberList=ret.data.topic.get(0).members;
+                    memberList = ret.data.topic.get(0).members;
                     mMsgListAdapter.setRemainMemberList(memberList);
                     mMsgListAdapter.notifyDataSetChanged();
                 }
@@ -652,7 +653,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     topic.mergedMsgs.remove(myMsg);
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
                     myMsg.setMsgId(latestMsgId());
-                    DatabaseDealer.updateResendMsg(myMsg,"local");
+                    DatabaseDealer.updateResendMsg(myMsg, "local");
                     if (myMsg.getContentType() == 20) {
                         //上传七牛成功  如果存储了七牛返回的key 表示上传成功
                         myMsg.setState(DbMyMsg.State.Sending.ordinal());
@@ -937,7 +938,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                             mMsgListAdapter.setmDatas(topic.mergedMsgs);
                             mMsgListAdapter.notifyDataSetChanged();
                             mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-                            mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), 0);
+                            MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 0);
+                            mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                         }
 
                         @Override
@@ -1047,17 +1049,18 @@ public class ImMsgListActivity extends ImBaseActivity {
                     } catch (JSONException e) {
                         sendPicFailure(myMsg);
                     }
-                    mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), 101);
+                    MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 101);
+                    mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
+
                 }
             }
 
 
-        }, new
-
-                UploadOptions(null, null, false, new UpProgressHandler() {
+        }, new UploadOptions(null, null, false, new UpProgressHandler() {
             @Override
             public void progress(String s, double v) {
-                mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), v);
+                MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, v);
+                mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
 
             }
 
@@ -1075,7 +1078,8 @@ public class ImMsgListActivity extends ImBaseActivity {
     private void sendPicFailure(DbMyMsg myMsg) {
         myMsg.setState(DbMyMsg.State.Failed.ordinal());
         myMsg.save();
-        mMsgListAdapter.notifyDataSetChanged();
+        MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
+        mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
     }
 
     /**
@@ -1152,23 +1156,27 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
-                myMsg.save();
-                mMsgListAdapter.notifyDataSetChanged();
-                // TODO: 2018/3/29 防止替换url后图片重新刷新 页面一闪下所以放在下面
                 myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
                 myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                 myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
                 myMsg.save();
+
+                MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
+                mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
+
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 myMsg.setState(DbMyMsg.State.Failed.ordinal());
                 myMsg.save();
-                mMsgListAdapter.notifyDataSetChanged();
+                MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
+                mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
             }
         });
 
         mMsgEditText.setText("");
     }
+
+
 }
