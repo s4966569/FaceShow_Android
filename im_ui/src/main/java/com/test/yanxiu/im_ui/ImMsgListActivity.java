@@ -11,8 +11,10 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -268,7 +270,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
         //新增的 发送按钮 发送逻辑与 按键发送一样
-        TextView sendTv = findViewById(R.id.tv_sure);
+        final TextView sendTv=findViewById(R.id.tv_sure);
         sendTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -284,6 +286,36 @@ public class ImMsgListActivity extends ImBaseActivity {
                 doSend(msg, null);
             }
         });
+        //添加监听 当有文字输入时 展示发送按钮可点击
+        mMsgEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence != null) {
+                    if (charSequence.length()>0) {
+                        //设置 enable 可点击状态
+                        sendTv.setEnabled(true);
+                        sendTv.setBackgroundResource(R.drawable.im_sendbtn_default);
+                        return;
+                    }
+                }
+                //设置颜色为 disable 与 按下颜色一样
+                sendTv.setEnabled(false);
+                sendTv.setBackgroundResource(R.drawable.im_sendbtn_pressed);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        //初始设置为 不可点击 当用户有输入 才进行使能设置
+        sendTv.setEnabled(false);
+        sendTv.setBackgroundResource(R.drawable.im_sendbtn_pressed);
 
         // 弹出键盘后处理
         KeyboardChangeListener keyboardListener = new KeyboardChangeListener(this);
@@ -312,7 +344,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         ptrHelper.setmCallback(mOnLoadMoreCallback);
     }
 
-
+    @Subscribe
+    public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
+        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+    }
     private void setupData() {
         if (topic != null && !DatabaseDealer.isMockTopic(topic)) {
             // 每次进入话题更新用户信息
@@ -372,7 +409,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                         mTitleLayout.setTitle("班级群聊 (" + ret.data.topic.get(0).members.size() + ")");
                     }
                     //持有最新的成员列表
-                    memberList = ret.data.topic.get(0).members;
+                    memberList=ret.data.topic.get(0).members;
+                    mMsgListAdapter.setRemainMemberList(memberList);
                     mMsgListAdapter.notifyDataSetChanged();
                 }
 
@@ -474,14 +512,18 @@ public class ImMsgListActivity extends ImBaseActivity {
                 }
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
-                myMsg.save();
+                //新的更新方法
+                DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+//                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFail(RequestBase request, Error error) {
                 myMsg.setState(DbMyMsg.State.Failed.ordinal());
-                myMsg.save();
+                //更新数据库的方法
+                DatabaseDealer.updateResendMsg(myMsg, "local");
+//                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
             }
         });
@@ -525,8 +567,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         myMsg.setContentType(10);
         myMsg.setMsg(msg);
         myMsg.setFrom("local");
-        myMsg.save();
-        topic.mergedMsgs.add(0, myMsg);
+        //新的更新数据库的方法 如果数据库没有这条数据  内部进行save 操作
+        DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
+//        myMsg.save();
+        topic.mergedMsgs.add(0, dbMyMsg);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
         //}
@@ -608,7 +652,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     topic.mergedMsgs.remove(myMsg);
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
                     myMsg.setMsgId(latestMsgId());
-                    myMsg.save();
+                    DatabaseDealer.updateResendMsg(myMsg,"local");
                     if (myMsg.getContentType() == 20) {
                         //上传七牛成功  如果存储了七牛返回的key 表示上传成功
                         myMsg.setState(DbMyMsg.State.Sending.ordinal());
@@ -624,7 +668,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                             //上传七牛失败
                             getQiNiuToken(myMsg.getViewUrl(), myMsg);
                         }
-
                     } else {
                         // 1, 先更新数据库中
                         doSend(myMsg.getMsg(), myMsg.getReqId());

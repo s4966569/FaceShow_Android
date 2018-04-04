@@ -339,7 +339,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     //http 请求 需要展示红点  通知 homeFragment 展示红点
                     noticeShowRedDot();
                 }
-
+                //通知imMsgListActivity刷新列表消息
+                MqttProtobufDealer.onTopicUpdate();
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }

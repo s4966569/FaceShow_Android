@@ -23,7 +23,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-
 /**
  * Created by cailei on 08/11/2016.
  */
@@ -107,13 +106,13 @@ public abstract class RequestBase {
         try {
             request = generateRequest(uuid);
         } catch (Exception e) {
-            Log.e("request",e.getMessage());
+            Log.e("request", e.getMessage());
         }
         if (request == null) {
             callback.onFail(RequestBase.this, new Error("request start error"));
             return null;
         }
-         client = setClient();
+        client = setClient();
         call = client.newCall(request);
         final long start = System.currentTimeMillis();
         call.enqueue(new Callback() {
@@ -178,10 +177,37 @@ public abstract class RequestBase {
 
     /**
      * 用于 处理 字符串转义
-     * */
-    private String dealWithException(String response){
-        return response!=null?response.replace("&quot;","\\\""):"";
+     * &quot; 引号“
+     * &amp; &符号
+     * &lt;  <
+     * &gt; >
+     * &nbsp; 空格
+     */
+    private String escape(String response) {
+        //先转义& 符号  &quot的& 可能被转义为 &amp;
+        if (response.contains("&amp;")) {
+            response = response.replace("&amp;", "&");
+        }
+        if (response.contains("&quot;")) {
+            response = response.replace("&quot;", "\\\"");
+        }
+        if (response.contains("&lt;")) {
+            response = response.replace("&lt;", "<");
+        }
+        if (response.contains("&gt;")) {
+            response = response.replace("&gt;", ">");
+        }
+//        if (response.contains("&nbsp;")) {
+//            response = response.replace("&nbsp", "&");
+//        }
+        return response;
     }
+
+
+    private String dealWithException(String response) {
+       return  escape(response);
+    }
+
 
     protected OkHttpClient setClient() {
         return OkHttpClientManager.getInstance();
