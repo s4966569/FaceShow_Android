@@ -519,7 +519,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                     picUrl = myMsg.getViewUrl();
                 }
 
+                Log.e("frc","position:  "+getAdapterPosition()+ "     "+"Url:  "+picUrl);
                 Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
+                Log.e("frc","position:  "+getAdapterPosition()+ "     "+"w:  "+wh[0]+"    h: "+wh[1]);
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
