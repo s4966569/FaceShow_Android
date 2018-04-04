@@ -1,7 +1,13 @@
 package com.test.yanxiu.im_ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -20,6 +28,8 @@ import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.view.ProgressImageContainer;
+import com.test.yanxiu.im_ui.view.RoundCornerImageView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -334,7 +344,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ImageView mAvatarImageView;
         private TextView mNameTextView;
         private TextView mMsgTextView;
-        private ImageView mMsgImageView;
+        private ProgressImageContainer mMsgImageView;
 //        private RoundCornerMaskView mMsgImageViewRound;
 
         public MsgViewHolder(View itemView) {
@@ -364,16 +374,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (msg.getContentType() == 20) {
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
-                Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
-
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
-                        .override(wh[0], wh[1])
-                        .into(mMsgImageView);
-//                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
-//                layoutParams.height = wh[1];
-//                layoutParams.width = wh[0];
-//                mMsgImageViewRound.setLayoutParams(layoutParams);
+                        .asBitmap()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                Integer[] wh = getPicShowWH(itemView.getContext(), resource.getWidth(), resource.getHeight());
+                                Bitmap scaledBitmap = Bitmap.createScaledBitmap(resource, wh[0], wh[1], true);
+                                mMsgImageView.setImageBitmap(scaledBitmap);
+
+                            }
+
+                            @Override
+                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                super.onLoadFailed(e, errorDrawable);
+                            }
+                        });
+
 
             } else if (msg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
@@ -431,7 +449,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private TextView mMsgTextView;
         private ProgressBar mStateSendingProgressBar;
         private ImageView mStateFailedImageView;
-        private ImageView mMsgImageView;
+        private ProgressImageContainer mMsgImageView;
 //        private RoundCornerMaskView mMsgImageViewRound;
 
         public MyMsgViewHolder(View itemView) {
@@ -446,8 +464,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
 
         @Override
-        public void setData(Item item) {
-            DbMyMsg myMsg = item.getMyMsg();
+        public void setData(final Item item) {
+            final DbMyMsg myMsg = item.getMyMsg();
 
             // 设置头像
             mAvatarImageView = itemView.findViewById(R.id.avatar_imageview);
@@ -466,23 +484,30 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
                 Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
-
+                mMsgImageView.setTag(myMsg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(myMsg.getViewUrl())
                         .asBitmap()
-//                        .into(new SimpleTarget<Bitmap>() {
-//                            @Override
-//                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-//                                mMsgImageView.setImageBitmap(resource);
-//                            }
-//                        });
-                        .override(wh[0], wh[1])
-                        .into(mMsgImageView);
+                        .placeholder(R.drawable.ic_default_color)
+                        .fitCenter()
+                        .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
 
-//                ViewGroup.LayoutParams layoutParams = mMsgImageViewRound.getLayoutParams();
-//                layoutParams.height = wh[1];
-//                layoutParams.width = wh[0];
-//                mMsgImageViewRound.setLayoutParams(layoutParams);
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                if (TextUtils.equals(myMsg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
+                                    mMsgImageView.setImageBitmap(resource);
+                                }else {
+                                    mMsgImageView.setImageResource(R.drawable.ic_default_color);
+                                }
+                            }
+
+                            @Override
+                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                super.onLoadFailed(e, errorDrawable);
+                                mMsgImageView.setImageResource(R.drawable.ic_default_color);
+
+                            }
+                        });
 
             } else if (myMsg.getContentType() == 30) {
                 mMsgTextView.setVisibility(View.GONE);
@@ -494,9 +519,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setText(myMsg.getMsg());
             }
 
-            // 设置状态
-//            mStateSendingProgressBar.setVisibility(View.GONE);
-//            mStateFailedImageView.setVisibility(View.GONE);
 
             if (myMsg.getState() == DbMyMsg.State.Sending.ordinal()) {
                 mStateSendingProgressBar.setVisibility(View.VISIBLE);
@@ -575,19 +597,72 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         float iResultHeight = baseSize;
         //水平显示
         if (width > height) {
-            float scaleSize = width / baseSize;
+            float scaleSize = baseSize / width;
             iResultWidth = baseSize;
             iResultHeight = height * scaleSize;
         }
         //垂直显示
         if (width < height) {
-            float scaleSize = height / baseSize;
+            float scaleSize = baseSize / height;
             iResultHeight = baseSize;
             iResultWidth = width * scaleSize;
         }
 
         return new Integer[]{(int) iResultWidth, (int) iResultHeight};
+    }
 
+    /**
+     * 获取图片应该显示的长和宽
+     *
+     * @param width  真实宽度
+     * @param height 真实长度
+     * @return
+     */
+
+    private float getPicScaleSize(Context context, int width, int height) {
+        float baseSize = ScreenUtils.dpToPx(context, 140);
+        float scaleSize = 0;
+        if (width <= 0) {
+            return 0;
+        }
+        if (height <= 0) {
+            return 0;
+        }
+        //水平显示
+        if (width > height) {
+            scaleSize = baseSize / width;
+        }
+        //垂直显示
+        if (width < height) {
+            scaleSize = baseSize / height;
+        }
+
+        return scaleSize;
 
     }
+
+    @Override
+    public void onBindViewHolder(MsgListItemViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else {
+            Log.e("frc", "payloads: " + payloads);
+            int progress = (int) (((Double) payloads.get(0)) * 100);
+            ((MyMsgViewHolder) holder).mMsgImageView.setProgress(progress);
+        }
+    }
+
+    /**
+     * 计算图片的宽高
+     *
+     * @param imgPath 图片路径
+     * @return Integer【】 第一个参数表示width 第二个参数表示height
+     */
+    private Integer[] getPicWithAndHeight(String imgPath) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
+        return new Integer[]{options.outWidth, options.outHeight};
+    }
+
 }

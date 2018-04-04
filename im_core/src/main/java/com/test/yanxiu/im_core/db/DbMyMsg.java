@@ -1,7 +1,5 @@
 package com.test.yanxiu.im_core.db;
 
-import org.litepal.annotation.Column;
-import org.litepal.crud.DataSupport;
 
 /**
  * Created by cailei on 07/03/2018.
@@ -15,6 +13,8 @@ public class DbMyMsg extends DbMsg {
     }
 
     private int state;      // 0-成功 1-正在传 2-失败
+    //存储七牛Key  如果有可以  则说明上传七牛这步骤成功了
+    private String qiNiuKey;
 
     public int getState() {
         return state;
@@ -22,6 +22,14 @@ public class DbMyMsg extends DbMsg {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public String getQiNiuKey() {
+        return qiNiuKey;
+    }
+
+    public void setQiNiuKey(String qiNiuKey) {
+        this.qiNiuKey = qiNiuKey;
     }
 }
 

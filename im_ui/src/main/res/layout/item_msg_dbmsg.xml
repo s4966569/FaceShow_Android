@@ -54,7 +54,7 @@
         android:textSize="14dp" />
 
 
-    <ImageView
+    <com.test.yanxiu.im_ui.view.ProgressImageContainer
         android:id="@+id/msg_imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
