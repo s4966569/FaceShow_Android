@@ -22,6 +22,7 @@ import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
+import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
@@ -61,6 +62,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private List<DbTopic> topics = new ArrayList<>();
+
     public ImTopicListFragment() {
         // Required empty public constructor
     }
@@ -107,6 +109,16 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     // 放置到最前
                     topics.remove(topic);
                     topics.add(0, topic);
+                }
+            }
+            //退出Message页面后将本地图片地址删除
+            for (DbMsg mergedMsg : topic.mergedMsgs) {
+                if (mergedMsg instanceof DbMyMsg) {
+                    if (((DbMyMsg) mergedMsg).getState() == DbMyMsg.State.Success.ordinal()) {
+                        if (mergedMsg.getLocalViewUrl() != null) {
+                            mergedMsg.setLocalViewUrl(null);
+                        }
+                    }
                 }
             }
         }
@@ -250,7 +262,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         updateTopicsWithMembers(strTopicIds);
         */
 
-        for(String topicId : idTopicsNeedUpdateMember){
+        for (String topicId : idTopicsNeedUpdateMember) {
             // 由于server限制，改成一个个取
             updateTopicsWithMembers(topicId);
         }
@@ -259,6 +271,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     // 4，依次更新topic的最新一页数据，并更新数据库，然后更新UI
     private int totalRetryTimes;
     private RequestQueueHelper rqHelper = new RequestQueueHelper();
+
     private void updateEachTopicMsgs(List<DbTopic> topics) {
         totalRetryTimes = 10;
         for (final DbTopic dbTopic : topics) {
@@ -274,7 +287,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
             }
         }
-    };
+    }
+
+    ;
 
     private void doGetTopicMsgsRequest(final DbTopic dbTopic) {
         if ((dbTopic.mergedMsgs != null) && (dbTopic.mergedMsgs.size() > 0)) {
@@ -295,7 +310,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
                 // 新建topic成功后topicMsg.size为0
-                if (ret.data.topicMsg==null || ret.data.topicMsg.size()==0) {
+                if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     return;
                 }
 
@@ -305,7 +320,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                 // 用最新一页，取代之前的mergedMsgs，
                 // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
-                for(Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext();) {
+                for (Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext(); ) {
                     DbMsg uiMsg = i.next();
                     if (uiMsg.getFrom().equals("mqtt")) {
                         // 数据库中记录的来自mqtt的消息
@@ -313,7 +328,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             //如果 http请求中包含此条消息
                             if (imMsg.reqId.equals(uiMsg.getReqId())) {
                                 //对数据库内容进行 更新 将消息来源更新为 http
-                                DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+                                DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
                                 //在UImsg 列表中将其删除
                                 i.remove();
                             }
@@ -332,10 +347,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     }
                 }
                 //判断获取的消息数量是否为0 或空  此时 不显示红点
-                if (ret.data.topicMsg==null||ret.data.topicMsg.size()==0) {
+                if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     dbTopic.setShowDot(false);
                     dbTopic.save();
-                }else {
+                } else {
                     //http 请求 需要展示红点  通知 homeFragment 展示红点
                     noticeShowRedDot();
                 }
@@ -382,7 +397,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             binder.init();
                             binder.connect();
                         }
-                    }, 30 *1000);
+                    }, 30 * 1000);
                 }
 
                 @Override
@@ -492,9 +507,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     dbTopic.latestMsgId = imTopic.latestMsgId;
 
                     // 更新uiTopics
-                    for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+                    for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
                         DbTopic uiTopic = i.next();
-                        if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+                        if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
                             i.remove();
                         }
                     }
@@ -525,7 +540,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         public void onItemClick(int position, DbTopic dbTopic) {
 
             //事件统计  点击班级群聊
-            if (dbTopic != null&&dbTopic.getType().equals("2")) {
+            if (dbTopic != null && dbTopic.getType().equals("2")) {
                 EventUpdate.onClickGroupTopicEvent(getActivity());
             }
             SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
@@ -598,9 +613,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onMockTopicRemoved(ImMsgListActivity.MockTopicRemovedEvent event) {
-        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+        for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
             DbTopic uiTopic = i.next();
-            if (uiTopic.getTopicId()  == event.dbTopic.getTopicId()) {
+            if (uiTopic.getTopicId() == event.dbTopic.getTopicId()) {
                 i.remove();
                 DatabaseDealer.removeMockTopic(uiTopic);
                 msgShownTopics.remove(event.dbTopic);
@@ -620,9 +635,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         msgShownTopics.add(curTopic);
 
         // 更新uiTopics
-        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+        for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
             DbTopic uiTopic = i.next();
-            if (uiTopic.getTopicId()  == dbTopic.getTopicId()) {
+            if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
                 i.remove();
             }
         }
@@ -638,11 +653,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void rearrangeTopics() {
         //首先按照 最新消息时间进行排序
         Log.i(TAG, "rearrangeTopics: ");
-        Collections.sort(topics,DatabaseDealer.topicComparator);
+        Collections.sort(topics, DatabaseDealer.topicComparator);
 
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
-        for(Iterator<DbTopic> i = topics.iterator(); i.hasNext();) {
+        for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
             DbTopic topic = i.next();
 
             if (topic.getType().equals("1")) {
@@ -658,34 +673,34 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     /**
      * title 点击回调
-     *
-     * */
+     */
     private TitleActionCallback titleActionCallback;
 
     public void setTitleActionCallback(TitleActionCallback titleActionCallback) {
         this.titleActionCallback = titleActionCallback;
     }
 
-    public interface TitleActionCallback{
+    public interface TitleActionCallback {
         void onLeftImgClicked();
     }
 
 
     /**
      * 新消息红点 监听
-     * */
+     */
     private NewMessageListener newMessageListener;
 
-    private void noticeShowRedDot(){
-        if (newMessageListener != null&&ImTopicListFragment.this.isHidden()) {
+    private void noticeShowRedDot() {
+        if (newMessageListener != null && ImTopicListFragment.this.isHidden()) {
             newMessageListener.onGetNewMessage();
         }
     }
+
     public void setNewMessageListener(NewMessageListener newMessageListener) {
         this.newMessageListener = newMessageListener;
     }
 
-    public interface NewMessageListener{
+    public interface NewMessageListener {
         void onGetNewMessage();
     }
 }

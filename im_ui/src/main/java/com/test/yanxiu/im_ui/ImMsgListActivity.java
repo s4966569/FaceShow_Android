@@ -349,10 +349,10 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         mMsgListAdapter.setShowPreviewPicListener(new MsgListAdapter.ShowPreviewPicListener() {
             @Override
-            public void picClick(int position, View view,String url) {
+            public void picClick(int position, View view, String url) {
                 ArrayList list = new ArrayList();
                 list.add(url);
-                PhotoActivity.LaunchActivity(ImMsgListActivity.this,list,0,0,1);
+                PhotoActivity.LaunchActivity(ImMsgListActivity.this, list, 0, 0, 1);
             }
         });
     }
@@ -675,7 +675,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
                         mMsgListAdapter.notifyDataSetChanged();
                         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-                        mMsgListAdapter.notifyDataSetChanged();
                         if (!TextUtils.isEmpty(myMsg.getQiNiuKey())) {
                             doSendImgMsg(myMsg.getQiNiuKey(), myMsg.getWith(), myMsg.getHeight(), myMsg);
                         } else {
@@ -885,6 +884,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         switch (requestCode) {
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
+
+
                 reSizePics(createSelectedImagesList(data));
                 break;
             default:
@@ -943,9 +944,10 @@ public class ImMsgListActivity extends ImBaseActivity {
                             //type==20 为图片
                             myMsg.setContentType(20);
                             myMsg.setFrom("local");
-                            myMsg.setViewUrl(path);
-//                            myMsg.setHeight(widthAndHeight[0]);
-//                            myMsg.setWith(widthAndHeight[1]);
+                            myMsg.setLocalViewUrl(path);
+                            Integer[] wh = getPicWithAndHeight(path);
+                            myMsg.setWith(wh[0]);
+                            myMsg.setHeight(wh[1]);
                             myMsg.save();
                             topic.mergedMsgs.add(0, myMsg);
                             mMsgListAdapter.setmDatas(topic.mergedMsgs);
@@ -1170,6 +1172,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
+                myMsg.setLocalViewUrl(null);
                 myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                 myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
                 myMsg.save();

@@ -22,6 +22,7 @@ public class DbMsg extends DataSupport {
     protected String viewUrl;
     protected int with;
     protected int height;
+    protected String localViewUrl;
 
     protected String from; // mqtt, http, local
 
@@ -122,5 +123,12 @@ public class DbMsg extends DataSupport {
         this.height = height;
     }
 
+    public String getLocalViewUrl() {
+        return localViewUrl;
+    }
+
+    public void setLocalViewUrl(String localViewUrl) {
+        this.localViewUrl = localViewUrl;
+    }
     //endregion
 }

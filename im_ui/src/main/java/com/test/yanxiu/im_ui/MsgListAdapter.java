@@ -364,7 +364,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 @Override
                 public void onClick(View v) {
                     if (showPreviewPicListener != null) {
-                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView,msg.getViewUrl());
+                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView, msg.getViewUrl());
                     }
                 }
             });
@@ -383,11 +383,19 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
                 Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
+
+
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
+                            @Override
+                            public void onStart() {
+                                super.onStart();
+                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                            }
+
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 if (TextUtils.equals(msg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
@@ -481,7 +489,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 @Override
                 public void onClick(View v) {
                     if (showPreviewPicListener != null) {
-                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView,myMsg.getViewUrl());
+                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView, myMsg.getViewUrl());
                     }
                 }
             });
@@ -503,17 +511,27 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (myMsg.getContentType() == 20) {
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
+                final String picUrl;
+                //如果有本地地址则用本地  没有本地的将使用线上的
+                if (!TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
+                    picUrl = myMsg.getLocalViewUrl();
+                } else {
+                    picUrl = myMsg.getViewUrl();
+                }
+
                 Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
-                mMsgImageView.setTag(myMsg.getViewUrl());
+                mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
-                        .load(myMsg.getViewUrl())
+                        .load(picUrl)
                         .asBitmap()
+                        .placeholder(R.drawable.bg_im_pic_holder_view)
                         .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
 
+
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                if (TextUtils.equals(myMsg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
+                                if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
                                     mMsgImageView.clearOverLayer();
                                     mMsgImageView.setImageBitmap(resource);
                                 } else {
@@ -664,9 +682,12 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
     @Override
     public void onBindViewHolder(MsgListItemViewHolder holder, int position, List<Object> payloads) {
+
         if (payloads.isEmpty()) {
+            Log.e("frc", "payloads.isEmpty  position:   " + position);
             onBindViewHolder(holder, position);
         } else {
+            Log.e("frc", "payloads.is not Empty  position:   " + position);
             Object payload = payloads.get(0);
             if (payload instanceof PayLoad) {
                 switch (((PayLoad) payload).type) {
