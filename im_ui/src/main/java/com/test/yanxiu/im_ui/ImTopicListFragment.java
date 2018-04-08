@@ -545,13 +545,27 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
                 //首先判断用户是否被移除
                 if (!inTopic){
+                    //在 topic 中删除
+                    Iterator<DbTopic> iterator=topics.iterator();
+                    while (iterator.hasNext()) {
+                        if (iterator.next().getTopicId()==event.topicId) {
+                            //在UI 列表中删除
+                            iterator.remove();
+                            // 在数据库中删除
+                            DatabaseDealer.deleteTopicById(event.topicId);
+                            break;
+                        }
+                    }
                     Toast.makeText(getActivity(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
                     //取消目标 topic 的 mqtt 的订阅
                     binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
                     //判断栈顶Activity 如果聊天界面开启 先关闭聊天界面 然后在mainactivity的onActivityResult 中进行logout
                     Activity currentTopActivity=ActivityManger.getTopActivity();
-                    if (currentTopActivity.getClass().getSimpleName().equals("ImMsgListActivity")) {
-                        currentTopActivity.setResult(ACTIVITY_RESULT_REMOVED_USER);
+                    if ("ImMsgListActivity".equals(currentTopActivity.getClass().getSimpleName())) {
+                        //这里需要对数量进行判断
+                        Intent intent=currentTopActivity.getIntent();
+                        intent.putExtra("groupTopicNum",groupTopicNum);
+                        currentTopActivity.setResult(ACTIVITY_RESULT_REMOVED_USER,intent);
                         currentTopActivity.finish();
                     }else if (mOnUserRemoveFromClaszCallback!=null){
                         //回调给 mainactivity 用户被除名

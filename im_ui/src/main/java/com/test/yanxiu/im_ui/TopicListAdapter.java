@@ -2,6 +2,7 @@ package com.test.yanxiu.im_ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -151,7 +152,13 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
                     // 4, 显示消息内容
-                    mMsgTextView.setText(latestMsg.getMsg());
+                    boolean isImage=!TextUtils.isEmpty(latestMsg.getViewUrl())||TextUtils.isEmpty(latestMsg.getLocalViewUrl())
+                            &&TextUtils.equals("qiniu",latestMsg.getMsg());
+                    if (isImage) {
+                        mMsgTextView.setText("[图片]");
+                    }else {
+                        mMsgTextView.setText(latestMsg.getMsg());
+                    }
                 }
             }
 
