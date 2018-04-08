@@ -12,6 +12,7 @@
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="15dp"
+        android:scaleType="centerCrop"
         android:layout_centerVertical="true" />
     
     <com.test.yanxiu.im_ui.view.RoundCornerMaskView
