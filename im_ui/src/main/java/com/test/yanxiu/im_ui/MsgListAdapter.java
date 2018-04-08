@@ -495,7 +495,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         } else {
                             url = myMsg.getLocalViewUrl();
                         }
-                        Log.e("frc", "reviewPic url :::" + url);
                         showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView, url);
                     }
                 }
@@ -528,7 +527,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
                 Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
                 final Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
-                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
@@ -539,11 +537,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
+                                    mMsgImageView.clearOverLayer();
                                     if (mMsgImageView.getBitmap() == null) {
                                         Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-
                                         Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                                        mMsgImageView.clearOverLayer();
                                         mMsgImageView.setImageBitmap(bitmap1);
                                     } else {
                                         mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
@@ -555,6 +552,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
+                                    mMsgImageView.clearOverLayer();
                                     if (resource != null) {
                                         mMsgImageView.setImageBitmap(resource);
                                     } else {
@@ -562,7 +560,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                         Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
                                         mMsgImageView.setImageBitmap(bitmap1);
                                     }
-                                    mMsgImageView.clearOverLayer();
                                 }
                             }
 

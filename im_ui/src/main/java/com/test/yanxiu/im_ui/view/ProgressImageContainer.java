@@ -81,7 +81,9 @@ public class ProgressImageContainer extends FrameLayout {
         mProgress.setText(progress + "%");
         if (progress >= 100 || progress < 0) {
             clearOverLayer();
+
         }
+        postInvalidate();
     }
 
     private int drawableRes = -1;

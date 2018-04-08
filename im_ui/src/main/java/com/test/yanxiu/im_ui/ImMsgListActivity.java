@@ -958,7 +958,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                         @Override
                         public void onStart() {
                             final String msgReqId = UUID.randomUUID().toString();
-                            Log.e("frc","UUID::  "+ msgReqId);
                             myMsg.setState(DbMyMsg.State.Sending.ordinal());
                             myMsg.setReqId(msgReqId);
                             myMsg.setMsgId(latestMsgId());
@@ -972,11 +971,10 @@ public class ImMsgListActivity extends ImBaseActivity {
                             Integer[] wh = getPicWithAndHeight(path);
                             myMsg.setWith(wh[0]);
                             myMsg.setHeight(wh[1]);
-//                            myMsg.save();
                             DatabaseDealer.updateResendMsg(myMsg, "local");
                             topic.mergedMsgs.add(0, myMsg);
                             mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                            mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+//                            mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
                             MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 0);
                             mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                         }
