@@ -974,9 +974,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                             DatabaseDealer.updateResendMsg(myMsg, "local");
                             topic.mergedMsgs.add(0, myMsg);
                             mMsgListAdapter.setmDatas(topic.mergedMsgs);
-//                            mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-                            MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 0);
-                            mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
+                            mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+                            mMsgListAdapter.notifyDataSetChanged();
                         }
 
                         @Override
@@ -1205,7 +1204,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         saveImageMsgRequest.rid = rid;
         saveImageMsgRequest.height = String.valueOf(height);
         saveImageMsgRequest.width = String.valueOf(width);
-        saveImageMsgRequest.reqId =myMsg.getReqId();
+        saveImageMsgRequest.reqId = myMsg.getReqId();
 
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
