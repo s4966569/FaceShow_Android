@@ -3,7 +3,6 @@ package com.test.yanxiu.im_ui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -30,7 +29,6 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.im_ui.view.ProgressImageContainer;
-import com.test.yanxiu.im_ui.view.RoundCornerImageView;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -433,10 +431,12 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
                     if ((topic != null) && (topic.getType().equals("2"))) {
                         // 群聊点击头像
-                        sender.fromTopicId = topic.getTopicId();
 
-                        //判断成员是否依然在群组中
-                        if (isRemainMember(sender.getImId())) {
+
+                        //判断成员是否依然在群组中  
+                        // TODO: 2018/4/8 这里出现了sender 为空的情况 原因暂未查明
+                        if (sender!=null&&isRemainMember(sender.getImId())) {
+                            sender.fromTopicId = topic.getTopicId();
                             EventBus.getDefault().post(sender);
                         } else {
                             if (mContext != null) {

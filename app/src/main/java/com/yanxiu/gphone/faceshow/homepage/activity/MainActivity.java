@@ -321,8 +321,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             public void onRemoved(int topicNum) {
                 //用户被移除了  获取当前用户 班级列表 并判断如果 用户列表为空了 返回到登陆界面
                 if (topicNum==0) {
-                    // 没有班级了  进入到登录页
-                    MainActivity.this.finish();
+                    // 没有班级了  进入到登录页 准备扫码加班
+                    logout();
                     // MQTT 的处理在 onDestroy()中进行
                 }else {
                     //还有班级 进入到班级选择页
@@ -666,7 +666,14 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         }
 
         if (requestCode == com.test.yanxiu.im_ui.Constants.IM_REQUEST_CODE_MSGLIST) {
-            mNaviFragmentFactory.getImFragment().onMsgListActivityReturned();
+            //由 msglist Activity
+            if (resultCode== ImTopicListFragment.ACTIVITY_RESULT_REMOVED_USER) {
+                //判断如果是执行 用户被移除的后续操作 已经关闭了聊天界面 下面
+                logout();
+            }else {
+                mNaviFragmentFactory.getImFragment().onMsgListActivityReturned();
+            }
+
         }
     }
 
