@@ -84,7 +84,14 @@ public class ProgressImageContainer extends FrameLayout {
         }
     }
 
+    private int drawableRes=-1;
+
+    public int getDrawableRes() {
+        return drawableRes;
+    }
+
     public void setImageResource(int resId) {
+        drawableRes = resId;
         mRoundCornerImage.setImageResource(resId);
     }
 
@@ -92,16 +99,6 @@ public class ProgressImageContainer extends FrameLayout {
         mRoundCornerImage.setImageBitmap(bitmap);
     }
 
-    public void setImageDrawable(Drawable drawable) {
-        this.drawable = drawable;
-        mRoundCornerImage.setImageDrawable(drawable);
-    }
-
-    public Drawable getImageDrawable() {
-        return drawable;
-    }
-
-    private Drawable drawable;
 
     public void clearOverLayer() {
         mRoundCornerImage.clearOverLayer();
