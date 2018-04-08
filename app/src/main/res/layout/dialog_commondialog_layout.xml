@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/main_bg_selector"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/baseDialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/color_334466"
+        android:textSize="15dp"
+        android:visibility="gone"
+        tool:text="标题" />
+
+    <TextView
+        android:id="@+id/baseDialog_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/color_334466"
+        android:textSize="15dp"
+        tool:text="内容" />
+
+    <include layout="@layout/line" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:id="@+id/baseDialog_cancel"
+            android:layout_width="75dp"
+            android:layout_height="29dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="30dp"
+            android:background="@drawable/selector_cancel_dialog_button_bg"
+            android:gravity="center"
+            android:text="取消"
+            android:textColor="@drawable/selector_cancel_dialog_button_color"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/baseDialog_confirm"
+            android:layout_width="75dp"
+            android:layout_height="29dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/selector_cancel_dialog_button_bg"
+            android:gravity="center"
+            android:text="确认"
+            android:textColor="@drawable/selector_cancel_dialog_button_color"
+            android:textSize="14dp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

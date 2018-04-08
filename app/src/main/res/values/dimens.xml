@@ -85,4 +85,6 @@
     <!--我的 start-->
     <dimen name="my_item_text_size">14dp</dimen>
     <dimen name="task_res_textSize">14dp</dimen>
+
+    <dimen name="cancelDialog_height">181dp</dimen>
 </resources>

@@ -1,4 +1,4 @@
-package com.yanxiu.gphone.faceshow.util;
+package com.yanxiu.gphone.faceshow.util.update;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,10 +25,18 @@ import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.constant.Constants;
+import com.yanxiu.gphone.faceshow.customview.dialog.UpdateDialog;
 import com.yanxiu.gphone.faceshow.http.request.DownLoadRequest;
 import com.yanxiu.gphone.faceshow.http.request.InitializeRequest;
 import com.yanxiu.gphone.faceshow.http.response.InitializeReponse;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.service.UpdateService;
+import com.yanxiu.gphone.faceshow.util.ActivityManger;
+import com.yanxiu.gphone.faceshow.util.DownloadThread;
+import com.yanxiu.gphone.faceshow.util.FileUtil;
+import com.yanxiu.gphone.faceshow.util.Logger;
+import com.yanxiu.gphone.faceshow.util.SystemUtil;
+import com.yanxiu.gphone.faceshow.util.ToastUtil;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -46,12 +54,15 @@ public class UpdateUtil {
 
     private static InitializeRequest mInitializeRequest;
     //     private static UpdateDialog mUpdateDialog;
-    private static SystemUpdataDialog mUpdateDialog;
+    private static UpdateDialog mUpdateDialog;
     private static NotificationManager mNotificationManager;
     private static Notification mNotification;
     public static final int NOTIFICATION_ID = 0x11;
     private static NotificationCompat.Builder mNotificationBuilder;
     private static Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private static List<com.yanxiu.gphone.faceshow.http.response.InitializeReponse.Data> mData;
+    private static boolean mIsUpgrade;
 
     public interface OnUpgradeCallBack {
         void onExit();
@@ -59,9 +70,15 @@ public class UpdateUtil {
         void onDownloadApk(boolean isSuccess);
 
         void onInstallApk(boolean isSuccess);
+
+        void onCancle();
     }
 
-    public static void Initialize(final Context context, final boolean isFromUser) {
+    public interface OnUpdateFinishCallBack {
+        void onUpdateFinish(String state);
+    }
+
+    public static void Initialize(final Context context, final boolean isFromUser, final OnUpdateFinishCallBack onUpdateFinishCallBack) {
 //         if (!isFromUser && Constants.UPDATA_TYPE == 1) {
 //             return;
 //         }
@@ -74,35 +91,10 @@ public class UpdateUtil {
             @Override
             public void onSuccess(RequestBase request, InitializeReponse ret) {
                 if (ret.data != null && ret.data.size() > 0) {
-                    boolean isUpgrade = checkIsShouldUpdate(Constants.versionName, ret.data.get(0).version);
-                    if (isUpgrade) {
-                        if (!TextUtils.isEmpty(ret.data.get(0).fileURL)) {
-                            String[] str = ret.data.get(0).fileURL.split("\\.");
-                            if (str.length > 1 && "apk".equals(str[str.length - 1])) {
-//                                 if (true){
-                                showUpdateDialog(context, ret.data.get(0), new OnUpgradeCallBack() {
-                                    @Override
-                                    public void onExit() {
-                                        ActivityManger.destoryAll();
-                                        android.os.Process.killProcess(android.os.Process.myPid());
-                                        System.exit(-1);
-                                    }
+                    mData = ret.data;
+                    mIsUpgrade = checkIsShouldUpdate(Constants.versionName, ret.data.get(0).version);
+                    if (mIsUpgrade) {
 
-                                    @Override
-                                    public void onDownloadApk(boolean isSuccess) {
-                                    }
-
-                                    @Override
-                                    public void onInstallApk(boolean isSuccess) {
-
-                                    }
-                                });
-                            } else {
-//                                 ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
-                            }
-                        } else {
-//                             ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
-                        }
                     } else {
                         if (isFromUser) {
                             ToastUtil.showToast(context, R.string.update_new);
@@ -113,6 +105,8 @@ public class UpdateUtil {
                         ToastUtil.showToast(context, R.string.update_new);
                     }
                 }
+                if (onUpdateFinishCallBack != null)
+                    onUpdateFinishCallBack.onUpdateFinish("onSuccess");
             }
 
             @Override
@@ -120,8 +114,54 @@ public class UpdateUtil {
                 if (isFromUser) {
                     ToastUtil.showToast(context, error.getMessage());
                 }
+                if (onUpdateFinishCallBack != null)
+                    onUpdateFinishCallBack.onUpdateFinish("onFail");
             }
         });
+    }
+
+    public static void checkUpdate(final Context context) {
+        if (mIsUpgrade) {
+            if (!TextUtils.isEmpty(mData.get(0).fileURL)) {
+                String[] str = mData.get(0).fileURL.split("\\.");
+                if (str.length > 1 && "apk".equals(str[str.length - 1])) {
+//                                 if (true){
+                    showUpdateDialog(context, mData.get(0), new OnUpgradeCallBack() {
+                        @Override
+                        public void onExit() {
+                            mIsUpgrade = false;
+                            mData = null;
+                            ActivityManger.destoryAll();
+//                            android.os.Process.killProcess(android.os.Process.myPid());
+//                            System.exit(-1);
+                        }
+
+                        @Override
+                        public void onDownloadApk(boolean isSuccess) {
+                            mIsUpgrade = false;
+                            mData = null;
+                        }
+
+                        @Override
+                        public void onInstallApk(boolean isSuccess) {
+                            mIsUpgrade = false;
+                            mData = null;
+                        }
+
+                        @Override
+                        public void onCancle() {
+                            mIsUpgrade = false;
+                            mData = null;
+                        }
+                    });
+                } else {
+//                                 ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
+                }
+            } else {
+//                             ToastManager.showMsgOnDebug("这是版本更新接口提示,测试同学,你们辛苦了,请按照正常的作业流程走,不要乱跑,谢谢合作,此条消息只在debug环境下出现");
+            }
+        }
+
     }
 
     private static class MyPermission implements OnPermissionCallback {
@@ -155,28 +195,7 @@ public class UpdateUtil {
             mUpdateDialog.dismiss();
             mUpdateDialog = null;
         }
-//         mUpdateDialog = new UpdateDialog(context, data.upgradetype, new UpdateDialog.UpdateDialogCallBack() {
-//             @Override
-//             public void update() {
-//                 FaceShowBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));
-//             }
-//
-//             @Override
-//             public void cancel() {
-//             }
-//
-//             @Override
-//             public void exit() {
-//                 if (callBack != null) {
-//                     callBack.onExit();
-//                 }
-//             }
-//         });
-//         mUpdateDialog.setTitles(data.title, data.version);
-//         mUpdateDialog.setContent(data.content);
-//         mUpdateDialog.setCanceledOnTouchOutside(false);
-//         mUpdateDialog.show();
-        mUpdateDialog = new SystemUpdataDialog(context,data.title, data.content, data.upgradetype, new SystemUpdataDialog.UpdateDialogCallBack() {
+        mUpdateDialog = new UpdateDialog(context, data.upgradetype, new UpdateDialog.UpdateDialogCallBack() {
             @Override
             public void update() {
                 FaceShowBaseActivity.requestWriteAndReadPermission(new MyPermission(context, data, callBack));
@@ -184,7 +203,9 @@ public class UpdateUtil {
 
             @Override
             public void cancel() {
-
+                if (callBack != null) {
+                    callBack.onCancle();
+                }
             }
 
             @Override
@@ -194,8 +215,10 @@ public class UpdateUtil {
                 }
             }
         });
-        mUpdateDialog.setTitles(data.title, data.version);
-        mUpdateDialog.setContent(data.content);
+//        mUpdateDialog.setTitles(data.title, data.version);
+//        mUpdateDialog.setContent(data.content);
+        mUpdateDialog.setTitleText(data.title);
+        mUpdateDialog.setContentText(data.content);
         mUpdateDialog.show();
     }
 
@@ -203,13 +226,16 @@ public class UpdateUtil {
 
         DownloadThread downloadThread = new DownloadThread(fileURL, FileUtil.getExternalStorageAbsolutePath("faceshow.apk"), new DownLoadRequest.OnDownloadListener() {
             private long preMillis = System.currentTimeMillis();
+
             @Override
             public void onDownloadSuccess(String saveDir) {
-                mNotificationManager.cancel(NOTIFICATION_ID);
-                mNotification.icon = R.drawable.notification01;
-                mNotification.tickerText = context.getResources().getString(R.string.update_asynctask_downloading_success);
-                mNotification.contentView.setProgressBar(R.id.progress_value, 100, 100, false);
-                mNotification.contentView.setViewVisibility(R.id.progress_value, View.GONE);
+//                mNotificationManager.cancel(NOTIFICATION_ID);
+//                mNotification.icon = R.drawable.notification01;
+//                mNotification.tickerText = context.getResources().getString(R.string.update_asynctask_downloading_success);
+//                mNotification.contentView.setProgressBar(R.id.progress_value, 100, 100, false);
+//                mNotification.contentView.setViewVisibility(R.id.progress_value, View.GONE);
+                mUpdateDialog.setProgress(100);
+                mUpdateDialog.dismiss();
                 if (callBack != null) {
                     callBack.onDownloadApk(true);
                     installApk(context, saveDir);
@@ -218,20 +244,20 @@ public class UpdateUtil {
 
             @Override
             public void onDownloadStart() {
-                Intent intent = new Intent();
-                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_updata_layout);
-                remoteViews.setTextViewText(R.id.app_name, context.getResources().getString(R.string.app_name));
-
-                remoteViews.setTextViewText(R.id.progress_text, "0%");
-                remoteViews.setProgressBar(R.id.progress_value, 100, 0, false);
-//                mNotification.contentView = remoteViews;
-               mNotification= mNotificationBuilder.setSmallIcon(R.drawable.notification04)
-                        .setContentTitle("正在下载")
-                        .setContent(remoteViews)
-                        .setOngoing(true)
-                        .setContentIntent(pendingIntent).build();
-
+//                Intent intent = new Intent();
+//                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+//                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification_updata_layout);
+//                remoteViews.setTextViewText(R.id.app_name, context.getResources().getString(R.string.app_name));
+//
+//                remoteViews.setTextViewText(R.id.progress_text, "0%");
+//                remoteViews.setProgressBar(R.id.progress_value, 100, 0, false);
+////                mNotification.contentView = remoteViews;
+//                mNotification = mNotificationBuilder.setSmallIcon(R.drawable.notification04)
+//                        .setContentTitle("正在下载")
+//                        .setContent(remoteViews)
+//                        .setOngoing(true)
+//                        .setContentIntent(pendingIntent).build();
+                mUpdateDialog.setProgress(0);
 
 //                mNotification.contentView.setInt(R.id.app_name,"setTextColor", isDarkNotificationTheme(context)==true?Color.WHITE:Color.BLACK);
 //                        setInt(R.id.share_content, "setTextColor", isDarkNotificationTheme(context)==true?Color.WHITE:Color.BLACK);
@@ -241,34 +267,37 @@ public class UpdateUtil {
 //                mNotification.icon = R.drawable.notification04;
 //
 //                mNotification.contentIntent = pendingIntent;
-                mNotificationManager.notify(NOTIFICATION_ID, mNotification);
-                remoteViews.setInt(R.id.app_name,"setTextColor", isDarkNotificationTheme(context)==true?Color.WHITE:Color.BLACK);
-                remoteViews.setInt(R.id.progress_text,"setTextColor", isDarkNotificationTheme(context)==true?Color.WHITE:Color.BLACK);
+//                mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+//                remoteViews.setInt(R.id.app_name, "setTextColor", isDarkNotificationTheme(context) == true ? Color.WHITE : Color.BLACK);
+//                remoteViews.setInt(R.id.progress_text, "setTextColor", isDarkNotificationTheme(context) == true ? Color.WHITE : Color.BLACK);
             }
 
             @Override
             public void onDownloading(int progress) {
-                if(System.currentTimeMillis() - preMillis < 500 && progress != 100){
+                if (System.currentTimeMillis() - preMillis < 500 && progress != 100) {
                     return;
                 }
-                if(mNotification == null || mNotification.contentView == null)
-                    return;
-                mUpdateDialog.setProgress(progress);
-                mNotification.contentView.setProgressBar(R.id.progress_value, 100, (int) progress, false);
-                mNotification.contentView.setTextViewText(R.id.progress_text, (int) progress + "%");
-                mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+//                if (mNotification == null || mNotification.contentView == null)
+//                    return;
+//                mUpdateDialog.setProgress(progress);
+//                mNotification.contentView.setProgressBar(R.id.progress_value, 100, (int) progress, false);
+//                mNotification.contentView.setTextViewText(R.id.progress_text, (int) progress + "%");
+//                mNotificationManager.notify(NOTIFICATION_ID, mNotification);
                 preMillis = System.currentTimeMillis();
+                mUpdateDialog.setProgress(progress);
             }
 
             @Override
             public void onDownloadFailed() {
                 Logger.d(TAG, "onfail");
-                mNotificationManager.cancel(NOTIFICATION_ID);
-                mNotification.icon = R.drawable.notification01;
-                mNotification.tickerText = context.getResources().getString(R.string.update_asynctask_downloading_fail);
+//                mNotificationManager.cancel(NOTIFICATION_ID);
+//                mNotification.icon = R.drawable.notification01;
+//                mNotification.tickerText = context.getResources().getString(R.string.update_asynctask_downloading_fail);
                 if (callBack != null) {
                     callBack.onDownloadApk(false);
                 }
+                ToastUtil.showToast(context, R.string.update_asynctask_downloading_fail);
+                mUpdateDialog.dismiss();
             }
         });
 
@@ -335,26 +364,27 @@ public class UpdateUtil {
 
     /**
      * 获取通知栏颜色
+     *
      * @param context
      * @return
      */
     public static int getNotificationColor(Context context) {
-        int layoutId=mNotification.contentView.getLayoutId();
-        ViewGroup viewGroup= (ViewGroup) LayoutInflater.from(context).inflate(layoutId, null, false);
-        if (viewGroup.findViewById(android.R.id.title)!=null) {
+        int layoutId = mNotification.contentView.getLayoutId();
+        ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(layoutId, null, false);
+        if (viewGroup.findViewById(android.R.id.title) != null) {
             return ((TextView) viewGroup.findViewById(android.R.id.title)).getCurrentTextColor();
         }
         return findColor(viewGroup);
     }
 
     private static boolean isSimilarColor(int baseColor, int color) {
-        int simpleBaseColor=baseColor|0xff000000;
-        int simpleColor=color|0xff000000;
-        int baseRed=Color.red(simpleBaseColor)-Color.red(simpleColor);
-        int baseGreen=Color.green(simpleBaseColor)-Color.green(simpleColor);
-        int baseBlue=Color.blue(simpleBaseColor)-Color.blue(simpleColor);
-        double value=Math.sqrt(baseRed*baseRed+baseGreen*baseGreen+baseBlue*baseBlue);
-        if (value<180.0) {
+        int simpleBaseColor = baseColor | 0xff000000;
+        int simpleColor = color | 0xff000000;
+        int baseRed = Color.red(simpleBaseColor) - Color.red(simpleColor);
+        int baseGreen = Color.green(simpleBaseColor) - Color.green(simpleColor);
+        int baseBlue = Color.blue(simpleBaseColor) - Color.blue(simpleColor);
+        double value = Math.sqrt(baseRed * baseRed + baseGreen * baseGreen + baseBlue * baseBlue);
+        if (value < 180.0) {
             return true;
         }
         return false;
@@ -362,18 +392,17 @@ public class UpdateUtil {
 
 
     private static int findColor(ViewGroup viewGroupSource) {
-        int color=Color.TRANSPARENT;
-        LinkedList<ViewGroup> viewGroups=new LinkedList<>();
+        int color = Color.TRANSPARENT;
+        LinkedList<ViewGroup> viewGroups = new LinkedList<>();
         viewGroups.add(viewGroupSource);
-        while (viewGroups.size()>0) {
-            ViewGroup viewGroup1=viewGroups.getFirst();
+        while (viewGroups.size() > 0) {
+            ViewGroup viewGroup1 = viewGroups.getFirst();
             for (int i = 0; i < viewGroup1.getChildCount(); i++) {
                 if (viewGroup1.getChildAt(i) instanceof ViewGroup) {
                     viewGroups.add((ViewGroup) viewGroup1.getChildAt(i));
-                }
-                else if (viewGroup1.getChildAt(i) instanceof TextView) {
-                    if (((TextView) viewGroup1.getChildAt(i)).getCurrentTextColor()!=-1) {
-                        color=((TextView) viewGroup1.getChildAt(i)).getCurrentTextColor();
+                } else if (viewGroup1.getChildAt(i) instanceof TextView) {
+                    if (((TextView) viewGroup1.getChildAt(i)).getCurrentTextColor() != -1) {
+                        color = ((TextView) viewGroup1.getChildAt(i)).getCurrentTextColor();
                     }
                 }
             }
