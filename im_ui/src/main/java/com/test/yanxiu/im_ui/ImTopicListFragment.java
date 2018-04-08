@@ -556,7 +556,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             break;
                         }
                     }
-                    Toast.makeText(getActivity(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
+                    try {
+                        Toast.makeText(getContext().getApplicationContext(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+//                        e.printStackTrace();
+                        Log.e(TAG, "toast crash : " );
+                    }
                     //取消目标 topic 的 mqtt 的订阅
                     binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
                     //判断栈顶Activity 如果聊天界面开启 先关闭聊天界面 然后在mainactivity的onActivityResult 中进行logout
