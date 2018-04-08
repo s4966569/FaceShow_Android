@@ -151,9 +151,12 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 if (latestMsg != null) {
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
-                    // 4, 显示消息内容
+
+                    // 判断是否是 图片 消息
                     boolean isImage=!TextUtils.isEmpty(latestMsg.getViewUrl())||TextUtils.isEmpty(latestMsg.getLocalViewUrl())
                             &&TextUtils.equals("qiniu",latestMsg.getMsg());
+
+                    // 4, 显示消息内容
                     if (isImage) {
                         mMsgTextView.setText("[图片]");
                     }else {

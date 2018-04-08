@@ -545,16 +545,19 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
                 //首先判断用户是否被移除
                 if (!inTopic){
-                    try {
-                        Toast.makeText(getContext(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-//                        e.printStackTrace();
-                        Log.e(TAG, "toast crash : " );
-                    }
+
                     //在 topic 中删除
                     Iterator<DbTopic> iterator=topics.iterator();
+                    DbTopic removedTopic=null;
                     while (iterator.hasNext()) {
-                        if (iterator.next().getTopicId()==event.topicId) {
+                        removedTopic=iterator.next();
+                        if (removedTopic.getTopicId()==event.topicId) {
+                            try {
+                                Toast.makeText(getContext(),"【已被移出"+ removedTopic.getGroup()+"】",Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+//                        e.printStackTrace();
+                                Log.e(TAG, "toast crash : " );
+                            }
                             //在UI 列表中删除
                             iterator.remove();
                             // 在数据库中删除
