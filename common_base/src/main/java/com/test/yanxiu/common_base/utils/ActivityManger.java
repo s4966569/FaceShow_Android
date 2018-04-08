@@ -48,6 +48,21 @@ public class ActivityManger {
     }
 
 
+    /**
+     * 关闭指定activity 以上的所有activity
+     * @param activityName 指定activity的名字
+     */
+    public static void clearTopFrom(String activityName) {
+        for (int i = activityList.size() - 1; i >= 0; i--) {
+            if (activityList.get(i).getClass().getSimpleName().equals(activityName)) {
+                break;
+            }else {
+                activityList.get(i).finish();
+            }
+        }
+    }
+
+
     public static void LogOut(String... isMain) {
         Activity activitys = null;
         if (activityList != null && activityList.size() > 0) {
@@ -68,14 +83,15 @@ public class ActivityManger {
 
     /**
      * 清楚list中最上面的几个Activity
+     *
      * @param count
      */
-    public static void destroyForwardActivityByCount(int count){
-        if (count>activityList.size()){
-            count=activityList.size();
+    public static void destroyForwardActivityByCount(int count) {
+        if (count > activityList.size()) {
+            count = activityList.size();
         }
-        for (int i = activityList.size(); activityList.size()-count<i; i--) {
-            activityList.get(i-1).finish();
+        for (int i = activityList.size(); activityList.size() - count < i; i--) {
+            activityList.get(i - 1).finish();
         }
 
     }

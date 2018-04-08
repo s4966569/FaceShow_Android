@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
@@ -188,7 +189,17 @@ public class MqttService extends Service {
     public void doUnsubscribeTopic(String topicId){
         if ((mClient != null) && mClient.isConnected()) {
             try {
-                mClient. unsubscribe("im/v1.0/topic/" + topicId);
+                mClient. unsubscribe("im/v1.0/topic/" + topicId, MqttService.this, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        Log.i("immqtt", "onSuccess: ");
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        Log.e("immqtt", "onFailure: ",exception.getCause() );
+                    }
+                });
             } catch (MqttException e) {
                 e.printStackTrace();
             }

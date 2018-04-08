@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -14,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.test.yanxiu.common_base.utils.ActivityManger;
 import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
@@ -62,6 +65,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private RecyclerView mTopicListRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
+    public static final int ACTIVITY_RESULT_REMOVED_USER=0X33;
     private List<DbTopic> topics = new ArrayList<>();
 
     /**
@@ -539,13 +543,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         inTopic=true;
                     }
                 }
-
-                if (!inTopic&&mOnUserRemoveFromClaszCallback!=null){
-                    // TODO 本页的 topiclist 删除 当前 topicid 刷新界面
+                //首先判断用户是否被移除
+                if (!inTopic){
+                    Toast.makeText(getActivity(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
                     //取消目标 topic 的 mqtt 的订阅
                     binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
-                    //回调给 mainactivity 用户被除名
-                    mOnUserRemoveFromClaszCallback.onRemoved(groupTopicNum);
+                    //判断栈顶Activity 如果聊天界面开启 先关闭聊天界面 然后在mainactivity的onActivityResult 中进行logout
+                    Activity currentTopActivity=ActivityManger.getTopActivity();
+                    if (currentTopActivity.getClass().getSimpleName().equals("ImMsgListActivity")) {
+                        currentTopActivity.setResult(ACTIVITY_RESULT_REMOVED_USER);
+                        currentTopActivity.finish();
+                    }else if (mOnUserRemoveFromClaszCallback!=null){
+                        //回调给 mainactivity 用户被除名
+                        mOnUserRemoveFromClaszCallback.onRemoved(groupTopicNum);
+                    }
                 }
             }
 
