@@ -1232,8 +1232,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
                     topic.setShowDot(false);
                     DatabaseDealer.updateResendMsg(myMsg, "mqtt");
-                    MsgListAdapter.PayLoad payLoad1 = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 1.1d);
-                    mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad1);
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);

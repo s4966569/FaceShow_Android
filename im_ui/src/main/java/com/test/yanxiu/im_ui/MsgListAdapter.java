@@ -374,6 +374,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             if (sender != null) {
                 Glide.with(mContext)
                         .load(sender.getAvatar())
+                        .placeholder(R.drawable.icon_chat_unknown)
+                        .error(R.drawable.icon_chat_unknown)
                         .into(mAvatarImageView);
                 mNameTextView.setText(sender.getName());
             }
@@ -710,10 +712,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     public void onBindViewHolder(MsgListItemViewHolder holder, int position, List<Object> payloads) {
 
         if (payloads.isEmpty()) {
-            Log.e("frc", "payloads.isEmpty  position:   " + position);
             onBindViewHolder(holder, position);
         } else {
-            Log.e("frc", "payloads.is not Empty  position:   " + position);
             Object payload = payloads.get(0);
             if (payload instanceof PayLoad) {
                 switch (((PayLoad) payload).type) {
@@ -729,10 +729,12 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         }
 
                         if (myMsgViewHolder.myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
+                            ((MyMsgViewHolder) holder).mMsgImageView.setProgress(100);
                             myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.GONE);
                             myMsgViewHolder.mStateFailedImageView.setVisibility(View.VISIBLE);
                         }
                         if (myMsgViewHolder.myMsg.getState() == DbMyMsg.State.Success.ordinal()) {
+                            ((MyMsgViewHolder) holder).mMsgImageView.setProgress(100);
                             myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.GONE);
                             myMsgViewHolder.mStateFailedImageView.setVisibility(View.GONE);
                         }

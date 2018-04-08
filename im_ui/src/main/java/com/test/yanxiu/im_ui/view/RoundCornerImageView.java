@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.drawable.ShapeDrawable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 

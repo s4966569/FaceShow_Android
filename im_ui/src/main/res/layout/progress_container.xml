@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <com.test.yanxiu.im_ui.view.RoundCornerImageView
+    <com.test.yanxiu.im_ui.view.XCRoundRectImageView
         android:id="@+id/roundImageView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:over_color="#99000000"
-        app:radius="6dp"/>
+        android:alpha="0.6"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/overLayer"
@@ -23,16 +20,16 @@
             android:id="@+id/animationImageView"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/progress"/>
+            android:src="@drawable/progress" />
 
         <TextView
             android:id="@+id/progressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16dp"
             android:layout_marginTop="5dp"
+            android:text="0%"
             android:textColor="@android:color/white"
-            android:text="0%"/>
+            android:textSize="16dp" />
     </LinearLayout>
 
 </RelativeLayout>

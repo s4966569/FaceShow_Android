@@ -2,7 +2,6 @@ package com.test.yanxiu.im_ui.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +23,7 @@ import com.test.yanxiu.im_ui.R;
  */
 
 public class ProgressImageContainer extends FrameLayout {
-    private RoundCornerImageView mRoundCornerImage;
+    private XCRoundRectImageView mRoundCornerImage;
     private ImageView mAnimationImage;
     private TextView mProgress;
     private View mOverLayer;
@@ -62,10 +61,13 @@ public class ProgressImageContainer extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(500);
+        rotateAnimation.setDuration(1000);
 //        rotateAnimation.setFillAfter(true);
         rotateAnimation.setRepeatCount(Animation.INFINITE);
         rotateAnimation.setInterpolator(new LinearInterpolator());
+        mAnimationImage.setAnimation(rotateAnimation);
+        rotateAnimation.start();
+
         mOverLayer.setVisibility(INVISIBLE);
 
     }
@@ -79,21 +81,15 @@ public class ProgressImageContainer extends FrameLayout {
     public void setProgress(int progress) {
         mOverLayer.setVisibility(VISIBLE);
         mProgress.setText(progress + "%");
-        if (progress >100 || progress < 0) {
+        if (progress >= 100 || progress < 0) {
             clearOverLayer();
 
         }
         postInvalidate();
     }
 
-    private int drawableRes = -1;
-
-    public int getDrawableRes() {
-        return drawableRes;
-    }
 
     public void setImageResource(int resId) {
-        drawableRes = resId;
         mRoundCornerImage.setImageResource(resId);
     }
 
@@ -109,7 +105,7 @@ public class ProgressImageContainer extends FrameLayout {
     }
 
     public void clearOverLayer() {
-        mRoundCornerImage.clearOverLayer();
+//        mRoundCornerImage.clearOverLayer();
         mOverLayer.setVisibility(INVISIBLE);
     }
 }
