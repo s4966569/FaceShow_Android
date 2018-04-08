@@ -1,11 +1,9 @@
 package com.test.yanxiu.im_ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Network;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +14,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
-import com.lzy.imagepicker.ui.ImagePreviewActivity;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.Configuration;
 import com.qiniu.android.storage.UpCancellationSignal;
@@ -94,8 +92,6 @@ import top.zibin.luban.OnCompressListener;
 
 public class ImMsgListActivity extends ImBaseActivity {
     private final String TAG = getClass().getSimpleName();
-
-//    private DbTopic topic;
 
 
     private DbTopic topic;
@@ -679,7 +675,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                             doSendImgMsg(myMsg.getQiNiuKey(), myMsg.getWith(), myMsg.getHeight(), myMsg);
                         } else {
                             //上传七牛失败
-                            getQiNiuToken(myMsg.getViewUrl(), myMsg);
+                            getQiNiuToken(myMsg.getLocalViewUrl(), myMsg);
                         }
                     } else {
                         // 1, 先更新数据库中
@@ -962,6 +958,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         @Override
                         public void onStart() {
                             final String msgReqId = UUID.randomUUID().toString();
+                            Log.e("frc","UUID::  "+ msgReqId);
                             myMsg.setState(DbMyMsg.State.Sending.ordinal());
                             myMsg.setReqId(msgReqId);
                             myMsg.setMsgId(latestMsgId());
@@ -975,8 +972,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                             Integer[] wh = getPicWithAndHeight(path);
                             myMsg.setWith(wh[0]);
                             myMsg.setHeight(wh[1]);
-                            myMsg.save();
-                            DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
+//                            myMsg.save();
+                            DatabaseDealer.updateResendMsg(myMsg, "local");
                             topic.mergedMsgs.add(0, myMsg);
                             mMsgListAdapter.setmDatas(topic.mergedMsgs);
                             mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -1210,28 +1207,27 @@ public class ImMsgListActivity extends ImBaseActivity {
         saveImageMsgRequest.rid = rid;
         saveImageMsgRequest.height = String.valueOf(height);
         saveImageMsgRequest.width = String.valueOf(width);
+        saveImageMsgRequest.reqId =myMsg.getReqId();
 
-        myMsg.setReqId(saveImageMsgRequest.reqId);
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
             @Override
             public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
                 if (ret.data.topicMsg.size() > 0) {
                     ImMsg imMsg = ret.data.topicMsg.get(0);
-                    myMsg.setMsgId(imMsg.msgId); // 由于和mqtt异步，这样能保证更新msgId
+                    myMsg.setReqId(imMsg.reqId); // 由于和mqtt异步，这样能保证更新msgId
+                    myMsg.setMsgId(imMsg.msgId);
                     myMsg.setState(DbMyMsg.State.Success.ordinal());
                     myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
-                    myMsg.setLocalViewUrl(null);
                     myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
-
                     topic.setShowDot(false);
+                    DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+
+                    MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
+                    mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                 }
 
-                DatabaseDealer.updateResendMsg(myMsg, "mqtt");
-
-                MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
-                mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
 
             }
 

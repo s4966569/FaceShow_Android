@@ -3,6 +3,7 @@ package com.test.yanxiu.im_ui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -488,7 +489,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 @Override
                 public void onClick(View v) {
                     if (showPreviewPicListener != null) {
-                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView, myMsg.getViewUrl());
+                        String url;
+                        if (TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
+                            url = myMsg.getViewUrl();
+                        } else {
+                            url = myMsg.getLocalViewUrl();
+                        }
+                        Log.e("frc", "reviewPic url :::" + url);
+                        showPreviewPicListener.picClick(getAdapterPosition(), mMsgImageView, url);
                     }
                 }
             });
@@ -519,7 +527,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 }
 
                 Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
-                Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
+                final Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
                 Log.e("frc", "position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
@@ -531,11 +539,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
-                                    if (mMsgImageView.getDrawableRes() == -1) {
+                                    if (mMsgImageView.getBitmap() == null) {
+                                        Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+
+                                        Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
                                         mMsgImageView.clearOverLayer();
-                                        mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                        mMsgImageView.setImageBitmap(bitmap1);
                                     } else {
-                                        mMsgImageView.setImageResource(mMsgImageView.getDrawableRes());
+                                        mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+
                                     }
                                 }
                             }
@@ -546,7 +558,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                     if (resource != null) {
                                         mMsgImageView.setImageBitmap(resource);
                                     } else {
-                                        mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                        Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                                        Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                                        mMsgImageView.setImageBitmap(bitmap1);
                                     }
                                     mMsgImageView.clearOverLayer();
                                 }
@@ -556,7 +570,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
                                     mMsgImageView.clearOverLayer();
-                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                                    mMsgImageView.setImageBitmap(bitmap1);
                                 }
                             }
                         });

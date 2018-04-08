@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -129,7 +130,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             for (DbMsg mergedMsg : topic.mergedMsgs) {
                 if (mergedMsg instanceof DbMyMsg) {
                     if (((DbMyMsg) mergedMsg).getState() == DbMyMsg.State.Success.ordinal()) {
-                        if (mergedMsg.getLocalViewUrl() != null) {
+                        if (!TextUtils.isEmpty(mergedMsg.getViewUrl())&&mergedMsg.getLocalViewUrl() != null) {
                             mergedMsg.setLocalViewUrl(null);
                         }
                     }
