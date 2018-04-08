@@ -10,6 +10,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -210,7 +211,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListRecyclerView.setLayoutManager(new FoucsLinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
                 false));
+        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
+
         mMsgListAdapter = new MsgListAdapter(this);
+        mMsgListAdapter.setHasStableIds(true);
         mMsgListAdapter.setTopic(topic);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
@@ -796,7 +801,8 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
-        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+//        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
+//        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
     }
     //endregion
 
@@ -948,34 +954,33 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
         for (int i = 0; i < imagePathList.size(); i++) {
             final String path = imagePathList.get(i);
-//            final Integer[] widthAndHeight = getPicWithAndHeight(path);
             final DbMyMsg myMsg = new DbMyMsg();
-
+            String msgReqId = UUID.randomUUID().toString();
+            myMsg.setState(DbMyMsg.State.Sending.ordinal());
+            myMsg.setReqId(msgReqId);
+            myMsg.setMsgId(latestMsgId());
+            myMsg.setTopicId(topic.getTopicId());
+            myMsg.setSenderId(Constants.imId);
+            myMsg.setSendTime(new Date().getTime());
+            myMsg.setContentType(20);
+            myMsg.setFrom("local");
+            myMsg.setMsg("");
+            myMsg.setLocalViewUrl(path);
+            Integer[] wh = getPicWithAndHeight(path);
+            myMsg.setWith(wh[0]);
+            myMsg.setHeight(wh[1]);
+            DatabaseDealer.updateResendMsg(myMsg, "local");
+            topic.mergedMsgs.add(0, myMsg);
+            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+            mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
             Luban.with(ImMsgListActivity.this)
                     .load(imagePathList.get(i))
                     .ignoreBy(200)
                     .setCompressListener(new OnCompressListener() {
                         @Override
                         public void onStart() {
-                            final String msgReqId = UUID.randomUUID().toString();
-                            myMsg.setState(DbMyMsg.State.Sending.ordinal());
-                            myMsg.setReqId(msgReqId);
-                            myMsg.setMsgId(latestMsgId());
-                            myMsg.setTopicId(topic.getTopicId());
-                            myMsg.setSenderId(Constants.imId);
-                            myMsg.setSendTime(new Date().getTime());
-                            myMsg.setContentType(20);
-                            myMsg.setFrom("local");
-                            myMsg.setMsg("");
-                            myMsg.setLocalViewUrl(path);
-                            Integer[] wh = getPicWithAndHeight(path);
-                            myMsg.setWith(wh[0]);
-                            myMsg.setHeight(wh[1]);
-                            DatabaseDealer.updateResendMsg(myMsg, "local");
-                            topic.mergedMsgs.add(0, myMsg);
-                            mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                            mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-                            mMsgListAdapter.notifyDataSetChanged();
+                            MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 0d);
+                            mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                         }
 
                         @Override
@@ -985,6 +990,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
                         @Override
                         public void onError(Throwable e) {
+
 
                         }
                     }).launch();
@@ -1085,7 +1091,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     } catch (JSONException e) {
                         sendPicFailure(myMsg);
                     }
-                    MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 101);
+                    MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 0.99d);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
 
                 }
@@ -1095,7 +1101,13 @@ public class ImMsgListActivity extends ImBaseActivity {
         }, new UploadOptions(null, null, false, new UpProgressHandler() {
             @Override
             public void progress(String s, double v) {
-                MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, v);
+                Double progress;
+                if (v>0.99){
+                    progress =0.99d;
+                }else {
+                    progress =v;
+                }
+                MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, progress);
                 mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
 
             }
@@ -1220,6 +1232,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
                     topic.setShowDot(false);
                     DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+                    MsgListAdapter.PayLoad payLoad1 = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, 1.1d);
+                    mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad1);
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
