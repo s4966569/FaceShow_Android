@@ -4,9 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.test.yanxiu.common_base.utils.SrtLogger;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
@@ -179,6 +177,18 @@ public class MqttService extends Service {
                         //SrtLogger.log("immqtt", "mqtt subscribe topic failed");
                     }
                 });
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    /**
+     * 取消 topic 的订阅
+     * */
+    public void doUnsubscribeTopic(String topicId){
+        if ((mClient != null) && mClient.isConnected()) {
+            try {
+                mClient. unsubscribe("im/v1.0/topic/" + topicId);
             } catch (MqttException e) {
                 e.printStackTrace();
             }

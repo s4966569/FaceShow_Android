@@ -36,6 +36,7 @@ import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.http.common.ImTopic;
 import com.test.yanxiu.im_core.mqtt.MqttService;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
+import com.test.yanxiu.im_ui.callback.OnUserRemoveFromClaszCallback;
 import com.test.yanxiu.im_ui.contacts.ContactsActivity;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -62,6 +63,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private List<DbTopic> topics = new ArrayList<>();
+
+    /**
+     * 用户被移除班级的回调
+     */
+    private OnUserRemoveFromClaszCallback mOnUserRemoveFromClaszCallback;
+
+    public void setOnUserRemoveFromClaszCallback(OnUserRemoveFromClaszCallback onUserRemoveFromClaszCallback) {
+        mOnUserRemoveFromClaszCallback = onUserRemoveFromClaszCallback;
+    }
 
     public ImTopicListFragment() {
         // Required empty public constructor
@@ -477,18 +487,133 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     @Subscribe
-    public void onMqttMsg(MqttProtobufDealer.TopicChangeEvent event) {
+    public void onMqttMsg(final MqttProtobufDealer.TopicChangeEvent event) {
         // 目前只处理AddTo
         Log.i(TAG, "onMqttMsg: topic change ");
         if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
             binder.subscribeTopic(Long.toString(event.topicId));
             updateTopicsWithMembers(Long.toString(event.topicId));
+        } else if (event.type == MqttProtobufDealer.TopicChange.RemoveFrom) {
+            //检查当前用户是否 被某个 topic 除名
+            checkUserRemove(event);
+
         }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
         //回调给 主页  显示 新消息红点
         noticeShowRedDot();
     }
+
+    /**
+     * 通过请求用户的最新 topic 列表 检查 通知有除名的 topic
+     * 貌似也可以用 topic id  来获取对应 topic 的 member 来检查自己是否还在 memberlist 中
+     * 但 已被移除的 member 能否通过 topicid 获取 topic member 信息？
+     * */
+    private void checkUserRemove(final MqttProtobufDealer.TopicChangeEvent event) {
+        //方案一  请求获取最新的 topic 列表 看是否还有 这个 topic
+        isUserInTopicByTopicList(event);
+        //方案二 通过获取 指定 topic 的成员列表来判断
+//        isUserInTopicByMemberid(event);
+    }
+
+    /**
+     * 获取当前用户的 topic 列表  判断用户是否还在这个 topic 中
+     * */
+    private void isUserInTopicByTopicList(final MqttProtobufDealer.TopicChangeEvent event) {
+        TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
+        getMemberTopicsRequest.imToken = Constants.imToken;
+        getMemberTopicsRequest.startRequest(TopicGetMemberTopicsResponse.class, new HttpCallback<TopicGetMemberTopicsResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
+                // topic list 请求成功 可以进行一次刷新操作
+                boolean inTopic=false;
+                int groupTopicNum=0;
+                for (ImTopic imTopic : ret.data.topic) {
+                    //累加 群聊的数量 可以判断目前用户所在的班级数量
+                    if (imTopic.topicType.equals("2")) {
+                        groupTopicNum++;
+                    }
+
+                    if (imTopic.topicId == event.topicId) {
+                        //当前用户依然在 topic 中 刷新一次？
+                        inTopic=true;
+                    }
+                }
+
+                if (!inTopic&&mOnUserRemoveFromClaszCallback!=null){
+                    // TODO 本页的 topiclist 删除 当前 topicid 刷新界面
+                    //取消目标 topic 的 mqtt 的订阅
+                    binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
+                    //回调给 mainactivity 用户被除名
+                    mOnUserRemoveFromClaszCallback.onRemoved(groupTopicNum);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+
+            }
+        });
+    }
+
+    /**
+     * 通过 获取 发生成员变化的 topic 成员列表来 判断当前用户是否还在 topic 中
+     * */
+//    private void isUserInTopicByMemberid(final MqttProtobufDealer.TopicChangeEvent event) {
+//        //方案二  通过 topicid 获取 member 列表
+//        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
+//        getTopicsRequest.imToken = Constants.imToken;
+//        getTopicsRequest.topicIds = String.valueOf(event.topicId);
+//        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
+//            @Override
+//            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
+//                // 更新数据库
+//                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
+//                //正确的 size=1只请求了 通知有人员变动的 topic
+//                for (ImTopic imTopic : ret.data.topic) {
+//                    //首先判断 用户是否在成员名单中
+//                    if (imTopic.topicId==event.topicId) {
+//                        boolean inTopic=false;
+//                        for (ImTopic.Member member : imTopic.members) {
+//                            if (member.memberId== Constants.imId) {
+//                                inTopic=true;
+//                                break;
+//                            }
+//                        }
+//                        //用户不在 名单中
+//                        if (!inTopic&&mOnUserRemoveFromClaszCallback!=null){
+//                            //去掉 mqtt 的订阅
+//                            binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
+//                            //回调给 mainactivity 用户被除名
+//                            mOnUserRemoveFromClaszCallback.onRemoved();
+//                            return;
+//                        }
+//                    }
+//
+//                    //如果 用户还在这个 topic 中 顺便更新一下
+//                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+//                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
+//                    dbTopic.latestMsgId = imTopic.latestMsgId;
+//                    // 更新uiTopics
+//                    for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
+//                        DbTopic uiTopic = i.next();
+//                        if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
+//                            i.remove();
+//                        }
+//                    }
+//                    topics.add(dbTopic);
+//                    topicsNeedUpdateMember.add(dbTopic);
+//                }
+//                rearrangeTopics();
+//                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFail(RequestBase request, Error error) {
+//
+//            }
+//        });
+//    }
 
     // http, mqtt 公用
     private void updateTopicsWithMembers(String topicIds) {

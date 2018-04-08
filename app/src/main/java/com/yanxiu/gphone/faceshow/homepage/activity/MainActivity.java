@@ -22,6 +22,7 @@ import com.igexin.sdk.PushManager;
 import com.test.yanxiu.common_base.utils.ActivityManger;
 import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_ui.ImTopicListFragment;
+import com.test.yanxiu.im_ui.callback.OnUserRemoveFromClaszCallback;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -314,6 +315,25 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.VISIBLE);
             }
         });
+        //用户 被删除班级事件监听
+        mNaviFragmentFactory.getImFragment().setOnUserRemoveFromClaszCallback(new OnUserRemoveFromClaszCallback() {
+            @Override
+            public void onRemoved(int topicNum) {
+                //用户被移除了  获取当前用户 班级列表 并判断如果 用户列表为空了 返回到登陆界面
+                if (topicNum==0) {
+                    // 没有班级了  进入到登录页
+                    MainActivity.this.finish();
+                    // MQTT 的处理在 onDestroy()中进行
+                }else {
+                    //还有班级 进入到班级选择页
+                    toChooseClassActivity(new Intent(MainActivity.this,
+                            ChooseClassActivity.class), CHOOSE_CLASS);
+                }
+
+            }
+        });
+
+
         showCurrentFragment(0);
     }
 
