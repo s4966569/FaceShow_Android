@@ -27,6 +27,7 @@ public class ProgressImageContainer extends FrameLayout {
     private ImageView mAnimationImage;
     private TextView mProgress;
     private View mOverLayer;
+    private View mImageViewOver;
 
     public ProgressImageContainer(@NonNull Context context) {
         super(context);
@@ -54,7 +55,10 @@ public class ProgressImageContainer extends FrameLayout {
         mAnimationImage = view.findViewById(R.id.animationImageView);
         mProgress = view.findViewById(R.id.progressText);
         mOverLayer = view.findViewById(R.id.overLayer);
+        mImageViewOver = view.findViewById(R.id.img_over);
         mOverLayer.setVisibility(INVISIBLE);
+
+
     }
 
     @Override
@@ -68,8 +72,6 @@ public class ProgressImageContainer extends FrameLayout {
         mAnimationImage.setAnimation(rotateAnimation);
         rotateAnimation.start();
 
-        mOverLayer.setVisibility(INVISIBLE);
-
     }
 
     @Override
@@ -79,13 +81,12 @@ public class ProgressImageContainer extends FrameLayout {
     }
 
     public void setProgress(int progress) {
-        mOverLayer.setVisibility(VISIBLE);
         mProgress.setText(progress + "%");
+        addOverLayer();
         if (progress >= 100 || progress < 0) {
             clearOverLayer();
 
         }
-        postInvalidate();
     }
 
 
@@ -98,6 +99,7 @@ public class ProgressImageContainer extends FrameLayout {
     public void setImageBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
         mRoundCornerImage.setImageBitmap(bitmap);
+        mImageViewOver.setLayoutParams(mRoundCornerImage.getLayoutParams());
     }
 
     public Bitmap getBitmap() {
@@ -105,7 +107,14 @@ public class ProgressImageContainer extends FrameLayout {
     }
 
     public void clearOverLayer() {
-//        mRoundCornerImage.clearOverLayer();
+        mImageViewOver.setVisibility(GONE);
         mOverLayer.setVisibility(INVISIBLE);
     }
+
+    public void addOverLayer() {
+        mImageViewOver.setVisibility(VISIBLE);
+        mOverLayer.setVisibility(VISIBLE);
+    }
+
+
 }

@@ -716,8 +716,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         } else {
             Object payload = payloads.get(0);
             if (payload instanceof PayLoad) {
+
                 switch (((PayLoad) payload).type) {
                     case PayLoad.CHANG_SEND_PROGRESS:
+                        ((MyMsgViewHolder) holder).mMsgImageView.addOverLayer();
                         int progress = (int) (((Double) ((PayLoad) payload).data) * 100);
                         ((MyMsgViewHolder) holder).mMsgImageView.setProgress(progress);
                         break;
@@ -732,11 +734,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             ((MyMsgViewHolder) holder).mMsgImageView.setProgress(100);
                             myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.GONE);
                             myMsgViewHolder.mStateFailedImageView.setVisibility(View.VISIBLE);
+                            ((MyMsgViewHolder) holder).mMsgImageView.clearOverLayer();
                         }
                         if (myMsgViewHolder.myMsg.getState() == DbMyMsg.State.Success.ordinal()) {
                             ((MyMsgViewHolder) holder).mMsgImageView.setProgress(100);
                             myMsgViewHolder.mStateSendingProgressBar.setVisibility(View.GONE);
                             myMsgViewHolder.mStateFailedImageView.setVisibility(View.GONE);
+                            ((MyMsgViewHolder) holder).mMsgImageView.clearOverLayer();
                         }
                         break;
                 }
