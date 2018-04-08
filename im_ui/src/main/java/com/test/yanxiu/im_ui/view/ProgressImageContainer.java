@@ -79,7 +79,7 @@ public class ProgressImageContainer extends FrameLayout {
     public void setProgress(int progress) {
         mOverLayer.setVisibility(VISIBLE);
         mProgress.setText(progress + "%");
-        if (progress >= 100 || progress < 0) {
+        if (progress >100 || progress < 0) {
             clearOverLayer();
 
         }

@@ -786,4 +786,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+
 }
