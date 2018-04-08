@@ -93,9 +93,15 @@ public class ProgressImageContainer extends FrameLayout {
     }
 
     public void setImageDrawable(Drawable drawable) {
+        this.drawable = drawable;
         mRoundCornerImage.setImageDrawable(drawable);
     }
 
+    public Drawable getImageDrawable() {
+        return drawable;
+    }
+
+    private Drawable drawable;
 
     public void clearOverLayer() {
         mRoundCornerImage.clearOverLayer();

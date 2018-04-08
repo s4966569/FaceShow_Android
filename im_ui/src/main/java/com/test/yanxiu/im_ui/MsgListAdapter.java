@@ -526,10 +526,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 Glide.with(itemView.getContext())
                         .load(picUrl)
                         .asBitmap()
-                        .placeholder(R.drawable.bg_im_pic_holder_view)
                         .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
-
+                            @Override
+                            public void onLoadStarted(Drawable placeholder) {
+                                if (mMsgImageView.getImageDrawable()==null){
+                                    mMsgImageView.clearOverLayer();
+                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                }
+                            }
 
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
