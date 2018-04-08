@@ -669,7 +669,14 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             //由 msglist Activity
             if (resultCode== ImTopicListFragment.ACTIVITY_RESULT_REMOVED_USER) {
                 //判断如果是执行 用户被移除的后续操作 已经关闭了聊天界面 下面
-                logout();
+                int remainGroupTopicNum=data.getIntExtra("groupTopicNum",0);
+                if (remainGroupTopicNum==0) {
+                    logout();
+                }else {
+                    //还有班级 进入到班级选择页
+                    toChooseClassActivity(new Intent(MainActivity.this,
+                            ChooseClassActivity.class), CHOOSE_CLASS);
+                }
             }else {
                 mNaviFragmentFactory.getImFragment().onMsgListActivityReturned();
             }

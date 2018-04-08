@@ -454,6 +454,15 @@ public class DatabaseDealer {
         return theMsg;
     }
 
+    /**
+     * 根据给定的topic id 删除数据库信息
+     * */
+    public static void  deleteTopicById(long topicId){
+        DataSupport.deleteAll(DbTopic.class,
+                "topicId = ? ", String.valueOf(topicId));
+
+    }
+
     //region util
 
     public static long getLatestMsgIdForTopic(long topicId) {
