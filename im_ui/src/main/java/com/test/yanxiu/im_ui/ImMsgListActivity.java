@@ -1216,12 +1216,19 @@ public class ImMsgListActivity extends ImBaseActivity {
         httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
             @Override
             public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
-                myMsg.setState(DbMyMsg.State.Success.ordinal());
-                myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
-                myMsg.setLocalViewUrl(null);
-                myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
-                myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
-                DatabaseDealer.updateResendMsg(myMsg, "local");
+                if (ret.data.topicMsg.size() > 0) {
+                    ImMsg imMsg = ret.data.topicMsg.get(0);
+                    myMsg.setMsgId(imMsg.msgId); // 由于和mqtt异步，这样能保证更新msgId
+                    myMsg.setState(DbMyMsg.State.Success.ordinal());
+                    myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
+                    myMsg.setLocalViewUrl(null);
+                    myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
+                    myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
+
+                    topic.setShowDot(false);
+                }
+
+                DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 
                 MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                 mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
