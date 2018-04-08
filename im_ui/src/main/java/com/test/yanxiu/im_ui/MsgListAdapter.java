@@ -382,12 +382,12 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
                 Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
-
-
+                Log.e("frc", "MsgViewHolder  position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
+                        .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onStart() {
@@ -399,8 +399,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 if (TextUtils.equals(msg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
                                     mMsgImageView.setImageBitmap(resource);
-                                } else {
-                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                                 }
                             }
 
@@ -435,7 +433,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
                         //判断成员是否依然在群组中  
                         // TODO: 2018/4/8 这里出现了sender 为空的情况 原因暂未查明
-                        if (sender!=null&&isRemainMember(sender.getImId())) {
+                        if (sender != null && isRemainMember(sender.getImId())) {
                             sender.fromTopicId = topic.getTopicId();
                             EventBus.getDefault().post(sender);
                         } else {
@@ -536,7 +534,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                     if (mMsgImageView.getDrawableRes() == -1) {
                                         mMsgImageView.clearOverLayer();
                                         mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
-                                    }else {
+                                    } else {
                                         mMsgImageView.setImageResource(mMsgImageView.getDrawableRes());
                                     }
                                 }
