@@ -545,6 +545,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
                 //首先判断用户是否被移除
                 if (!inTopic){
+                    try {
+                        Toast.makeText(getContext(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+//                        e.printStackTrace();
+                        Log.e(TAG, "toast crash : " );
+                    }
                     //在 topic 中删除
                     Iterator<DbTopic> iterator=topics.iterator();
                     while (iterator.hasNext()) {
@@ -555,12 +561,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             DatabaseDealer.deleteTopicById(event.topicId);
                             break;
                         }
-                    }
-                    try {
-                        Toast.makeText(getContext().getApplicationContext(),"【已被移出此班】",Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-//                        e.printStackTrace();
-                        Log.e(TAG, "toast crash : " );
                     }
                     //取消目标 topic 的 mqtt 的订阅
                     binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
