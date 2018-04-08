@@ -566,6 +566,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             break;
                         }
                     }
+                    mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
                     //取消目标 topic 的 mqtt 的订阅
                     binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
                     //判断栈顶Activity 如果聊天界面开启 先关闭聊天界面 然后在mainactivity的onActivityResult 中进行logout
