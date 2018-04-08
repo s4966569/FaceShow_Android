@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
@@ -519,39 +520,46 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                     picUrl = myMsg.getViewUrl();
                 }
 
-                Log.e("frc","position:  "+getAdapterPosition()+ "     "+"Url:  "+picUrl);
+                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
                 Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
-                Log.e("frc","position:  "+getAdapterPosition()+ "     "+"w:  "+wh[0]+"    h: "+wh[1]);
+                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
                         .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
-                                if (mMsgImageView.getImageDrawable()==null){
-                                    mMsgImageView.clearOverLayer();
-                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
+                                    if (mMsgImageView.getDrawableRes() == -1) {
+                                        mMsgImageView.clearOverLayer();
+                                        mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                    }else {
+                                        mMsgImageView.setImageResource(mMsgImageView.getDrawableRes());
+                                    }
                                 }
                             }
 
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
+                                    if (resource != null) {
+                                        mMsgImageView.setImageBitmap(resource);
+                                    } else {
+                                        mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                    }
                                     mMsgImageView.clearOverLayer();
-                                    mMsgImageView.setImageBitmap(resource);
-                                } else {
-                                    mMsgImageView.clearOverLayer();
-                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                                 }
                             }
 
                             @Override
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                mMsgImageView.clearOverLayer();
-                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
-
+                                if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
+                                    mMsgImageView.clearOverLayer();
+                                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                }
                             }
                         });
 
