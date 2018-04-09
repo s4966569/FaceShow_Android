@@ -311,8 +311,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mNaviFragmentFactory.getImFragment().setNewMessageListener(new ImTopicListFragment.NewMessageListener() {
 
             @Override
-            public void onGetNewMessage() {
-                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.VISIBLE);
+            public void onGetNewMessage(boolean showRedDot) {
+                Log.i(TAG, "onGetNewMessage: showdot = "+showRedDot);
+                mBottomView.findViewById(R.id.im_red_circle)
+                        .setVisibility(showRedDot?View.VISIBLE:View.INVISIBLE);
             }
         });
         //用户 被删除班级事件监听
@@ -505,7 +507,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(false);
                 //点击 聊聊  清空 红点
-                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.INVISIBLE);
+//                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.INVISIBLE);
                 break;
             case R.id.title_layout_right_img:
                 ToastUtil.showToast(getApplicationContext(), "扫描");

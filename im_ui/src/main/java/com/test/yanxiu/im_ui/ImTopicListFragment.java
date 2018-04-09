@@ -103,6 +103,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public void onMsgListActivityReturned() {
+        Log.i(TAG, "onMsgListActivityReturned: ");
         for (DbTopic topic : msgShownTopics) {
             // 最多保留20条
             topic.setShowDot(false);
@@ -502,12 +503,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             //检查当前用户是否 被某个 topic 除名
             Log.i("repeat", "onMqttMsg: ");
             checkUserRemove(event);
-
         }
         rearrangeTopics();
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-        //回调给 主页  显示 新消息红点
-        noticeShowRedDot();
     }
 
     /**
@@ -722,7 +720,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             getActivity().startActivityForResult(i, Constants.IM_REQUEST_CODE_MSGLIST);
             dbTopic.setShowDot(false);
             dbTopic.save();
-
+            //通知mainactivity 是否显示红点
+            noticeShowRedDot();
             curTopic = dbTopic;
             msgShownTopics.add(dbTopic);
         }
@@ -830,6 +829,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
         topics.addAll(privateTopics);
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
+        //每次重排检查一次
+        noticeShowRedDot();
     }
 
     /**
@@ -852,9 +853,25 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private NewMessageListener newMessageListener;
 
     private void noticeShowRedDot() {
-        if (newMessageListener != null && ImTopicListFragment.this.isHidden()) {
-            newMessageListener.onGetNewMessage();
+        if (newMessageListener != null) {
+            //遍历 所有topic 是否有显示红点的topic 来通知MainActivity
+            newMessageListener.onGetNewMessage(shouldShowRedDot());
         }
+    }
+
+    /**
+     * 检查是否还有显示红点的topic
+     * */
+    private boolean shouldShowRedDot(){
+        Log.i(TAG, "shouldShowRedDot: ");
+        for (DbTopic topic : topics) {
+            if (topic.isShowDot()) {
+                Log.i(TAG, "shouldShowRedDot: true");
+                return true;
+            }
+        }
+        Log.i(TAG, "shouldShowRedDot: false");
+        return false;
     }
 
     public void setNewMessageListener(NewMessageListener newMessageListener) {
@@ -862,6 +879,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
 
     public interface NewMessageListener {
-        void onGetNewMessage();
+        void onGetNewMessage(boolean showRedDot);
     }
 }
