@@ -15,7 +15,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,7 +54,6 @@ import com.test.yanxiu.im_core.http.GetQiNiuTokenRequest;
 import com.test.yanxiu.im_core.http.GetQiNiuTokenResponse;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
-import com.test.yanxiu.im_core.http.ImRequestBase;
 import com.test.yanxiu.im_core.http.SaveImageMsgRequest;
 import com.test.yanxiu.im_core.http.SaveImageMsgResponse;
 import com.test.yanxiu.im_core.http.SaveTextMsgRequest;
@@ -227,15 +225,18 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         mMsgListAdapter.notifyDataSetChanged();
 
+        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
-        mMsgListRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
-                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
-                }
-            }
-        });
+        //会造成进入界面后 从第一条滚动到最后一条的 效果
+//        mMsgListRecyclerView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
+//                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+//                }
+//            }
+//        });
 
         ImageView mTakePicImageView = findViewById(R.id.takepic_imageview);
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
@@ -515,8 +516,8 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
-        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-
+//        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+        mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
@@ -531,6 +532,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                 DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
+
+
             }
 
             @Override
