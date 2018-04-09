@@ -2,7 +2,6 @@ package com.test.yanxiu.im_ui.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,10 +23,11 @@ import com.test.yanxiu.im_ui.R;
  */
 
 public class ProgressImageContainer extends FrameLayout {
-    private RoundCornerImageView mRoundCornerImage;
+    private XCRoundRectImageView mRoundCornerImage;
     private ImageView mAnimationImage;
     private TextView mProgress;
     private View mOverLayer;
+    private View mImageViewOver;
 
     public ProgressImageContainer(@NonNull Context context) {
         super(context);
@@ -55,18 +55,22 @@ public class ProgressImageContainer extends FrameLayout {
         mAnimationImage = view.findViewById(R.id.animationImageView);
         mProgress = view.findViewById(R.id.progressText);
         mOverLayer = view.findViewById(R.id.overLayer);
+        mImageViewOver = view.findViewById(R.id.img_over);
         mOverLayer.setVisibility(INVISIBLE);
+
+
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(500);
+        rotateAnimation.setDuration(1000);
 //        rotateAnimation.setFillAfter(true);
         rotateAnimation.setRepeatCount(Animation.INFINITE);
         rotateAnimation.setInterpolator(new LinearInterpolator());
-        mOverLayer.setVisibility(INVISIBLE);
+        mAnimationImage.setAnimation(rotateAnimation);
+        rotateAnimation.start();
 
     }
 
@@ -77,23 +81,16 @@ public class ProgressImageContainer extends FrameLayout {
     }
 
     public void setProgress(int progress) {
-        mOverLayer.setVisibility(VISIBLE);
         mProgress.setText(progress + "%");
-        if (progress >100 || progress < 0) {
+        addOverLayer();
+        if (progress >= 100 || progress < 0) {
             clearOverLayer();
 
         }
-        postInvalidate();
     }
 
-    private int drawableRes = -1;
-
-    public int getDrawableRes() {
-        return drawableRes;
-    }
 
     public void setImageResource(int resId) {
-        drawableRes = resId;
         mRoundCornerImage.setImageResource(resId);
     }
 
@@ -102,6 +99,7 @@ public class ProgressImageContainer extends FrameLayout {
     public void setImageBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
         mRoundCornerImage.setImageBitmap(bitmap);
+        mImageViewOver.setLayoutParams(mRoundCornerImage.getLayoutParams());
     }
 
     public Bitmap getBitmap() {
@@ -109,7 +107,14 @@ public class ProgressImageContainer extends FrameLayout {
     }
 
     public void clearOverLayer() {
-        mRoundCornerImage.clearOverLayer();
+        mImageViewOver.setVisibility(GONE);
         mOverLayer.setVisibility(INVISIBLE);
     }
+
+    public void addOverLayer() {
+        mImageViewOver.setVisibility(VISIBLE);
+        mOverLayer.setVisibility(VISIBLE);
+    }
+
+
 }

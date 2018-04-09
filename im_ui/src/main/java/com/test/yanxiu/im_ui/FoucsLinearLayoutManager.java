@@ -18,6 +18,12 @@ import com.facebook.stetho.common.LogUtil;
  */
 class FoucsLinearLayoutManager extends LinearLayoutManager {
 
+
+    @Override
+    public boolean supportsPredictiveItemAnimations() {
+        return false;
+    }
+
     public FoucsLinearLayoutManager(Context context) {
         super(context);
     }
@@ -69,5 +75,14 @@ class FoucsLinearLayoutManager extends LinearLayoutManager {
         //这里的child 是整个ItemView 而不是某个具体的editText
         LogUtil.e("requestChildRectangleOnScreen( focusedChildVisible=)====> chlild==" + child.getId() + "parent==" + parent.getId());
         return false;
+    }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        try {
+            super.onLayoutChildren(recycler, state);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 }
