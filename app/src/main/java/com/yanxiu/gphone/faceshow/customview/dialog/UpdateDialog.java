@@ -57,7 +57,7 @@ public class UpdateDialog extends CustomBaseDialog {
         setContentView(mRootView);
 
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mRootView.getLayoutParams();
-        lp.width = (int) (ScreenUtils.getScreenWidth(mContext) * (1 - 0.28));
+        lp.width = (int) (ScreenUtils.getScreenWidth(mContext) * (1 - 0.146));
         lp.height = FrameLayout.LayoutParams.WRAP_CONTENT;
         lp.topMargin = (ScreenUtils.getScreenHeight(mContext) - ScreenUtils.getStatusBarHeight(mContext)) / 2 - mContext.getResources().getDimensionPixelSize(R.dimen.cancelDialog_height) / 2;
         lp.gravity = CENTER_HORIZONTAL;

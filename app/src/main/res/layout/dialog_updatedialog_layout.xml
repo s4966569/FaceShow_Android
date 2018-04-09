@@ -14,8 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:textColor="@color/color_334466"
-        android:textSize="15dp"
+        android:textColor="@color/color_333333"
+        android:textSize="13dp"
+        android:textStyle="bold"
         tool:text="标题" />
 
     <LinearLayout
@@ -29,27 +30,29 @@
             android:id="@+id/updateDialog_progress_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/color_334466"
-            android:textSize="15dp"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13dp"
             tool:text="进度" />
 
         <ProgressBar
             android:id="@+id/updateDialog_progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="6dp"
+            android:layout_height="10dp"
             android:layout_marginTop="10dp"
             android:max="100"
             android:progressDrawable="@drawable/progress_bar_color" />
 
         <TextView
-            android:layout_width="75dp"
-            android:layout_height="29dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:text="下载中..."
-            android:textColor="#0067eb"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:textColor="#1da1f2"
             android:textSize="14dp" />
 
     </LinearLayout>
@@ -66,8 +69,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="20dp"
-            android:textColor="@color/color_334466"
-            android:textSize="15dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13dp"
             tool:text="内容" />
 
         <RelativeLayout
