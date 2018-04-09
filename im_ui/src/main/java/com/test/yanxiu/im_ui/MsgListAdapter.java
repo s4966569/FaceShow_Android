@@ -391,8 +391,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
-                Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
+                final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
                 Log.e("frc", "MsgViewHolder  position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
+                //占据高度
+                if (mMsgImageView.getBitmap() == null) {
+                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                    mMsgImageView.setImageBitmap(bitmap1);
+                } else {
+                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+                }
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
@@ -402,7 +410,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             @Override
                             public void onStart() {
                                 super.onStart();
-                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                if (mMsgImageView.getBitmap() == null) {
+                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                                    mMsgImageView.setImageBitmap(bitmap1);
+                                } else {
+                                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+                                }
+//                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                             }
 
                             @Override

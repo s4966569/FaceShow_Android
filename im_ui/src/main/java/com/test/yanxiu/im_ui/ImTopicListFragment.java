@@ -500,6 +500,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             updateTopicsWithMembers(Long.toString(event.topicId));
         } else if (event.type == MqttProtobufDealer.TopicChange.RemoveFrom) {
             //检查当前用户是否 被某个 topic 除名
+            Log.i("repeat", "onMqttMsg: ");
             checkUserRemove(event);
 
         }
