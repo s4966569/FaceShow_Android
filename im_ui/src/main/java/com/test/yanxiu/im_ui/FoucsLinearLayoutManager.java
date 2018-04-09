@@ -18,6 +18,12 @@ import com.facebook.stetho.common.LogUtil;
  */
 class FoucsLinearLayoutManager extends LinearLayoutManager {
 
+
+    @Override
+    public boolean supportsPredictiveItemAnimations() {
+        return false;
+    }
+
     public FoucsLinearLayoutManager(Context context) {
         super(context);
     }

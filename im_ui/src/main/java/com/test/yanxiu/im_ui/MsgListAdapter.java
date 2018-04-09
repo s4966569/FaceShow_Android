@@ -194,7 +194,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
         }
         if (isLoading) {
-            position--;
+            position++;
         }
         return position;
 
