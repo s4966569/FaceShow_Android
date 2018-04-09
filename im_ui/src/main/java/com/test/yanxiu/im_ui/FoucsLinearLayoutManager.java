@@ -76,4 +76,13 @@ class FoucsLinearLayoutManager extends LinearLayoutManager {
         LogUtil.e("requestChildRectangleOnScreen( focusedChildVisible=)====> chlild==" + child.getId() + "parent==" + parent.getId());
         return false;
     }
+
+    @Override
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        try {
+            super.onLayoutChildren(recycler, state);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+    }
 }
