@@ -964,6 +964,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             myMsg.setSendTime(new Date().getTime());
             myMsg.setContentType(20);
             myMsg.setFrom("local");
+            topic.setShowDot(false);
             myMsg.setMsg("");
             myMsg.setLocalViewUrl(path);
             Integer[] wh = getPicWithAndHeight(path);
@@ -1230,7 +1231,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
                     myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
-                    topic.setShowDot(false);
                     DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
