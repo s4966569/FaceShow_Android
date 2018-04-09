@@ -889,10 +889,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         switch (requestCode) {
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
-
-                // 预先插入mock topic
-                isNeedMockTopic();
-                reSizePics(createSelectedImagesList(data));
+                if (data!=null) {
+                    isNeedMockTopic();
+                    reSizePics(createSelectedImagesList(data));
+                }
                 break;
             default:
                 break;

@@ -37,7 +37,7 @@ public class ChoosePicsDialog extends Dialog implements View.OnClickListener {
 
     private void init(Context context){
         mContext=context;
-        View rootView= LayoutInflater.from(context).inflate(R.layout.dialog_choose_pics,null);
+        View rootView= LayoutInflater.from(context).inflate(R.layout.im_ui_dialog_choose_pics,null);
         setContentView(rootView);
         rootView.findViewById(R.id.im_ui_ll_album).setOnClickListener(this);
         rootView.findViewById(R.id.im_ui_ll_camera).setOnClickListener(this);
