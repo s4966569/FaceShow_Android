@@ -3,7 +3,6 @@ package com.test.yanxiu.im_ui;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -376,6 +375,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .load(sender.getAvatar())
                         .into(mAvatarImageView);
                 mNameTextView.setText(sender.getName());
+            }else {
+                Glide.with(mContext)
+                        .load(R.drawable.im_chat_default)
+                        .into(mAvatarImageView);
             }
 
             if (msg.getContentType() == 20) {
