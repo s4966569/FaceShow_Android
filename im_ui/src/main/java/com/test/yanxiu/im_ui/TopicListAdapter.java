@@ -138,6 +138,8 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         // 1, 显示对方头像
                         Glide.with(mContext)
                                 .load(member.getAvatar())
+                                .placeholder(R.drawable.icon_chat_unknown)
+                                .error(R.drawable.icon_chat_unknown)
                                 .into(mAvatarImageView);
                         // 2, 显示对方昵称(班级名)
                         //mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
