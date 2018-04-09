@@ -524,6 +524,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
             // 设置消息内容
             if (myMsg.getContentType() == 20) {
+
+                final Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
+
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
                 final String picUrl;
@@ -533,9 +536,17 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 } else {
                     picUrl = myMsg.getViewUrl();
                 }
+                //占据高度
+                if (mMsgImageView.getBitmap() == null) {
+                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                    mMsgImageView.setImageBitmap(bitmap1);
+                } else {
+                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+                }
+
 
                 Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
-                final Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
@@ -553,7 +564,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                         mMsgImageView.setImageBitmap(bitmap1);
                                     } else {
                                         mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-
                                     }
                                 }
                             }
