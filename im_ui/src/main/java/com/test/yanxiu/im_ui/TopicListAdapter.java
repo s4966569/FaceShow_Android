@@ -16,6 +16,7 @@ import com.lzy.imagepicker.util.Utils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
+import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
 import com.test.yanxiu.im_ui.view.CircleView;
 
@@ -175,13 +176,37 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 if (latestMsg != null) {
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
-                    // 4, 显示消息内容
+                    // 4, 显示消息内容 这里 如果有本地数据库没有的 已经被删除的sender 会不显示最新消息
+
+                    //判断是否有sender 信息 先检查 topic member 列表
+                    StringBuilder stringBuilder=new StringBuilder();
+                    DbMember senderInfo=null;
                     for (DbMember member : topic.getMembers()) {
                         if (member.getImId() == latestMsg.getSenderId()) {
-                            mMsgTextView.setText(member.getName() + ":" + latestMsg.getMsg());
+                            senderInfo=member;
+                            Log.i(TAG, "setData:  member  in list "+member.getName());
                             break;
                         }
                     }
+                    //如果member列表中没有（用户已被踢出topic） 查询本地数据库是否含有
+                    if (senderInfo==null) {
+                        senderInfo= DatabaseDealer.getMemberById(latestMsg.getSenderId());
+                        Log.i(TAG, "setData: sender try to find in db "+(senderInfo!=null));
+                    }
+                    //将 找到的 sender 名字加入显示 string中
+                    stringBuilder.append(senderInfo==null?" :":senderInfo.getName()+":");
+                    //判断最后一条消息的类型是不是图片类
+                    boolean isImage=!TextUtils.isEmpty(latestMsg.getViewUrl())||TextUtils.isEmpty(latestMsg.getLocalViewUrl())
+                            &&TextUtils.equals("qiniu",latestMsg.getMsg());
+
+                    if (isImage) {
+                        //如果是图片类型 显示消息内容为[图片]
+                        stringBuilder.append("[图片]");
+                    }else {
+                        //如果是文字类型 直接显示文字内容
+                        stringBuilder.append(latestMsg.getMsg());
+                    }
+                    mMsgTextView.setText(stringBuilder.toString());
                 }
             }
 

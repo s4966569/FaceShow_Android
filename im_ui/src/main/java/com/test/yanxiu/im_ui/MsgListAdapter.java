@@ -384,6 +384,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 Glide.with(mContext)
                         .load(R.drawable.im_chat_default)
                         .into(mAvatarImageView);
+                mNameTextView.setText("");
             }
 
             if (msg.getContentType() == 20) {
