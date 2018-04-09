@@ -736,8 +736,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                         }
 
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                        //fix  FSAPP-1369
+                        mMsgListAdapter.notifyDataSetChanged();
                         int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
                         if (num > 0) {
+                            //这里造成了 FSAPP-1369
                             mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
                             mMsgListAdapter.notifyItemRangeInserted(0, num);
                         }
