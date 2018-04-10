@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lzy.imagepicker.util.Utils;
+import com.test.yanxiu.common_base.utils.EscapeCharacterUtils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.db.DbMyMsg;
@@ -201,7 +202,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         //说明 有本地未发送成功的消息 找自己的名字……
                         for (DbMember member : topic.getMembers()) {
                             if (member.getImId() == Constants.imId) {
-                                stringBuilder.append(member.getName() + ":");
+                                stringBuilder.append(EscapeCharacterUtils.unescape(member.getName()) + ":");
                                 break;
                             }
                         }
@@ -210,14 +211,14 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         if (myLocalMsg.getContentType() == 20) {
                             stringBuilder.append("[图片]");
                         } else {
-                            stringBuilder.append(myLocalMsg.getMsg());
+                            stringBuilder.append(EscapeCharacterUtils.unescape(myLocalMsg.getMsg()));
                         }
                         //采用 local的时间作为topic 的最新消息时间 用于topic list 的排序
 //                        topic.latestMsgTime=myLocalMsg.getSendTime();
                     } else {
                         // 最新消息 后没有本人发送的消息
                         //将 找到的 sender 名字加入显示 string中
-                        stringBuilder.append(senderInfo == null ? " :" : senderInfo.getName() + ":");
+                        stringBuilder.append(senderInfo == null ? " :" :EscapeCharacterUtils.unescape( senderInfo.getName()) + ":");
                         //判断最后一条消息的类型是不是图片类
                         boolean isImage = !TextUtils.isEmpty(latestMsg.getViewUrl()) || !TextUtils.isEmpty(latestMsg.getLocalViewUrl())
                                 && TextUtils.equals("qiniu", latestMsg.getMsg());
@@ -225,8 +226,8 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                             //如果是图片类型 显示消息内容为[图片]
                             stringBuilder.append("[图片]");
                         } else {
-                            //如果是文字类型 直接显示文字内容
-                            stringBuilder.append(latestMsg.getMsg());
+                            //如果是文字类型 直接显示文字内容 并对转义字符进行处理
+                            stringBuilder.append(EscapeCharacterUtils.unescape(latestMsg.getMsg()));
                         }
                     }
                     mMsgTextView.setText(stringBuilder.toString());

@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.test.yanxiu.common_base.utils.EscapeCharacterUtils;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -379,7 +380,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .placeholder(R.drawable.icon_chat_unknown)
                         .error(R.drawable.icon_chat_unknown)
                         .into(mAvatarImageView);
-                mNameTextView.setText(sender.getName());
+                //对用户名字进行转义处理
+                mNameTextView.setText(EscapeCharacterUtils.unescape(sender.getName()));
             }else {
                 Glide.with(mContext)
                         .load(R.drawable.im_chat_default)
@@ -440,8 +442,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             } else {
                 mMsgTextView.setVisibility(View.VISIBLE);
                 mMsgImageView.setVisibility(View.GONE);
-
-                mMsgTextView.setText(msg.getMsg());
+                //对聊天内容中的转义字符进行处理
+                mMsgTextView.setText(EscapeCharacterUtils.unescape(msg.getMsg()));
             }
 
             mAvatarImageView.setOnClickListener(new View.OnClickListener() {

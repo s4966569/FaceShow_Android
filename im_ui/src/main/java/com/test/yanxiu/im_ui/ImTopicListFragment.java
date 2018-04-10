@@ -66,7 +66,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private RecyclerView mTopicListRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    public static final int ACTIVITY_RESULT_REMOVED_USER=0X33;
+    public static final int ACTIVITY_RESULT_REMOVED_USER = 0X33;
     private List<DbTopic> topics = new ArrayList<>();
 
     /**
@@ -131,7 +131,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             for (DbMsg mergedMsg : topic.mergedMsgs) {
                 if (mergedMsg instanceof DbMyMsg) {
                     if (((DbMyMsg) mergedMsg).getState() == DbMyMsg.State.Success.ordinal()) {
-                        if (!TextUtils.isEmpty(mergedMsg.getViewUrl())&&mergedMsg.getLocalViewUrl() != null) {
+                        if (!TextUtils.isEmpty(mergedMsg.getViewUrl()) && mergedMsg.getLocalViewUrl() != null) {
                             mergedMsg.setLocalViewUrl(null);
                         }
                     }
@@ -384,6 +384,41 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         });
     }
 
+    private void mergeMsgHttpAndLocal(DbTopic dbTopic, List<ImMsg> newMsgList) {
+        //获取新的列表中 有 上次的,MQTT 推送数据 进行本地更新 以mergedMsg 为主体
+        Iterator<ImMsg> imMsgIterator = newMsgList.iterator();
+        Iterator<DbMsg> dbMsgIterator = dbTopic.mergedMsgs.iterator();
+
+        ImMsg imMsg;
+        //已有数据的更新
+        for (DbMsg dbMsg : dbTopic.mergedMsgs) {
+            if (dbMsg.getFrom().equals("mqtt")) {
+                while (imMsgIterator.hasNext()) {
+                    //遍历寻找
+                    imMsg = imMsgIterator.next();
+                    if (imMsg.reqId.equals(dbMsg.getReqId())){
+                        DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+                        //在 新列表中删除数据
+                        imMsgIterator.remove();
+                    }
+                }
+            }
+        }
+        //将新数据插入数据库
+        List<DbMsg> newDbMsgs=new ArrayList<>(newMsgList.size());
+        DbMsg nDbMsg=null;
+        while (imMsgIterator.hasNext()){
+          nDbMsg=  DatabaseDealer.updateDbMsgWithImMsg(imMsgIterator.next(),"http",Constants.imId);
+          newDbMsgs.add(nDbMsg);
+        }
+        //原有数据与新数据的合并 以msgid 最为区分
+
+
+
+
+    }
+
+
     public ServiceConnection mqttServiceConnection = new ServiceConnection() {
 
 
@@ -478,7 +513,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 //dbTopic.mergedMsgs.add(0, dbMsg);
                 DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
                 //判断 如果mqtt 传过来的是自己发送的消息 不显示红点
-                dbTopic.setShowDot(msg.senderId!= Constants.imId);
+                dbTopic.setShowDot(msg.senderId != Constants.imId);
                 dbTopic.save();
                 break;
             }
@@ -508,7 +543,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
      * 通过请求用户的最新 topic 列表 检查 通知有除名的 topic
      * 貌似也可以用 topic id  来获取对应 topic 的 member 来检查自己是否还在 memberlist 中
      * 但 已被移除的 member 能否通过 topicid 获取 topic member 信息？
-     * */
+     */
     private void checkUserRemove(final MqttProtobufDealer.TopicChangeEvent event) {
         //方案一  请求获取最新的 topic 列表 看是否还有 这个 topic
         isUserInTopicByTopicList(event);
@@ -518,7 +553,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     /**
      * 获取当前用户的 topic 列表  判断用户是否还在这个 topic 中
-     * */
+     */
     private void isUserInTopicByTopicList(final MqttProtobufDealer.TopicChangeEvent event) {
         TopicGetMemberTopicsRequest getMemberTopicsRequest = new TopicGetMemberTopicsRequest();
         getMemberTopicsRequest.imToken = Constants.imToken;
@@ -526,8 +561,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // topic list 请求成功 可以进行一次刷新操作
-                boolean inTopic=false;
-                int groupTopicNum=0;
+                boolean inTopic = false;
+                int groupTopicNum = 0;
                 for (ImTopic imTopic : ret.data.topic) {
                     //累加 群聊的数量 可以判断目前用户所在的班级数量
                     if (imTopic.topicType.equals("2")) {
@@ -536,23 +571,23 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                     if (imTopic.topicId == event.topicId) {
                         //当前用户依然在 topic 中 刷新一次？
-                        inTopic=true;
+                        inTopic = true;
                     }
                 }
                 //首先判断用户是否被移除
-                if (!inTopic){
+                if (!inTopic) {
 
                     //在 topic 中删除
-                    Iterator<DbTopic> iterator=topics.iterator();
-                    DbTopic removedTopic=null;
+                    Iterator<DbTopic> iterator = topics.iterator();
+                    DbTopic removedTopic = null;
                     while (iterator.hasNext()) {
-                        removedTopic=iterator.next();
-                        if (removedTopic.getTopicId()==event.topicId) {
+                        removedTopic = iterator.next();
+                        if (removedTopic.getTopicId() == event.topicId) {
                             try {
-                                Toast.makeText(getContext(),"【已被移出"+ removedTopic.getGroup()+"】",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "【已被移出" + removedTopic.getGroup() + "】", Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
 //                        e.printStackTrace();
-                                Log.e(TAG, "toast crash : " );
+                                Log.e(TAG, "toast crash : ");
                             }
                             //在UI 列表中删除
                             iterator.remove();
@@ -565,14 +600,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     //取消目标 topic 的 mqtt 的订阅
                     binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
                     //判断栈顶Activity 如果聊天界面开启 先关闭聊天界面 然后在mainactivity的onActivityResult 中进行logout
-                    Activity currentTopActivity=ActivityManger.getTopActivity();
+                    Activity currentTopActivity = ActivityManger.getTopActivity();
                     if ("ImMsgListActivity".equals(currentTopActivity.getClass().getSimpleName())) {
                         //这里需要对数量进行判断
-                        Intent intent=currentTopActivity.getIntent();
-                        intent.putExtra("groupTopicNum",groupTopicNum);
-                        currentTopActivity.setResult(ACTIVITY_RESULT_REMOVED_USER,intent);
+                        Intent intent = currentTopActivity.getIntent();
+                        intent.putExtra("groupTopicNum", groupTopicNum);
+                        currentTopActivity.setResult(ACTIVITY_RESULT_REMOVED_USER, intent);
                         currentTopActivity.finish();
-                    }else if (mOnUserRemoveFromClaszCallback!=null){
+                    } else if (mOnUserRemoveFromClaszCallback != null) {
                         //回调给 mainactivity 用户被除名
                         mOnUserRemoveFromClaszCallback.onRemoved(groupTopicNum);
                     }
@@ -588,7 +623,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     /**
      * 通过 获取 发生成员变化的 topic 成员列表来 判断当前用户是否还在 topic 中
-     * */
+     */
 //    private void isUserInTopicByMemberid(final MqttProtobufDealer.TopicChangeEvent event) {
 //        //方案二  通过 topicid 获取 member 列表
 //        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
@@ -857,8 +892,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     /**
      * 检查是否还有显示红点的topic
-     * */
-    private boolean shouldShowRedDot(){
+     */
+    private boolean shouldShowRedDot() {
         Log.i(TAG, "shouldShowRedDot: ");
         for (DbTopic topic : topics) {
             if (topic.isShowDot()) {

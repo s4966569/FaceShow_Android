@@ -808,7 +808,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
-//        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
     }
     //endregion
 
