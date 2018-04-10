@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
@@ -46,6 +47,14 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
     private int mSelcetPosition = 0;
     private List<GetStudentClazsesResponse.ClazsInfosBean> data = new ArrayList<>();
 
+    /**
+     * 用户选择班级的type
+     * 强制选择还是 随便选择
+     * */
+    public static final int NORMAL_TYPE=0;
+    public static final int FORCE_TYPE=1;
+    int chooseType=NORMAL_TYPE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,8 +89,31 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
         });
     }
 
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        if (chooseType==NORMAL_TYPE) {
+            super.onBackPressed();
+        }else if(chooseType==FORCE_TYPE){
+           Toast.makeText(ChooseClassActivity.this, "请选择班级", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void initTitle() {
-        mLeftImage.setVisibility(View.VISIBLE);
+        int type=getIntent().getIntExtra("type",0);
+        if (type==NORMAL_TYPE) {
+            // type 0 代表 不需要强制选择班级
+            mLeftImage.setVisibility(View.VISIBLE);
+            mLeftImage.setEnabled(true);
+        }else if (type==FORCE_TYPE){
+            //type 1 代表需要强制用户选择班级
+            mLeftImage.setVisibility(View.INVISIBLE);
+            mLeftImage.setEnabled(false);
+        }
+
         mTitleLayoutTitle.setText("选择班级");
         mTitleLayoutTitle.setVisibility(View.VISIBLE);
         mTitleLayoutRightTxt.setText(R.string.sure);

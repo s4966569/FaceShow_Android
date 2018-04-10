@@ -225,8 +225,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 /*点击 切换班级按钮 在onactivityresult 回调中重置 抽屉的数据*/
 //                mDrawerLayout.closeDrawer(mLeftDrawerView);
                 setCanCloseDrawer();
-                toChooseClassActivity(new Intent(MainActivity.this,
-                        ChooseClassActivity.class), CHOOSE_CLASS);
+                //普通模式 进入 班级选择界面
+                normalChooseClass();
             }
         });
         /*设置版本号显示*/
@@ -328,8 +328,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     // MQTT 的处理在 onDestroy()中进行
                 }else {
                     //还有班级 进入到班级选择页
-                    toChooseClassActivity(new Intent(MainActivity.this,
-                            ChooseClassActivity.class), CHOOSE_CLASS);
+                    forceChooseClasz();
                 }
 
             }
@@ -337,6 +336,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
 
         showCurrentFragment(0);
+    }
+
+    private void normalChooseClass(){
+        Intent intent=new Intent(MainActivity.this,
+                ChooseClassActivity.class);
+        intent.putExtra("type",ChooseClassActivity.NORMAL_TYPE);
+        toChooseClassActivity(intent, CHOOSE_CLASS);
+
+    }
+    private void forceChooseClasz() {
+        Intent intent=new Intent(MainActivity.this,
+                ChooseClassActivity.class);
+        intent.putExtra("type",ChooseClassActivity.FORCE_TYPE);
+        toChooseClassActivity(intent, CHOOSE_CLASS);
     }
 
     private void initListener() {
@@ -676,8 +689,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     logout();
                 }else {
                     //还有班级 进入到班级选择页
-                    toChooseClassActivity(new Intent(MainActivity.this,
-                            ChooseClassActivity.class), CHOOSE_CLASS);
+                   forceChooseClasz();
                 }
             }else {
                 mNaviFragmentFactory.getImFragment().onMsgListActivityReturned();
