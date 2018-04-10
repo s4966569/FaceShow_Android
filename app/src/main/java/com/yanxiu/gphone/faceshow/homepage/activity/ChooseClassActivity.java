@@ -103,12 +103,12 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
     }
 
     private void initTitle() {
-        int type=getIntent().getIntExtra("type",0);
-        if (type==NORMAL_TYPE) {
+        chooseType=getIntent().getIntExtra("type",NORMAL_TYPE);
+        if (chooseType==NORMAL_TYPE) {
             // type 0 代表 不需要强制选择班级
             mLeftImage.setVisibility(View.VISIBLE);
             mLeftImage.setEnabled(true);
-        }else if (type==FORCE_TYPE){
+        }else if (chooseType==FORCE_TYPE){
             //type 1 代表需要强制用户选择班级
             mLeftImage.setVisibility(View.INVISIBLE);
             mLeftImage.setEnabled(false);
