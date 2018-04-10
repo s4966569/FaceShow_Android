@@ -222,8 +222,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 for (ImTopic imTopic : ret.data.topic) {
                     binder.subscribeTopic(Long.toString(imTopic.topicId));
                 }
+                //检查用户是否在离线的时候被topic 删除
+                checkBeenRemoveFromAnyTopic(ret);
 
                 updateTopicsFromHttpAddMembers(ret);
+
             }
 
             @Override
@@ -231,6 +234,59 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
             }
         });
+    }
+
+    /**
+     * 用 HTTP 请求的 topic 列表与本地数据看的topic 类表进行比较
+     * 如果有用户被某些topic 删除 弹出提示跳转 班级选择界面
+     * */
+    private void checkBeenRemoveFromAnyTopic(TopicGetMemberTopicsResponse ret) {
+        List<DbTopic> dbHistoryTopic=new ArrayList<>();
+        dbHistoryTopic.addAll(topics);
+        Iterator<DbTopic> dbTopicIterator=dbHistoryTopic.iterator();
+
+        DbTopic dt=null;
+        while (dbTopicIterator.hasNext()){
+            dt=dbTopicIterator.next();
+            for (ImTopic imTopic : ret.data.topic) {
+                if (imTopic.topicId==dt.getTopicId()){
+                    dbTopicIterator.remove();
+                    break;
+                }
+            }
+        }
+        if (dbHistoryTopic.size()!=0) {
+            //本地有服务器上没有的topic 证明用户在这个topic 中被删除
+            if (mOnUserRemoveFromClaszCallback != null) {
+                try {
+                    Toast.makeText(getContext(), "【已被移出" + dbHistoryTopic.get(0).getGroup() + "】", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+//                        e.printStackTrace();
+                    Log.e(TAG, "toast crash : ");
+                }
+
+                for (DbTopic dbTopic : dbHistoryTopic) {
+                    // 在数据库中删除
+                    DatabaseDealer.deleteTopicById(dbTopic.getTopicId());
+                    // topic 中删除
+                    for (DbTopic topic : topics) {
+                        if (topic.getTopicId()==dbTopic.getTopicId()){
+                            topics.remove(topic);
+                            break;
+                        }
+                    }
+                }
+
+                //获取群聊数量
+                int remainGroup=0;
+                for (DbTopic topic : topics) {
+                    if (topic.getType().equals("2")){
+                        remainGroup++;
+                    }
+                }
+                mOnUserRemoveFromClaszCallback.onRemoved(remainGroup);
+            }
+        }
     }
 
     // 3，从Http获取需要更新的topic的信息，完成后写入DB，更新UI
