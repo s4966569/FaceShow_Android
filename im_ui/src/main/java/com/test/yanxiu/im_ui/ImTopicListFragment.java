@@ -366,9 +366,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     dbTopic.setShowDot(false);
                     dbTopic.save();
-                } else {
-                    //http 请求 需要展示红点  通知 homeFragment 展示红点
-                    noticeShowRedDot();
                 }
                 //通知imMsgListActivity刷新列表消息
                 MqttProtobufDealer.onTopicUpdate();
@@ -482,8 +479,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
                 dbTopic.setShowDot(true);
                 dbTopic.save();
-                //回调给 主页  显示 新消息红点
-                noticeShowRedDot();
                 break;
             }
         }
@@ -721,7 +716,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             dbTopic.setShowDot(false);
             dbTopic.save();
             //通知mainactivity 是否显示红点
-            noticeShowRedDot();
             curTopic = dbTopic;
             msgShownTopics.add(dbTopic);
         }
