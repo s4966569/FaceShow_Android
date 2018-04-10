@@ -808,13 +808,14 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private void rearrangeTopics() {
         //首先按照 最新消息时间进行排序
         Log.i(TAG, "rearrangeTopics: ");
+        //只对 服务器消息时间进行排序
         Collections.sort(topics, DatabaseDealer.topicComparator);
-
+        //增加本地离线消息时间排序
+//        Collections.sort(topics, DatabaseDealer.topicComparatorWithLocalMsg);
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
         for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
             DbTopic topic = i.next();
-
             if (topic.getType().equals("1")) {
                 // 私聊
                 i.remove();

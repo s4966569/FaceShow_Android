@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.lzy.imagepicker.util.Utils;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
+import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_ui.callback.OnRecyclerViewItemClickCallback;
@@ -31,7 +32,7 @@ import java.util.Locale;
  */
 
 public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.TopicViewHolder> {
-    private final String TAG=getClass().getSimpleName();
+    private final String TAG = getClass().getSimpleName();
     private Context mContext;
     private List<DbTopic> mDatas;
     private OnRecyclerViewItemClickCallback mOnItemClickCallback;
@@ -60,22 +61,22 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 //        }else {
 //            setVisibile(true,holder.itemView);
 //        }
-        setVisibile(true,holder.itemView);
+        setVisibile(true, holder.itemView);
         holder.setData(topic);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mOnItemClickCallback != null) {
-                    mOnItemClickCallback.onItemClick(position,topic);
+                    mOnItemClickCallback.onItemClick(position, topic);
                 }
             }
         });
     }
 
-    public void setVisibile(boolean isVisible,View view) {
+    public void setVisibile(boolean isVisible, View view) {
         RecyclerView.LayoutParams param = (RecyclerView.LayoutParams) view.getLayoutParams();
         if (isVisible) {
-            param.height = Utils.dp2px(mContext,71);// 这里注意使用自己布局的根布局类型
+            param.height = Utils.dp2px(mContext, 71);// 这里注意使用自己布局的根布局类型
             param.width = RelativeLayout.LayoutParams.MATCH_PARENT;// 这里注意使用自己布局的根布局类型
             view.setVisibility(View.VISIBLE);
         } else {
@@ -145,7 +146,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         // 2, 显示对方昵称(班级名)
                         //mSenderTextView.setText(member.getName() + "(" + topic.getGroup() + ")");
                         // 私聊不显示（班级）
-                        Log.i(TAG, "setData: "+member.getName());
+                        Log.i(TAG, "setData: " + member.getName());
                         mSenderTextView.setText(member.getName());
                         break;
                     }
@@ -156,13 +157,13 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
 
                     // 判断是否是 图片 消息
-                    boolean isImage=!TextUtils.isEmpty(latestMsg.getViewUrl())||!TextUtils.isEmpty(latestMsg.getLocalViewUrl())
-                            &&TextUtils.equals("qiniu",latestMsg.getMsg());
+                    boolean isImage = !TextUtils.isEmpty(latestMsg.getViewUrl()) || !TextUtils.isEmpty(latestMsg.getLocalViewUrl())
+                            && TextUtils.equals("qiniu", latestMsg.getMsg());
 
                     // 4, 显示消息内容
                     if (isImage) {
                         mMsgTextView.setText("[图片]");
-                    }else {
+                    } else {
                         mMsgTextView.setText(latestMsg.getMsg());
                     }
                 }
@@ -179,32 +180,54 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                     // 4, 显示消息内容 这里 如果有本地数据库没有的 已经被删除的sender 会不显示最新消息
 
                     //判断是否有sender 信息 先检查 topic member 列表
-                    StringBuilder stringBuilder=new StringBuilder();
-                    DbMember senderInfo=null;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    DbMember senderInfo = null;
                     for (DbMember member : topic.getMembers()) {
                         if (member.getImId() == latestMsg.getSenderId()) {
-                            senderInfo=member;
-                            Log.i(TAG, "setData:  member  in list "+member.getName());
+                            senderInfo = member;
+                            Log.i(TAG, "setData:  member  in list " + member.getName());
                             break;
                         }
                     }
                     //如果member列表中没有（用户已被踢出topic） 查询本地数据库是否含有
-                    if (senderInfo==null) {
-                        senderInfo= DatabaseDealer.getMemberById(latestMsg.getSenderId());
-                        Log.i(TAG, "setData: sender try to find in db "+(senderInfo!=null));
+                    if (senderInfo == null) {
+                        senderInfo = DatabaseDealer.getMemberById(latestMsg.getSenderId());
+                        Log.i(TAG, "setData: sender try to find in db " + (senderInfo != null));
                     }
-                    //将 找到的 sender 名字加入显示 string中
-                    stringBuilder.append(senderInfo==null?" :":senderInfo.getName()+":");
-                    //判断最后一条消息的类型是不是图片类
-                    boolean isImage=!TextUtils.isEmpty(latestMsg.getViewUrl())||TextUtils.isEmpty(latestMsg.getLocalViewUrl())
-                            &&TextUtils.equals("qiniu",latestMsg.getMsg());
+                    // 检查 离线消息
+                    DbMyMsg myLocalMsg  = DatabaseDealer.getLatestMyMsgByMsgId(latestMsg.getMsgId());
 
-                    if (isImage) {
-                        //如果是图片类型 显示消息内容为[图片]
-                        stringBuilder.append("[图片]");
-                    }else {
-                        //如果是文字类型 直接显示文字内容
-                        stringBuilder.append(latestMsg.getMsg());
+                    if (myLocalMsg != null) {
+                        //说明 有本地未发送成功的消息 找自己的名字……
+                        for (DbMember member : topic.getMembers()) {
+                            if (member.getImId() == Constants.imId) {
+                                stringBuilder.append(member.getName() + ":");
+                                break;
+                            }
+                        }
+
+                        //将本地消息作为最新消息
+                        if (myLocalMsg.getContentType() == 20) {
+                            stringBuilder.append("[图片]");
+                        } else {
+                            stringBuilder.append(myLocalMsg.getMsg());
+                        }
+                        //采用 local的时间作为topic 的最新消息时间 用于topic list 的排序
+//                        topic.latestMsgTime=myLocalMsg.getSendTime();
+                    } else {
+                        // 最新消息 后没有本人发送的消息
+                        //将 找到的 sender 名字加入显示 string中
+                        stringBuilder.append(senderInfo == null ? " :" : senderInfo.getName() + ":");
+                        //判断最后一条消息的类型是不是图片类
+                        boolean isImage = !TextUtils.isEmpty(latestMsg.getViewUrl()) || !TextUtils.isEmpty(latestMsg.getLocalViewUrl())
+                                && TextUtils.equals("qiniu", latestMsg.getMsg());
+                        if (isImage) {
+                            //如果是图片类型 显示消息内容为[图片]
+                            stringBuilder.append("[图片]");
+                        } else {
+                            //如果是文字类型 直接显示文字内容
+                            stringBuilder.append(latestMsg.getMsg());
+                        }
                     }
                     mMsgTextView.setText(stringBuilder.toString());
                 }
