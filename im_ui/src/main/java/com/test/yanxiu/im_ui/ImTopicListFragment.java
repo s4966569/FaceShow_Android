@@ -477,7 +477,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             if (dbTopic.getTopicId() == msg.topicId) {
                 //dbTopic.mergedMsgs.add(0, dbMsg);
                 DatabaseDealer.pendingMsgToTopic(dbMsg, dbTopic);
-                dbTopic.setShowDot(true);
+                //判断 如果mqtt 传过来的是自己发送的消息 不显示红点
+                dbTopic.setShowDot(msg.senderId!= Constants.imId);
                 dbTopic.save();
                 break;
             }
