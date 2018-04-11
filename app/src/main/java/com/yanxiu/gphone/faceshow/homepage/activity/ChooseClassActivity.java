@@ -87,6 +87,7 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
                 mSelcetPosition = postion;
             }
         });
+
     }
 
     /**
@@ -109,7 +110,7 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
             mLeftImage.setVisibility(View.VISIBLE);
             mLeftImage.setEnabled(true);
         }else if (chooseType==FORCE_TYPE){
-            //type 1 代表需要强制用户选择班级
+            //type 1 代表需要强制用户选择班级 并且 此时 sp中的classinfor 已经失效
             mLeftImage.setVisibility(View.INVISIBLE);
             mLeftImage.setEnabled(false);
         }
