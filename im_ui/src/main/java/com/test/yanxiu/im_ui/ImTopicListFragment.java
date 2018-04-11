@@ -406,6 +406,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             }
                         }
                         continue;
+                    }else if (uiMsg.getFrom().equals("local")){
+                        //本地数据也不删除
+                        continue;
                     }
                     i.remove();
                 }
