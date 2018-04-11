@@ -129,11 +129,82 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 return;
             }
 
-
             DbMsg latestMsg = null;
             if (topic.mergedMsgs.size() > 0) {
                 latestMsg = topic.mergedMsgs.get(0);
             }
+            //群聊与私聊的不同 在 名称与图标  最新消息的显示一样
+            //判断 聊天类型
+//            if (topic.getType().equals("1")) {
+//                //私聊 显示对方头像 和 topic 名称
+//                for (DbMember member : topic.getMembers()) {
+//                    if (member.getImId() != Constants.imId) {
+//                        Glide.with(mContext)
+//                                .load(member.getAvatar())
+//                                .placeholder(R.drawable.icon_chat_unknown)
+//                                .error(R.drawable.icon_chat_unknown)
+//                                .into(mAvatarImageView);
+//                        mSenderTextView.setText(member.getName());
+//                        break;
+//                    }
+//                }
+//            } else if (topic.getType().equals("2")) {
+//                //群聊
+//                // 1, 显示班级默认图片
+//                mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
+//                // 2, 显示班级群聊(班级名) 在消息判断外侧，保证列表 显示群组名称
+//                mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
+//            }
+//
+//            //显示最新消息
+//            if (latestMsg == null) {
+//                //topic 最新消息为空 最新消息显示空
+//                return;
+//            }
+//            //1 判断本地消息
+//            DbMsg localMsg = DatabaseDealer.getLatestMyMsgByMsgId(latestMsg.getMsgId());
+//            if (localMsg != null) {
+//                latestMsg = localMsg;
+//            }
+//            //2 获取最后一条信息的发送者信息
+//            DbMember sender = null;
+//            //member列表中查找
+//            for (DbMember member : topic.getMembers()) {
+//                if (latestMsg.getSenderId() == member.getImId()) {
+//                    sender = member;
+//                }
+//            }
+//            // 本地用户数据库
+//            if (sender == null) {
+//                sender = DatabaseDealer.getMemberById(sender.getImId());
+//            }
+//
+//            //显示最有一条信息的发送者
+//            StringBuilder latestMsgTxt = new StringBuilder();
+//            latestMsgTxt.append(sender == null ? "" : EscapeCharacterUtils.unescape(sender.getName()));
+//            latestMsgTxt.append(":");
+//
+//            //3 确定消息内容
+//            if (latestMsg.getContentType()==10) {
+//                //文字信息 并对转义字符处理
+//                latestMsgTxt.append(EscapeCharacterUtils.unescape(latestMsg.getMsg()));
+//            }else if (latestMsg.getContentType()==20){
+//                //图片信息
+//                latestMsgTxt.append("[图片]");
+//            }else {
+//                // TODO: 2018/4/11  预留 语音 视频
+//            }
+//            mMsgTextView.setText(latestMsgTxt.toString());
+//
+//            //4 显示消息时间
+//            mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
+//            //显示红点
+//            mRedDotCircleView.setVisibility(View.INVISIBLE);
+//            if (topic.isShowDot()) {
+//                mRedDotCircleView.setVisibility(View.VISIBLE);
+//            }
+
+
 
             if (topic.getType().equals("1")) { // 私聊
                 for (DbMember member : topic.getMembers()) {
@@ -152,25 +223,33 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         break;
                     }
                 }
-
                 if (latestMsg != null) {
                     // 3, 显示消息时间
                     mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
-
-                    // 判断是否是 图片 消息
-                    boolean isImage = !TextUtils.isEmpty(latestMsg.getViewUrl()) || !TextUtils.isEmpty(latestMsg.getLocalViewUrl())
-                            && TextUtils.equals("qiniu", latestMsg.getMsg());
-
-                    // 4, 显示消息内容
-                    if (isImage) {
-                        mMsgTextView.setText("[图片]");
+                    //检查本地消息
+                    DbMsg localMsg = DatabaseDealer.getLatestMyMsgByMsgId(latestMsg.getMsgId());
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (localMsg != null) {
+                        //将本地消息作为最新消息
+                        if (localMsg.getContentType() == 20) {
+                            mMsgTextView.setText("[图片]");
+                        } else {
+                            mMsgTextView.setText(EscapeCharacterUtils.unescape(localMsg.getMsg()));
+                        }
                     } else {
-                        mMsgTextView.setText(latestMsg.getMsg());
+                        //没有本地消息 // 判断是否是 图片 消息
+                        boolean isImage = !TextUtils.isEmpty(latestMsg.getViewUrl()) || !TextUtils.isEmpty(latestMsg.getLocalViewUrl())
+                                && TextUtils.equals("qiniu", latestMsg.getMsg());
+
+                        // 4, 显示消息内容
+                        if (isImage) {
+                            mMsgTextView.setText("[图片]");
+                        } else {
+                            mMsgTextView.setText(latestMsg.getMsg());
+                        }
                     }
                 }
-            }
-
-            if (topic.getType().equals("2")) { // 群聊
+            } else if (topic.getType().equals("2")) { // 群聊
                 // 1, 显示班级默认图片
                 mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
                 // 2, 显示班级群聊(班级名) 在消息判断外侧，保证列表 显示群组名称
@@ -196,7 +275,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         Log.i(TAG, "setData: sender try to find in db " + (senderInfo != null));
                     }
                     // 检查 离线消息
-                    DbMyMsg myLocalMsg  = DatabaseDealer.getLatestMyMsgByMsgId(latestMsg.getMsgId());
+                    DbMyMsg myLocalMsg = DatabaseDealer.getLatestMyMsgByMsgId(latestMsg.getMsgId());
 
                     if (myLocalMsg != null) {
                         //说明 有本地未发送成功的消息 找自己的名字……
@@ -218,7 +297,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                     } else {
                         // 最新消息 后没有本人发送的消息
                         //将 找到的 sender 名字加入显示 string中
-                        stringBuilder.append(senderInfo == null ? " :" :EscapeCharacterUtils.unescape( senderInfo.getName()) + ":");
+                        stringBuilder.append(senderInfo == null ? " :" : EscapeCharacterUtils.unescape(senderInfo.getName()) + ":");
                         //判断最后一条消息的类型是不是图片类
                         boolean isImage = !TextUtils.isEmpty(latestMsg.getViewUrl()) || !TextUtils.isEmpty(latestMsg.getLocalViewUrl())
                                 && TextUtils.equals("qiniu", latestMsg.getMsg());
