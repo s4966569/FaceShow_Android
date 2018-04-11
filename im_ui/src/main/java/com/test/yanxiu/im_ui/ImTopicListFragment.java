@@ -407,7 +407,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         }
                         continue;
                     }else if (uiMsg.getFrom().equals("local")){
-                        //本地数据也不删除
+                        // 数据库中记录的来自local 的消息 需要判断消息状态 ，如果是已经发送成功的删除
+                        for (ImMsg imMsg : ret.data.topicMsg) {
+                            if (uiMsg.getReqId().equals(imMsg.reqId)) {
+                                //已经发送成功的 消息 更新后移除
+                                DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+                                i.remove();
+                                break;
+                            }
+                        }
                         continue;
                     }
                     i.remove();
