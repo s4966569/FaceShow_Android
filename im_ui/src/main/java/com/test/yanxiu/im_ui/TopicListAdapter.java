@@ -135,6 +135,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             }
             //群聊与私聊的不同 在 名称与图标  最新消息的显示一样
             //判断 聊天类型
+            // TODO: 2018/4/11  整理后的写法  首次登陆会崩溃 还未查 
 //            if (topic.getType().equals("1")) {
 //                //私聊 显示对方头像 和 topic 名称
 //                for (DbMember member : topic.getMembers()) {
@@ -330,6 +331,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             String nowStr = formatter.format(now);
             String dateStr = formatter.format(date);
 
+
             // 由于server time可能有误差，所有未来时间也当做今天
             if ((nowStr.equals(dateStr)) || (date.getTime() > now.getTime())) {
                 // 在同一天，显示"上午 10:36"
@@ -349,10 +351,17 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 ret = "昨天";
                 return ret;
             }
+            //如果日期小于6天 显示星期
+            if ((nowZero.getTime()-date.getTime())<6*24*60*60*1000){
+                // 星期三 周三->星期三
+                SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE ", Locale.CHINA);
+                ret = formatter2.format(date);
+                return ret;
+            }
 
-            // 星期三 周三->星期三
-            SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE ", Locale.CHINA);
-            ret = formatter2.format(date);
+            //时间早于6天  显示具体日期
+            SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日",Locale.CHINA);
+            ret=format.format(date);
             return ret;
         }
     }

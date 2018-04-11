@@ -842,8 +842,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     if (ret.getData() != null && ret.getData().getClazsInfos() != null && ret.getData().getClazsInfos().size() > 0) {
                         if (ret.getData().getClazsInfos().size()!=1) {
                             /*当只有一个班级的时候 什么都不做*/
-                            toChooseClassActivity(new Intent(MainActivity.this,
-                                    ChooseClassActivity.class), CHOOSE_CLASS);
+                            forceChooseClasz();
                         }
                     } else {
                         mRootView.showOtherErrorView("暂无班级");

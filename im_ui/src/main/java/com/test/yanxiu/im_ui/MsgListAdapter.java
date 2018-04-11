@@ -335,10 +335,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 return ret;
             }
 
-            // 星期三 周三->星期三
-            SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
-            ret = formatter2.format(date) + " " + timeFormatter.format(date);
-
+            //如果日期小于6天 显示星期
+            if ((nowZero.getTime()-date.getTime())<6*24*60*60*1000) {
+                // 星期三 周三->星期三
+                SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
+                ret = formatter2.format(date) + " " + timeFormatter.format(date);
+                return ret;
+            }
+            //时间早于6天  显示具体日期
+            SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日",Locale.CHINA);
+            ret=format.format(date);
             return ret;
         }
     }
