@@ -206,9 +206,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
 
         mMsgListRecyclerView = findViewById(R.id.msg_list_recyclerview);
-        mMsgListRecyclerView.setLayoutManager(new FoucsLinearLayoutManager(this,
+        FoucsLinearLayoutManager layoutManager=new FoucsLinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
-                false));
+                false);
+//        layoutManager.setStackFromEnd(false);
+        mMsgListRecyclerView.setLayoutManager(layoutManager);
         ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
 
@@ -226,7 +228,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.notifyDataSetChanged();
 
         mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
-
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
         //会造成进入界面后 从第一条滚动到最后一条的 效果
 //        mMsgListRecyclerView.post(new Runnable() {
@@ -808,7 +809,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
-        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+//        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+        mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount()-1);
     }
     //endregion
 

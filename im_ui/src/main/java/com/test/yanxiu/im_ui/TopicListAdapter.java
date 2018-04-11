@@ -360,7 +360,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             }
 
             //时间早于6天  显示具体日期
-            SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日",Locale.CHINA);
+            SimpleDateFormat format=new SimpleDateFormat("MM月dd日",Locale.CHINA);
             ret=format.format(date);
             return ret;
         }

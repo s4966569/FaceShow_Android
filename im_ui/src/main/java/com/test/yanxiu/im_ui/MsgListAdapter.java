@@ -343,7 +343,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 return ret;
             }
             //时间早于6天  显示具体日期
-            SimpleDateFormat format=new SimpleDateFormat("yyyy年MM月dd日",Locale.CHINA);
+            SimpleDateFormat format=new SimpleDateFormat("MM月dd日",Locale.CHINA);
             ret=format.format(date);
             return ret;
         }
