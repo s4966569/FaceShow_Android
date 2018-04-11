@@ -636,6 +636,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 //首先判断用户是否被移除
                 if (!inTopic) {
 
+                    //判断是否topic 已经进行了删除操作
+                    synchronized (topics){
+                        boolean hasRemovedTopic=true;
+                        for (DbTopic dbTopic : topics) {
+                            if (dbTopic.getTopicId()==event.topicId) {
+                                hasRemovedTopic=false;
+                                break;
+                            }
+                        }
+                        //避免重复操作
+                        if (hasRemovedTopic) {
+                            return ;
+                        }
+                    }
                     //在 topic 中删除
                     Iterator<DbTopic> iterator = topics.iterator();
                     DbTopic removedTopic = null;
