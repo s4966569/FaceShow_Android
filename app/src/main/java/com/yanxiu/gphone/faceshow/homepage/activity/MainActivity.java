@@ -225,8 +225,8 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 /*点击 切换班级按钮 在onactivityresult 回调中重置 抽屉的数据*/
 //                mDrawerLayout.closeDrawer(mLeftDrawerView);
                 setCanCloseDrawer();
-                toChooseClassActivity(new Intent(MainActivity.this,
-                        ChooseClassActivity.class), CHOOSE_CLASS);
+                //普通模式 进入 班级选择界面
+                normalChooseClass();
             }
         });
         /*设置版本号显示*/
@@ -311,8 +311,10 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
         mNaviFragmentFactory.getImFragment().setNewMessageListener(new ImTopicListFragment.NewMessageListener() {
 
             @Override
-            public void onGetNewMessage() {
-                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.VISIBLE);
+            public void onGetNewMessage(boolean showRedDot) {
+                Log.i(TAG, "onGetNewMessage: showdot = "+showRedDot);
+                mBottomView.findViewById(R.id.im_red_circle)
+                        .setVisibility(showRedDot?View.VISIBLE:View.INVISIBLE);
             }
         });
         //用户 被删除班级事件监听
@@ -326,8 +328,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     // MQTT 的处理在 onDestroy()中进行
                 }else {
                     //还有班级 进入到班级选择页
-                    toChooseClassActivity(new Intent(MainActivity.this,
-                            ChooseClassActivity.class), CHOOSE_CLASS);
+                    forceChooseClasz();
                 }
 
             }
@@ -335,6 +336,20 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
 
         showCurrentFragment(0);
+    }
+
+    private void normalChooseClass(){
+        Intent intent=new Intent(MainActivity.this,
+                ChooseClassActivity.class);
+        intent.putExtra("type",ChooseClassActivity.NORMAL_TYPE);
+        toChooseClassActivity(intent, CHOOSE_CLASS);
+
+    }
+    private void forceChooseClasz() {
+        Intent intent=new Intent(MainActivity.this,
+                ChooseClassActivity.class);
+        intent.putExtra("type",ChooseClassActivity.FORCE_TYPE);
+        toChooseClassActivity(intent, CHOOSE_CLASS);
     }
 
     private void initListener() {
@@ -505,7 +520,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                 mNavIconViews[2].setEnabled(true);
                 mNavIconViews[3].setEnabled(false);
                 //点击 聊聊  清空 红点
-                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.INVISIBLE);
+//                mBottomView.findViewById(R.id.im_red_circle).setVisibility(View.INVISIBLE);
                 break;
             case R.id.title_layout_right_img:
                 ToastUtil.showToast(getApplicationContext(), "扫描");
@@ -674,8 +689,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     logout();
                 }else {
                     //还有班级 进入到班级选择页
-                    toChooseClassActivity(new Intent(MainActivity.this,
-                            ChooseClassActivity.class), CHOOSE_CLASS);
+                   forceChooseClasz();
                 }
             }else {
                 mNaviFragmentFactory.getImFragment().onMsgListActivityReturned();
@@ -828,8 +842,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
                     if (ret.getData() != null && ret.getData().getClazsInfos() != null && ret.getData().getClazsInfos().size() > 0) {
                         if (ret.getData().getClazsInfos().size()!=1) {
                             /*当只有一个班级的时候 什么都不做*/
-                            toChooseClassActivity(new Intent(MainActivity.this,
-                                    ChooseClassActivity.class), CHOOSE_CLASS);
+                            forceChooseClasz();
                         }
                     } else {
                         mRootView.showOtherErrorView("暂无班级");

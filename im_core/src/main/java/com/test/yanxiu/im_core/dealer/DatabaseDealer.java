@@ -263,9 +263,59 @@ public class DatabaseDealer {
         return topics;
     }
 
+    /**
+     * 用于 增加对离线消息的排序操作
+     * 由于本地时间与server 时间存在巨大差距
+     * 本地消息的时间可能比最新的 server时间还要 晚
+     *
+     * */
+    public static Comparator<DbTopic> topicComparatorWithLocalMsg=new Comparator<DbTopic>() {
+        @Override
+        public int compare(DbTopic topic1, DbTopic topic2) {
+            //首先检查 两个topic的 local 数据
+           DbMyMsg local1= DatabaseDealer.getLatestMyMsgByMsgId(topic1.latestMsgId);
+           DbMyMsg local2= DatabaseDealer.getLatestMyMsgByMsgId(topic2.latestMsgId);
+
+           //获取本地数据的最晚发送时间
+           long localLatest1=local1==null?-1:local1.getSendTime();
+           long localLatest2=local2==null?-1:local2.getSendTime();
+           //获取topic 的最新消息时间
+            long serverLatest1=topic1.latestMsgTime;
+            long serverLatest2=topic2.latestMsgTime;
+
+            //当完全由服务器时间进行比较的时候
+            if (localLatest1==-1&&localLatest2==-1) {
+                if (serverLatest1>serverLatest2) {
+                    return -1;
+                }else if (serverLatest1<serverLatest2){
+                    return 1;
+                }
+                return 0;
+            }else if(localLatest1!=-1&&localLatest2!=-1){
+               //当两者都为 本地时间进行比较时 直接对本地时间进行比较即可
+                if (serverLatest1>serverLatest2) {
+                    return -1;
+                }else if (serverLatest1<serverLatest2){
+                    return 1;
+                }
+                return 0;
+            }else if (localLatest1==-1&&localLatest2!=-1){
+                //topic 1 服务器时间 topic 2 为本地时间
+            }else if(localLatest1!=-1&&localLatest2==-1){
+
+            }
+
+            return 0;
+
+        }
+    };
+
     public static Comparator<DbTopic> topicComparator = new Comparator<DbTopic>() {
         @Override
         public int compare(DbTopic t1, DbTopic t2) {
+            //由于加入了离线消息的时间判断 这里要对离线消息进行比较
+
+
             long t1Time = t1.latestMsgTime;
             long t2Time = t2.latestMsgTime;
             if (t1Time < t2Time) {
@@ -463,6 +513,16 @@ public class DatabaseDealer {
 
     }
 
+    /**
+     * 获取到服务器返回的最新消息下 查找本地是否有 未发送成功msg
+     * 如果有 认为 本地未发送成功的mymsg 为最新消息 供topicList 展示
+     * */
+    public static DbMyMsg getLatestMyMsgByMsgId(long msgId){
+       DbMyMsg latestMyMsg= DataSupport.where("msgId = ?",Long.toString(msgId))
+                .order("sendTime desc")
+                .findFirst(DbMyMsg.class);
+       return latestMyMsg;
+    }
     //region util
 
     public static long getLatestMsgIdForTopic(long topicId) {

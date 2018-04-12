@@ -233,6 +233,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".homepage.activity.ChooseClassActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ninegrid.preview.ImagePreviewActivity"

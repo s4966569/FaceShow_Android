@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.test.yanxiu.common_base.utils.EscapeCharacterUtils;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
 import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.im_core.db.DbMember;
@@ -334,10 +335,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 return ret;
             }
 
-            // 星期三 周三->星期三
-            SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
-            ret = formatter2.format(date) + " " + timeFormatter.format(date);
-
+            //如果日期小于6天 显示星期
+            if ((nowZero.getTime()-date.getTime())<6*24*60*60*1000) {
+                // 星期三 周三->星期三
+                SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
+                ret = formatter2.format(date) + " " + timeFormatter.format(date);
+                return ret;
+            }
+            //时间早于6天  显示具体日期
+            SimpleDateFormat format=new SimpleDateFormat("MM月dd日",Locale.CHINA);
+            ret=format.format(date);
             return ret;
         }
     }
@@ -379,7 +386,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .placeholder(R.drawable.icon_chat_unknown)
                         .error(R.drawable.icon_chat_unknown)
                         .into(mAvatarImageView);
-                mNameTextView.setText(sender.getName());
+                //对用户名字进行转义处理
+                mNameTextView.setText(EscapeCharacterUtils.unescape(sender.getName()));
             }else {
                 Glide.with(mContext)
                         .load(R.drawable.im_chat_default)
@@ -391,8 +399,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
-                Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
+                final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
                 Log.e("frc", "MsgViewHolder  position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
+                //占据高度
+                if (mMsgImageView.getBitmap() == null) {
+                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                    mMsgImageView.setImageBitmap(bitmap1);
+                } else {
+                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+                }
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
@@ -403,7 +419,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             @Override
                             public void onStart() {
                                 super.onStart();
-                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                if (mMsgImageView.getBitmap() == null) {
+                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                                    mMsgImageView.setImageBitmap(bitmap1);
+                                } else {
+                                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+                                }
+//                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                             }
 
                             @Override
@@ -426,8 +449,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             } else {
                 mMsgTextView.setVisibility(View.VISIBLE);
                 mMsgImageView.setVisibility(View.GONE);
-
-                mMsgTextView.setText(msg.getMsg());
+                //对聊天内容中的转义字符进行处理
+                mMsgTextView.setText(EscapeCharacterUtils.unescape(msg.getMsg()));
             }
 
             mAvatarImageView.setOnClickListener(new View.OnClickListener() {
@@ -525,6 +548,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
             // 设置消息内容
             if (myMsg.getContentType() == 20) {
+
+                final Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
+
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
                 final String picUrl;
@@ -534,9 +560,17 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 } else {
                     picUrl = myMsg.getViewUrl();
                 }
+                //占据高度
+                if (mMsgImageView.getBitmap() == null) {
+                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                    mMsgImageView.setImageBitmap(bitmap1);
+                } else {
+                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+                }
+
 
                 Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
-                final Integer[] wh = getPicShowWH(itemView.getContext(), myMsg.getWith(), myMsg.getHeight());
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
@@ -554,7 +588,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                         mMsgImageView.setImageBitmap(bitmap1);
                                     } else {
                                         mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-
                                     }
                                 }
                             }
