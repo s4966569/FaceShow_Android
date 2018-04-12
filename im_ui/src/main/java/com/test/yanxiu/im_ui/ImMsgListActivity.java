@@ -739,7 +739,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
                                 mMsgListAdapter.setmDatas(topic.mergedMsgs);
                                 //fix  FSAPP-1369
-//                                mMsgListAdapter.notifyDataSetChanged();
+                                mMsgListAdapter.notifyDataSetChanged();
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
                                 if (num > 0) {
                                     //这里造成了 FSAPP-1369
