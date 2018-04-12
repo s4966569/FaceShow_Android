@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="5dp"
+        android:paddingLeft="15dp"
         android:clipChildren="false"
         android:clipToPadding="false"/>
 
