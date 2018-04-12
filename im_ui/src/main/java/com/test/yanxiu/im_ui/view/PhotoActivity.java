@@ -24,7 +24,7 @@ import java.util.List;
  * Time : 2017/6/23 14:11.
  * Function :
  */
-public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
+public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener, PhotoPagerAdapter.onClickPhotoListener {
 
     private static final String PATH_LIST="paths";
     private static final String SELECTID="select";
@@ -85,6 +85,7 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
         mBackView.setOnClickListener(PhotoActivity.this);
         mDeleteView.setOnClickListener(PhotoActivity.this);
         mImagePhotoView.addOnPageChangeListener(PhotoActivity.this);
+        mAdapter.setOnClickPhotoListener(PhotoActivity.this);
     }
 
     private void initData(ArrayList<String> list) {
@@ -181,5 +182,10 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
             showDialog();
 
         }
+    }
+
+    @Override
+    public void onClick(View view, int position) {
+        PhotoActivity.this.finish();
     }
 }
