@@ -2,6 +2,7 @@ package com.test.yanxiu.im_ui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,7 +132,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             if (topic.mergedMsgs.size() > 0) {
                 latestMsg = topic.mergedMsgs.get(0);
             }
-            //群聊与私聊的不同 在 名称与图标  最新消息的显示一样
+            //群聊与私聊的不同
             //判断 聊天类型
             if (topic.getType().equals("1")) {
                 //私聊 显示对方头像 和 topic 名称
@@ -179,19 +180,34 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 
             //显示最有一条信息的发送者
             StringBuilder latestMsgTxt = new StringBuilder();
-            latestMsgTxt.append(sender == null ? "" : EscapeCharacterUtils.unescape(sender.getName()));
-            latestMsgTxt.append(":");
+
+            //群聊时最后一条 要显示发送者的名字
+            if (topic.getType().equals("2")) {
+                latestMsgTxt.append(sender == null ? "" : EscapeCharacterUtils.unescape(sender.getName()));
+                latestMsgTxt.append(":");
+            }
+
 
             //3 确定消息内容
             if (latestMsg.getContentType()==10) {
                 //文字信息 并对转义字符处理
                 latestMsgTxt.append(EscapeCharacterUtils.unescape(latestMsg.getMsg()));
+                //七牛传过来的图片类型 图片url 不为空 并且 返回的内容文字为 qiniu
+                boolean isImageMsg= (!TextUtils.isEmpty(latestMsg.getLocalViewUrl())||!TextUtils.isEmpty(latestMsg.getViewUrl()))
+                        &&TextUtils.equals("qiniu",latestMsg.getMsg());
+                if (isImageMsg) {
+                    latestMsgTxt.append("[图片]");
+                }else {
+                    latestMsgTxt.append(EscapeCharacterUtils.unescape(latestMsg.getMsg()));
+                }
+
             }else if (latestMsg.getContentType()==20){
-                //图片信息
+                //图片信息 本地消息可以用 contenttype 判断图片
                 latestMsgTxt.append("[图片]");
             }else {
                 // TODO: 2018/4/11  预留 语音 视频
             }
+
             mMsgTextView.setText(latestMsgTxt.toString());
             //4 显示消息时间
             mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
