@@ -101,6 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:background="#55000000"
             android:visibility="gone">
 
             <android.support.v7.widget.RecyclerView
@@ -123,7 +124,7 @@
                 android:id="@+id/back_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#55000000" />
+                android:background="@android:color/transparent" />
 
         </LinearLayout>
     </RelativeLayout>
