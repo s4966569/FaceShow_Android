@@ -8,8 +8,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
+import com.yanxiu.gphone.faceshow.R2;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.login.LoginActivity;
+
+import java.security.cert.Extension;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +35,7 @@ public class ClassManagerActivity extends FaceShowBaseActivity {
         titleLayoutLeftTxt.setVisibility(View.VISIBLE);
         titleLayoutLeftTxt.setTextColor(ContextCompat.getColor(this,R.color.color_1da1f2));
     }
+
 
     @OnClick(R.id.title_layout_left_txt)
     public void onViewClicked() {
