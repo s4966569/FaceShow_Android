@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.test.yanxiu.im_ui.R;
 
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         ZoomImageView imageView=mImageViews.get(position);
-        Glide.with(mContext).load(mPaths.get(position)).placeholder(R.drawable.bg_im_pic_holder_view).error(R.drawable.bg_im_pic_holder_view).into(imageView);
+        Glide.with(mContext).load(mPaths.get(position)).error(R.drawable.bg_im_pic_holder_view).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
         container.addView(imageView);
         return imageView;
     }

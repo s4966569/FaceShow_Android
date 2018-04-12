@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -91,8 +93,6 @@ import top.zibin.luban.OnCompressListener;
 
 public class ImMsgListActivity extends ImBaseActivity {
     private final String TAG = getClass().getSimpleName();
-
-
     private DbTopic topic;
     private static final int IMAGE_PICKER = 0x03;
     private static final int REQUEST_CODE_SELECT = 0x04;
@@ -117,8 +117,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
         fromTopicId = getIntent().getLongExtra(Constants.kFromTopicId, -1);
@@ -972,7 +970,6 @@ public class ImMsgListActivity extends ImBaseActivity {
             myMsg.setSendTime(new Date().getTime());
             myMsg.setContentType(20);
             myMsg.setFrom("local");
-            topic.setShowDot(false);
             myMsg.setMsg("");
             myMsg.setLocalViewUrl(path);
             Integer[] wh = getPicWithAndHeight(path);
@@ -1239,7 +1236,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
                     myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
-                    DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+                    topic.setShowDot(false);
+                    DatabaseDealer.updateResendMsg(myMsg, "local");
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);

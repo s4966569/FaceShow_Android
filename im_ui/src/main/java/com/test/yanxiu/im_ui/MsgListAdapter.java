@@ -413,6 +413,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
@@ -574,7 +575,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 Glide.with(itemView.getContext())
                         .load(picUrl)
                         .asBitmap()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .fitCenter()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
