@@ -21,15 +21,15 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     private Context mContext;
 
-    private List<String> mPaths=new ArrayList<>();
-    private List<ZoomImageView> mImageViews=new ArrayList<>();
+    private List<String> mPaths = new ArrayList<>();
+    private List<ZoomImageView> mImageViews = new ArrayList<>();
 
-    public PhotoPagerAdapter(Context context){
-        this.mContext=context;
+    public PhotoPagerAdapter(Context context) {
+        this.mContext = context;
     }
 
-    public void setData(List<String> paths,List<ZoomImageView> images){
-        if (paths==null||images==null||paths.size()!=images.size()){
+    public void setData(List<String> paths, List<ZoomImageView> images) {
+        if (paths == null || images == null || paths.size() != images.size()) {
             return;
         }
         this.mImageViews.clear();
@@ -39,12 +39,12 @@ public class PhotoPagerAdapter extends PagerAdapter {
         this.notifyDataSetChanged();
     }
 
-    public List<ZoomImageView> getImageViews(){
+    public List<ZoomImageView> getImageViews() {
         return this.mImageViews;
     }
 
-    public void deleteItem(int position){
-        if (position>-1&&position<mPaths.size()){
+    public void deleteItem(int position) {
+        if (position > -1 && position < mPaths.size()) {
             this.mPaths.remove(position);
             this.mImageViews.remove(position);
             this.notifyDataSetChanged();
@@ -53,7 +53,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return mImageViews!=null?mImageViews.size():0;
+        return mImageViews != null ? mImageViews.size() : 0;
     }
 
     @Override
@@ -62,9 +62,17 @@ public class PhotoPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        ZoomImageView imageView=mImageViews.get(position);
+    public Object instantiateItem(ViewGroup container, final int position) {
+        ZoomImageView imageView = mImageViews.get(position);
         Glide.with(mContext).load(mPaths.get(position)).error(R.drawable.bg_im_pic_holder_view).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnClickPhotoListener != null) {
+                    mOnClickPhotoListener.onClick(v, position);
+                }
+            }
+        });
         container.addView(imageView);
         return imageView;
     }
@@ -76,6 +84,17 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view==object;
+        return view == object;
+    }
+
+
+    onClickPhotoListener mOnClickPhotoListener;
+
+    public void setOnClickPhotoListener(onClickPhotoListener iOnClickPhotoListener) {
+        mOnClickPhotoListener = iOnClickPhotoListener;
+    }
+
+    public interface onClickPhotoListener {
+        void onClick(View view, int position);
     }
 }
