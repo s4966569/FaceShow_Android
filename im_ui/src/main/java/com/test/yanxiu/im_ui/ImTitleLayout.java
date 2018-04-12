@@ -1,22 +1,16 @@
 package com.test.yanxiu.im_ui;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.test.yanxiu.im_ui.callback.OnNaviLeftBackCallback;
-
-import java.util.zip.Inflater;
 
 /**
  * Created by cailei on 08/03/2018.
@@ -33,7 +27,8 @@ public class ImTitleLayout extends RelativeLayout {
     // 和setLeftView互斥
     public void setOnNaviLeftBackCallback(final OnNaviLeftBackCallback onNaviLeftBackCallback) {
         this.onNaviLeftBackCallback = onNaviLeftBackCallback;
-        setLeftView(mDefaultBackImageView);
+//        setLeftView(mDefaultBackImageView);
+        mDefaultBackImageView.setVisibility(VISIBLE);
         mDefaultBackImageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,6 +45,7 @@ public class ImTitleLayout extends RelativeLayout {
 
     // 和setOnNaviLeftBackCallback互斥
     public void setLeftView(View v) {
+        mDefaultBackImageView.setVisibility(GONE);
         makeViewIndependence(v);
         mLeftView.addView(v);
     }
@@ -88,5 +84,6 @@ public class ImTitleLayout extends RelativeLayout {
         mLeftView = findViewById(R.id.left_view);
         mRightView = findViewById(R.id.right_view);
         mDefaultBackImageView = findViewById(R.id.navi_left_back_imageview);
+
     }
 }
