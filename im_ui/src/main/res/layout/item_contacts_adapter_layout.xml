@@ -2,11 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="46dp"
+    android:layout_height="60dp"
+    android:gravity="center_vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <View
+        android:layout_gravity="top"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginLeft="15dp"
@@ -14,8 +16,9 @@
         android:background="#e6e6e6" />
 
     <RelativeLayout
+
         android:layout_width="match_parent"
-        android:layout_height="45dp">
+        android:layout_height="59dp">
 
         <ImageView
             android:id="@+id/img_hard"

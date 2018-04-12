@@ -19,7 +19,6 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
             android:contentDescription="@null"
             android:src="@drawable/selector_title_back" />
@@ -92,9 +91,10 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_white" />
+            android:background="@android:color/transparent" />
 
         <LinearLayout
             android:id="@+id/ll_change_class"
