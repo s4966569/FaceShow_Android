@@ -7,11 +7,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -52,6 +55,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     public ContactsAdapter mContactsAdapter;
     private ChangeClassAdapter mChangeClassAdapter;
     private RecyclerView mContactsList;
+    private RecyclerView changeClassList;
     private RelativeLayout mRlChangeClass;
     private int mCurrentItemClassSelected;
     private View rootView;
@@ -82,7 +86,7 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
         mContactsList.setAdapter(mContactsAdapter);
         /*初始化切换班级列表*/
         mChangeClassAdapter = new ChangeClassAdapter();
-        RecyclerView changeClassList = rootView.findViewById(R.id.recyclerView_change_class);
+        changeClassList = rootView.findViewById(R.id.recyclerView_change_class);
 
         //此处是为了实现切换班级列表限制最多显示三行半
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this.getContext()) {
@@ -340,6 +344,29 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
     public void showChangeClassWindow(List<ClassBean> data, int currentClassPosition) {
         if (data != null && data.size() > 0) {
             mChangeClassAdapter.refresh(data, currentClassPosition);
+            TranslateAnimation mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                    -1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+            mShowAction.setDuration(200);
+
+            mShowAction.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    Log.i(TAG, "onAnimationStart: ");
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    Log.i(TAG, "onAnimationEnd: ");
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            changeClassList.startAnimation(mShowAction);
+
             mLlChangeClass.setVisibility(View.VISIBLE);
         }
     }
@@ -347,7 +374,31 @@ public class ContactsFragment extends ContactMvpBaseFragment<IContactsView, Cont
 
     @Override
     public void hideChangeClassWindow() {
-        mLlChangeClass.setVisibility(View.GONE);
+        TranslateAnimation mHiddenAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                -1.0f);
+        mHiddenAction.setDuration(200);
+
+        mHiddenAction.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                Log.i(TAG, "onAnimationStart: ");
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                Log.i(TAG, "onAnimationEnd: ");
+                mLlChangeClass.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        changeClassList.startAnimation(mHiddenAction);
+
     }
 
     @Override
