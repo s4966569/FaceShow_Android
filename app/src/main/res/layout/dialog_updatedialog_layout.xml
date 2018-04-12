@@ -94,10 +94,10 @@
                 android:layout_height="29dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:background="@drawable/selector_cancel_dialog_button_bg"
+                android:background="@drawable/shape_homework_detail_confirm_selected"
                 android:gravity="center"
                 android:text="@string/updata_now"
-                android:textColor="@drawable/selector_cancel_dialog_button_color"
+                android:textColor="@color/color_ffffff"
                 android:textSize="14dp" />
 
         </RelativeLayout>
