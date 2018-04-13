@@ -979,6 +979,10 @@ public class ImMsgListActivity extends ImBaseActivity {
             topic.mergedMsgs.add(0, myMsg);
             mMsgListAdapter.setmDatas(topic.mergedMsgs);
             mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
+            if (!NetWorkUtils.isNetworkAvailable(ImMsgListActivity.this)) {
+                sendPicFailure(myMsg);
+                continue;
+            }
             Luban.with(ImMsgListActivity.this)
                     .load(imagePathList.get(i))
                     .ignoreBy(200)
@@ -1069,10 +1073,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             uploadManager = new UploadManager(config);
         }
 
-        if (!NetWorkUtils.isNetworkAvailable(ImMsgListActivity.this)) {
-            sendPicFailure(myMsg);
-            return;
-        }
+
         uploadManager.put(picPath, null, mQiniuToken, new UpCompletionHandler() {
             @Override
             public void complete(String s, ResponseInfo responseInfo, JSONObject jsonObject) {

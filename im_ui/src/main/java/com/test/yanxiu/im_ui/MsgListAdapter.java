@@ -336,15 +336,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             //如果日期小于6天 显示星期
-            if ((nowZero.getTime()-date.getTime())<6*24*60*60*1000) {
+            if ((nowZero.getTime() - date.getTime()) < 6 * 24 * 60 * 60 * 1000) {
                 // 星期三 周三->星期三
                 SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
                 ret = formatter2.format(date) + " " + timeFormatter.format(date);
                 return ret;
             }
             //时间早于6天  显示具体日期
-            SimpleDateFormat format=new SimpleDateFormat("MM月dd日",Locale.CHINA);
-            ret=format.format(date);
+            SimpleDateFormat format = new SimpleDateFormat("MM月dd日", Locale.CHINA);
+            ret = format.format(date);
             return ret;
         }
     }
@@ -388,7 +388,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .into(mAvatarImageView);
                 //对用户名字进行转义处理
                 mNameTextView.setText(EscapeCharacterUtils.unescape(sender.getName()));
-            }else {
+            } else {
                 Glide.with(mContext)
                         .load(R.drawable.im_chat_default)
                         .into(mAvatarImageView);
@@ -703,17 +703,28 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         float baseSize = ScreenUtils.dpToPx(context, 140);
         float iResultWidth = baseSize;
         float iResultHeight = baseSize;
-        //水平显示
-        if (width > height) {
-            float scaleSize = baseSize / width;
+        if (width < baseSize && height < baseSize) {
             iResultWidth = baseSize;
-            iResultHeight = height * scaleSize;
-        }
-        //垂直显示
-        if (width < height) {
-            float scaleSize = baseSize / height;
             iResultHeight = baseSize;
-            iResultWidth = width * scaleSize;
+        } else if (height > width * 5) {//比屏幕还高  默认为长图
+            //垂直显示
+            float scaleSize = baseSize / height;
+            iResultWidth = baseSize * 3 / 4;
+            iResultHeight = height * scaleSize;
+        } else {
+
+            //水平显示
+            if (width > height) {
+                float scaleSize = baseSize / width;
+                iResultWidth = baseSize;
+                iResultHeight = height * scaleSize;
+            }
+            //垂直显示
+            if (width < height) {
+                float scaleSize = baseSize / height;
+                iResultHeight = baseSize;
+                iResultWidth = width * scaleSize;
+            }
         }
 
         return new Integer[]{(int) iResultWidth, (int) iResultHeight};
