@@ -68,7 +68,7 @@ public class PhotoActivity extends FaceShowBaseActivity implements ViewPager.OnP
         //去除状态栏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.im_ui_activity_photo);
+        setContentView(R.layout.activity_photo);
         mContext=PhotoActivity.this;
         mSelectPosition=getIntent().getIntExtra(SELECTID,-1);
         mFromId=getIntent().getIntExtra(FROM,-1);
