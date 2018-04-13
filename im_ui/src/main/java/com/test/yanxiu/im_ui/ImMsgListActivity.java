@@ -10,7 +10,6 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -206,11 +205,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                 false);
 //        layoutManager.setStackFromEnd(false);
         mMsgListRecyclerView.setLayoutManager(layoutManager);
-        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
+//        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+//        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
 
         mMsgListAdapter = new MsgListAdapter(this);
-        mMsgListAdapter.setHasStableIds(true);
+//        mMsgListAdapter.setHasStableIds(true);
         mMsgListAdapter.setTopic(topic);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
@@ -357,6 +356,8 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
+//新创建的topic 数据不一致造成 新建对话 无法刷新 mergemsgs
+       topic= SharedSingleton.getInstance().get(Constants.kShareTopic);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -738,7 +739,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
                                 mMsgListAdapter.setmDatas(topic.mergedMsgs);
                                 //fix  FSAPP-1369
-                                mMsgListAdapter.notifyDataSetChanged();
+//                                mMsgListAdapter.notifyDataSetChanged();
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
                                 if (num > 0) {
                                     //这里造成了 FSAPP-1369
@@ -811,7 +812,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         //在对话内收到消息 默认取消红点的显示  bug1307
         topic.setShowDot(false);
         topic.save();
-
+        if (msg.senderId== Constants.imId) {
+            if (msg.contentType==20||msg.contentType==10&&TextUtils.equals("qiniu",msg.contentData.msg)&&!TextUtils.isEmpty(msg.contentData.viewUrl)) {
+//                mMsgListAdapter.notifyDataSetChanged();
+                return ;
+            }
+        }
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);

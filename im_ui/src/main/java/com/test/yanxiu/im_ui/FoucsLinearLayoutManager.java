@@ -77,12 +77,5 @@ class FoucsLinearLayoutManager extends LinearLayoutManager {
         return false;
     }
 
-    @Override
-    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        try {
-            super.onLayoutChildren(recycler, state);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-    }
+
 }
