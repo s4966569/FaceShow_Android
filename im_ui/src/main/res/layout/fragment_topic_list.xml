@@ -33,6 +33,7 @@
         android:id="@+id/navi_left_imageview"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginLeft="-10dp"
         android:src="@drawable/selector_icon_drawer" />
 
     <TextView
@@ -40,7 +41,7 @@
         android:id="@+id/navi_right_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="17dp"
+        android:textSize="15dp"
         android:textColor="@drawable/selector_1da1f2_1884c7"
         android:text="通讯录"/>
 

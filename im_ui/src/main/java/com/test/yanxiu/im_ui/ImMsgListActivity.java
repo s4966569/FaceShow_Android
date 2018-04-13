@@ -1,6 +1,5 @@
 package com.test.yanxiu.im_ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,15 +8,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -209,11 +205,11 @@ public class ImMsgListActivity extends ImBaseActivity {
                 false);
 //        layoutManager.setStackFromEnd(false);
         mMsgListRecyclerView.setLayoutManager(layoutManager);
-        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
+//        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+//        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
 
         mMsgListAdapter = new MsgListAdapter(this);
-        mMsgListAdapter.setHasStableIds(true);
+//        mMsgListAdapter.setHasStableIds(true);
         mMsgListAdapter.setTopic(topic);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
@@ -250,29 +246,29 @@ public class ImMsgListActivity extends ImBaseActivity {
         });
 
         mMsgEditText = findViewById(R.id.msg_edittext);
-        mMsgEditText.setImeOptions(EditorInfo.IME_ACTION_SEND);
+        mMsgEditText.setImeOptions(EditorInfo.IME_ACTION_NONE);
         mMsgEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        mMsgEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
-                    SrtLogger.log("imui", "TBD: 发送");
-                    //统计
-                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
-                    String msg = mMsgEditText.getText().toString();
-                    mMsgEditText.setText("");
-                    String trimMsg = msg.trim();
-                    if (trimMsg.length() == 0) {
-                        return true;
-                    }
-
-                    doSend(msg, null);
-
-                    return true;
-                }
-                return false;
-            }
-        });
+//        mMsgEditText.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
+//                    SrtLogger.log("imui", "TBD: 发送");
+//                    //统计
+//                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
+//                    String msg = mMsgEditText.getText().toString();
+//                    mMsgEditText.setText("");
+//                    String trimMsg = msg.trim();
+//                    if (trimMsg.length() == 0) {
+//                        return true;
+//                    }
+//
+//                    doSend(msg, null);
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
         //新增的 发送按钮 发送逻辑与 按键发送一样
         final TextView sendTv = findViewById(R.id.tv_sure);
         sendTv.setOnClickListener(new View.OnClickListener() {
@@ -360,6 +356,8 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
+//新创建的topic 数据不一致造成 新建对话 无法刷新 mergemsgs
+       topic= SharedSingleton.getInstance().get(Constants.kShareTopic);
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -673,7 +671,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                     if (myMsg.getContentType() == 20) {
                         //上传七牛成功  如果存储了七牛返回的key 表示上传成功
                         myMsg.setState(DbMyMsg.State.Sending.ordinal());
-                        myMsg.save();
+//                        myMsg.save();
+                        DatabaseDealer.updateResendMsg(myMsg,"local");
                         topic.mergedMsgs.add(0, myMsg);
                         mMsgListAdapter.setmDatas(topic.mergedMsgs);
                         mMsgListAdapter.notifyDataSetChanged();
@@ -693,6 +692,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
     };
 
+
     private boolean hasMoreMsgs = true;
     private OnPullToRefreshCallback mOnLoadMoreCallback = new OnPullToRefreshCallback() {
         @Override
@@ -700,84 +700,93 @@ public class ImMsgListActivity extends ImBaseActivity {
             if (hasMoreMsgs) {
                 mMsgListAdapter.setIsLoading(true);
                 mMsgListAdapter.notifyItemRangeInserted(0, 1);
-                // 先从网络取，如果失败了则由数据库重建
-                final DbMsg earliestMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
-                GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
-                getTopicMsgsRequest.imToken = Constants.imToken;
-                getTopicMsgsRequest.topicId = Long.toString(topic.getTopicId());
-                getTopicMsgsRequest.startId = Long.toString(earliestMsg.getMsgId());
-                getTopicMsgsRequest.order = "desc";
-                getTopicMsgsRequest.startRequest(GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
+                handler.postDelayed(new Runnable() {
                     @Override
-                    public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
-                        ptrHelper.loadingComplete();
-                        mMsgListAdapter.setIsLoading(false);
-                        mMsgListAdapter.notifyItemRangeRemoved(0, 1);
+                    public void run() {
+                        // 先从网络取，如果失败了则由数据库重建
+                        final DbMsg earliestMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                        GetTopicMsgsRequest getTopicMsgsRequest = new GetTopicMsgsRequest();
+                        getTopicMsgsRequest.imToken = Constants.imToken;
+                        getTopicMsgsRequest.topicId = Long.toString(topic.getTopicId());
+                        getTopicMsgsRequest.startId = Long.toString(earliestMsg.getMsgId());
+                        getTopicMsgsRequest.order = "desc";
+                        getTopicMsgsRequest.startRequest(GetTopicMsgsResponse.class, new HttpCallback<GetTopicMsgsResponse>() {
+                            @Override
+                            public void onSuccess(RequestBase request, GetTopicMsgsResponse ret) {
+                                ptrHelper.loadingComplete();
+                                mMsgListAdapter.setIsLoading(false);
+                                mMsgListAdapter.notifyItemRangeRemoved(0, 1);
 
-                        final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                                final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
 
-                        if (ret.data.topicMsg.size() < DatabaseDealer.pagesize) {
-                            hasMoreMsgs = false;
-                        }
+                                if (ret.data.topicMsg.size() < DatabaseDealer.pagesize) {
+                                    hasMoreMsgs = false;
+                                }
 
-                        if (ret.data.topicMsg.size() > 0) {
-                            // 去除最后一条重复的
-                            ret.data.topicMsg.remove(0);
-                        }
+                                if (ret.data.topicMsg.size() > 0) {
+                                    // 去除最后一条重复的
+                                    ret.data.topicMsg.remove(0);
+                                }
 
-                        for (ImMsg msg : ret.data.topicMsg) {
-                            DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
-                            topic.mergedMsgs.add(dbMsg);
+                                for (ImMsg msg : ret.data.topicMsg) {
+                                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
+                                    topic.mergedMsgs.add(dbMsg);
 
-                            if (dbMsg.getMsgId() > topic.latestMsgId) {
-                                topic.latestMsgId = dbMsg.getMsgId();
+                                    if (dbMsg.getMsgId() > topic.latestMsgId) {
+                                        topic.latestMsgId = dbMsg.getMsgId();
+                                    }
+                                }
+
+                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                                //fix  FSAPP-1369
+//                                mMsgListAdapter.notifyDataSetChanged();
+                                int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
+                                if (num > 0) {
+                                    //这里造成了 FSAPP-1369
+                                    mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
+                                    mMsgListAdapter.notifyItemRangeInserted(0, num);
+                                }
                             }
-                        }
 
-                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                        //fix  FSAPP-1369
-                        mMsgListAdapter.notifyDataSetChanged();
-                        int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
-                        if (num > 0) {
-                            //这里造成了 FSAPP-1369
-                            mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
-                            mMsgListAdapter.notifyItemRangeInserted(0, num);
-                        }
-                    }
+                            @Override
+                            public void onFail(RequestBase request, Error error) {
+                                // 从数据库获取
+                                ptrHelper.loadingComplete();
+                                mMsgListAdapter.setIsLoading(false);
+                                mMsgListAdapter.notifyItemRangeRemoved(0, 1);
 
-                    @Override
-                    public void onFail(RequestBase request, Error error) {
-                        // 从数据库获取
-                        ptrHelper.loadingComplete();
-                        mMsgListAdapter.setIsLoading(false);
-                        mMsgListAdapter.notifyItemRangeRemoved(0, 1);
+                                final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
 
-                        final DbMsg theRefreshingMsg = topic.mergedMsgs.get(topic.mergedMsgs.size() - 1);
+                                List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
+                                        earliestMsg.getMsgId(),
+                                        DatabaseDealer.pagesize);
 
-                        List<DbMsg> msgs = DatabaseDealer.getTopicMsgs(topic.getTopicId(),
-                                earliestMsg.getMsgId(),
-                                DatabaseDealer.pagesize);
+                                // 从数据库取回的消息，包含了startIndex这一条，而对于未发送成功的MyMsg则可能有多条
+                                for (Iterator<DbMsg> i = msgs.iterator(); i.hasNext(); ) {
+                                    DbMsg uiMsg = i.next();
+                                    if (uiMsg.getMsgId() == earliestMsg.getMsgId()) {
+                                        i.remove();
+                                    }
+                                }
 
-                        // 从数据库取回的消息，包含了startIndex这一条，而对于未发送成功的MyMsg则可能有多条
-                        for (Iterator<DbMsg> i = msgs.iterator(); i.hasNext(); ) {
-                            DbMsg uiMsg = i.next();
-                            if (uiMsg.getMsgId() == earliestMsg.getMsgId()) {
-                                i.remove();
+                                if (msgs.size() < DatabaseDealer.pagesize) {
+                                    hasMoreMsgs = false;
+                                }
+                                topic.mergedMsgs.addAll(msgs);
+                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                                int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
+
+                                if (num > 0) {
+                                    mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
+                                    mMsgListAdapter.notifyItemRangeInserted(0, num);
+                                    //
+                                }
+
                             }
-                        }
-
-                        if (msgs.size() < DatabaseDealer.pagesize) {
-                            hasMoreMsgs = false;
-                        }
-                        topic.mergedMsgs.addAll(msgs);
-                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
-                        int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
-                        if (num > 0) {
-                            mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
-                            mMsgListAdapter.notifyItemRangeInserted(0, num);
-                        }
+                        });
                     }
-                });
+                },500);
+
             }
 
         }
@@ -803,7 +812,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         //在对话内收到消息 默认取消红点的显示  bug1307
         topic.setShowDot(false);
         topic.save();
-
+        if (msg.senderId== Constants.imId) {
+            if (msg.contentType==20||msg.contentType==10&&TextUtils.equals("qiniu",msg.contentData.msg)&&!TextUtils.isEmpty(msg.contentData.viewUrl)) {
+//                mMsgListAdapter.notifyDataSetChanged();
+                return ;
+            }
+        }
         mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);

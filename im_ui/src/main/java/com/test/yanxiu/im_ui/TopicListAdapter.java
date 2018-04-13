@@ -190,8 +190,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
 
             //3 确定消息内容
             if (latestMsg.getContentType()==10) {
-                //文字信息 并对转义字符处理
-                latestMsgTxt.append(EscapeCharacterUtils.unescape(latestMsg.getMsg()));
                 //七牛传过来的图片类型 图片url 不为空 并且 返回的内容文字为 qiniu
                 boolean isImageMsg= (!TextUtils.isEmpty(latestMsg.getLocalViewUrl())||!TextUtils.isEmpty(latestMsg.getViewUrl()))
                         &&TextUtils.equals("qiniu",latestMsg.getMsg());

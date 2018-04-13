@@ -435,6 +435,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     dbTopic.save();
                 }
                 //通知imMsgListActivity刷新列表消息
+                SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
                 MqttProtobufDealer.onTopicUpdate();
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();

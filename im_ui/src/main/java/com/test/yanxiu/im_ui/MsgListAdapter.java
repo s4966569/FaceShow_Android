@@ -560,15 +560,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 } else {
                     picUrl = myMsg.getViewUrl();
                 }
-                //占据高度
-                if (mMsgImageView.getBitmap() == null) {
-                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                    mMsgImageView.setImageBitmap(bitmap1);
-                } else {
-                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-                }
-
 
                 Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
                 mMsgImageView.setTag(picUrl);
@@ -844,10 +835,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+//    @Override
+//    public long getItemId(int position) {
+//        return position;
+//    }
 
 
 }
