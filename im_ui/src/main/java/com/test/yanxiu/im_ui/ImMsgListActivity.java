@@ -15,7 +15,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -248,29 +247,29 @@ public class ImMsgListActivity extends ImBaseActivity {
         });
 
         mMsgEditText = findViewById(R.id.msg_edittext);
-        mMsgEditText.setImeOptions(EditorInfo.IME_ACTION_SEND);
+        mMsgEditText.setImeOptions(EditorInfo.IME_ACTION_NONE);
         mMsgEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        mMsgEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
-                    SrtLogger.log("imui", "TBD: 发送");
-                    //统计
-                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
-                    String msg = mMsgEditText.getText().toString();
-                    mMsgEditText.setText("");
-                    String trimMsg = msg.trim();
-                    if (trimMsg.length() == 0) {
-                        return true;
-                    }
-
-                    doSend(msg, null);
-
-                    return true;
-                }
-                return false;
-            }
-        });
+//        mMsgEditText.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
+//                    SrtLogger.log("imui", "TBD: 发送");
+//                    //统计
+//                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
+//                    String msg = mMsgEditText.getText().toString();
+//                    mMsgEditText.setText("");
+//                    String trimMsg = msg.trim();
+//                    if (trimMsg.length() == 0) {
+//                        return true;
+//                    }
+//
+//                    doSend(msg, null);
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
         //新增的 发送按钮 发送逻辑与 按键发送一样
         final TextView sendTv = findViewById(R.id.tv_sure);
         sendTv.setOnClickListener(new View.OnClickListener() {
