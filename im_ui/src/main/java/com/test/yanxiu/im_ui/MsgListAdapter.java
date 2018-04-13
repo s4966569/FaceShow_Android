@@ -400,21 +400,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
                 final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
-                Log.e("frc", "MsgViewHolder  position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
-                //占据高度
-                if (mMsgImageView.getBitmap() == null) {
-                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                    mMsgImageView.setImageBitmap(bitmap1);
-                } else {
-                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-                }
+
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .fitCenter()
+                        .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onStart() {
@@ -567,7 +559,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .load(picUrl)
                         .asBitmap()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .fitCenter()
+                        .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
@@ -694,29 +686,27 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         float baseSize = ScreenUtils.dpToPx(context, 140);
         float iResultWidth = baseSize;
         float iResultHeight = baseSize;
-        if (width < baseSize && height < baseSize) {
-            iResultWidth = baseSize;
-            iResultHeight = baseSize;
-        } else if (height > width * 5) {//比屏幕还高  默认为长图
-            //垂直显示
-            float scaleSize = baseSize / height;
-            iResultWidth = baseSize * 3 / 4;
-            iResultHeight = height * scaleSize;
-        } else {
 
-            //水平显示
-            if (width > height) {
-                float scaleSize = baseSize / width;
-                iResultWidth = baseSize;
-                iResultHeight = height * scaleSize;
-            }
-            //垂直显示
-            if (width < height) {
-                float scaleSize = baseSize / height;
-                iResultHeight = baseSize;
-                iResultWidth = width * scaleSize;
-            }
+        //水平显示
+        if (width > height) {
+            float scaleSize = baseSize / width;
+            iResultWidth = baseSize;
+            iResultHeight = height * scaleSize;
         }
+        //垂直显示
+        if (width < height) {
+            float scaleSize = baseSize / height;
+            iResultHeight = baseSize;
+            iResultWidth = width * scaleSize;
+        }
+
+        if (iResultHeight < baseSize / 2) {
+            iResultHeight = baseSize / 2;
+        }
+        if (iResultWidth < baseSize / 2) {
+            iResultWidth = baseSize / 2;
+        }
+
 
         return new Integer[]{(int) iResultWidth, (int) iResultHeight};
     }
