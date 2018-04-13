@@ -495,6 +495,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ImageView mStateFailedImageView;
         private ProgressImageContainer mMsgImageView;
         private DbMyMsg myMsg;
+        private ImageView mImgGlide;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -504,6 +505,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
+            mImgGlide =itemView.findViewById(R.id.img_glide);
         }
 
         @Override
@@ -549,11 +551,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 //如果有本地地址则用本地  没有本地的将使用线上的
                 if (!TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
                     picUrl = myMsg.getLocalViewUrl();
+                    if (!TextUtils.isEmpty(myMsg.getViewUrl())){
+                        Glide.with(itemView.getContext()).load(myMsg.getViewUrl()).override(wh[0],wh[1]).into(mImgGlide);
+                    }
                 } else {
                     picUrl = myMsg.getViewUrl();
                 }
 
-                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
+                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "localUrl:  " + myMsg.getLocalViewUrl());
+                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + myMsg.getViewUrl());
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
