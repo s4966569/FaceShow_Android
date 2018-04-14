@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -32,6 +33,8 @@ import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
 import com.test.yanxiu.im_core.http.GetTopicMsgsRequest;
 import com.test.yanxiu.im_core.http.GetTopicMsgsResponse;
+import com.test.yanxiu.im_core.http.PolicyConfigRequest;
+import com.test.yanxiu.im_core.http.PolicyConfigResponse;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsRequest;
 import com.test.yanxiu.im_core.http.TopicGetMemberTopicsResponse;
 import com.test.yanxiu.im_core.http.TopicGetTopicsRequest;
@@ -57,6 +60,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static android.content.Context.BIND_AUTO_CREATE;
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class ImTopicListFragment extends FaceShowBaseFragment {
@@ -239,23 +243,23 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     /**
      * 用 HTTP 请求的 topic 列表与本地数据看的topic 类表进行比较
      * 如果有用户被某些topic 删除 弹出提示跳转 班级选择界面
-     * */
+     */
     private void checkBeenRemoveFromAnyTopic(TopicGetMemberTopicsResponse ret) {
-        List<DbTopic> dbHistoryTopic=new ArrayList<>();
+        List<DbTopic> dbHistoryTopic = new ArrayList<>();
         dbHistoryTopic.addAll(topics);
-        Iterator<DbTopic> dbTopicIterator=dbHistoryTopic.iterator();
+        Iterator<DbTopic> dbTopicIterator = dbHistoryTopic.iterator();
 
-        DbTopic dt=null;
-        while (dbTopicIterator.hasNext()){
-            dt=dbTopicIterator.next();
+        DbTopic dt = null;
+        while (dbTopicIterator.hasNext()) {
+            dt = dbTopicIterator.next();
             for (ImTopic imTopic : ret.data.topic) {
-                if (imTopic.topicId==dt.getTopicId()){
+                if (imTopic.topicId == dt.getTopicId()) {
                     dbTopicIterator.remove();
                     break;
                 }
             }
         }
-        if (dbHistoryTopic.size()!=0) {
+        if (dbHistoryTopic.size() != 0) {
             //本地有服务器上没有的topic 证明用户在这个topic 中被删除
             if (mOnUserRemoveFromClaszCallback != null) {
                 try {
@@ -270,7 +274,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     DatabaseDealer.deleteTopicById(dbTopic.getTopicId());
                     // topic 中删除
                     for (DbTopic topic : topics) {
-                        if (topic.getTopicId()==dbTopic.getTopicId()){
+                        if (topic.getTopicId() == dbTopic.getTopicId()) {
                             topics.remove(topic);
                             break;
                         }
@@ -278,9 +282,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
 
                 //获取群聊数量
-                int remainGroup=0;
+                int remainGroup = 0;
                 for (DbTopic topic : topics) {
-                    if (topic.getType().equals("2")){
+                    if (topic.getType().equals("2")) {
                         remainGroup++;
                     }
                 }
@@ -406,12 +410,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             }
                         }
                         continue;
-                    }else if (uiMsg.getFrom().equals("local")){
+                    } else if (uiMsg.getFrom().equals("local")) {
                         // 数据库中记录的来自local 的消息 需要判断消息状态 ，如果是已经发送成功的删除
                         for (ImMsg imMsg : ret.data.topicMsg) {
                             if (uiMsg.getReqId().equals(imMsg.reqId)) {
                                 //已经发送成功的 消息 更新后移除
-                                DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+                                DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
                                 i.remove();
                                 break;
                             }
@@ -464,8 +468,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 while (imMsgIterator.hasNext()) {
                     //遍历寻找
                     imMsg = imMsgIterator.next();
-                    if (imMsg.reqId.equals(dbMsg.getReqId())){
-                        DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+                    if (imMsg.reqId.equals(dbMsg.getReqId())) {
+                        DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
                         //在 新列表中删除数据
                         imMsgIterator.remove();
                     }
@@ -473,15 +477,13 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         }
         //将新数据插入数据库
-        List<DbMsg> newDbMsgs=new ArrayList<>(newMsgList.size());
-        DbMsg nDbMsg=null;
-        while (imMsgIterator.hasNext()){
-          nDbMsg=  DatabaseDealer.updateDbMsgWithImMsg(imMsgIterator.next(),"http",Constants.imId);
-          newDbMsgs.add(nDbMsg);
+        List<DbMsg> newDbMsgs = new ArrayList<>(newMsgList.size());
+        DbMsg nDbMsg = null;
+        while (imMsgIterator.hasNext()) {
+            nDbMsg = DatabaseDealer.updateDbMsgWithImMsg(imMsgIterator.next(), "http", Constants.imId);
+            newDbMsgs.add(nDbMsg);
         }
         //原有数据与新数据的合并 以msgid 最为区分
-
-
 
 
     }
@@ -498,6 +500,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             binder.getService().setmMqttServiceCallback(new MqttService.MqttServiceCallback() {
                 @Override
                 public void onDisconnect() {
+                    SrtLogger.log("frc", "service onDisconnect");
                     // 每30秒重试一次
                     if (reconnectTimer != null) {
                         reconnectTimer.cancel();
@@ -518,6 +521,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                 @Override
                 public void onConnect() {
+                    SrtLogger.log("frc", "service onConnect");
                     if (reconnectTimer != null) {
                         reconnectTimer.cancel();
                         reconnectTimer.purge();
@@ -557,11 +561,17 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     private ArrayList<DbTopic> msgShownTopics = new ArrayList<>();      // 因为需要可以从群聊点击头像进入私聊，多级msgs界面
 
     private void startMqttService() {
-        Intent intent = new Intent(getActivity(), MqttService.class);
-        //mqttServiceConnection =
-        getActivity().bindService(intent, mqttServiceConnection, BIND_AUTO_CREATE);
-
         EventBus.getDefault().register(this);
+        getImHostRequest(new GetImHostCallBack() {
+            @Override
+            public void onSuccess(String host) {
+                Intent intent = new Intent(getActivity(), MqttService.class);
+                intent.putExtra("host",host);
+                getActivity().bindService(intent, mqttServiceConnection, BIND_AUTO_CREATE);
+            }
+        });
+
+
     }
 
     private void stopMqttService() {
@@ -646,17 +656,17 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 if (!inTopic) {
 
                     //判断是否topic 已经进行了删除操作
-                    synchronized (topics){
-                        boolean hasRemovedTopic=true;
+                    synchronized (topics) {
+                        boolean hasRemovedTopic = true;
                         for (DbTopic dbTopic : topics) {
-                            if (dbTopic.getTopicId()==event.topicId) {
-                                hasRemovedTopic=false;
+                            if (dbTopic.getTopicId() == event.topicId) {
+                                hasRemovedTopic = false;
                                 break;
                             }
                         }
                         //避免重复操作
                         if (hasRemovedTopic) {
-                            return ;
+                            return;
                         }
                     }
                     //在 topic 中删除
@@ -994,4 +1004,68 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public interface NewMessageListener {
         void onGetNewMessage(boolean showRedDot);
     }
+
+
+    /**
+     * 这是个异步过程可能会存在的问题
+     * 在何处进行网络请求-->目前可以放在登录完毕后或者进入主页中 但是考虑到module的完整性并且此处做了mqtt连接失败会重连的策略  其实可以放在此处获取host的
+     * 但是如果一些极端现象：现在server从host1切花到host2  但是host1仍然可用，这种情况下用户第一次进来还是连的host1  只有退出后再进入才会连host2  考虑到目前切换的频率极低所以就先这样写
+     * 数据存储于Sp中：本来sp应用用统一的管理，但是这是个独立的module并且公用的spManager在App中没有放到CommonBase中,而且此处存储的host只在此处获取，就不去动app module中的SPManager了
+     */
+    private void getImHostRequest(final GetImHostCallBack iGetImHostCallBack) {
+        PolicyConfigRequest policyConfigRequest = new PolicyConfigRequest();
+        policyConfigRequest.startRequest(PolicyConfigResponse.class, new HttpCallback<PolicyConfigResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, PolicyConfigResponse ret) {
+                if (ret.code == 0 && ret.data != null) {
+                    saveHost2Sp(ret.data.getMqttServer());
+                    if (iGetImHostCallBack != null) {
+                        iGetImHostCallBack.onSuccess(ret.data.getMqttServer());
+                    }
+                } else {
+                    String oldHost = getHostBySp();
+                    if (TextUtils.isEmpty(oldHost)) {
+                        getImHostRequest(iGetImHostCallBack);
+                    } else {
+                        if (iGetImHostCallBack != null) {
+                            iGetImHostCallBack.onSuccess(oldHost);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                String oldHost = getHostBySp();
+                if (TextUtils.isEmpty(oldHost)) {
+                    getImHostRequest(iGetImHostCallBack);
+                } else {
+                    if (iGetImHostCallBack != null) {
+                        iGetImHostCallBack.onSuccess(oldHost);
+                    }
+                }
+            }
+        });
+    }
+
+
+    private void saveHost2Sp(String host) {
+        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("FaceShowIm", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit().putString("ImHost", host);
+        editor.apply();
+
+
+    }
+
+    private String getHostBySp() {
+        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("FaceShowIm", MODE_PRIVATE);
+        return sharedPreferences.getString("ImHost", "");
+
+    }
+
+    interface GetImHostCallBack {
+        void onSuccess(String host);
+
+    }
+
 }

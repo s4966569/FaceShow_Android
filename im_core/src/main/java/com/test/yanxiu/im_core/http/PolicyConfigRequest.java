@@ -6,7 +6,7 @@ package com.test.yanxiu.im_core.http;
 
 // 1.1 获取通用配置
 public class PolicyConfigRequest extends ImRequestBase {
-    private String method="policy.config";
+    private String method="policy.mqtt.server";
 
-    public String v;     // 版本：默认1.0
+    public String type ="tcp";
 }
