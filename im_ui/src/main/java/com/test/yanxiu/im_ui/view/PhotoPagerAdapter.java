@@ -64,7 +64,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
         ZoomImageView imageView = mImageViews.get(position);
-        Glide.with(mContext).load(mPaths.get(position)).error(R.drawable.bg_im_pic_holder_view).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
+        Glide.with(mContext).load(mPaths.get(position)).error(R.drawable.bg_im_pic_holder_view).thumbnail(0.1f).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

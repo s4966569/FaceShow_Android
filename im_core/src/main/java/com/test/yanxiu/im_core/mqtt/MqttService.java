@@ -70,7 +70,7 @@ public class MqttService extends Service {
         }
     }
 
-    private String host = "tcp://orz.yanxiu.com:7914";
+    private String host = "tcp://";
     private String userName = "admin";
     private String passWord = "public";
     private String clientId = "android01";
@@ -229,6 +229,7 @@ public class MqttService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         SrtLogger.log("im service", "bind");
+        host =host+intent.getStringExtra("host");
         return new MqttBinder();
     }
 

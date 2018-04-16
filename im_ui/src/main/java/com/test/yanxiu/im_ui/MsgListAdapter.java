@@ -346,15 +346,15 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
 
             //如果日期小于6天 显示星期
-            if ((nowZero.getTime()-date.getTime())<6*24*60*60*1000) {
+            if ((nowZero.getTime() - date.getTime()) < 6 * 24 * 60 * 60 * 1000) {
                 // 星期三 周三->星期三
                 SimpleDateFormat formatter2 = new SimpleDateFormat("EEEE", Locale.CHINA);
                 ret = formatter2.format(date) + " " + timeFormatter.format(date);
                 return ret;
             }
             //时间早于6天  显示具体日期
-            SimpleDateFormat format=new SimpleDateFormat("MM月dd日",Locale.CHINA);
-            ret=format.format(date);
+            SimpleDateFormat format = new SimpleDateFormat("MM月dd日", Locale.CHINA);
+            ret = format.format(date);
             return ret;
         }
     }
@@ -398,7 +398,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .into(mAvatarImageView);
                 //对用户名字进行转义处理
                 mNameTextView.setText(EscapeCharacterUtils.unescape(sender.getName()));
-            }else {
+            } else {
                 Glide.with(mContext)
                         .load(R.drawable.im_chat_default)
                         .into(mAvatarImageView);
@@ -410,21 +410,13 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
                 final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
-                Log.e("frc", "MsgViewHolder  position:  " + getAdapterPosition() + "     " + "w:  " + wh[0] + "    h: " + wh[1]);
-                //占据高度
-                if (mMsgImageView.getBitmap() == null) {
-                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                    mMsgImageView.setImageBitmap(bitmap1);
-                } else {
-                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-                }
+
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .fitCenter()
+                        .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onStart() {
@@ -513,6 +505,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ImageView mStateFailedImageView;
         private ProgressImageContainer mMsgImageView;
         private DbMyMsg myMsg;
+        private ImageView mImgGlide;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -522,6 +515,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
+            mImgGlide =itemView.findViewById(R.id.img_glide);
         }
 
         @Override
@@ -567,17 +561,21 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 //如果有本地地址则用本地  没有本地的将使用线上的
                 if (!TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
                     picUrl = myMsg.getLocalViewUrl();
+                    if (!TextUtils.isEmpty(myMsg.getViewUrl())){
+                        Glide.with(itemView.getContext()).load(myMsg.getViewUrl()).override(wh[0],wh[1]).into(mImgGlide);
+                    }
                 } else {
                     picUrl = myMsg.getViewUrl();
                 }
 
-                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + picUrl);
+                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "localUrl:  " + myMsg.getLocalViewUrl());
+                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + myMsg.getViewUrl());
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
                         .asBitmap()
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .fitCenter()
+                        .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
@@ -704,6 +702,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         float baseSize = ScreenUtils.dpToPx(context, 140);
         float iResultWidth = baseSize;
         float iResultHeight = baseSize;
+
         //水平显示
         if (width > height) {
             float scaleSize = baseSize / width;
@@ -716,6 +715,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             iResultHeight = baseSize;
             iResultWidth = width * scaleSize;
         }
+
+        if (iResultHeight < baseSize / 2) {
+            iResultHeight = baseSize / 2;
+        }
+        if (iResultWidth < baseSize / 2) {
+            iResultWidth = baseSize / 2;
+        }
+
 
         return new Integer[]{(int) iResultWidth, (int) iResultHeight};
     }

@@ -148,6 +148,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
             /*请求班级列表 并判断是否跳转*/
             getClassListData();
         }
+
     }
 
 
