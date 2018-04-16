@@ -389,46 +389,75 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 // 有新消息，UI上应该显示红点
                 dbTopic.setShowDot(true);
                 dbTopic.save();
-
+                ArrayList<DbMsg> updateMsgs=new ArrayList<>();
                 // 用最新一页，取代之前的mergedMsgs，
                 // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
-                for (Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext(); ) {
-                    DbMsg uiMsg = i.next();
-                    if (uiMsg.getFrom().equals("mqtt")) {
-                        // 数据库中记录的来自mqtt的消息
-                        for (ImMsg imMsg : ret.data.topicMsg) {
-                            //如果 http请求中包含此条消息
-                            if (imMsg.reqId.equals(uiMsg.getReqId())) {
-                                //对数据库内容进行 更新 将消息来源更新为 http
-                                DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
-                                //在UImsg 列表中将其删除
-                                i.remove();
-                            }
-                        }
-                        continue;
-                    }else if (uiMsg.getFrom().equals("local")){
-                        // 数据库中记录的来自local 的消息 需要判断消息状态 ，如果是已经发送成功的删除
-                        for (ImMsg imMsg : ret.data.topicMsg) {
-                            if (uiMsg.getReqId().equals(imMsg.reqId)) {
-                                //已经发送成功的 消息 更新后移除
+                Iterator<ImMsg> updateMsgsIterator=ret.data.topicMsg.iterator();
+                //更新 local & mqtt -> http
+                while (updateMsgsIterator.hasNext()) {
+                    ImMsg imMsg=updateMsgsIterator.next();
+                    for (DbMsg mergedMsg : dbTopic.mergedMsgs) {
+                        //判断是否 重复
+                        if (imMsg.reqId.equals(mergedMsg.getReqId())) {
+                            //需要更新 服务器有  本地也有
+                            if (mergedMsg.getFrom().equals("mqtt")||mergedMsg.getFrom().equals("local")){
                                 DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
-                                i.remove();
-                                break;
                             }
+                            //更新本地后 删除重复数据
+                            updateMsgsIterator.remove();
+                            break;
                         }
-                        continue;
                     }
-                    i.remove();
                 }
 
-                for (ImMsg msg : ret.data.topicMsg) {
-                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
-                    dbTopic.mergedMsgs.add(dbMsg);
 
+                //updatemsgs 中还剩下 新消息 将新消息加入到 mergemsg中 并保存到数据库中
+                for (ImMsg imMsg : ret.data.topicMsg) {
+                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
+                    dbTopic.mergedMsgs.add(0,dbMsg);
+                    updateMsgs.add(dbMsg);
                     if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
                         dbTopic.latestMsgId = dbMsg.getMsgId();
                     }
                 }
+
+
+//                for (Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext(); ) {
+//                    DbMsg uiMsg = i.next();
+//                    if (uiMsg.getFrom().equals("mqtt")) {
+//                        // 数据库中记录的来自mqtt的消息
+//                        for (ImMsg imMsg : ret.data.topicMsg) {
+//                            //如果 http请求中包含此条消息
+//                            if (imMsg.reqId.equals(uiMsg.getReqId())) {
+//                                //对数据库内容进行 更新 将消息来源更新为 http
+//                                DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
+//                                //在UImsg 列表中将其删除
+//                                i.remove();
+//                            }
+//                        }
+//                        continue;
+//                    }else if (uiMsg.getFrom().equals("local")){
+//                        // 数据库中记录的来自local 的消息 需要判断消息状态 ，如果是已经发送成功的删除
+//                        for (ImMsg imMsg : ret.data.topicMsg) {
+//                            if (uiMsg.getReqId().equals(imMsg.reqId)) {
+//                                //已经发送成功的 消息 更新后移除
+//                                DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
+//                                i.remove();
+//                                break;
+//                            }
+//                        }
+//                        continue;
+//                    }
+//                    i.remove();
+//                }
+//
+//                for (ImMsg msg : ret.data.topicMsg) {
+//                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
+//                    dbTopic.mergedMsgs.add(dbMsg);
+//                    if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
+//                        dbTopic.latestMsgId = dbMsg.getMsgId();
+//                    }
+//                }
                 //判断获取的消息数量是否为0 或空  此时 不显示红点
                 if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     dbTopic.setShowDot(false);
@@ -436,7 +465,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
                 //通知imMsgListActivity刷新列表消息
                 SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
-                MqttProtobufDealer.onTopicUpdate();
+                MqttProtobufDealer.onTopicUpdate(dbTopic.getTopicId(),updateMsgs);
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
@@ -450,40 +479,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 doGetTopicMsgsRequest(dbTopic);
             }
         });
-    }
-
-    private void mergeMsgHttpAndLocal(DbTopic dbTopic, List<ImMsg> newMsgList) {
-        //获取新的列表中 有 上次的,MQTT 推送数据 进行本地更新 以mergedMsg 为主体
-        Iterator<ImMsg> imMsgIterator = newMsgList.iterator();
-        Iterator<DbMsg> dbMsgIterator = dbTopic.mergedMsgs.iterator();
-
-        ImMsg imMsg;
-        //已有数据的更新
-        for (DbMsg dbMsg : dbTopic.mergedMsgs) {
-            if (dbMsg.getFrom().equals("mqtt")) {
-                while (imMsgIterator.hasNext()) {
-                    //遍历寻找
-                    imMsg = imMsgIterator.next();
-                    if (imMsg.reqId.equals(dbMsg.getReqId())){
-                        DatabaseDealer.updateDbMsgWithImMsg(imMsg,"http",Constants.imId);
-                        //在 新列表中删除数据
-                        imMsgIterator.remove();
-                    }
-                }
-            }
-        }
-        //将新数据插入数据库
-        List<DbMsg> newDbMsgs=new ArrayList<>(newMsgList.size());
-        DbMsg nDbMsg=null;
-        while (imMsgIterator.hasNext()){
-          nDbMsg=  DatabaseDealer.updateDbMsgWithImMsg(imMsgIterator.next(),"http",Constants.imId);
-          newDbMsgs.add(nDbMsg);
-        }
-        //原有数据与新数据的合并 以msgid 最为区分
-
-
-
-
     }
 
 

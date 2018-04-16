@@ -74,8 +74,18 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         return topic;
     }
 
+    /**
+     *
+     * 统一数据源入口 防止 topic 与 datalist 指向不同的列表
+     * */
     public void setTopic(DbTopic topic) {
         this.topic = topic;
+        if (topic != null) {
+            setmDatas(topic.mergedMsgs);
+        }else {
+            setmDatas(new ArrayList<DbMsg>());
+        }
+
     }
 
     public MsgListAdapter(Context context) {
@@ -105,7 +115,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         isLoading = loading;
     }
 
-    public void setmDatas(List<DbMsg> mDatas) {
+    private void setmDatas(List<DbMsg> mDatas) {
         this.mDatas = mDatas;
         // 重新生成用于显示的mUiDatas
         generateUiDatas();

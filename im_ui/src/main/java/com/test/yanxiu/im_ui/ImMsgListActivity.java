@@ -214,9 +214,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
         if (topic != null) {
-            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+            mMsgListAdapter.setTopic(topic);
+//            mMsgListAdapter.setmDatas(topic.mergedMsgs);
         } else {
-            mMsgListAdapter.setmDatas(new ArrayList<DbMsg>());
+            mMsgListAdapter.setTopic(topic);
         }
 
         mMsgListAdapter.notifyDataSetChanged();
@@ -357,8 +358,20 @@ public class ImMsgListActivity extends ImBaseActivity {
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
 //新创建的topic 数据不一致造成 新建对话 无法刷新 mergemsgs
-       topic= SharedSingleton.getInstance().get(Constants.kShareTopic);
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        if (event.topicId!=topic.getTopicId()) {
+            return;
+        }
+        //有可能快速进入topic 后  imtopiclistFragment的网络请求才返回
+        //这种情况造成了 重复添加……
+
+
+        //按时间顺序 插入
+
+        for (int i = event.newMsgs.size()-1; i>=0; i--) {
+            topic.mergedMsgs.add(0,event.newMsgs.get(i));
+        }
+        mMsgListAdapter.setTopic(topic);
+//        mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
     }
@@ -510,8 +523,9 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         }
         final DbMyMsg myMsg = sendMsg;
-
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
+//        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
         mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -526,6 +540,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
                 //新的更新方法
+                myMsg.setFrom("mqtt");
                 DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
@@ -585,8 +600,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         //新的更新数据库的方法 如果数据库没有这条数据  内部进行save 操作
         DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
 //        myMsg.save();
+
         topic.mergedMsgs.add(0, dbMyMsg);
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+//        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
         mMsgListAdapter.notifyDataSetChanged();
         //}
 
@@ -620,12 +638,16 @@ public class ImMsgListActivity extends ImBaseActivity {
                     realTopic.save();
                     topic = realTopic;
 
-                    // 3，做mock topic 和 real topic间msgs的转换
+                    // 3，做mock topic 和 real topic间msgs的转换 这里 topic 的mergeMsgs 没变化但是 realtopic 变了
                     DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
 
                     // 4, 通知新增real topic
                     NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
                     newTopicEvent.dbTopic = realTopic;
+                    //数据集合变了 需要更新
+                    mMsgListAdapter.setTopic(topic);
+                    SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
+//                    mMsgListAdapter.setmDatas(realTopic.mergedMsgs);
                     EventBus.getDefault().post(newTopicEvent);
 
                     mMsgListAdapter.notifyDataSetChanged();
@@ -674,7 +696,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 //                        myMsg.save();
                         DatabaseDealer.updateResendMsg(myMsg,"local");
                         topic.mergedMsgs.add(0, myMsg);
-                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+//                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
                         mMsgListAdapter.notifyDataSetChanged();
                         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
                         if (!TextUtils.isEmpty(myMsg.getQiNiuKey())) {
@@ -736,8 +758,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                                         topic.latestMsgId = dbMsg.getMsgId();
                                     }
                                 }
-
-                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                                mMsgListAdapter.setTopic(topic);
+//                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
                                 //fix  FSAPP-1369
 //                                mMsgListAdapter.notifyDataSetChanged();
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
@@ -773,7 +795,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                                     hasMoreMsgs = false;
                                 }
                                 topic.mergedMsgs.addAll(msgs);
-                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                                mMsgListAdapter.setTopic(topic);
+//                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
 
                                 if (num > 0) {
@@ -818,7 +841,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                 return ;
             }
         }
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
+//        mMsgListAdapter.setmDatas(topic.mergedMsgs);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -991,7 +1015,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             myMsg.setHeight(wh[1]);
             DatabaseDealer.updateResendMsg(myMsg, "local");
             topic.mergedMsgs.add(0, myMsg);
-            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+            mMsgListAdapter.setTopic(topic);
+//            mMsgListAdapter.setmDatas(topic.mergedMsgs);
             mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
             Luban.with(ImMsgListActivity.this)
                     .load(imagePathList.get(i))
@@ -1250,8 +1275,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
                     myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
+                    myMsg.setFrom("mqtt");
                     topic.setShowDot(false);
-                    DatabaseDealer.updateResendMsg(myMsg, "local");
+                    DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);

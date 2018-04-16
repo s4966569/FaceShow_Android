@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.test.yanxiu.im_core.db.DbMsg;
 import com.test.yanxiu.im_core.http.common.ImMsg;
 import com.test.yanxiu.im_core.protobuf.ImMqttProto;
 import com.test.yanxiu.im_core.protobuf.MqttMsgProto;
@@ -12,6 +13,8 @@ import com.test.yanxiu.im_core.protobuf.TopicGetProto;
 import com.test.yanxiu.im_core.protobuf.TopicMsgProto;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 /**
  * Created by cailei on 05/03/2018.
@@ -34,6 +37,7 @@ public class MqttProtobufDealer {
 
     public static class TopicUpdateEvent {
         public long topicId;
+        public List<DbMsg> newMsgs;
     }
 
     public static void dealWithData(byte[] rawData) throws InvalidProtocolBufferException {
@@ -111,8 +115,10 @@ public class MqttProtobufDealer {
 
     }
 
-    public static void onTopicUpdate() {
+    public static void onTopicUpdate(long topicId, List<DbMsg> newMsgs) {
         TopicUpdateEvent event = new TopicUpdateEvent();
+        event.topicId=topicId;
+        event.newMsgs=newMsgs;
         EventBus.getDefault().post(event);
     }
 }
