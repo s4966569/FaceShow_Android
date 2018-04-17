@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -171,6 +172,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     @Override
     protected void onDestroy() {
+        SharedSingleton.getInstance().set(Constants.kShareTopic, null);
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -214,9 +216,9 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
 
         if (topic != null) {
-            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+            mMsgListAdapter.setTopic(topic);
         } else {
-            mMsgListAdapter.setmDatas(new ArrayList<DbMsg>());
+            mMsgListAdapter.setTopic(topic);
         }
 
         mMsgListAdapter.notifyDataSetChanged();
@@ -356,9 +358,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
-//新创建的topic 数据不一致造成 新建对话 无法刷新 mergemsgs
-       topic= SharedSingleton.getInstance().get(Constants.kShareTopic);
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
     }
@@ -511,7 +511,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
         final DbMyMsg myMsg = sendMsg;
 
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
         mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -526,7 +526,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
                 //新的更新方法
-                DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+                DatabaseDealer.updateResendMsg(myMsg, "http");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
 
@@ -586,7 +586,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
 //        myMsg.save();
         topic.mergedMsgs.add(0, dbMyMsg);
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
         mMsgListAdapter.notifyDataSetChanged();
         //}
 
@@ -606,28 +606,13 @@ public class ImMsgListActivity extends ImBaseActivity {
                     }
                     // 应该只有一个imTopic
 
-                    // 1，通知移除mock topic
-                    DbTopic mockTopic = topic;
-                    MockTopicRemovedEvent mockRemoveEvent = new MockTopicRemovedEvent();
-                    mockRemoveEvent.dbTopic = mockTopic;
-                    EventBus.getDefault().post(mockRemoveEvent);
-
-
-                    // 2，添加server返回的real topic
-                    DbTopic realTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    realTopic.latestMsgTime = imTopic.latestMsgTime;
-                    realTopic.latestMsgId = imTopic.latestMsgId;
-                    realTopic.save();
-                    topic = realTopic;
-
-                    // 3，做mock topic 和 real topic间msgs的转换
-                    DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
+                    DbTopic realTopic = translateMockTopicToReal(imTopic);
 
                     // 4, 通知新增real topic
                     NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
                     newTopicEvent.dbTopic = realTopic;
                     EventBus.getDefault().post(newTopicEvent);
-
+                    mMsgListAdapter.setTopic(realTopic);
                     mMsgListAdapter.notifyDataSetChanged();
                     doSendMsg(msg, msgReqId);
                 }
@@ -674,7 +659,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 //                        myMsg.save();
                         DatabaseDealer.updateResendMsg(myMsg,"local");
                         topic.mergedMsgs.add(0, myMsg);
-                        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                        mMsgListAdapter.setTopic(topic);
                         mMsgListAdapter.notifyDataSetChanged();
                         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
                         if (!TextUtils.isEmpty(myMsg.getQiNiuKey())) {
@@ -737,7 +722,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                                     }
                                 }
 
-                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                                mMsgListAdapter.setTopic(topic);
                                 //fix  FSAPP-1369
 //                                mMsgListAdapter.notifyDataSetChanged();
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
@@ -773,7 +758,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                                     hasMoreMsgs = false;
                                 }
                                 topic.mergedMsgs.addAll(msgs);
-                                mMsgListAdapter.setmDatas(topic.mergedMsgs);
+                                mMsgListAdapter.setTopic(topic);
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
 
                                 if (num > 0) {
@@ -818,7 +803,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 return ;
             }
         }
-        mMsgListAdapter.setmDatas(topic.mergedMsgs);
+        mMsgListAdapter.setTopic(topic);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -991,7 +976,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             myMsg.setHeight(wh[1]);
             DatabaseDealer.updateResendMsg(myMsg, "local");
             topic.mergedMsgs.add(0, myMsg);
-            mMsgListAdapter.setmDatas(topic.mergedMsgs);
+            mMsgListAdapter.setTopic(topic);
             mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
             if (!NetWorkUtils.isNetworkAvailable(ImMsgListActivity.this)) {
                 sendPicFailure(myMsg);
@@ -1182,24 +1167,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                         imTopic = topic;
                     }
                     // 应该只有一个imTopic
+                    DbTopic realTopic = translateMockTopicToReal(imTopic);
 
-                    // 1，通知移除mock topic
-                    DbTopic mockTopic = topic;
-                    MockTopicRemovedEvent mockRemoveEvent = new MockTopicRemovedEvent();
-                    mockRemoveEvent.dbTopic = mockTopic;
-                    EventBus.getDefault().post(mockRemoveEvent);
-
-
-                    // 2，添加server返回的real topic
-                    DbTopic realTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    realTopic.latestMsgTime = imTopic.latestMsgTime;
-                    realTopic.latestMsgId = imTopic.latestMsgId;
-                    realTopic.save();
-                    topic = realTopic;
-
-                    // 3，做mock topic 和 real topic间msgs的转换
-                    DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
-
+                    mMsgListAdapter.setTopic(realTopic);
                     // 4, 通知新增real topic
                     NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
                     newTopicEvent.dbTopic = realTopic;
@@ -1219,6 +1189,31 @@ public class ImMsgListActivity extends ImBaseActivity {
             // 已经有对话，直接发送即可
             doSendImage(rid, with, height, dbMyMsg);
         }
+    }
+
+    @NonNull
+    private DbTopic translateMockTopicToReal(ImTopic imTopic) {
+        // 1，通知移除mock topic
+        DbTopic mockTopic = getSharedTopic();
+        MockTopicRemovedEvent mockRemoveEvent = new MockTopicRemovedEvent();
+        mockRemoveEvent.dbTopic = mockTopic;
+        EventBus.getDefault().post(mockRemoveEvent);
+
+
+        // 2，添加server返回的real topic
+        DbTopic realTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
+        realTopic.latestMsgTime = imTopic.latestMsgTime;
+        realTopic.latestMsgId = imTopic.latestMsgId;
+        realTopic.save();
+        topic=realTopic;
+        // 3，做mock topic 和 real topic间msgs的转换
+        DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic,realTopic);
+        return realTopic;
+    }
+
+    private DbTopic getSharedTopic() {
+        return SharedSingleton.getInstance().get(Constants.kShareTopic);
     }
 
 

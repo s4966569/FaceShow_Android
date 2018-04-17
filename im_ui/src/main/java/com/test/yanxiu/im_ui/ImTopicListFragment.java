@@ -396,43 +396,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                 // 用最新一页，取代之前的mergedMsgs，
                 // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
-                for (Iterator<DbMsg> i = dbTopic.mergedMsgs.iterator(); i.hasNext(); ) {
-                    DbMsg uiMsg = i.next();
-                    if (uiMsg.getFrom().equals("mqtt")) {
-                        // 数据库中记录的来自mqtt的消息
-                        for (ImMsg imMsg : ret.data.topicMsg) {
-                            //如果 http请求中包含此条消息
-                            if (imMsg.reqId.equals(uiMsg.getReqId())) {
-                                //对数据库内容进行 更新 将消息来源更新为 http
-                                DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
-                                //在UImsg 列表中将其删除
-                                i.remove();
-                            }
-                        }
-                        continue;
-                    } else if (uiMsg.getFrom().equals("local")) {
-                        // 数据库中记录的来自local 的消息 需要判断消息状态 ，如果是已经发送成功的删除
-                        for (ImMsg imMsg : ret.data.topicMsg) {
-                            if (uiMsg.getReqId().equals(imMsg.reqId)) {
-                                //已经发送成功的 消息 更新后移除
-                                DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
-                                i.remove();
-                                break;
-                            }
-                        }
-                        continue;
-                    }
-                    i.remove();
-                }
-
-                for (ImMsg msg : ret.data.topicMsg) {
-                    DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "http", Constants.imId);
-                    dbTopic.mergedMsgs.add(dbMsg);
-
-                    if (dbMsg.getMsgId() > dbTopic.latestMsgId) {
-                        dbTopic.latestMsgId = dbMsg.getMsgId();
-                    }
-                }
+                mergeMsgHttpAndLocal(dbTopic,ret.data.topicMsg);
                 //判断获取的消息数量是否为0 或空  此时 不显示红点
                 if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     dbTopic.setShowDot(false);
@@ -456,38 +420,37 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         });
     }
 
+    /**
+     * 更新数据库
+     * 对新消息与本地消息进行排序
+     * @param dbTopic 当前获取新消息列表的topic
+     * @param newMsgList 服务器返回的最新消息列表
+     * */
     private void mergeMsgHttpAndLocal(DbTopic dbTopic, List<ImMsg> newMsgList) {
         //获取新的列表中 有 上次的,MQTT 推送数据 进行本地更新 以mergedMsg 为主体
         Iterator<ImMsg> imMsgIterator = newMsgList.iterator();
-        Iterator<DbMsg> dbMsgIterator = dbTopic.mergedMsgs.iterator();
-
-        ImMsg imMsg;
-        //已有数据的更新
-        for (DbMsg dbMsg : dbTopic.mergedMsgs) {
-            if (dbMsg.getFrom().equals("mqtt")) {
-                while (imMsgIterator.hasNext()) {
-                    //遍历寻找
-                    imMsg = imMsgIterator.next();
-                    if (imMsg.reqId.equals(dbMsg.getReqId())) {
+        while (imMsgIterator.hasNext()) {
+            ImMsg imMsg = imMsgIterator.next();
+            //1、判断 是否本地已有数据
+            for (DbMsg dbMsg : dbTopic.mergedMsgs) {
+                if (dbMsg.getReqId().equals(imMsg.reqId)) {
+                    //mqtt 数据刷新为推送转为http拉取   local 为网络不好时 本地认为未成功的数据
+                    if (dbMsg.getFrom().equals("mqtt") || dbMsg.getFrom().equals("local")) {
                         DatabaseDealer.updateDbMsgWithImMsg(imMsg, "http", Constants.imId);
-                        //在 新列表中删除数据
-                        imMsgIterator.remove();
                     }
+                    //去重
+                    imMsgIterator.remove();
+                    break;
                 }
             }
         }
-        //将新数据插入数据库
-        List<DbMsg> newDbMsgs = new ArrayList<>(newMsgList.size());
-        DbMsg nDbMsg = null;
-        while (imMsgIterator.hasNext()) {
-            nDbMsg = DatabaseDealer.updateDbMsgWithImMsg(imMsgIterator.next(), "http", Constants.imId);
-            newDbMsgs.add(nDbMsg);
+        //当获取的
+        //2、进行新数据的插入 上面已经完成去重工作  这个应该根据msgId进行排序
+        for (int i = newMsgList.size()-1; i >=0; i--) {
+            DbMsg newMsg=DatabaseDealer.updateDbMsgWithImMsg(newMsgList.get(i),"http",Constants.imId);
+            dbTopic.mergedMsgs.add(0,newMsg);
         }
-        //原有数据与新数据的合并 以msgid 最为区分
-
-
     }
-
 
     public ServiceConnection mqttServiceConnection = new ServiceConnection() {
 
@@ -623,10 +586,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
      * 但 已被移除的 member 能否通过 topicid 获取 topic member 信息？
      */
     private void checkUserRemove(final MqttProtobufDealer.TopicChangeEvent event) {
-        //方案一  请求获取最新的 topic 列表 看是否还有 这个 topic
         isUserInTopicByTopicList(event);
-        //方案二 通过获取 指定 topic 的成员列表来判断
-//        isUserInTopicByMemberid(event);
+
     }
 
     /**
@@ -713,64 +674,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         });
     }
 
-    /**
-     * 通过 获取 发生成员变化的 topic 成员列表来 判断当前用户是否还在 topic 中
-     */
-//    private void isUserInTopicByMemberid(final MqttProtobufDealer.TopicChangeEvent event) {
-//        //方案二  通过 topicid 获取 member 列表
-//        TopicGetTopicsRequest getTopicsRequest = new TopicGetTopicsRequest();
-//        getTopicsRequest.imToken = Constants.imToken;
-//        getTopicsRequest.topicIds = String.valueOf(event.topicId);
-//        getTopicsRequest.startRequest(TopicGetTopicsResponse.class, new HttpCallback<TopicGetTopicsResponse>() {
-//            @Override
-//            public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
-//                // 更新数据库
-//                List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
-//                //正确的 size=1只请求了 通知有人员变动的 topic
-//                for (ImTopic imTopic : ret.data.topic) {
-//                    //首先判断 用户是否在成员名单中
-//                    if (imTopic.topicId==event.topicId) {
-//                        boolean inTopic=false;
-//                        for (ImTopic.Member member : imTopic.members) {
-//                            if (member.memberId== Constants.imId) {
-//                                inTopic=true;
-//                                break;
-//                            }
-//                        }
-//                        //用户不在 名单中
-//                        if (!inTopic&&mOnUserRemoveFromClaszCallback!=null){
-//                            //去掉 mqtt 的订阅
-//                            binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
-//                            //回调给 mainactivity 用户被除名
-//                            mOnUserRemoveFromClaszCallback.onRemoved();
-//                            return;
-//                        }
-//                    }
-//
-//                    //如果 用户还在这个 topic 中 顺便更新一下
-//                    DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-//                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
-//                    dbTopic.latestMsgId = imTopic.latestMsgId;
-//                    // 更新uiTopics
-//                    for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
-//                        DbTopic uiTopic = i.next();
-//                        if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
-//                            i.remove();
-//                        }
-//                    }
-//                    topics.add(dbTopic);
-//                    topicsNeedUpdateMember.add(dbTopic);
-//                }
-//                rearrangeTopics();
-//                mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onFail(RequestBase request, Error error) {
-//
-//            }
-//        });
-//    }
 
     // http, mqtt 公用
     private void updateTopicsWithMembers(String topicIds) {
@@ -782,20 +685,27 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             public void onSuccess(RequestBase request, TopicGetTopicsResponse ret) {
                 // 更新数据库
                 List<DbTopic> topicsNeedUpdateMember = new ArrayList<>();
-
+                
                 for (ImTopic imTopic : ret.data.topic) {
                     DbTopic dbTopic = DatabaseDealer.updateDbTopicWithImTopic(imTopic);
-                    dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                    dbTopic.latestMsgId = imTopic.latestMsgId;
-
+                  
+                    boolean hasThisTopic=false;
                     // 更新uiTopics
-                    for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
-                        DbTopic uiTopic = i.next();
-                        if (uiTopic.getTopicId() == dbTopic.getTopicId()) {
-                            i.remove();
+                    for (DbTopic uiTopic : topics) {
+                        if (uiTopic.getTopicId()==imTopic.topicId) {
+                            hasThisTopic=true;
+                            uiTopic.setTopicId(imTopic.topicId);
+                            uiTopic.setName(imTopic.topicName);
+                            uiTopic.setType(imTopic.topicType);
+                            uiTopic.setChange(imTopic.topicChange);
+                            uiTopic.setGroup(imTopic.topicGroup);
                         }
                     }
-                    topics.add(dbTopic);
+                    if (!hasThisTopic) {
+                        topics.add(dbTopic);
+                        dbTopic.latestMsgTime = imTopic.latestMsgTime;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
+                    }
                     topicsNeedUpdateMember.add(dbTopic);
                 }
 
