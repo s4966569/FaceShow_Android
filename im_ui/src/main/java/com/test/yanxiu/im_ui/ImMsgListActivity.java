@@ -223,8 +223,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
 
         mMsgListAdapter.notifyDataSetChanged();
-
-        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+        moveToBottom();
+//        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
         //会造成进入界面后 从第一条滚动到最后一条的 效果
 //        mMsgListRecyclerView.post(new Runnable() {
@@ -527,9 +527,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         final DbMyMsg myMsg = sendMsg;
         mMsgListAdapter.setTopic(topic);
         SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
-        mMsgListAdapter.notifyDataSetChanged();
-//        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-        mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
@@ -545,6 +542,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
+                mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
 
 
             }
@@ -556,6 +554,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 DatabaseDealer.updateResendMsg(myMsg, "local");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
+                mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
             }
         });
 
@@ -606,7 +605,8 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         mMsgListAdapter.setTopic(topic);
         SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
-        mMsgListAdapter.notifyDataSetChanged();
+        // TODO: 2018/4/17  头像晃动
+//        mMsgListAdapter.notifyDataSetChanged();
         //}
 
         // 对于是mock topic的需要先创建topic
@@ -826,6 +826,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 return ;
             }
         }
+        //需要重新生成UI  比如 timeline 目前
         mMsgListAdapter.setTopic(topic);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
@@ -1297,6 +1298,36 @@ public class ImMsgListActivity extends ImBaseActivity {
         });
 
         mMsgEditText.setText("");
+    }
+
+
+
+    /**
+     *
+     * RecyclerView 移动到当前位置，
+     *
+     * @param manager   设置RecyclerView对应的manager
+     * @param mRecyclerView  当前的RecyclerView
+     * @param n  要跳转的位置
+     */
+    public  void moveToPosition(LinearLayoutManager manager, RecyclerView mRecyclerView, int n) {
+        int firstItem = manager.findFirstVisibleItemPosition();
+        int lastItem = manager.findLastVisibleItemPosition();
+        if (n <= firstItem) {
+            mRecyclerView.scrollToPosition(n);
+        } else if (n <= lastItem) {
+            int top = mRecyclerView.getChildAt(n - firstItem).getTop();
+            mRecyclerView.scrollBy(0, top);
+        } else {
+            mRecyclerView.scrollToPosition(n);
+        }
+
+    }
+
+    public void moveToBottom(){
+//        moveToPosition((LinearLayoutManager)mMsgListRecyclerView.getLayoutManager()
+//                ,mMsgListRecyclerView,mMsgListRecyclerView.getAdapter().getItemCount()-1);
+        mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount()-1);
     }
 
 

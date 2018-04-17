@@ -106,6 +106,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         super.onDestroyView();
     }
 
+
+
+    //界面由 msglist返回后 需要重新排序
+
     public void onMsgListActivityReturned() {
         Log.i(TAG, "onMsgListActivityReturned: ");
         for (DbTopic topic : msgShownTopics) {
@@ -115,6 +119,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
             // 有新消息则要放置到最前
             long latestMsgTime = topic.latestMsgTime;
+            //最后点击进入的topic 也要置顶 利用msgshowTopics
+
 
             // 因为mqtt新增topic，和http新增topic，不确定哪个先返回，所以需要用msg activity里的topic替换掉topic fragment的
             for (DbTopic dbTopic : topics) {
@@ -131,6 +137,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     topics.add(0, topic);
                 }
             }
+
             //退出Message页面后将本地图片地址删除
             for (DbMsg mergedMsg : topic.mergedMsgs) {
                 if (mergedMsg instanceof DbMyMsg) {
@@ -393,7 +400,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 // 有新消息，UI上应该显示红点
                 dbTopic.setShowDot(true);
                 dbTopic.save();
-                ArrayList<DbMsg> updateMsgs=new ArrayList<>();
                 // 用最新一页，取代之前的mergedMsgs，
                 // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
 
@@ -406,7 +412,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
                 //通知imMsgListActivity刷新列表消息
                 SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
-                MqttProtobufDealer.onTopicUpdate(dbTopic.getTopicId(),updateMsgs);
+                MqttProtobufDealer.onTopicUpdate(dbTopic.getTopicId());
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
@@ -757,6 +763,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             dbTopic.save();
             //通知mainactivity 是否显示红点
             curTopic = dbTopic;
+
             msgShownTopics.add(dbTopic);
         }
     };
@@ -849,8 +856,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         Log.i(TAG, "rearrangeTopics: ");
         //只对 服务器消息时间进行排序
         Collections.sort(topics, DatabaseDealer.topicComparator);
-        //增加本地离线消息时间排序
-//        Collections.sort(topics, DatabaseDealer.topicComparatorWithLocalMsg);
+
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
         for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
