@@ -74,6 +74,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         return topic;
     }
 
+    /**
+     *
+     * 统一数据源入口 防止 topic 与 datalist 指向不同的列表
+     * */
     public void setTopic(DbTopic topic) {
         if (topic==null) {
             setmDatas(new ArrayList<DbMsg>());
@@ -81,6 +85,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         }
         this.topic = topic;
         setmDatas(topic.mergedMsgs);
+
     }
 
     public MsgListAdapter(Context context) {
@@ -110,6 +115,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         isLoading = loading;
     }
 
+
     //统一数据入口
     private void setmDatas(List<DbMsg> mDatas) {
         this.mDatas = mDatas;
@@ -121,10 +127,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     // 从现有的mDatas，生成mUiDatas
     private void generateUiDatas() {
         mUiDatas = new ArrayList<>();
-
-//        for (int i = 0; i < mDatas.size(); i++) {
-//            Log.i(TAG, "generateUiDatas: "+new Gson().toJson(mDatas.get(i)));
-//        }
         for (int i = 0; i < mDatas.size(); i++) {
             DbMsg curDbMsg = mDatas.get(i);
             // 最后一条跟当前时间比较，其余的跟前一条时间比较

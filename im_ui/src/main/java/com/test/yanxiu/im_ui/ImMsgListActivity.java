@@ -358,6 +358,11 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
+
+        //新创建的topic 数据不一致造成 新建对话 无法刷新 mergemsgs
+        if (event.topicId!=topic.getTopicId()) {
+            return;
+        }
         mMsgListAdapter.setTopic(topic);
         mMsgListAdapter.notifyDataSetChanged();
         mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -510,8 +515,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         }
         final DbMyMsg myMsg = sendMsg;
-
         mMsgListAdapter.setTopic(topic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
         mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
@@ -526,7 +531,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
                 //新的更新方法
-                DatabaseDealer.updateResendMsg(myMsg, "http");
+                myMsg.setFrom("mqtt");
+                DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
 
@@ -585,8 +591,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         //新的更新数据库的方法 如果数据库没有这条数据  内部进行save 操作
         DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
 //        myMsg.save();
+
         topic.mergedMsgs.add(0, dbMyMsg);
+
         mMsgListAdapter.setTopic(topic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
         mMsgListAdapter.notifyDataSetChanged();
         //}
 
@@ -607,10 +616,13 @@ public class ImMsgListActivity extends ImBaseActivity {
                     // 应该只有一个imTopic
 
                     DbTopic realTopic = translateMockTopicToReal(imTopic);
-
                     // 4, 通知新增real topic
                     NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
                     newTopicEvent.dbTopic = realTopic;
+                    //数据集合变了 需要更新
+                    mMsgListAdapter.setTopic(topic);
+                    SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
+//                    mMsgListAdapter.setmDatas(realTopic.mergedMsgs);
                     EventBus.getDefault().post(newTopicEvent);
                     mMsgListAdapter.setTopic(realTopic);
                     mMsgListAdapter.notifyDataSetChanged();
@@ -723,6 +735,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                                 }
 
                                 mMsgListAdapter.setTopic(topic);
+
                                 //fix  FSAPP-1369
 //                                mMsgListAdapter.notifyDataSetChanged();
                                 int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
@@ -1246,8 +1259,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setViewUrl(ret.data.topicMsg.get(0).contentData.viewUrl);
                     myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
+                    myMsg.setFrom("mqtt");
                     topic.setShowDot(false);
-                    DatabaseDealer.updateResendMsg(myMsg, "local");
+                    DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);

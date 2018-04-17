@@ -393,10 +393,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 // 有新消息，UI上应该显示红点
                 dbTopic.setShowDot(true);
                 dbTopic.save();
-
+                ArrayList<DbMsg> updateMsgs=new ArrayList<>();
                 // 用最新一页，取代之前的mergedMsgs，
                 // 因为和mqtt是异步，所以这次mqtt连接后新收到的消息不应该删除（所以从DB来的数据，手动设置为from "http"）,有点trick
+
                 mergeMsgHttpAndLocal(dbTopic,ret.data.topicMsg);
+
                 //判断获取的消息数量是否为0 或空  此时 不显示红点
                 if (ret.data.topicMsg == null || ret.data.topicMsg.size() == 0) {
                     dbTopic.setShowDot(false);
@@ -404,7 +406,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 }
                 //通知imMsgListActivity刷新列表消息
                 SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
-                MqttProtobufDealer.onTopicUpdate();
+                MqttProtobufDealer.onTopicUpdate(dbTopic.getTopicId(),updateMsgs);
                 rearrangeTopics();
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
@@ -419,6 +421,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         });
     }
+
 
     /**
      * 更新数据库
@@ -451,7 +454,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             dbTopic.mergedMsgs.add(0,newMsg);
         }
     }
-
     public ServiceConnection mqttServiceConnection = new ServiceConnection() {
 
 
