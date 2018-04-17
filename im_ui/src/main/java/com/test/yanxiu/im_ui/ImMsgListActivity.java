@@ -93,6 +93,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     private DbTopic topic;
     private static final int IMAGE_PICKER = 0x03;
     private static final int REQUEST_CODE_SELECT = 0x04;
+    private static final int REQUEST_CODE_LOAD_BIG_IMG = 0x05;
     private ImTitleLayout mTitleLayout;
     private RecyclerView mMsgListRecyclerView;
     private MsgListAdapter mMsgListAdapter;
@@ -349,12 +350,21 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.setShowPreviewPicListener(new MsgListAdapter.ShowPreviewPicListener() {
             @Override
             public void picClick(int position, View view, String url) {
+                shouldScrollToBottom=false;
                 ArrayList list = new ArrayList();
                 list.add(url);
-                PhotoActivity.LaunchActivity(ImMsgListActivity.this, list, 0, 0, 1);
+//                PhotoActivity.LaunchActivity(ImMsgListActivity.this, list, 0, 0, 1);
+                PhotoActivity.LaunchActivity(ImMsgListActivity.this, REQUEST_CODE_LOAD_BIG_IMG,list, 0, 0, 1);
             }
         });
     }
+
+    /**
+     * 控制收到新消息是否滚动
+     * 默认情况是true
+     * 当用户点击查看打图时 设置为false
+     * */
+    private boolean shouldScrollToBottom=true;
 
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
@@ -820,7 +830,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.notifyDataSetChanged();
 //        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
-        mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount()-1);
+        //是否要滑动到最新一条
+        if (shouldScrollToBottom) {
+            mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount()-1);
+        }
+
     }
     //endregion
 
@@ -902,6 +916,9 @@ public class ImMsgListActivity extends ImBaseActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+            case REQUEST_CODE_LOAD_BIG_IMG:
+                shouldScrollToBottom=true;
+                break;
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
                 if (data!=null) {

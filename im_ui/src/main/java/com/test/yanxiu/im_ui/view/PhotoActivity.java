@@ -1,5 +1,6 @@
 package com.test.yanxiu.im_ui.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.test.yanxiu.faceshow_ui_base.ImBaseActivity;
@@ -54,7 +54,17 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
         intent.putExtra(SELECTID,selectPosition);
         intent.putExtra(FROM,fromId);
         intent.putExtra(ISCANDELETE,isCanDelete);
+
         context.startActivity(intent);
+    }
+    public static void LaunchActivity(Activity context,int reqCode, ArrayList<String> list, int selectPosition, int fromId, int isCanDelete){
+        Intent intent=new Intent(context,PhotoActivity.class);
+        intent.putStringArrayListExtra(PATH_LIST,list);
+        intent.putExtra(SELECTID,selectPosition);
+        intent.putExtra(FROM,fromId);
+        intent.putExtra(ISCANDELETE,isCanDelete);
+
+        context.startActivityForResult(intent,reqCode);
     }
 
     @Override
