@@ -28,10 +28,12 @@ import java.util.UUID;
 public class MqttService extends Service {
     public interface MqttServiceCallback {
         void onDisconnect();
+
         void onConnect();
     }
 
     private MqttServiceCallback mMqttServiceCallback;
+
     public void setmMqttServiceCallback(MqttServiceCallback mMqttServiceCallback) {
         this.mMqttServiceCallback = mMqttServiceCallback;
     }
@@ -108,6 +110,7 @@ public class MqttService extends Service {
     };
 
     private int uuid = 0;
+
     private void doInit() {
         clientId = "android" + uuid++ + UUID.randomUUID().toString();
 
@@ -183,13 +186,14 @@ public class MqttService extends Service {
             }
         }
     }
+
     /**
      * 取消 topic 的订阅
-     * */
-    public void doUnsubscribeTopic(String topicId){
+     */
+    public void doUnsubscribeTopic(String topicId) {
         if ((mClient != null) && mClient.isConnected()) {
             try {
-                mClient. unsubscribe("im/v1.0/topic/" + topicId, MqttService.this, new IMqttActionListener() {
+                mClient.unsubscribe("im/v1.0/topic/" + topicId, MqttService.this, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
                         Log.i("immqtt", "onSuccess: ");
@@ -197,7 +201,7 @@ public class MqttService extends Service {
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        Log.e("immqtt", "onFailure: ",exception.getCause() );
+                        Log.e("immqtt", "onFailure: ", exception.getCause());
                     }
                 });
             } catch (MqttException e) {
@@ -205,6 +209,7 @@ public class MqttService extends Service {
             }
         }
     }
+
 
     public void doSubscribeMember(long memberId) {
         if ((mClient != null) && mClient.isConnected()) {
@@ -229,12 +234,12 @@ public class MqttService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         SrtLogger.log("im service", "bind");
-        host =host+intent.getStringExtra("host");
+        host = host + intent.getStringExtra("host");
         return new MqttBinder();
     }
 
     @Override
-    public void onRebind (Intent intent) {
+    public void onRebind(Intent intent) {
         SrtLogger.log("im service", "rebind");
     }
 
