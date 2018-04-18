@@ -430,6 +430,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setImageBitmap(holdBitmap);
 
                 //执行加载图片
+                final Bitmap finalHoldBitmap = holdBitmap;
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
@@ -461,7 +462,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
                             @Override
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                                mMsgImageView.setImageBitmap(finalHoldBitmap);
                             }
                         });
 
@@ -600,6 +601,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
                 mMsgImageView.setTag(picUrl);
                 final Bitmap finalHoldBitmap = holdBitmap;
+                final Bitmap finalHoldBitmap1 = holdBitmap;
                 Glide.with(itemView.getContext())
                         .load(picUrl)
                         .asBitmap()
@@ -635,6 +637,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                 }
                             }
 
+                            @Override
+                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                super.onLoadFailed(e, errorDrawable);
+                                mMsgImageView.setImageBitmap(finalHoldBitmap1);
+                            }
                         });
 
             } else if (myMsg.getContentType() == 30) {

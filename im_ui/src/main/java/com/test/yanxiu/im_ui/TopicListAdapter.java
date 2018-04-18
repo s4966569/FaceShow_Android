@@ -138,12 +138,16 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 //私聊 显示对方头像 和 topic 名称
                 for (DbMember member : topic.getMembers()) {
                     if (member.getImId() != Constants.imId) {
-                        Glide.with(mContext)
-                                .load(member.getAvatar())
-                                .placeholder(R.drawable.icon_chat_unknown)
-                                .error(R.drawable.icon_chat_unknown)
-                                .into(mAvatarImageView);
-                        mSenderTextView.setText(member.getName());
+
+                        //图片更换 重新加载
+                        if (!TextUtils.equals(member.getAvatar(), (CharSequence) mAvatarImageView.getTag())) {
+                            Glide.with(mContext)
+                                    .load(member.getAvatar())
+                                    .placeholder(R.drawable.icon_chat_unknown)
+                                    .into(mAvatarImageView);
+                            mAvatarImageView.setTag(member.getAvatar());
+                        }
+                        mSenderTextView.setText(EscapeCharacterUtils.unescape(member.getName()));
                         break;
                     }
                 }
@@ -152,7 +156,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 // 1, 显示班级默认图片
                 mAvatarImageView.setImageResource(R.drawable.icon_chat_class);
                 // 2, 显示班级群聊(班级名) 在消息判断外侧，保证列表 显示群组名称
-                mSenderTextView.setText("班级群聊" + "(" + topic.getGroup() + ")");
+                mSenderTextView.setText("班级群聊" + "(" + EscapeCharacterUtils.unescape(topic.getGroup()) + ")");
             }
 
             //显示最新消息
