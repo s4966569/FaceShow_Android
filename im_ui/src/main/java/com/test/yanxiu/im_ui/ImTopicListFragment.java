@@ -27,7 +27,6 @@ import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
-import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
@@ -150,7 +149,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 //            }
         }
 
-        rearrangeTopics(); // 重新排列群聊、私聊
+        rearrangeTopics(true); // 重新排列群聊、私聊 并以本地操作时间排序依据
 
         curTopic = null;
         msgShownTopics.clear();
@@ -217,7 +216,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 msg.setFrom("http");
             }
         }
-        rearrangeTopics();
+        //排序 由数据库获取topiclist 以本地操作时间为依据
+        rearrangeTopics(true);
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -413,7 +413,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 //通知imMsgListActivity刷新列表消息
                 SharedSingleton.getInstance().set(Constants.kShareTopic, dbTopic);
                 MqttProtobufDealer.onTopicUpdate(dbTopic.getTopicId());
-                rearrangeTopics();
+                rearrangeTopics(false);
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
             }
 
@@ -573,7 +573,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 break;
             }
         }
-        rearrangeTopics();
+        //排序 以服务器时间为依据
+        rearrangeTopics(false);
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
     }
@@ -590,7 +591,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             Log.i("repeat", "onMqttMsg: ");
             checkUserRemove(event);
         }
-        rearrangeTopics();
+        //排序以服务器时间为依据
+        rearrangeTopics(false);
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -725,7 +727,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
                 // 更新UI, 需要重新排列么？
                 // Collections.sort(topics, topicComparator);
-                rearrangeTopics();
+                //由网络获取的新数据 以服务器时间为依据
+                rearrangeTopics(false);
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
                 // 4，对于需要更新members的topic，等待更新完members，再去取msgs
@@ -849,7 +852,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
         }
         topics.add(dbTopic);
-        rearrangeTopics();
+        //创建topic 本地时间排序
+        rearrangeTopics(true);
         mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 
         binder.subscribeTopic(Long.toString(dbTopic.getTopicId()));
@@ -857,13 +861,20 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     }
     //endregion
 
-    private void rearrangeTopics() {
+
+    /**
+     * 对topic 进行排序 按最近使用的
+     * @param byLocal 是否已本地操作时间作为排序依据
+     * */
+    private void rearrangeTopics(boolean byLocal) {
         //首先按照 最新消息时间进行排序
         Log.i(TAG, "rearrangeTopics: ");
         //只对 服务器消息时间进行排序
-//        Collections.sort(topics, DatabaseDealer.topicComparator);
-        Collections.sort(topics, DatabaseDealer.topicComparatorByLocalTime);
-
+        if (byLocal) {
+            Collections.sort(topics, DatabaseDealer.topicComparatorByLocalTime);
+        }else {
+            Collections.sort(topics, DatabaseDealer.topicComparator);
+        }
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();
         for (Iterator<DbTopic> i = topics.iterator(); i.hasNext(); ) {
