@@ -407,18 +407,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
                 final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
-
-                //判断是否 需要展示占位图
-                String exsistUrl = (String) mMsgImageView.getTag();
-                //没有tag 或者保存的tag 不是 msg 的图片路径 说明需要加载新图片
-                boolean showPlaceHoldImg = TextUtils.isEmpty(exsistUrl) ||
-                        (!exsistUrl.equals(msg.getLocalViewUrl()) && !exsistUrl.equals(msg.getViewUrl()));
-                if (showPlaceHoldImg) {
-                    Log.i(TAG, "setData: show place holderimg first ");
-                    mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
-                }
-
-
                 mMsgImageView.setTag(msg.getViewUrl());
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
@@ -566,19 +554,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
 
-                //判断是否 需要展示占位图
-                String exsistUrl = (String) mMsgImageView.getTag();
-                //没有tag 或者保存的tag 不是 msg 的图片路径 说明需要加载新图片
-                boolean showPlaceHoldImg = TextUtils.isEmpty(exsistUrl);
-//                        ||(!exsistUrl.equals(myMsg.getLocalViewUrl())&&!exsistUrl.equals(myMsg.getViewUrl()));
-                if (showPlaceHoldImg) {
-                    Log.i(TAG, "setData: show place holderimg first ");
-
-                }
                 mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
-                final String picUrl ;
+                final String picUrl;
                 //如果有本地地址则用本地  没有本地的将使用线上的
-                if (TextUtils.isEmpty(myMsg.getLocalViewUrl()) && !TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
+                if (!TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
                     picUrl = myMsg.getLocalViewUrl();
                 } else {
                     picUrl = myMsg.getViewUrl();
@@ -620,16 +599,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                 }
                             }
 
-                            @Override
-                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
-                                    mMsgImageView.clearOverLayer();
-                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                                    mMsgImageView.setImageBitmap(bitmap1);
-
-                                }
-                            }
                         });
 
             } else if (myMsg.getContentType() == 30) {

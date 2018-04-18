@@ -115,10 +115,9 @@ public class MqttProtobufDealer {
 
     }
 
-    public static void onTopicUpdate(long topicId, List<DbMsg> newMsgs) {
+    public static void onTopicUpdate(long topicId) {
         TopicUpdateEvent event = new TopicUpdateEvent();
         event.topicId=topicId;
-        event.newMsgs=newMsgs;
         EventBus.getDefault().post(event);
     }
 }
