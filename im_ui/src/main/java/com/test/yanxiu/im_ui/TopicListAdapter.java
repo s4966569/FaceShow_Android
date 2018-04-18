@@ -138,15 +138,10 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                 //私聊 显示对方头像 和 topic 名称
                 for (DbMember member : topic.getMembers()) {
                     if (member.getImId() != Constants.imId) {
-
-                        //图片更换 重新加载
-                        if (!TextUtils.equals(member.getAvatar(), (CharSequence) mAvatarImageView.getTag())) {
                             Glide.with(mContext)
                                     .load(member.getAvatar())
                                     .placeholder(R.drawable.icon_chat_unknown)
                                     .into(mAvatarImageView);
-                            mAvatarImageView.setTag(member.getAvatar());
-                        }
                         mSenderTextView.setText(EscapeCharacterUtils.unescape(member.getName()));
                         break;
                     }
