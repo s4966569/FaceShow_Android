@@ -139,15 +139,15 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             }
 
             //退出Message页面后将本地图片地址删除
-            for (DbMsg mergedMsg : topic.mergedMsgs) {
-                if (mergedMsg instanceof DbMyMsg) {
-                    if (((DbMyMsg) mergedMsg).getState() == DbMyMsg.State.Success.ordinal()) {
-                        if (!TextUtils.isEmpty(mergedMsg.getViewUrl()) && mergedMsg.getLocalViewUrl() != null) {
-                            mergedMsg.setLocalViewUrl(null);
-                        }
-                    }
-                }
-            }
+//            for (DbMsg mergedMsg : topic.mergedMsgs) {
+//                if (mergedMsg instanceof DbMyMsg) {
+//                    if (((DbMyMsg) mergedMsg).getState() == DbMyMsg.State.Success.ordinal()) {
+//                        if (!TextUtils.isEmpty(mergedMsg.getViewUrl()) && mergedMsg.getLocalViewUrl() != null) {
+//                            mergedMsg.setLocalViewUrl(null);
+//                        }
+//                    }
+//                }
+//            }
         }
 
         rearrangeTopics(); // 重新排列群聊、私聊

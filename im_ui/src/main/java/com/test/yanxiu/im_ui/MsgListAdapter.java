@@ -75,11 +75,10 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     }
 
     /**
-     *
      * 统一数据源入口 防止 topic 与 datalist 指向不同的列表
-     * */
+     */
     public void setTopic(DbTopic topic) {
-        if (topic==null) {
+        if (topic == null) {
             setmDatas(new ArrayList<DbMsg>());
             return;
         }
@@ -506,7 +505,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
         private ImageView mStateFailedImageView;
         private ProgressImageContainer mMsgImageView;
         private DbMyMsg myMsg;
-        private ImageView mImgGlide;
+//        private ImageView mImgGlide;
 
         public MyMsgViewHolder(View itemView) {
             super(itemView);
@@ -516,7 +515,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mStateSendingProgressBar = itemView.findViewById(R.id.state_sending_progressbar);
             mMsgImageView = itemView.findViewById(R.id.msg_imageView);
             mStateFailedImageView = itemView.findViewById(R.id.state_fail_imageview);
-            mImgGlide =itemView.findViewById(R.id.img_glide);
+//            mImgGlide =itemView.findViewById(R.id.img_glide);
         }
 
         @Override
@@ -559,21 +558,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
 
-                //判断是否 需要展示占位图
                 mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                 final String picUrl;
                 //如果有本地地址则用本地  没有本地的将使用线上的
                 if (!TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
                     picUrl = myMsg.getLocalViewUrl();
-                    if (!TextUtils.isEmpty(myMsg.getViewUrl())){
-                        Glide.with(itemView.getContext()).load(myMsg.getViewUrl()).override(wh[0],wh[1]).into(mImgGlide);
-                    }
                 } else {
                     picUrl = myMsg.getViewUrl();
                 }
 
-                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "localUrl:  " + myMsg.getLocalViewUrl());
-                Log.e("frc", "position:  " + getAdapterPosition() + "     " + "Url:  " + myMsg.getViewUrl());
+
                 mMsgImageView.setTag(picUrl);
                 Glide.with(itemView.getContext())
                         .load(picUrl)
@@ -609,15 +603,6 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                                 }
                             }
 
-                            @Override
-                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
-                                    mMsgImageView.clearOverLayer();
-                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                                    mMsgImageView.setImageBitmap(bitmap1);
-                                }
-                            }
                         });
 
             } else if (myMsg.getContentType() == 30) {
