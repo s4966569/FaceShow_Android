@@ -542,9 +542,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 DatabaseDealer.updateResendMsg(myMsg, "mqtt");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
-                mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
-
-
+                moveToBottom();
             }
 
             @Override
@@ -554,7 +552,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 DatabaseDealer.updateResendMsg(myMsg, "local");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
-                mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount() - 1);
+            moveToBottom();
             }
         });
 
@@ -600,6 +598,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         //新的更新数据库的方法 如果数据库没有这条数据  内部进行save 操作
         DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
 //        myMsg.save();
+        //记录下操作的本地时间  用于本地排序
+        topic.latestOperateLocalTime=System.currentTimeMillis();
 
         topic.mergedMsgs.add(0, dbMyMsg);
 
@@ -813,10 +813,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         //topic.mergedMsgs.add(0, dbMsg);
         DatabaseDealer.pendingMsgToTopic(dbMsg, topic);
-        if (dbMsg.getMsgId() > topic.latestMsgId) {
-            topic.latestMsgId = dbMsg.getMsgId();
-            topic.latestMsgTime = dbMsg.getSendTime();
-        }
+//
         //在对话内收到消息 默认取消红点的显示  bug1307
         topic.setShowDot(false);
         topic.save();
@@ -833,7 +830,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 //        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
         //是否要滑动到最新一条
         if (shouldScrollToBottom) {
-            mMsgListRecyclerView.smoothScrollToPosition(mMsgListAdapter.getItemCount()-1);
+            moveToBottom();
         }
 
     }
@@ -1327,7 +1324,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     public void moveToBottom(){
 //        moveToPosition((LinearLayoutManager)mMsgListRecyclerView.getLayoutManager()
 //                ,mMsgListRecyclerView,mMsgListRecyclerView.getAdapter().getItemCount()-1);
-        mMsgListRecyclerView.smoothScrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount()-1);
+        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount()-1);
     }
 
 

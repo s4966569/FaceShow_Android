@@ -269,43 +269,54 @@ public class DatabaseDealer {
      * 本地消息的时间可能比最新的 server时间还要 晚
      *
      * */
-    public static Comparator<DbTopic> topicComparatorWithLocalMsg=new Comparator<DbTopic>() {
+    public static Comparator<DbTopic> topicComparatorByLocalTime=new Comparator<DbTopic>() {
         @Override
         public int compare(DbTopic topic1, DbTopic topic2) {
-            //首先检查 两个topic的 local 数据
-           DbMyMsg local1= DatabaseDealer.getLatestMyMsgByMsgId(topic1.latestMsgId);
-           DbMyMsg local2= DatabaseDealer.getLatestMyMsgByMsgId(topic2.latestMsgId);
+            long localOperateTime1=topic1.latestOperateLocalTime;
+            long localOperateTime2=topic2.latestOperateLocalTime;
 
-           //获取本地数据的最晚发送时间
-           long localLatest1=local1==null?-1:local1.getSendTime();
-           long localLatest2=local2==null?-1:local2.getSendTime();
-           //获取topic 的最新消息时间
-            long serverLatest1=topic1.latestMsgTime;
-            long serverLatest2=topic2.latestMsgTime;
 
-            //当完全由服务器时间进行比较的时候
-            if (localLatest1==-1&&localLatest2==-1) {
-                if (serverLatest1>serverLatest2) {
-                    return -1;
-                }else if (serverLatest1<serverLatest2){
-                    return 1;
-                }
-                return 0;
-            }else if(localLatest1!=-1&&localLatest2!=-1){
-               //当两者都为 本地时间进行比较时 直接对本地时间进行比较即可
-                if (serverLatest1>serverLatest2) {
-                    return -1;
-                }else if (serverLatest1<serverLatest2){
-                    return 1;
-                }
-                return 0;
-            }else if (localLatest1==-1&&localLatest2!=-1){
-                //topic 1 服务器时间 topic 2 为本地时间
-            }else if(localLatest1!=-1&&localLatest2==-1){
-
+            if (localOperateTime1 < localOperateTime2) {
+                return 1;
             }
-
+            if (localOperateTime1 > localOperateTime2) {
+                return -1;
+            }
             return 0;
+//            //首先检查 两个topic的 local 数据
+//           DbMyMsg local1= DatabaseDealer.getLatestMyMsgByMsgId(topic1.latestMsgId);
+//           DbMyMsg local2= DatabaseDealer.getLatestMyMsgByMsgId(topic2.latestMsgId);
+//
+//           //获取本地数据的最晚发送时间
+//           long localLatest1=local1==null?-1:local1.getSendTime();
+//           long localLatest2=local2==null?-1:local2.getSendTime();
+//           //获取topic 的最新消息时间
+//            long serverLatest1=topic1.latestMsgTime;
+//            long serverLatest2=topic2.latestMsgTime;
+//
+//            //当完全由服务器时间进行比较的时候
+//            if (localLatest1==-1&&localLatest2==-1) {
+//                if (serverLatest1>serverLatest2) {
+//                    return -1;
+//                }else if (serverLatest1<serverLatest2){
+//                    return 1;
+//                }
+//                return 0;
+//            }else if(localLatest1!=-1&&localLatest2!=-1){
+//               //当两者都为 本地时间进行比较时 直接对本地时间进行比较即可
+//                if (serverLatest1>serverLatest2) {
+//                    return -1;
+//                }else if (serverLatest1<serverLatest2){
+//                    return 1;
+//                }
+//                return 0;
+//            }else if (localLatest1==-1&&localLatest2!=-1){
+//                //topic 1 服务器时间 topic 2 为本地时间
+//            }else if(localLatest1!=-1&&localLatest2==-1){
+//
+//            }
+
+//            return 0;
 
         }
     };
@@ -588,6 +599,8 @@ public class DatabaseDealer {
         topic.mergedMsgs.add(0, msg);
         topic.latestMsgId = msg.getMsgId();
         topic.latestMsgTime = msg.getSendTime();
+        //记录本地操作时间
+        topic.latestOperateLocalTime=System.currentTimeMillis();
     }
     //endregion
 

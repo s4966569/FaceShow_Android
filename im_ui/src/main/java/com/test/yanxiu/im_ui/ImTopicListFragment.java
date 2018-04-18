@@ -458,6 +458,12 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         for (int i = newMsgList.size()-1; i >=0; i--) {
             DbMsg newMsg=DatabaseDealer.updateDbMsgWithImMsg(newMsgList.get(i),"http",Constants.imId);
             dbTopic.mergedMsgs.add(0,newMsg);
+            if (newMsg.getMsgId()>dbTopic.latestMsgId) {
+                dbTopic.latestMsgId=newMsg.getMsgId();
+                dbTopic.latestMsgTime=newMsg.getSendTime();
+                //刷新本地操作时间 更新时刷新 为了有离线消息和无离线消息的topic排序
+                dbTopic.latestOperateLocalTime=System.currentTimeMillis();
+            }
         }
     }
     public ServiceConnection mqttServiceConnection = new ServiceConnection() {
@@ -855,7 +861,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         //首先按照 最新消息时间进行排序
         Log.i(TAG, "rearrangeTopics: ");
         //只对 服务器消息时间进行排序
-        Collections.sort(topics, DatabaseDealer.topicComparator);
+//        Collections.sort(topics, DatabaseDealer.topicComparator);
+        Collections.sort(topics, DatabaseDealer.topicComparatorByLocalTime);
 
         // 只区分开群聊、私聊，不改变以前里面的顺序
         List<DbTopic> privateTopics = new ArrayList<>();

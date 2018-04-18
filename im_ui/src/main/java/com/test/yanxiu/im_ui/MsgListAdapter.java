@@ -408,7 +408,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.setVisibility(View.VISIBLE);
                 mMsgImageView.clearOverLayer();
                 final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
+                //接收的消息 目前没有本地缓存 首先展示占位图
+                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+
                 mMsgImageView.setTag(msg.getViewUrl());
+                //执行加载图片
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()

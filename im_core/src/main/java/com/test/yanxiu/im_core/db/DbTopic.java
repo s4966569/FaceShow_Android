@@ -25,6 +25,9 @@ public class DbTopic extends DataSupport {
 
 
     // 只为UI显示用，不做数据库存储用
+    //最后一次本地操作的时间
+    @Column(ignore = true)
+    public long latestOperateLocalTime;
     @Column(ignore = true)
     public long latestMsgId;
     @Column(ignore = true)
