@@ -213,15 +213,9 @@ public class ImMsgListActivity extends ImBaseActivity {
 
         mMsgListAdapter = new MsgListAdapter(this);
 //        mMsgListAdapter.setHasStableIds(true);
+        //内部有空处理
         mMsgListAdapter.setTopic(topic);
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
-
-        if (topic != null) {
-            mMsgListAdapter.setTopic(topic);
-        } else {
-            mMsgListAdapter.setTopic(topic);
-        }
-
         mMsgListAdapter.notifyDataSetChanged();
         moveToBottom();
 //        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部

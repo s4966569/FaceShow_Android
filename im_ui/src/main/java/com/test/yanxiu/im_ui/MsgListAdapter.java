@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
      * 用于判断 点击头像进行私聊的判断
      */
     private List<ImTopic.Member> remainMemberList;
+    /**
+     * 占位图缓存
+     * */
+    private LruCache<String,Bitmap> placeHolderBitmapCache=new LruCache<>(10);
+
 
     public void setRemainMemberList(List<ImTopic.Member> remainMemberList) {
         this.remainMemberList = remainMemberList;
@@ -249,6 +255,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
         holder.setData(item);
 
+
         if (holder instanceof MyMsgViewHolder) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -408,26 +415,40 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgImageView.clearOverLayer();
                 final Integer[] wh = getPicShowWH(itemView.getContext(), msg.getWith(), msg.getHeight());
                 //接收的消息 目前没有本地缓存 首先展示占位图
-                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+//                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
 
                 mMsgImageView.setTag(msg.getViewUrl());
+
+               Bitmap holdBitmap = placeHolderBitmapCache.get(wh[0]+"*"+wh[1]);
+                if (holdBitmap==null) {
+                    //如果没有缓存 生成占位图
+                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                    holdBitmap = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                    //加入缓存
+                    placeHolderBitmapCache.put(wh[0]+"*"+wh[1],holdBitmap);
+                }
+                mMsgImageView.setImageBitmap(holdBitmap);
+
                 //执行加载图片
                 Glide.with(itemView.getContext())
                         .load(msg.getViewUrl())
                         .asBitmap()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onStart() {
                                 super.onStart();
-                                if (mMsgImageView.getBitmap() == null) {
-                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                                    mMsgImageView.setImageBitmap(bitmap1);
-                                } else {
-                                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-                                }
+                                mMsgImageView.clearOverLayer();
+//                                if (mMsgImageView.getBitmap() == null) {
+//                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+//                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+//                                    mMsgImageView.setImageBitmap(bitmap1);
+//                                } else {
+////                                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+//                                }
+                                Log.i(TAG, "glide load onStart: ");
 //                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                             }
 
@@ -558,7 +579,16 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                 mMsgTextView.setVisibility(View.GONE);
                 mMsgImageView.setVisibility(View.VISIBLE);
 
-                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+                Bitmap holdBitmap = placeHolderBitmapCache.get(wh[0]+"*"+wh[1]);
+                if (holdBitmap==null) {
+                    //如果没有缓存 生成占位图
+                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+                    holdBitmap = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                    //加入缓存
+                    placeHolderBitmapCache.put(wh[0]+"*"+wh[1],holdBitmap);
+                }
+                mMsgImageView.setImageBitmap(holdBitmap);
+
                 final String picUrl;
                 //如果有本地地址则用本地  没有本地的将使用线上的
                 if (!TextUtils.isEmpty(myMsg.getLocalViewUrl())) {
@@ -569,36 +599,38 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
 
                 mMsgImageView.setTag(picUrl);
+                final Bitmap finalHoldBitmap = holdBitmap;
                 Glide.with(itemView.getContext())
                         .load(picUrl)
                         .asBitmap()
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
                                     mMsgImageView.clearOverLayer();
-                                    if (mMsgImageView.getBitmap() == null) {
-                                        Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                                        Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                                        mMsgImageView.setImageBitmap(bitmap1);
-                                    } else {
-                                        mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-                                    }
+//                                    if (mMsgImageView.getBitmap() == null) {
+//                                        Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+//                                        Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+//                                        mMsgImageView.setImageBitmap(bitmap1);
+//                                    } else {
+////                                        mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
+//                                    }
                                 }
                             }
 
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
-                                    mMsgImageView.clearOverLayer();
+//                                    mMsgImageView.clearOverLayer();
                                     if (resource != null) {
                                         mMsgImageView.setImageBitmap(resource);
                                     } else {
-                                        Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-                                        Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-                                        mMsgImageView.setImageBitmap(bitmap1);
+//                                        Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
+//                                        Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
+                                        mMsgImageView.setImageBitmap(finalHoldBitmap);
                                     }
                                 }
                             }
