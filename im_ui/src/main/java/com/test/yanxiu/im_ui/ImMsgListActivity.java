@@ -742,7 +742,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
                                 //fix  FSAPP-1369
 //                                mMsgListAdapter.notifyDataSetChanged();
-                                int num = mMsgListAdapter.uiAddedNumberForMsg(theRefreshingMsg);
+                                int num = mMsgListAdapter.uiAddedNumberForMsg(earliestMsg);
                                 if (num > 0) {
                                     //这里造成了 FSAPP-1369
                                     mMsgListAdapter.notifyItemRangeRemoved(0, 1); // 最后的Datetime需要去掉
