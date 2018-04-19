@@ -435,7 +435,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .load(msg.getViewUrl())
                         .asBitmap()
                         .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
@@ -606,7 +606,7 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                         .load(picUrl)
                         .asBitmap()
                         .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .centerCrop()
                         .into(new SimpleTarget<Bitmap>(wh[0], wh[1]) {
                             @Override
