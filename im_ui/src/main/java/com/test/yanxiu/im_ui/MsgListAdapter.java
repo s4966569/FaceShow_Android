@@ -22,6 +22,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.test.yanxiu.common_base.utils.EscapeCharacterUtils;
 import com.test.yanxiu.common_base.utils.ScreenUtils;
+import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
@@ -442,19 +443,14 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
                             public void onStart() {
                                 super.onStart();
                                 mMsgImageView.clearOverLayer();
-//                                if (mMsgImageView.getBitmap() == null) {
-//                                    Bitmap bitmap = BitmapFactory.decodeResource(itemView.getResources(), R.drawable.bg_im_pic_holder_view);
-//                                    Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, wh[0], wh[1], true);
-//                                    mMsgImageView.setImageBitmap(bitmap1);
-//                                } else {
-////                                    mMsgImageView.setImageBitmap(mMsgImageView.getBitmap());
-//                                }
                                 Log.i(TAG, "glide load onStart: ");
-//                                mMsgImageView.setImageResource(R.drawable.bg_im_pic_holder_view);
                             }
 
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                if (SharedSingleton.getInstance().get(msg.getViewUrl()) == null) {
+                                    SharedSingleton.getInstance().cacheBitmap(msg.getViewUrl(),resource);
+                                }
                                 if (TextUtils.equals(msg.getViewUrl(), (CharSequence) mMsgImageView.getTag())) {
                                     mMsgImageView.setImageBitmap(resource);
                                 }
@@ -625,6 +621,9 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
 
                             @Override
                             public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                if (SharedSingleton.getInstance().get(picUrl) == null) {
+                                    SharedSingleton.getInstance().cacheBitmap(picUrl,resource);
+                                }
                                 if (TextUtils.equals(picUrl, (CharSequence) mMsgImageView.getTag())) {
 //                                    mMsgImageView.clearOverLayer();
                                     if (resource != null) {

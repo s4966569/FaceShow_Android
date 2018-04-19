@@ -1,5 +1,8 @@
 package com.test.yanxiu.common_base.utils;
 
+import android.graphics.Bitmap;
+import android.util.LruCache;
+
 import java.util.HashMap;
 
 /**
@@ -9,6 +12,20 @@ import java.util.HashMap;
 public class SharedSingleton {
     private static SharedSingleton instance;
     private HashMap hashMap = new HashMap();
+
+
+    /**
+     * 模拟本地磁盘缓存功能 等加入真实磁盘缓存后 废弃该部分
+     * */
+    private LruCache<String,Bitmap> bitmapLruCache=new LruCache<>(5);
+
+    public Bitmap getCachedBitmap(String key){
+       return bitmapLruCache.get(key);
+    }
+    public void cacheBitmap(String url,Bitmap bitmap){
+        bitmapLruCache.put(url,bitmap);
+    }
+
 
     private SharedSingleton() {}
     public static SharedSingleton getInstance() {
@@ -25,6 +42,7 @@ public class SharedSingleton {
 
     public void destroyInstance() {
         hashMap.clear();
+        bitmapLruCache.evictAll();
         hashMap = null;
         instance = null;
     }

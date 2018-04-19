@@ -29,4 +29,11 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowAnimationStyle">@null</item>
     </style>
+
+
+
+    <style name="Transparent" parent="im_ui">
+        <!--将Activity的Theme设置成透明-->
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

@@ -65,6 +65,7 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
         intent.putExtra(ISCANDELETE,isCanDelete);
 
         context.startActivityForResult(intent,reqCode);
+        context.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
     }
 
     @Override
@@ -150,6 +151,7 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
 
                     if (mTotalNum==0){
                         PhotoActivity.this.finish();
+                        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     }else {
                         mTitleView.setText((mSelectPosition + 1) + "/" + mTotalNum);
                     }
@@ -188,6 +190,7 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
         int i = v.getId();
         if (i == R.id.im_ui_iv_left) {
             PhotoActivity.this.finish();
+            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         } else if (i == R.id.im_ui_iv_right) {
             showDialog();
 
@@ -197,5 +200,6 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
     @Override
     public void onClick(View view, int position) {
         PhotoActivity.this.finish();
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
     }
 }
