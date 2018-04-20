@@ -210,7 +210,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
             //显示红点
             mRedDotCircleView.setVisibility(View.INVISIBLE);
-            if (topic.isShowDot()) {
+            if (topic.isShowDot()&&topic.latestMsgId!=-1) {
                 mRedDotCircleView.setVisibility(View.VISIBLE);
             }
         }
