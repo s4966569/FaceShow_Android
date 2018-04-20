@@ -2,9 +2,11 @@ package com.test.yanxiu.im_ui.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -26,13 +28,13 @@ public class PhotoPagerAdapter extends PagerAdapter {
     private Context mContext;
 
     private List<String> mPaths = new ArrayList<>();
-    private List<ZoomImageView> mImageViews = new ArrayList<>();
+    private List<View> mImageViews = new ArrayList<>();
 
     public PhotoPagerAdapter(Context context) {
         this.mContext = context;
     }
 
-    public void setData(List<String> paths, List<ZoomImageView> images) {
+    public void setData(List<String> paths, List<View> images) {
         if (paths == null || images == null || paths.size() != images.size()) {
             return;
         }
@@ -43,7 +45,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
         this.notifyDataSetChanged();
     }
 
-    public List<ZoomImageView> getImageViews() {
+    public List<View> getImageViews() {
         return this.mImageViews;
     }
 
@@ -67,13 +69,16 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
-        final ZoomImageView imageView = mImageViews.get(position);
+        View view=mImageViews.get(position);
+        final ZoomImageView imageView = mImageViews.get(position).findViewById(R.id.photo_preview_item_zoom_imageview);
+        final ProgressBar progressBar=mImageViews.get(position).findViewById(R.id.photo_preview_item_progress_bar);
         String path=mPaths.get(position);
         Bitmap cache=SharedSingleton.getInstance().getCachedBitmap(path);
         if (cache != null) {
             imageView.setImageBitmap(cache);
         }else{
-//            imageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+            imageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+            progressBar.setVisibility(View.VISIBLE);
         }
         Glide.with(mContext)
                 .load(path)
@@ -84,11 +89,20 @@ public class PhotoPagerAdapter extends PagerAdapter {
                     @Override
                     public void onStart() {
                         super.onStart();
+                        progressBar.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         imageView.setImageBitmap(resource);
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+
+                    @Override
+                    public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                        super.onLoadFailed(e, errorDrawable);
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -99,8 +113,8 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 }
             }
         });
-        container.addView(imageView);
-        return imageView;
+        container.addView(view);
+        return view;
     }
 
     @Override

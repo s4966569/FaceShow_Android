@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -111,9 +112,12 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
             return;
         }
         mTotalNum=list.size();
-        List<ZoomImageView> zoomImageViews=new ArrayList<>();
-        for (int i=0;i<list.size();i++){
-            ZoomImageView imageView=new ZoomImageView(mContext);
+//        List<ZoomImageView> zoomImageViews=new ArrayList<>();
+        List<View> previewImageView=new ArrayList<>();
+
+        for (int i = 0; i < list.size(); i++) {
+            View view= LayoutInflater.from(mContext).inflate(R.layout.photo_preview_item,null);
+            ZoomImageView imageView=view.findViewById(R.id.photo_preview_item_zoom_imageview);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -127,9 +131,28 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
                     return true;
                 }
             });
-            zoomImageViews.add(imageView);
+            previewImageView.add(view);
         }
-        mAdapter.setData(list,zoomImageViews);
+
+//        for (int i=0;i<list.size();i++){
+//            ZoomImageView imageView=new ZoomImageView(mContext);
+//            imageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mTopView.setVisibility(View.VISIBLE);
+//                }
+//            });
+//            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    mTopView.setVisibility(View.GONE);
+//                    return true;
+//                }
+//            });
+//            zoomImageViews.add(imageView);
+//        }
+//        mAdapter.setData(list,zoomImageViews);
+        mAdapter.setData(list,previewImageView);
         mImagePhotoView.setCurrentItem(mSelectPosition);
         mTitleView.setText((mSelectPosition+1)+"/"+mTotalNum);
         mBackView.setBackgroundResource(R.drawable.selector_back);
@@ -170,8 +193,9 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
     public void onPageSelected(int position) {
         this.mSelectPosition=position;
         mTitleView.setText((mSelectPosition+1)+"/"+mTotalNum);
-        for (ZoomImageView zoomImageView:mAdapter.getImageViews()){
+        for (View view:mAdapter.getImageViews()){
             try {
+                ZoomImageView zoomImageView=view.findViewById(R.id.photo_preview_item_zoom_imageview);
                 zoomImageView.reset();
             }catch (Exception e){
                 e.printStackTrace();

@@ -114,7 +114,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         for (DbTopic topic : msgShownTopics) {
             // 最多保留20条
             topic.setShowDot(false);
-            topic.mergedMsgs = topic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, topic.mergedMsgs.size()));
+//            topic.mergedMsgs = topic.mergedMsgs.subList(0, Math.min(DatabaseDealer.pagesize, topic.mergedMsgs.size()));
 
             // 有新消息则要放置到最前
             long latestMsgTime = topic.latestMsgTime;
