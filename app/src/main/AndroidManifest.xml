@@ -120,7 +120,6 @@
             android:taskAffinity="com.yanxiu.gphone.faceshow" />
         <activity
             android:name=".common.activity.PhotoActivity"
-            android:theme="@style/AppThemeFullScreen"
             android:screenOrientation="portrait" />
         <activity
             android:name=".notification.activity.NotificationDetailActivity"

@@ -11,8 +11,8 @@ android:toDegrees="720">
     android:useLevel="false">
 
     <gradient
-        android:endColor="@color/color_999999"
-        android:startColor="@android:color/transparent"
+        android:endColor="@color/color_white"
+        android:startColor="@color/color_333333"
         android:type="sweep" />
 </shape>
 </rotate>

@@ -72,6 +72,7 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         setContentView(R.layout.im_ui_activity_photo);
         mContext=PhotoActivity.this;
         mSelectPosition=getIntent().getIntExtra(SELECTID,-1);

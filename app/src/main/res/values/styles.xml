@@ -7,14 +7,8 @@
         <!--<item name="colorPrimary">@color/colorPrimary</item>-->
         <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
         <!--<item name="colorAccent">@color/colorAccent</item>-->
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textCursorDrawable">@drawable/edittext_cursor_drawable</item>
-    </style>
-
-
-    <style name="AppThemeFullScreen" parent="AppTheme">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:fitsSystemWindows">true</item>
-
     </style>
 
     <style name="APPtabLayoutStyle" >

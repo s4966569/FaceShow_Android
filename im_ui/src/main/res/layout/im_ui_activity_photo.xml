@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <android.support.v4.view.ViewPager
+        android:background="@color/color_black"
         android:id="@+id/vp_image_review"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
