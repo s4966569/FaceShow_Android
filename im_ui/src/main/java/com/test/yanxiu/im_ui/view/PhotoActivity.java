@@ -91,6 +91,8 @@ public class PhotoActivity extends ImBaseActivity implements ViewPager.OnPageCha
         mImagePhotoView= (ViewPager) findViewById(R.id.vp_image_review);
         mAdapter=new PhotoPagerAdapter(mContext);
         mImagePhotoView.setAdapter(mAdapter);
+
+
     }
 
     private void listener() {
