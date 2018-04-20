@@ -4,6 +4,7 @@
     xmlns:im="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="#dfe3e5"
     android:paddingLeft="0dp"
     android:paddingRight="15dp"
@@ -57,7 +58,9 @@
                 android:paddingRight="16dp"
                 android:paddingTop="10dp"
                 android:textColor="#ffffff"
-                android:textSize="15dp" />
+                tools:text="这就是个测试行高 测试测试测试测试测试测试测绘测试"
+                android:lineSpacingExtra="4dp"
+                android:textSize="16dp" />
 
             <com.test.yanxiu.im_ui.view.ProgressImageContainer
                 android:id="@+id/msg_imageView"
