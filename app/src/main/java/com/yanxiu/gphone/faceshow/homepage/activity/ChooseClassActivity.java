@@ -175,6 +175,8 @@ public class ChooseClassActivity extends FaceShowBaseActivity {
                 break;
             case R.id.title_layout_right_txt:
                 if (data != null&&data.size()>0) {
+                    //如果 点击了确定 选择了班级 设置为 非首次登陆情况
+                    SpManager.setFristStartUp(false);
                     UserInfo.Info info = SpManager.getUserInfo();
                     info.setClassId(String.valueOf(data.get(mSelcetPosition).getId()));
                     info.setClassName(data.get(mSelcetPosition).getClazsName());

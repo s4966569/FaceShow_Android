@@ -52,7 +52,7 @@
         android:paddingRight="8dp"
         android:paddingTop="10dp"
         android:textColor="#333333"
-        android:textSize="14dp" />
+        android:textSize="15dp" />
 
 
     <com.test.yanxiu.im_ui.view.ProgressImageContainer
