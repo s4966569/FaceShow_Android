@@ -3,6 +3,8 @@ package com.test.yanxiu.im_ui.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,9 +85,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
         Glide.with(mContext)
                 .load(path)
                 .asBitmap()
-                .placeholder(R.drawable.bg_im_pic_holder_view)
-                .error(R.drawable.bg_im_pic_holder_view)
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onStart() {
@@ -95,15 +95,22 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        imageView.setImageBitmap(resource);
                         progressBar.setVisibility(View.GONE);
+                        imageView.setImageBitmap(resource);
+
                     }
 
 
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onLoadFailed(Exception e, Drawable errorDrawable) {
                         super.onLoadFailed(e, errorDrawable);
-                        progressBar.setVisibility(View.GONE);
+                        imageView.setImageDrawable(mContext.getDrawable(R.drawable.bg_im_pic_holder_view));
+                    }
+
+                    @Override
+                    public void onStop() {
+                        super.onStop();
                     }
                 });
         imageView.setOnClickListener(new View.OnClickListener() {
