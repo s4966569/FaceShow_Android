@@ -90,7 +90,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
                     @Override
                     public void onStart() {
                         super.onStart();
-                        progressBar.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
                     }
 
                     @Override
