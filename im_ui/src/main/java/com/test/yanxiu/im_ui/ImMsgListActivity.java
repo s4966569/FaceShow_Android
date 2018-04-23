@@ -15,8 +15,13 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -105,6 +110,7 @@ public class ImMsgListActivity extends ImBaseActivity {
     private long fromTopicId = -1;
     private String mQiniuToken;
     private boolean mKeyBoardShown;//键盘已经显示了
+    private FoucsLinearLayoutManager layoutManager;
 
     /**
      * 最新的成员列表
@@ -118,7 +124,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         memberId = getIntent().getLongExtra(Constants.kCreateTopicMemberId, -1);
         memberName = getIntent().getStringExtra(Constants.kCreateTopicMemberName);
         fromTopicId = getIntent().getLongExtra(Constants.kFromTopicId, -1);
-
         setResult(RESULT_CANCELED); // 只为有返回，code无意义
 
         topic = SharedSingleton.getInstance().get(Constants.kShareTopic);
@@ -126,8 +131,8 @@ public class ImMsgListActivity extends ImBaseActivity {
             hasMoreMsgs = false;
         }
 
-
-        setContentView(R.layout.activity_msg_list);
+        view = LayoutInflater.from(this).inflate(R.layout.activity_msg_list, null);
+        setContentView(view);
         setupView();
         setupData();
         initImagePicker();
@@ -138,11 +143,11 @@ public class ImMsgListActivity extends ImBaseActivity {
      * 为了埋点
      */
     private boolean isPrivatePage = false;
+    View view;
 
     @Override
     protected void onResume() {
         super.onResume();
-
 //        埋点
         if (topic != null) {
             //  判断topic type
@@ -159,6 +164,18 @@ public class ImMsgListActivity extends ImBaseActivity {
             isPrivatePage = true;
             EventUpdate.onPrivatePageStart(this);
         }
+
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.e("onGlobalLayout", "onGlobalLayout");
+            }
+        });
     }
 
     @Override
@@ -203,7 +220,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
 
         mMsgListRecyclerView = findViewById(R.id.msg_list_recyclerview);
-        FoucsLinearLayoutManager layoutManager=new FoucsLinearLayoutManager(this,
+         layoutManager = new FoucsLinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
                 false);
 //        layoutManager.setStackFromEnd(false);
@@ -344,11 +361,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.setShowPreviewPicListener(new MsgListAdapter.ShowPreviewPicListener() {
             @Override
             public void picClick(int position, View view, String url) {
-                shouldScrollToBottom=false;
+                shouldScrollToBottom = false;
                 ArrayList list = new ArrayList();
                 list.add(url);
 //                PhotoActivity.LaunchActivity(ImMsgListActivity.this, list, 0, 0, 1);
-                PhotoActivity.LaunchActivity(ImMsgListActivity.this, REQUEST_CODE_LOAD_BIG_IMG,list, 0, 0, 1);
+                PhotoActivity.LaunchActivity(ImMsgListActivity.this, REQUEST_CODE_LOAD_BIG_IMG, list, position, 0, 1);
             }
         });
     }
@@ -357,14 +374,14 @@ public class ImMsgListActivity extends ImBaseActivity {
      * 控制收到新消息是否滚动
      * 默认情况是true
      * 当用户点击查看打图时 设置为false
-     * */
-    private boolean shouldScrollToBottom=true;
+     */
+    private boolean shouldScrollToBottom = true;
 
     @Subscribe
     public void onTopicUpdate(MqttProtobufDealer.TopicUpdateEvent event) {
 
         //新创建的topic 数据不一致造成 新建对话 无法刷新 mergemsgs
-        if (event.topicId!=topic.getTopicId()) {
+        if (event.topicId != topic.getTopicId()) {
             return;
         }
         mMsgListAdapter.setTopic(topic);
@@ -520,7 +537,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
         final DbMyMsg myMsg = sendMsg;
         mMsgListAdapter.setTopic(topic);
-        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
@@ -546,7 +563,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 DatabaseDealer.updateResendMsg(myMsg, "local");
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
-            moveToBottom();
+                moveToBottom();
             }
         });
 
@@ -593,12 +610,12 @@ public class ImMsgListActivity extends ImBaseActivity {
         DbMyMsg dbMyMsg = DatabaseDealer.updateResendMsg(myMsg, "local");
 //        myMsg.save();
         //记录下操作的本地时间  用于本地排序
-        topic.latestOperateLocalTime=System.currentTimeMillis();
+        topic.latestOperateLocalTime = System.currentTimeMillis();
 
         topic.mergedMsgs.add(0, dbMyMsg);
 
         mMsgListAdapter.setTopic(topic);
-        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
         // TODO: 2018/4/17  头像晃动
 //        mMsgListAdapter.notifyDataSetChanged();
         //}
@@ -625,7 +642,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     newTopicEvent.dbTopic = realTopic;
                     //数据集合变了 需要更新
                     mMsgListAdapter.setTopic(topic);
-                    SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
+                    SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
 //                    mMsgListAdapter.setmDatas(realTopic.mergedMsgs);
                     EventBus.getDefault().post(newTopicEvent);
                     mMsgListAdapter.setTopic(realTopic);
@@ -673,7 +690,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         //上传七牛成功  如果存储了七牛返回的key 表示上传成功
                         myMsg.setState(DbMyMsg.State.Sending.ordinal());
 //                        myMsg.save();
-                        DatabaseDealer.updateResendMsg(myMsg,"local");
+                        DatabaseDealer.updateResendMsg(myMsg, "local");
                         topic.mergedMsgs.add(0, myMsg);
                         mMsgListAdapter.setTopic(topic);
                         mMsgListAdapter.notifyDataSetChanged();
@@ -787,7 +804,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                             }
                         });
                     }
-                },500);
+                }, 500);
 
             }
 
@@ -811,10 +828,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         //在对话内收到消息 默认取消红点的显示  bug1307
         topic.setShowDot(false);
         topic.save();
-        if (msg.senderId== Constants.imId) {
-            if (msg.contentType==20||msg.contentType==10&&TextUtils.equals("qiniu",msg.contentData.msg)&&!TextUtils.isEmpty(msg.contentData.viewUrl)) {
+        if (msg.senderId == Constants.imId) {
+            if (msg.contentType == 20 || msg.contentType == 10 && TextUtils.equals("qiniu", msg.contentData.msg) && !TextUtils.isEmpty(msg.contentData.viewUrl)) {
 //                mMsgListAdapter.notifyDataSetChanged();
-                return ;
+                return;
             }
         }
         //需要重新生成UI  比如 timeline 目前
@@ -904,16 +921,25 @@ public class ImMsgListActivity extends ImBaseActivity {
         mClassCircleDialog.show();
     }
 
+    private int positionFromPreViewActivity = -1;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_CODE_LOAD_BIG_IMG:
-                shouldScrollToBottom=true;
+                shouldScrollToBottom = true;
+                if (resultCode == RESULT_OK) {
+                    positionFromPreViewActivity=data.getIntExtra("position", -1);
+                    if (positionFromPreViewActivity>-1){
+                        moveToPosition(layoutManager,mMsgListRecyclerView,positionFromPreViewActivity);
+                    }
+
+                }
                 break;
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
-                if (data!=null) {
+                if (data != null) {
                     isNeedMockTopic();
                     reSizePics(createSelectedImagesList(data));
                 }
@@ -1130,10 +1156,10 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public void progress(String s, double v) {
                 Double progress;
-                if (v>0.99){
-                    progress =0.99d;
-                }else {
-                    progress =v;
+                if (v > 0.99) {
+                    progress = 0.99d;
+                } else {
+                    progress = v;
                 }
                 MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_PROGRESS, progress);
                 mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
@@ -1227,10 +1253,10 @@ public class ImMsgListActivity extends ImBaseActivity {
         realTopic.latestMsgTime = imTopic.latestMsgTime;
         realTopic.latestMsgId = imTopic.latestMsgId;
         realTopic.save();
-        topic=realTopic;
+        topic = realTopic;
         // 3，做mock topic 和 real topic间msgs的转换
         DatabaseDealer.migrateMsgsForMockTopic(mockTopic, realTopic);
-        SharedSingleton.getInstance().set(Constants.kShareTopic,realTopic);
+        SharedSingleton.getInstance().set(Constants.kShareTopic, realTopic);
         return realTopic;
     }
 
@@ -1292,16 +1318,14 @@ public class ImMsgListActivity extends ImBaseActivity {
     }
 
 
-
     /**
-     *
      * RecyclerView 移动到当前位置，
      *
-     * @param manager   设置RecyclerView对应的manager
-     * @param mRecyclerView  当前的RecyclerView
-     * @param n  要跳转的位置
+     * @param manager       设置RecyclerView对应的manager
+     * @param mRecyclerView 当前的RecyclerView
+     * @param n             要跳转的位置
      */
-    public  void moveToPosition(LinearLayoutManager manager, RecyclerView mRecyclerView, int n) {
+    public void moveToPosition(LinearLayoutManager manager, RecyclerView mRecyclerView, int n) {
         int firstItem = manager.findFirstVisibleItemPosition();
         int lastItem = manager.findLastVisibleItemPosition();
         if (n <= firstItem) {
@@ -1315,10 +1339,11 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     }
 
-    public void moveToBottom(){
+
+    public void moveToBottom() {
 //        moveToPosition((LinearLayoutManager)mMsgListRecyclerView.getLayoutManager()
 //                ,mMsgListRecyclerView,mMsgListRecyclerView.getAdapter().getItemCount()-1);
-        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount()-1);
+        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);
     }
 
 

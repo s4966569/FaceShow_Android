@@ -4,6 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,10 +30,17 @@ import com.lzy.imagepicker.adapter.ImageRecyclerAdapter;
 import com.lzy.imagepicker.adapter.ImageRecyclerAdapter.OnImageItemClickListener;
 import com.lzy.imagepicker.bean.ImageFolder;
 import com.lzy.imagepicker.bean.ImageItem;
+import com.lzy.imagepicker.util.BitmapUtil;
 import com.lzy.imagepicker.util.Utils;
 import com.lzy.imagepicker.view.FolderPopUpWindow;
 import com.lzy.imagepicker.view.GridSpacingItemDecoration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -337,22 +347,46 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
                  * 2017-03-21 对机型做旋转处理
                  */
                 String path = imagePicker.getTakeImageFile().getAbsolutePath();
-//                int degree = BitmapUtil.getBitmapDegree(path);
-//                if (degree != 0){
-//                    Bitmap bitmap = BitmapUtil.rotateBitmapByDegree(path,degree);
-//                    if (bitmap != null){
-//                        File file = new File(path);
-//                        try {
-//                            FileOutputStream bos = new FileOutputStream(file);
-//                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-//                            bos.flush();
-//                            bos.close();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
+                int degree = BitmapUtil.getBitmapDegree(path);
+                if (degree != 0){
+                    int sampleSize =caculateSampleSize(path,degree);
+                    if (outWidth == 0 || outHeight == 0)
+                        return;
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = sampleSize;
+                    //适当调整颜色深度
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    options.inJustDecodeBounds = false;
+                    FileInputStream inputStream = null;
+                    try {
+                        inputStream = new FileInputStream(path);
+                        Bitmap srcBitmap = BitmapFactory.decodeStream(inputStream, null, options);//加载原图
+                        //test
+                        Bitmap.Config srcConfig = srcBitmap.getConfig();
+                        int srcMem = srcBitmap.getRowBytes() * srcBitmap.getHeight();//计算bitmap占用的内存大小
 
+                        Bitmap destBitmap = rotateImage(srcBitmap, degree);
+                        int destMem = srcBitmap.getRowBytes() * srcBitmap.getHeight();
+                        srcBitmap.recycle();
+
+                        //保存bitmap到文件（覆盖原始图片）
+
+                        saveBitmap2file(path, destBitmap);
+                        destBitmap.recycle();
+
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (OutOfMemoryError error) {
+                    } finally {
+                        if (inputStream != null) {
+                            try {
+                                inputStream.close();
+                            } catch (IOException e) {
+                            }
+                        }
+                    }
+                }
                 ImageItem imageItem = new ImageItem();
                 imageItem.path = path;
                 imagePicker.clearSelectedImages();
@@ -370,6 +404,92 @@ public class ImageGridActivity extends ImageBaseActivity implements ImageDataSou
                 finish();
             }
         }
+    }
+
+
+    // 图片转为文件
+    public static boolean saveBitmap2file(String path, Bitmap bmp) {
+        Bitmap.CompressFormat format = Bitmap.CompressFormat.PNG;
+        int quality = 100;
+        OutputStream stream = null;
+        try {
+            File file = new File(path );
+            if (file.exists()) {
+                file.delete();
+            }
+            stream = new FileOutputStream(path );
+            bmp.compress(format, quality, stream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    stream.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        }
+
+        return true;
+    }
+    /**
+     * 通过img得到旋转rotate角度后的bitmap
+     */
+    public static Bitmap rotateImage(Bitmap img, int rotate) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(rotate);
+        int width = img.getWidth();
+        int height = img.getHeight();
+        img = Bitmap.createBitmap(img, 0, 0, width, height, matrix, false);
+        return img;
+    }
+
+    private int outWidth = 0;//输出bitmap的宽
+    private int outHeight = 0;//输出bitmap的高
+    //计算sampleSize
+    private int caculateSampleSize(String absolutePath, int rotate) {
+        outWidth = 0;
+        outHeight = 0;
+        int imgWidth = 0;//原始图片的宽
+        int imgHeight = 0;//原始图片的高
+        int sampleSize = 1;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(absolutePath);
+            BitmapFactory.decodeStream(inputStream, null, options);//由于options.inJustDecodeBounds位true，所以这里并没有在内存中解码图片，只是为了得到原始图片的大小
+            imgWidth = options.outWidth;
+            imgHeight = options.outHeight;
+            //初始化
+            outWidth = imgWidth;
+            outHeight = imgHeight;
+            //如果旋转的角度是90的奇数倍,则输出的宽和高和原始宽高调换
+            if ((rotate / 90) % 2 != 0) {
+                outWidth = imgHeight;
+                outHeight = imgWidth;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        //计算输出bitmap的sampleSize
+        while (imgWidth / sampleSize > outWidth || imgHeight / sampleSize > outHeight) {
+            sampleSize = sampleSize << 1;
+        }
+        return sampleSize;
     }
 
 }
