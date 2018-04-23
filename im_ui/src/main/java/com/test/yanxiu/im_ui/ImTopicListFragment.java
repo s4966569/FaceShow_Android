@@ -2,6 +2,7 @@ package com.test.yanxiu.im_ui;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -27,6 +28,7 @@ import com.test.yanxiu.faceshow_ui_base.FaceShowBaseFragment;
 import com.test.yanxiu.im_core.RequestQueueHelper;
 import com.test.yanxiu.im_core.db.DbMember;
 import com.test.yanxiu.im_core.db.DbMsg;
+import com.test.yanxiu.im_core.db.DbMyMsg;
 import com.test.yanxiu.im_core.db.DbTopic;
 import com.test.yanxiu.im_core.dealer.DatabaseDealer;
 import com.test.yanxiu.im_core.dealer.MqttProtobufDealer;
@@ -50,6 +52,8 @@ import com.test.yanxiu.network.RequestBase;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.LitePal;
+import org.litepal.crud.ClusterQuery;
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,6 +97,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_topic_list, container, false);
+        checkMyMsgStatus();
         startMqttService();
         setupView(v);
         setupData();
@@ -206,7 +211,21 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         // 为了重连等机制，放到mqtt connected以后做http拉取
         // updateTopicsFromHttpWithoutMembers();
     }
-
+    //检查正在发生的
+    private void checkMyMsgStatus(){
+        DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
+        ClusterQuery myQuery = null;
+        myQuery = DataSupport
+                .where("senderId = ?", String.valueOf(Constants.imId));
+        List<DbMyMsg> myMsgs = myQuery.find(DbMyMsg.class);
+        for (int i = 0 ; i < myMsgs.size();i ++ ){
+                    switch (myMsgs.get(i).getState()){
+                        case 1:
+                            myMsgs.get(i).setState(2);
+                            myMsgs.get(i).save();
+                    }
+        }
+    }
     // 1，从DB列表生成
     private void updateTopicsFromDb() {
         DatabaseDealer.useDbForUser(Long.toString(Constants.imId) + "_db");
