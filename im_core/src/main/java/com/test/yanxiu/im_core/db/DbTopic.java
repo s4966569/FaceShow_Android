@@ -25,6 +25,11 @@ public class DbTopic extends DataSupport {
 
 
     // 只为UI显示用，不做数据库存储用
+
+    // 用于本地的排序 采用置顶的方式进行topic 排序
+    // 最近被操作的topic 置顶 不再依据时间排序
+    @Column(ignore = true)
+    public boolean shouldInsertToTop=false;
     //最后一次本地操作的时间
     @Column(ignore = true)
     public long latestOperateLocalTime;

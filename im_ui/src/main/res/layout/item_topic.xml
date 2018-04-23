@@ -26,6 +26,7 @@
 
     <com.test.yanxiu.im_ui.view.CircleView
         android:id="@+id/reddot_circleview"
+        android:visibility="invisible"
         android:layout_width="9dp"
         android:layout_height="9dp"
         android:layout_alignRight="@id/avatar_imageview"

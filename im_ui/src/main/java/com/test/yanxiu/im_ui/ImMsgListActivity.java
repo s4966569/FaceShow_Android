@@ -20,8 +20,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -297,6 +295,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 if (trimMsg.length() == 0) {
                     return;
                 }
+
                 doSend(msg, null);
             }
         });
@@ -348,7 +347,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (mKeyBoardShown) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(                                                  ImMsgListActivity.this.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     mMsgListRecyclerView.clearFocus();
                 }
@@ -537,7 +536,11 @@ public class ImMsgListActivity extends ImBaseActivity {
         }
         final DbMyMsg myMsg = sendMsg;
         mMsgListAdapter.setTopic(topic);
-        SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
+
+        //用户操作 发送行为 当前topic 需要置顶
+        topic.shouldInsertToTop=true;
+        SharedSingleton.getInstance().set(Constants.kShareTopic,topic);
+
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
@@ -545,12 +548,18 @@ public class ImMsgListActivity extends ImBaseActivity {
                 if (ret.data.topicMsg.size() > 0) {
                     ImMsg imMsg = ret.data.topicMsg.get(0);
                     myMsg.setMsgId(imMsg.msgId); // 由于和mqtt异步，这样能保证更新msgId
+                    myMsg.setSendTime(imMsg.sendTime);
                 }
                 myMsg.setState(DbMyMsg.State.Success.ordinal());
                 topic.setShowDot(false);
                 //新的更新方法
                 myMsg.setFrom("mqtt");
                 DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+                //本地发送成功以后 HTTP 返回 更新latestmsgid与latestmsgtime 当返回topiclist 页面时 排序更新
+                if (myMsg.getMsgId()>topic.getTopicId()) {
+                    topic.latestMsgId=myMsg.getMsgId();
+                    topic.latestMsgTime=myMsg.getSendTime();
+                }
 //                myMsg.save();
                 mMsgListAdapter.notifyDataSetChanged();
                 moveToBottom();
@@ -939,7 +948,10 @@ public class ImMsgListActivity extends ImBaseActivity {
                 break;
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
-                if (data != null) {
+
+                if (data!=null) {
+
+
                     isNeedMockTopic();
                     reSizePics(createSelectedImagesList(data));
                 }
@@ -1235,6 +1247,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             });
         } else {
             // 已经有对话，直接发送即可
+            topic.shouldInsertToTop=true;
             doSendImage(rid, with, height, dbMyMsg);
         }
     }
@@ -1282,6 +1295,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         saveImageMsgRequest.width = String.valueOf(width);
         saveImageMsgRequest.reqId = myMsg.getReqId();
 
+        //用户操作 发送行为 当前topic 需要置顶
+        topic.shouldInsertToTop=true;
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
             @Override
@@ -1295,14 +1310,18 @@ public class ImMsgListActivity extends ImBaseActivity {
                     myMsg.setWith(ret.data.topicMsg.get(0).contentData.width);
                     myMsg.setHeight(ret.data.topicMsg.get(0).contentData.height);
                     myMsg.setFrom("mqtt");
+                    myMsg.setSendTime(imMsg.sendTime);
                     topic.setShowDot(false);
                     DatabaseDealer.updateResendMsg(myMsg, "mqtt");
+                    //发送成功以后 更新
+                    if (myMsg.getMsgId()>topic.latestMsgId) {
+                        topic.latestMsgId=myMsg.getMsgId();
+                        topic.latestMsgTime=myMsg.getSendTime();
+                    }
 
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                 }
-
-
             }
 
             @Override
@@ -1336,7 +1355,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         } else {
             mRecyclerView.scrollToPosition(n);
         }
-
     }
 
 

@@ -169,8 +169,9 @@ public class DatabaseDealer {
 
     /**
      * 获取此topic的从startMsgId开始的DbMsg中count条数据以及DbMyMsg中相关的数据，msgId值大的在前
+     *
      * @param startMsgId : 最大的msgId. 传-1为从最近一条msg开始
-     * @param count : 每页的数据个数，默认同server保持一致为20
+     * @param count      : 每页的数据个数，默认同server保持一致为20
      * @return 返回merge后的数组，如果数据足够，数组size() >= count，如果数组size()小于count值，则表明已经取完所有数据
      */
     public static List<DbMsg> getTopicMsgs(long topicId, long startMsgId, int count) {
@@ -209,7 +210,7 @@ public class DatabaseDealer {
         }
 
         int actualCount = Math.min(otherMsgs.size(), count);
-        for(Iterator<DbMsg> i = otherMsgs.iterator(); i.hasNext();) {
+        for (Iterator<DbMsg> i = otherMsgs.iterator(); i.hasNext(); ) {
             actualCount--;
             i.next();
             if (actualCount < 0) {
@@ -264,60 +265,67 @@ public class DatabaseDealer {
     }
 
     /**
-     * 用于 增加对离线消息的排序操作
-     * 由于本地时间与server 时间存在巨大差距
-     * 本地消息的时间可能比最新的 server时间还要 晚
+     * 首先判断 是否需要人工置顶
+     * 同时最多有两个同时为置顶标志的topic
+     * 此时比较两者的localoperateTime
      *
-     * */
-    public static Comparator<DbTopic> topicComparatorByLocalTime=new Comparator<DbTopic>() {
+     */
+    public static Comparator<DbTopic> topicComparatorInsertTopBaseOnLocalTime = new Comparator<DbTopic>() {
         @Override
         public int compare(DbTopic topic1, DbTopic topic2) {
-            long localOperateTime1=topic1.latestOperateLocalTime;
-            long localOperateTime2=topic2.latestOperateLocalTime;
-
-
-            if (localOperateTime1 < localOperateTime2) {
-                return 1;
-            }
-            if (localOperateTime1 > localOperateTime2) {
+            //置顶标志的topic 上升
+            if (topic1.shouldInsertToTop && !topic2.shouldInsertToTop) {
                 return -1;
+            } else if (!topic1.shouldInsertToTop && topic2.shouldInsertToTop) {
+                return 1;
+            } else { //其余无法通过 置顶标志位进行判断的 一律采用最新msg time 进行排序
+
+
+                //查看是否最后一条是离线数据
+                DbMyMsg localMsg1=getLatestMyMsgByMsgId(topic1.latestMsgId);
+                DbMyMsg localMsg2=getLatestMyMsgByMsgId(topic2.latestMsgId);
+
+                long rangeTime1=topic1.latestMsgTime;
+                long rangeTime2=topic2.latestMsgTime;
+                if (localMsg1 != null) {
+                    rangeTime1=localMsg1.getSendTime();
+                }
+                if (localMsg2 != null) {
+                    rangeTime2=localMsg2.getSendTime();
+                }
+
+                if( rangeTime1< rangeTime2){
+                    return 1;
+                }else if (rangeTime1>rangeTime2){
+                    return -1;
+                }
+                return 0;
             }
-            return 0;
-//            //首先检查 两个topic的 local 数据
-//           DbMyMsg local1= DatabaseDealer.getLatestMyMsgByMsgId(topic1.latestMsgId);
-//           DbMyMsg local2= DatabaseDealer.getLatestMyMsgByMsgId(topic2.latestMsgId);
-//
-//           //获取本地数据的最晚发送时间
-//           long localLatest1=local1==null?-1:local1.getSendTime();
-//           long localLatest2=local2==null?-1:local2.getSendTime();
-//           //获取topic 的最新消息时间
-//            long serverLatest1=topic1.latestMsgTime;
-//            long serverLatest2=topic2.latestMsgTime;
-//
-//            //当完全由服务器时间进行比较的时候
-//            if (localLatest1==-1&&localLatest2==-1) {
-//                if (serverLatest1>serverLatest2) {
-//                    return -1;
-//                }else if (serverLatest1<serverLatest2){
-//                    return 1;
-//                }
-//                return 0;
-//            }else if(localLatest1!=-1&&localLatest2!=-1){
-//               //当两者都为 本地时间进行比较时 直接对本地时间进行比较即可
-//                if (serverLatest1>serverLatest2) {
-//                    return -1;
-//                }else if (serverLatest1<serverLatest2){
-//                    return 1;
-//                }
-//                return 0;
-//            }else if (localLatest1==-1&&localLatest2!=-1){
-//                //topic 1 服务器时间 topic 2 为本地时间
-//            }else if(localLatest1!=-1&&localLatest2==-1){
-//
-//            }
-
 //            return 0;
+        }
+    };
 
+    public static Comparator<DbTopic> topicComparatorBaseOnBothLocalAndServerTime=new Comparator<DbTopic>() {
+        @Override
+        public int compare(DbTopic topic1, DbTopic topic2) {
+            DbMyMsg localMsg1=getLatestMyMsgByMsgId(topic1.latestMsgId);
+            DbMyMsg localMsg2=getLatestMyMsgByMsgId(topic2.latestMsgId);
+
+            long rangeTime1=topic1.latestMsgTime;
+            long rangeTime2=topic2.latestMsgTime;
+            if (localMsg1 != null) {
+                rangeTime1=localMsg1.getSendTime();
+            }
+            if (localMsg2 != null) {
+                rangeTime2=localMsg2.getSendTime();
+            }
+
+           if( rangeTime1< rangeTime2){
+                return 1;
+           }else if (rangeTime1>rangeTime2){
+               return -1;
+           }
+            return 0;
         }
     };
 
@@ -325,8 +333,6 @@ public class DatabaseDealer {
         @Override
         public int compare(DbTopic t1, DbTopic t2) {
             //由于加入了离线消息的时间判断 这里要对离线消息进行比较
-
-
             long t1Time = t1.latestMsgTime;
             long t2Time = t2.latestMsgTime;
             if (t1Time < t2Time) {
@@ -384,7 +390,9 @@ public class DatabaseDealer {
     // 将topic新增的member，和有信息改变的member，存DB
     private static void updateMembersThatNeedUpdate(DbTopic dbTopic, ImTopic imTopic) {
         List<DbMember> ret = new ArrayList<>();
-
+        if (imTopic.members == null) {
+            return ;
+        }
         for (ImTopic.Member member : imTopic.members) {
             ImMember imMember = member.memberInfo;
             DbMember dbMember = null;
@@ -463,7 +471,7 @@ public class DatabaseDealer {
         contentValues.put("sendTime", dbMsg.getSendTime());
         contentValues.put("state", dbMsg.getState());
         DataSupport.updateAll(DbMyMsg.class, contentValues, "reqid = ?", dbMsg.getReqId());
-       theMsg = DataSupport
+        theMsg = DataSupport
                 .where("reqid = ?", dbMsg.getReqId())
                 .findFirst(DbMyMsg.class);
         return theMsg;
@@ -471,7 +479,8 @@ public class DatabaseDealer {
 
     /**
      * 获取此topic的从startMsgId开始的DbMsg中count条数据以及DbMyMsg中相关的数据，msgId值大的在前
-     * @param from : http 或 mqtt
+     *
+     * @param from        : http 或 mqtt
      * @param curUserImId : 当前app的登录用户的imId
      * @return 返回merge后的数组，如果数据足够，数组size() >= count，如果数组size()小于count值，则表明已经取完所有数据
      */
@@ -517,8 +526,8 @@ public class DatabaseDealer {
 
     /**
      * 根据给定的topic id 删除数据库信息
-     * */
-    public static void  deleteTopicById(long topicId){
+     */
+    public static void deleteTopicById(long topicId) {
         DataSupport.deleteAll(DbTopic.class,
                 "topicId = ? ", String.valueOf(topicId));
 
@@ -527,12 +536,12 @@ public class DatabaseDealer {
     /**
      * 获取到服务器返回的最新消息下 查找本地是否有 未发送成功msg
      * 如果有 认为 本地未发送成功的mymsg 为最新消息 供topicList 展示
-     * */
-    public static DbMyMsg getLatestMyMsgByMsgId(long msgId){
-       DbMyMsg latestMyMsg= DataSupport.where("msgId = ?",Long.toString(msgId))
+     */
+    public static DbMyMsg getLatestMyMsgByMsgId(long msgId) {
+        DbMyMsg latestMyMsg = DataSupport.where("msgId = ?", Long.toString(msgId))
                 .order("sendTime desc")
                 .findFirst(DbMyMsg.class);
-       return latestMyMsg;
+        return latestMyMsg;
     }
     //region util
 
@@ -600,7 +609,7 @@ public class DatabaseDealer {
         topic.latestMsgId = msg.getMsgId();
         topic.latestMsgTime = msg.getSendTime();
         //记录本地操作时间
-        topic.latestOperateLocalTime=System.currentTimeMillis();
+        topic.latestOperateLocalTime = System.currentTimeMillis();
     }
     //endregion
 

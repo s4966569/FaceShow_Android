@@ -7,10 +7,9 @@
         <!--<item name="colorPrimary">@color/colorPrimary</item>-->
         <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
         <!--<item name="colorAccent">@color/colorAccent</item>-->
-        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textCursorDrawable">@drawable/edittext_cursor_drawable</item>
     </style>
-
 
     <style name="APPtabLayoutStyle" >
         <item name="android:textSize">@dimen/tab_bar_textsize</item>

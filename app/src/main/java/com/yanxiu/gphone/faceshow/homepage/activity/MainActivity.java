@@ -144,7 +144,7 @@ public class MainActivity extends FaceShowBaseActivity implements View.OnClickLi
 
         /*判断是否进入班级选择界面*/
         if (SpManager.isFristStartUp()) {
-            SpManager.setFristStartUp(false);
+//            SpManager.setFristStartUp(false);
             /*请求班级列表 并判断是否跳转*/
             getClassListData();
         }
