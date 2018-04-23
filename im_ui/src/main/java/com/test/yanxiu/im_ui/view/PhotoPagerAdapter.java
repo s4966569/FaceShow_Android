@@ -73,18 +73,19 @@ public class PhotoPagerAdapter extends PagerAdapter {
         final ZoomImageView imageView = mImageViews.get(position).findViewById(R.id.photo_preview_item_zoom_imageview);
         final ProgressBar progressBar=mImageViews.get(position).findViewById(R.id.photo_preview_item_progress_bar);
         String path=mPaths.get(position);
-        Bitmap cache=SharedSingleton.getInstance().getCachedBitmap(path);
-        if (cache != null) {
-            imageView.setImageBitmap(cache);
-        }else{
-            imageView.setImageResource(R.drawable.bg_im_pic_holder_view);
-            progressBar.setVisibility(View.VISIBLE);
-        }
+//        Bitmap cache=SharedSingleton.getInstance().getCachedBitmap(path);
+//        if (cache != null) {
+//            imageView.setImageBitmap(cache);
+//        }else{
+//            imageView.setImageResource(R.drawable.bg_im_pic_holder_view);
+//            progressBar.setVisibility(View.VISIBLE);
+//        }
         Glide.with(mContext)
                 .load(path)
                 .asBitmap()
+                .placeholder(R.drawable.bg_im_pic_holder_view)
                 .error(R.drawable.bg_im_pic_holder_view)
-                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onStart() {
