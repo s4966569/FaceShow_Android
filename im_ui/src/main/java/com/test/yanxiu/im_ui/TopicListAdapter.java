@@ -3,6 +3,7 @@ package com.test.yanxiu.im_ui;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,13 +121,13 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             mSenderTextView.setText("");
             mTimeTextView.setText("");
             mMsgTextView.setText("");
-
+            mRedDotCircleView.setVisibility(View.INVISIBLE);
             List<DbMember> members = topic.getMembers();
-            //如果没有member信息return
-            if ((members == null) || (members.size() == 0)) {
-                // 尚且没有member信息，全部用默认
-                return;
-            }
+//            //如果没有member信息return
+//            if ((members == null) || (members.size() == 0)) {
+//                // 尚且没有member信息，全部用默认
+//                return;
+//            }
 
             DbMsg latestMsg = null;
             if (topic.mergedMsgs.size() > 0) {
@@ -134,16 +135,19 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             }
             //群聊与私聊的不同
             //判断 聊天类型
+            Log.i(TAG, "setData: ");
             if (topic.getType().equals("1")) {
                 //私聊 显示对方头像 和 topic 名称
-                for (DbMember member : topic.getMembers()) {
-                    if (member.getImId() != Constants.imId) {
+                if (members != null) {
+                    for (DbMember member : topic.getMembers()) {
+                        if (member.getImId() != Constants.imId) {
                             Glide.with(mContext)
                                     .load(member.getAvatar())
                                     .placeholder(R.drawable.icon_chat_unknown)
                                     .into(mAvatarImageView);
-                        mSenderTextView.setText(EscapeCharacterUtils.unescape(member.getName()));
-                        break;
+                            mSenderTextView.setText(EscapeCharacterUtils.unescape(member.getName()));
+                            break;
+                        }
                     }
                 }
             } else if (topic.getType().equals("2")) {
@@ -167,9 +171,11 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             //2 获取最后一条信息的发送者信息
             DbMember sender = null;
             //member列表中查找
-            for (DbMember member : topic.getMembers()) {
-                if (latestMsg.getSenderId() == member.getImId()) {
-                    sender = member;
+            if (members != null) {
+                for (DbMember member : topic.getMembers()) {
+                    if (latestMsg.getSenderId() == member.getImId()) {
+                        sender = member;
+                    }
                 }
             }
             // 本地用户数据库
@@ -209,7 +215,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             //4 显示消息时间
             mTimeTextView.setText(timeStr(latestMsg.getSendTime()));
             //显示红点
-            mRedDotCircleView.setVisibility(View.INVISIBLE);
             if (topic.isShowDot()&&topic.latestMsgId!=-1) {
                 mRedDotCircleView.setVisibility(View.VISIBLE);
             }
