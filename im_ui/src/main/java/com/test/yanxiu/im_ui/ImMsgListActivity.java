@@ -20,8 +20,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -349,7 +347,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (mKeyBoardShown) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(ImMsgListActivity.this.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(                                                  ImMsgListActivity.this.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     mMsgListRecyclerView.clearFocus();
                 }
@@ -952,8 +950,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             case REQUEST_CODE_SELECT:
 
                 if (data!=null) {
-                    //用户 发送图片的行为 当前topic 需要置顶
-                    topic.shouldInsertToTop=true;
+
 
                     isNeedMockTopic();
                     reSizePics(createSelectedImagesList(data));
@@ -1250,6 +1247,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             });
         } else {
             // 已经有对话，直接发送即可
+            topic.shouldInsertToTop=true;
             doSendImage(rid, with, height, dbMyMsg);
         }
     }
@@ -1324,8 +1322,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                 }
-
-
             }
 
             @Override
@@ -1359,7 +1355,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         } else {
             mRecyclerView.scrollToPosition(n);
         }
-
     }
 
 
