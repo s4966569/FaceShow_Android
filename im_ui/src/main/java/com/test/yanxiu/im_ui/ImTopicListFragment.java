@@ -242,7 +242,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         //新topic 进入UI 记录本地操作时间
                         topics.add(dbTopic);
                         dbTopic.latestMsgTime = imTopic.latestMsgTime;
-                        dbTopic.latestMsgId=imTopic.latestMsgId;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
                         dbTopic.latestOperateLocalTime = System.currentTimeMillis();
                         dbTopic.shouldInsertToTop = true;
                     }
@@ -372,9 +372,9 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         getTopicMsgsRequest.imToken = Constants.imToken;
         getTopicMsgsRequest.topicId = Long.toString(dbTopic.getTopicId());
         //如果是可空的topic 没有消息记录 赋予latestmsgid 为long最大值
-        if(dbTopic.latestMsgId==0){
-            getTopicMsgsRequest.startId=String.valueOf(Long.MAX_VALUE);
-        }else {
+        if (dbTopic.latestMsgId == 0) {
+            getTopicMsgsRequest.startId = String.valueOf(Long.MAX_VALUE);
+        } else {
             getTopicMsgsRequest.startId = Long.toString(dbTopic.latestMsgId);
         }
         getTopicMsgsRequest.order = "desc";
@@ -596,7 +596,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
      */
     private void checkUserRemove(final MqttProtobufDealer.TopicChangeEvent event) {
         isUserInTopicByTopicList(event);
-
+//        mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -609,35 +609,35 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
             @Override
             public void onSuccess(RequestBase request, TopicGetMemberTopicsResponse ret) {
                 // topic list 请求成功 可以进行一次刷新操作
-                boolean inTopic = false;
-                int groupTopicNum = 0;
-                for (ImTopic imTopic : ret.data.topic) {
-                    //累加 群聊的数量 可以判断目前用户所在的班级数量
-                    if (imTopic.topicType.equals("2")) {
-                        groupTopicNum++;
+                synchronized (topics) {
+                    boolean inTopics = false;
+                    //判断本地是否已经移除的 目标topic
+                    for (DbTopic topic : topics) {
+                        if (topic.getTopicId() == event.topicId) {
+                            inTopics = true;
+                            break;
+                        }
+                    }
+                    if (!inTopics) {
+                        //如果已经不在列表中 已经被移除了
+                        return;
                     }
 
-                    if (imTopic.topicId == event.topicId) {
-                        //当前用户依然在 topic 中 刷新一次？
-                        inTopic = true;
+                    //如果还在列表中 为跳转信息做准备 获取班级数量
+                    int groupTopicNum = 0;
+                    boolean hasTheTopic=false;
+                    for (ImTopic imTopic : ret.data.topic) {
+                        if (imTopic.topicType.equals("2")) {
+                            groupTopicNum++;
+                        }
+                        if (imTopic.topicId==event.topicId) {
+                            hasTheTopic=true;
+                        }
                     }
-                }
-                //首先判断用户是否被移除
-                if (!inTopic) {
 
-                    //判断是否topic 已经进行了删除操作
-                    synchronized (topics) {
-                        boolean hasRemovedTopic = true;
-                        for (DbTopic dbTopic : topics) {
-                            if (dbTopic.getTopicId() == event.topicId) {
-                                hasRemovedTopic = false;
-                                break;
-                            }
-                        }
-                        //避免重复操作
-                        if (hasRemovedTopic) {
-                            return;
-                        }
+                    if (hasTheTopic) {
+                        //还在这个班级中 不操作直接返回
+                        return ;
                     }
                     //在 topic 中删除
                     Iterator<DbTopic> iterator = topics.iterator();
@@ -645,12 +645,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                     while (iterator.hasNext()) {
                         removedTopic = iterator.next();
                         if (removedTopic.getTopicId() == event.topicId) {
+                            //取消目标 topic 的 mqtt 的订阅
+                            binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
                             try {
                                 Toast.makeText(getContext(), "【已被移出" + removedTopic.getGroup() + "】", Toast.LENGTH_SHORT).show();
-                            } catch (Exception e) {
-//                        e.printStackTrace();
-                                Log.e(TAG, "toast crash : ");
-                            }
+                            } catch (Exception e) {Log.e(TAG, "toast crash : ");}
                             //在UI 列表中删除
                             iterator.remove();
                             // 在数据库中删除
@@ -658,9 +657,8 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                             break;
                         }
                     }
+                    //完成删除操作
                     mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
-                    //取消目标 topic 的 mqtt 的订阅
-                    binder.getService().doUnsubscribeTopic(String.valueOf(event.topicId));
                     //判断栈顶Activity 如果聊天界面开启 先关闭聊天界面 然后在mainactivity的onActivityResult 中进行logout
                     Activity currentTopActivity = ActivityManger.getTopActivity();
                     if ("ImMsgListActivity".equals(currentTopActivity.getClass().getSimpleName())) {
@@ -673,6 +671,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         //回调给 mainactivity 用户被除名
                         mOnUserRemoveFromClaszCallback.onRemoved(groupTopicNum);
                     }
+
                 }
             }
 
@@ -715,7 +714,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                         topics.add(dbTopic);
                         dbTopic.latestMsgTime = imTopic.latestMsgTime;
                         //关于 topic.latestMsgId=0  在请求时进行判断 如果为0 赋予 Long的最大值
-                        dbTopic.latestMsgId=imTopic.latestMsgId;
+                        dbTopic.latestMsgId = imTopic.latestMsgId;
                         dbTopic.latestOperateLocalTime = System.currentTimeMillis();
                         dbTopic.shouldInsertToTop = true;
                     }
