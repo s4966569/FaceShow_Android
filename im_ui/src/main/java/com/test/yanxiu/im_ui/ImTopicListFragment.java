@@ -821,7 +821,7 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
                 ranage(DatabaseDealer.topicComparatorInsertTopBaseOnLocalTime);
                 mTopicListRecyclerView.getAdapter().notifyDataSetChanged();
 //                // 4，对于需要更新members的topic，等待更新完members，再去取msgs
-//                updateEachTopicMsgs(topicsNeedUpdateMember);
+                updateEachTopicMsgs(topicsNeedUpdateMember);
             }
 
             @Override
