@@ -1043,7 +1043,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 sendPicFailure(myMsg);
                 continue;
             }
-            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "faceShow/");
+            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "/faceShow/");
             if(!file.exists()){
                 file.mkdirs();
             }
