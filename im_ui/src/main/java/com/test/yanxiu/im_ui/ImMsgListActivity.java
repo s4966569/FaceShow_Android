@@ -1064,8 +1064,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                             Integer[] wh = getPicWithAndHeight(file.getAbsolutePath());
                             myMsg.setWith(wh[0]);
                             myMsg.setHeight(wh[1]);
-                            myMsg.setLocalViewUrl(path);
-                            DatabaseDealer.updateResendMsg(myMsg,"local");
+                            myMsg.setLocalViewUrl(file.getAbsolutePath());
+                            myMsg.save();
                         }
 
                         @Override
