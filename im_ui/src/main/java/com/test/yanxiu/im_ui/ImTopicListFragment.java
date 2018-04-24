@@ -640,7 +640,6 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
 
     @Subscribe
     public void onMqttMsg(MqttProtobufDealer.NewMsgEvent event) {
-        Log.i(TAG, "onMqttMsg: new msg");
         ImMsg msg = event.msg;
         DbMsg dbMsg = DatabaseDealer.updateDbMsgWithImMsg(msg, "mqtt", Constants.imId);
 
@@ -668,13 +667,11 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
     @Subscribe
     public void onMqttMsg(final MqttProtobufDealer.TopicChangeEvent event) {
         // 目前只处理AddTo
-        Log.i(TAG, "onMqttMsg: topic change ");
         if (event.type == MqttProtobufDealer.TopicChange.AddTo) {
             binder.subscribeTopic(Long.toString(event.topicId));
             updateTopicsWithMembers(Long.toString(event.topicId));
         } else if (event.type == MqttProtobufDealer.TopicChange.RemoveFrom) {
             //检查当前用户是否 被某个 topic 除名
-            Log.i("repeat", "onMqttMsg: ");
             checkUserRemove(event);
         }
 //        //排序以服务器时间为依据
