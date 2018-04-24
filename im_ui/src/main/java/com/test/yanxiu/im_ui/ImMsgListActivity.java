@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -1042,8 +1043,13 @@ public class ImMsgListActivity extends ImBaseActivity {
                 sendPicFailure(myMsg);
                 continue;
             }
+            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ "faceShow/");
+            if(!file.exists()){
+                file.mkdirs();
+            }
             Luban.with(ImMsgListActivity.this)
                     .load(imagePathList.get(i))
+                    .setTargetDir(file.getAbsolutePath())
                     .ignoreBy(200)
                     .setCompressListener(new OnCompressListener() {
                         @Override
@@ -1054,7 +1060,12 @@ public class ImMsgListActivity extends ImBaseActivity {
 
                         @Override
                         public void onSuccess(File file) {
-                            getQiNiuToken(path, myMsg);
+                            getQiNiuToken(file.getAbsolutePath(), myMsg);
+                            Integer[] wh = getPicWithAndHeight(file.getAbsolutePath());
+                            myMsg.setWith(wh[0]);
+                            myMsg.setHeight(wh[1]);
+                            myMsg.setLocalViewUrl(path);
+                            DatabaseDealer.updateResendMsg(myMsg,"local");
                         }
 
                         @Override
