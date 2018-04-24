@@ -627,7 +627,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListAdapter.setTopic(topic);
         SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
         // TODO: 2018/4/17  头像晃动
-//        mMsgListAdapter.notifyDataSetChanged();
+        mMsgListAdapter.notifyDataSetChanged();
         //}
 
         // 对于是mock topic的需要先创建topic
