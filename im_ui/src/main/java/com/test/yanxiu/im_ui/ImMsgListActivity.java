@@ -1,9 +1,12 @@
 package com.test.yanxiu.im_ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -16,6 +19,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -336,8 +340,8 @@ public class ImMsgListActivity extends ImBaseActivity {
         keyboardListener.setKeyBoardListener(new KeyboardChangeListener.KeyBoardListener() {
             @Override
             public void onKeyboardChange(boolean isShow, int keyboardHeight) {
-                mKeyBoardShown = isShow;
-                if ((isShow) && (mMsgListRecyclerView.getAdapter().getItemCount() > 1)) {
+                if ((isSoftShowing()) && mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
+                    mKeyBoardShown = true;
                     mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
                 }
             }
@@ -368,6 +372,40 @@ public class ImMsgListActivity extends ImBaseActivity {
                 PhotoActivity.LaunchActivity(ImMsgListActivity.this, REQUEST_CODE_LOAD_BIG_IMG, list, position, 0, 1);
             }
         });
+    }
+
+    /**
+     * 底部虚拟按键栏的高度
+     *
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private int getSoftButtonsBarHeight() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        //这个方法获取可能不是真实屏幕的高度
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int usableHeight = metrics.heightPixels;
+        //获取当前屏幕的真实高度
+        this.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        int realHeight = metrics.heightPixels;
+        if (realHeight > usableHeight) {
+            return realHeight - usableHeight;
+        } else {
+            return 0;
+        }
+    }
+
+    private boolean isSoftShowing() {
+        //获取当前屏幕内容的高度
+        int screenHeight = getWindow().getDecorView().getHeight();
+        //获取View可见区域的bottom
+        Rect rect = new Rect();
+        //DecorView即为activity的顶级view
+        getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+        //考虑到虚拟导航栏的情况（虚拟导航栏情况下：screenHeight = rect.bottom + 虚拟导航栏高度）
+        //选取screenHeight*2/3进行判断
+//        return screenHeight*2/3 > rect.bottom;
+        return screenHeight - getSoftButtonsBarHeight() > rect.bottom;
     }
 
     /**
@@ -937,16 +975,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE_LOAD_BIG_IMG:
-                shouldScrollToBottom = true;
-                if (resultCode == RESULT_OK) {
-                    positionFromPreViewActivity=data.getIntExtra("position", -1);
-                    if (positionFromPreViewActivity>-1){
-                        moveToPosition(layoutManager,mMsgListRecyclerView,positionFromPreViewActivity);
-                    }
-
-                }
-                break;
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
 
