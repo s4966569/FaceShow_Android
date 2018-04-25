@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/main_bg_selector"
+    android:layout_gravity="center"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/updateDialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/color_333333"
+        android:textSize="13dp"
+        android:textStyle="bold"
+        tool:text="标题" />
+
+    <LinearLayout
+        android:id="@+id/updateDialog_progressLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/updateDialog_progress_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13dp"
+            tool:text="进度" />
+
+        <ProgressBar
+            android:id="@+id/updateDialog_progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginTop="10dp"
+            android:max="100"
+            android:progressDrawable="@drawable/progress_bar_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="下载中..."
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:textColor="#1da1f2"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/updateDialog_contentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/updateDialog_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/color_333333"
+            android:textSize="13dp"
+            tool:text="内容" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <TextView
+                android:id="@+id/updateDialog_cancel"
+                android:layout_width="75dp"
+                android:layout_height="29dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/selector_cancel_dialog_button_bg"
+                android:gravity="center"
+                android:text="@string/updata_after"
+                android:textColor="@drawable/selector_cancel_dialog_button_color"
+                android:textSize="14dp" />
+
+            <TextView
+                android:id="@+id/updateDialog_confirm"
+                android:layout_width="75dp"
+                android:layout_height="29dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/shape_homework_detail_confirm_selected"
+                android:gravity="center"
+                android:text="@string/updata_now"
+                android:textColor="@color/color_ffffff"
+                android:textSize="14dp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

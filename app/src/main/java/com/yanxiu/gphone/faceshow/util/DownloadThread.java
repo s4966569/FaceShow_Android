@@ -75,7 +75,12 @@ public class DownloadThread extends Thread {
                     final int progress = (int) (total * 100.00f / length);
                     Log.i("progress",String.valueOf(progress));
                     if (mListener != null) {
-                        mListener.onDownloading(progress);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mListener.onDownloading(progress);
+                            }
+                        });
                     }
                 }
                 bis.close();

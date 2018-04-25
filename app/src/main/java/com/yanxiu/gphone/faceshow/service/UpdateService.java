@@ -2,16 +2,10 @@ package com.yanxiu.gphone.faceshow.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.IBinder;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.yanxiu.gphone.faceshow.util.FrcLogUtils;
 import com.yanxiu.gphone.faceshow.util.update.UpdateUtil;
-
-import java.io.File;
 
 /**
  * 升级的服务
