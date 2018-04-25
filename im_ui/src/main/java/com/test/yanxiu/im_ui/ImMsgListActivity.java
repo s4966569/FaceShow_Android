@@ -600,6 +600,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                     topic.latestMsgTime = myMsg.getSendTime();
                 }
 //                myMsg.save();
+                //更新为服务器时间
+                mMsgListAdapter.setTopic(topic);
                 mMsgListAdapter.notifyDataSetChanged();
                 moveToBottom();
             }
@@ -1273,7 +1275,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                     NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
                     newTopicEvent.dbTopic = realTopic;
                     EventBus.getDefault().post(newTopicEvent);
-
+                    //更新时间
+                    mMsgListAdapter.setTopic(topic);
                     mMsgListAdapter.notifyDataSetChanged();
                     doSendImage(rid, with, height, dbMyMsg);
                 }
