@@ -86,6 +86,7 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(new SimpleTarget<Bitmap>() {
+
                     @Override
                     public void onStart() {
                         super.onStart();
