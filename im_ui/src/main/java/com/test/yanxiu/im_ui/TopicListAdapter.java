@@ -143,7 +143,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
                         if (member.getImId() != Constants.imId) {
                             Glide.with(mContext)
                                     .load(member.getAvatar())
-                                    .placeholder(R.drawable.im_chat_default)
+                                    .placeholder(R.drawable.icon_chat_unknown)
                                     .into(mAvatarImageView);
                             mSenderTextView.setText(EscapeCharacterUtils.unescape(member.getName()));
                             break;
