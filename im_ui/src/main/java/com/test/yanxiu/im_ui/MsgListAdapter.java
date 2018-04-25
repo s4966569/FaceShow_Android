@@ -137,6 +137,8 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             DbMsg curDbMsg = mDatas.get(i);
             // 最后一条跟当前时间比较，其余的跟前一条时间比较
             long nextSendTime = Long.MAX_VALUE;
+            //当前msg 是否是本地离线消息
+            String msgFrom=curDbMsg.getFrom();
             if (i != (mDatas.size() - 1)) {
                 DbMsg nextDbMsg = mDatas.get(i + 1);
                 nextSendTime = nextDbMsg.getSendTime();
@@ -153,13 +155,24 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             }
             mUiDatas.add(0, msgItem);
 
-            // 如果超过5分钟，则插入时间
-            if ((curDbMsg.getSendTime() - nextSendTime) > 5 * 60 * 1000) {
+
+            //找到最近一条服务器的消息并记录下时间
+            for (int j = i+1; j < mDatas.size(); j++) {
+                DbMsg msg=mDatas.get(j);
+                if (msg.getFrom().equals("http")||msg.getFrom().equals("mqtt")) {
+                    nextSendTime=msg.getSendTime();
+                    break;
+                }
+            }
+            // 如果超过5分钟，则插入时间 并且不是离线的消息 （离线消息的时间为本地时间有偏差）
+            if (!("local".equals(msgFrom))&&(curDbMsg.getSendTime() - nextSendTime) > 5 * 60 * 1000) {
                 Item timeItem = new Item();
                 timeItem.setType(ItemType.DATETIME);
                 timeItem.setTimestamp(curDbMsg.getSendTime());
                 mUiDatas.add(0, timeItem);
             }
+
+
 
         }
 
@@ -219,6 +232,11 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
     public int getItemViewType(int position) {
         Item item = mUiDatas.get(position);
         return item.type.ordinal();
+    }
+
+    public Item getDataItem(int position){
+        Item item=mUiDatas.get(position);
+        return item;
     }
 
     @Override
