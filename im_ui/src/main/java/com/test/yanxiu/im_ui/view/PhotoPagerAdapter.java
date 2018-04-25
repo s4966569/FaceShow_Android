@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -70,17 +71,10 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, final int position) {
-        View view=mImageViews.get(position);
+        View view = mImageViews.get(position);
         final ZoomImageView imageView = mImageViews.get(position).findViewById(R.id.photo_preview_item_zoom_imageview);
-        final ProgressBar progressBar=mImageViews.get(position).findViewById(R.id.photo_preview_item_progress_bar);
-        String path=mPaths.get(position);
-//        Bitmap cache=SharedSingleton.getInstance().getCachedBitmap(path);
-//        if (cache != null) {
-//            imageView.setImageBitmap(cache);
-//        }else{
-//            imageView.setImageResource(R.drawable.bg_im_pic_holder_view);
-//            progressBar.setVisibility(View.VISIBLE);
-//        }
+        final ProgressBar progressBar = mImageViews.get(position).findViewById(R.id.photo_preview_item_progress_bar);
+        String path = mPaths.get(position);
         Glide.with(mContext)
                 .load(path)
                 .asBitmap()
@@ -88,8 +82,8 @@ public class PhotoPagerAdapter extends PagerAdapter {
                 .into(new SimpleTarget<Bitmap>() {
 
                     @Override
-                    public void onStart() {
-                        super.onStart();
+                    public void onLoadStarted(Drawable placeholder) {
+                        super.onLoadStarted(placeholder);
                         progressBar.setVisibility(View.VISIBLE);
                     }
 
@@ -100,7 +94,6 @@ public class PhotoPagerAdapter extends PagerAdapter {
 
                     }
 
-
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onLoadFailed(Exception e, Drawable errorDrawable) {
@@ -108,13 +101,6 @@ public class PhotoPagerAdapter extends PagerAdapter {
                         progressBar.setVisibility(View.GONE);
                         imageView.setImageDrawable(mContext.getDrawable(R.drawable.bg_im_pic_holder_view));
                     }
-
-                    @Override
-                    public void onStop() {
-                        super.onStop();
-                        progressBar.setVisibility(View.GONE);
-                    }
-
                 });
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
