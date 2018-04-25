@@ -1372,7 +1372,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         });
 
-        mMsgEditText.setText("");
+//        mMsgEditText.setText("");
     }
 
 
