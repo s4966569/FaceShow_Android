@@ -637,6 +637,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             createTopicRequest.topicType = "1"; // 私聊
             createTopicRequest.imMemberIds = Long.toString(Constants.imId) + "," + Long.toString(memberId);
             createTopicRequest.fromGroupTopicId = topic.getFromTopic();
+
             createTopicRequest.startRequest(TopicCreateTopicResponse.class, new HttpCallback<TopicCreateTopicResponse>() {
                 @Override
                 public void onSuccess(RequestBase request, TopicCreateTopicResponse ret) {
@@ -651,6 +652,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                     NewTopicCreatedEvent newTopicEvent = new NewTopicCreatedEvent();
                     newTopicEvent.dbTopic = realTopic;
                     //数据集合变了 需要更新
+                    topic.shouldInsertToTop=true;
                     mMsgListAdapter.setTopic(topic);
                     SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
 //                    mMsgListAdapter.setmDatas(realTopic.mergedMsgs);
@@ -663,6 +665,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                 @Override
                 public void onFail(RequestBase request, Error error) {
                     DatabaseDealer.topicCreateFailed(topic);
+                    topic.shouldInsertToTop=true;
                     mMsgListAdapter.notifyDataSetChanged();
                 }
             });
