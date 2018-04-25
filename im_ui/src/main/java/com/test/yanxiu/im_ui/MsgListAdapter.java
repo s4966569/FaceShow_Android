@@ -154,6 +154,12 @@ public class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.MsgListI
             mUiDatas.add(0, msgItem);
 
             // 如果超过5分钟，则插入时间
+            //如果是sending 状态 先不显示时间
+            if (curDbMsg instanceof DbMyMsg) {
+                if (((DbMyMsg) curDbMsg).getState()==DbMyMsg.State.Sending.ordinal()) {
+                    continue;
+                }
+            }
             if ((curDbMsg.getSendTime() - nextSendTime) > 5 * 60 * 1000) {
                 Item timeItem = new Item();
                 timeItem.setType(ItemType.DATETIME);

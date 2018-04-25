@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -228,7 +229,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                 false);
 //        layoutManager.setStackFromEnd(false);
         mMsgListRecyclerView.setLayoutManager(layoutManager);
-//        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        mMsgListRecyclerView.setItemAnimator(null);
 //        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
 
         mMsgListAdapter = new MsgListAdapter(this);
@@ -668,6 +670,7 @@ public class ImMsgListActivity extends ImBaseActivity {
         SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
         // TODO: 2018/4/17  头像晃动
         mMsgListAdapter.notifyDataSetChanged();
+        moveToBottom();
         //}
 
         // 对于是mock topic的需要先创建topic

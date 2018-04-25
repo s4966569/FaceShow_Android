@@ -269,6 +269,10 @@ public class ImTopicListFragment extends FaceShowBaseFragment {
         DbTopic dt = null;
         while (dbTopicIterator.hasNext()) {
             dt = dbTopicIterator.next();
+            if (DatabaseDealer.isMockTopic(dt)) {
+                dbTopicIterator.remove();
+            }
+
             for (ImTopic imTopic : ret.data.topic) {
                 if (imTopic.topicId == dt.getTopicId()) {
                     dbTopicIterator.remove();
