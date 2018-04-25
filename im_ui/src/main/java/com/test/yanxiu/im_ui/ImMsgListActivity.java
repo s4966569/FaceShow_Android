@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -229,9 +228,8 @@ public class ImMsgListActivity extends ImBaseActivity {
                 false);
 //        layoutManager.setStackFromEnd(false);
         mMsgListRecyclerView.setLayoutManager(layoutManager);
-        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
-        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
-        mMsgListRecyclerView.setItemAnimator(null);
+//        ((SimpleItemAnimator) mMsgListRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+//        mMsgListRecyclerView.getItemAnimator().setChangeDuration(0);
 
         mMsgListAdapter = new MsgListAdapter(this);
 //        mMsgListAdapter.setHasStableIds(true);
@@ -240,7 +238,18 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgListRecyclerView.setAdapter(mMsgListAdapter);
         mMsgListAdapter.notifyDataSetChanged();
         moveToBottom();
+//        mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
         mMsgListAdapter.setmOnItemClickCallback(onDbMsgCallback);
+        //会造成进入界面后 从第一条滚动到最后一条的 效果
+//        mMsgListRecyclerView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mMsgListRecyclerView.getAdapter().getItemCount() > 1) {
+//                    mMsgListRecyclerView.scrollToPosition(mMsgListRecyclerView.getAdapter().getItemCount() - 1);//滚动到底部
+//                }
+//            }
+//        });
+
         ImageView mTakePicImageView = findViewById(R.id.takepic_imageview);
         mTakePicImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,6 +265,27 @@ public class ImMsgListActivity extends ImBaseActivity {
         mMsgEditText = findViewById(R.id.msg_edittext);
         mMsgEditText.setImeOptions(EditorInfo.IME_ACTION_NONE);
         mMsgEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+//        mMsgEditText.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if ((keyCode == event.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_UP)) {
+//                    SrtLogger.log("imui", "TBD: 发送");
+//                    //统计
+//                    EventUpdate.onClickMsgSendEvent(ImMsgListActivity.this);
+//                    String msg = mMsgEditText.getText().toString();
+//                    mMsgEditText.setText("");
+//                    String trimMsg = msg.trim();
+//                    if (trimMsg.length() == 0) {
+//                        return true;
+//                    }
+//
+//                    doSend(msg, null);
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
         //新增的 发送按钮 发送逻辑与 按键发送一样
         final TextView sendTv = findViewById(R.id.tv_sure);
         sendTv.setOnClickListener(new View.OnClickListener() {
@@ -544,11 +574,12 @@ public class ImMsgListActivity extends ImBaseActivity {
             }
         }
         final DbMyMsg myMsg = sendMsg;
+        mMsgListAdapter.setTopic(topic);
+
         //用户操作 发送行为 当前topic 需要置顶
         topic.shouldInsertToTop = true;
         SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
-        //UI 重生成
-        mMsgListAdapter.setTopic(topic);
+
         // 数据存储，UI显示都完成后，http发送
         httpQueueHelper.addRequest(saveTextMsgRequest, SaveTextMsgResponse.class, new HttpCallback<SaveTextMsgResponse>() {
             @Override
@@ -568,8 +599,9 @@ public class ImMsgListActivity extends ImBaseActivity {
                     topic.latestMsgId = myMsg.getMsgId();
                     topic.latestMsgTime = myMsg.getSendTime();
                 }
-                //发送成功之后 更新发送那一条的状态
-                updateLatestItem(myMsg);
+//                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+                moveToBottom();
             }
 
             @Override
@@ -577,9 +609,12 @@ public class ImMsgListActivity extends ImBaseActivity {
                 myMsg.setState(DbMyMsg.State.Failed.ordinal());
                 //更新数据库的方法
                 DatabaseDealer.updateResendMsg(myMsg, "local");
-                updateLatestItem(myMsg);
+//                myMsg.save();
+                mMsgListAdapter.notifyDataSetChanged();
+                moveToBottom();
             }
         });
+
         mMsgEditText.setText("");
     }
 
@@ -624,11 +659,15 @@ public class ImMsgListActivity extends ImBaseActivity {
 //        myMsg.save();
         //记录下操作的本地时间  用于本地排序
         topic.latestOperateLocalTime = System.currentTimeMillis();
+
         topic.mergedMsgs.add(0, dbMyMsg);
+
+        mMsgListAdapter.setTopic(topic);
         SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
-        // 点击发送后 将消息展示在 ui 上
-        updateLatestItem(myMsg);
-        moveToBottom();
+        // TODO: 2018/4/17  头像晃动
+        mMsgListAdapter.notifyDataSetChanged();
+        //}
+
         // 对于是mock topic的需要先创建topic
         if (DatabaseDealer.isMockTopic(topic)) {
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
@@ -651,8 +690,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                     newTopicEvent.dbTopic = realTopic;
                     //数据集合变了 需要更新
                     mMsgListAdapter.setTopic(topic);
-                    //创建topic 成功 置顶
-                    topic.shouldInsertToTop=true;
                     SharedSingleton.getInstance().set(Constants.kShareTopic, topic);
 //                    mMsgListAdapter.setmDatas(realTopic.mergedMsgs);
                     EventBus.getDefault().post(newTopicEvent);
@@ -664,8 +701,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                 @Override
                 public void onFail(RequestBase request, Error error) {
                     DatabaseDealer.topicCreateFailed(topic);
-                    //创建 topic 失败也置顶
-                    topic.shouldInsertToTop=true;
                     mMsgListAdapter.notifyDataSetChanged();
                 }
             });
@@ -694,7 +729,7 @@ public class ImMsgListActivity extends ImBaseActivity {
             if (dbMsg instanceof DbMyMsg) {
                 final DbMyMsg myMsg = (DbMyMsg) dbMsg;
                 if (myMsg.getState() == DbMyMsg.State.Failed.ordinal()) {
-                    // 重新发送 在队列中移除
+                    // 重新发送
                     topic.mergedMsgs.remove(myMsg);
                     myMsg.setState(DbMyMsg.State.Sending.ordinal());
                     myMsg.setMsgId(latestMsgId());
@@ -704,7 +739,6 @@ public class ImMsgListActivity extends ImBaseActivity {
                         myMsg.setState(DbMyMsg.State.Sending.ordinal());
 //                        myMsg.save();
                         DatabaseDealer.updateResendMsg(myMsg, "local");
-                        //加入到队列末尾
                         topic.mergedMsgs.add(0, myMsg);
                         mMsgListAdapter.setTopic(topic);
                         mMsgListAdapter.notifyDataSetChanged();
@@ -847,47 +881,17 @@ public class ImMsgListActivity extends ImBaseActivity {
 //                mMsgListAdapter.notifyDataSetChanged();
                 return;
             }
-
         }
-        updateLatestItem(dbMsg);
+        //需要重新生成UI  比如 timeline 目前
+        mMsgListAdapter.setTopic(topic);
+        mMsgListAdapter.notifyDataSetChanged();
+//        mMsgListAdapter.notifyItemRangeChanged(0, mMsgListAdapter.getItemCount() - 1);
+//        mMsgListRecyclerView.scrollToPosition(mMsgListAdapter.getItemCount() - 1);
         //是否要滑动到最新一条
         if (shouldScrollToBottom) {
             moveToBottom();
         }
-    }
 
-
-    private void updateLatestImageDataItem(DbMyMsg myMsg){
-        mMsgListAdapter.setTopic(topic);
-        int msgPosition=mMsgListAdapter.getCurrentDbMsgPosition(myMsg);
-        //检查 msgPosition - 1 是否越界
-        if (msgPosition>1) {
-            if (mMsgListAdapter.getItemViewType(msgPosition - 1) == MsgListAdapter.ItemType.DATETIME.ordinal()) {
-                //要更新时间
-                mMsgListAdapter.getDataItem(msgPosition - 1).setTimestamp(myMsg.getSendTime());
-                mMsgListAdapter.notifyItemChanged(msgPosition - 1);
-            }
-        }
-    }
-    /**
-     * 更新最后一条消息
-     * 如果上一条是时间 item 一起更新
-     * */
-    private void updateLatestItem(DbMsg dbMsg) {
-        //重生成 uiitems
-        mMsgListAdapter.setTopic(topic);
-        int msgPosition=mMsgListAdapter.getCurrentDbMsgPosition(dbMsg);
-        //检查 msgPosition - 1 是否越界
-        if (msgPosition>1) {
-            if (mMsgListAdapter.getItemViewType(msgPosition - 1) == MsgListAdapter.ItemType.DATETIME.ordinal()) {
-                //要更新时间
-                mMsgListAdapter.getDataItem(msgPosition - 1).setTimestamp(dbMsg.getSendTime());
-                mMsgListAdapter.notifyItemChanged(msgPosition - 1);
-            }
-        }
-        if(mMsgListAdapter.getItemCount()>0) {
-            mMsgListAdapter.notifyItemRangeChanged(msgPosition, mMsgListAdapter.getItemCount() - 1);
-        }
     }
     //endregion
 
@@ -1227,8 +1231,6 @@ public class ImMsgListActivity extends ImBaseActivity {
     private void sendPicFailure(DbMyMsg myMsg) {
         myMsg.setState(DbMyMsg.State.Failed.ordinal());
         DatabaseDealer.updateResendMsg(myMsg, "local");
-        //更新 时间线item
-        updateLatestImageDataItem(myMsg);
         MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
         mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
     }
@@ -1249,7 +1251,7 @@ public class ImMsgListActivity extends ImBaseActivity {
 
     private void doSendImgMsg(final String rid, final int with, final int height, final DbMyMsg dbMyMsg) {
         isNeedMockTopic();
-        // 对于是mock topic的需要先创建topic 创建 topic 的过程不需要 ui 的更新 可以重新生成 adapter 的 uiItem
+        // 对于是mock topic的需要先创建topic
         if (DatabaseDealer.isMockTopic(topic)) {
             TopicCreateTopicRequest createTopicRequest = new TopicCreateTopicRequest();
             createTopicRequest.imToken = Constants.imToken;
@@ -1335,7 +1337,6 @@ public class ImMsgListActivity extends ImBaseActivity {
         //用户操作 发送行为 当前topic 需要置顶
         topic.shouldInsertToTop = true;
         // 数据存储，UI显示都完成后，http发送
-        mMsgListAdapter.setTopic(topic);
         httpQueueHelper.addRequest(saveImageMsgRequest, SaveImageMsgResponse.class, new HttpCallback<SaveImageMsgResponse>() {
             @Override
             public void onSuccess(RequestBase request, SaveImageMsgResponse ret) {
@@ -1356,7 +1357,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.latestMsgId = myMsg.getMsgId();
                         topic.latestMsgTime = myMsg.getSendTime();
                     }
-                    updateLatestImageDataItem(myMsg);
+
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                 }
@@ -1366,7 +1367,6 @@ public class ImMsgListActivity extends ImBaseActivity {
             public void onFail(RequestBase request, Error error) {
                 myMsg.setState(DbMyMsg.State.Failed.ordinal());
                 DatabaseDealer.updateResendMsg(myMsg, "local");
-                updateLatestImageDataItem(myMsg);
                 MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                 mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
             }
