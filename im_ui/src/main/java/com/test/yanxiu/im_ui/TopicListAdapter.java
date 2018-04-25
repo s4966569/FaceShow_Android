@@ -138,6 +138,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.Topi
             Log.i(TAG, "setData: ");
             if (topic.getType().equals("1")) {
                 //私聊 显示对方头像 和 topic 名称
+                mAvatarImageView.setImageResource(R.drawable.im_chat_default);
                 if (members != null) {
                     for (DbMember member : topic.getMembers()) {
                         if (member.getImId() != Constants.imId) {
