@@ -1363,7 +1363,7 @@ public class ImMsgListActivity extends ImBaseActivity {
                         topic.latestMsgId = myMsg.getMsgId();
                         topic.latestMsgTime = myMsg.getSendTime();
                     }
-
+                    mMsgListAdapter.setTopic(topic);
                     MsgListAdapter.PayLoad payLoad = new MsgListAdapter.PayLoad(MsgListAdapter.PayLoad.CHANG_SEND_STATUE);
                     mMsgListAdapter.notifyItemChanged(mMsgListAdapter.getCurrentDbMsgPosition(myMsg), payLoad);
                 }
