@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.test.yanxiu.common_base.utils.SharedSingleton;
 import com.test.yanxiu.im_ui.R;
 
 import java.util.ArrayList;
@@ -105,13 +104,16 @@ public class PhotoPagerAdapter extends PagerAdapter {
                     @Override
                     public void onLoadFailed(Exception e, Drawable errorDrawable) {
                         super.onLoadFailed(e, errorDrawable);
+                        progressBar.setVisibility(View.GONE);
                         imageView.setImageDrawable(mContext.getDrawable(R.drawable.bg_im_pic_holder_view));
                     }
 
                     @Override
                     public void onStop() {
                         super.onStop();
+                        progressBar.setVisibility(View.GONE);
                     }
+
                 });
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
