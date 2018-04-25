@@ -975,12 +975,12 @@ public class ImMsgListActivity extends ImBaseActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+            case REQUEST_CODE_LOAD_BIG_IMG:
+                shouldScrollToBottom=true;
+                break;
             case IMAGE_PICKER:
             case REQUEST_CODE_SELECT:
-
                 if (data!=null) {
-
-
                     isNeedMockTopic();
                     reSizePics(createSelectedImagesList(data));
                 }

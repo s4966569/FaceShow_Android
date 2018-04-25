@@ -9,6 +9,7 @@
         android:id="@+id/avatar_imageview"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:src="@drawable/im_chat_default"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="15dp"
