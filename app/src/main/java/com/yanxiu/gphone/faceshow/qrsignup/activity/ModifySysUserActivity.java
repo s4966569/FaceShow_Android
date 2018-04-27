@@ -71,7 +71,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
     private void fragmentInit(int userType) {
     /*fragment 初始化*/
         profileFragment = new SetProfileFragment();
-
+        profileFragment.clazsName=targetClazsName;
         profileFragment.setSysUserBean(registedUserBean);
 //        Log.i(TAG, "onCreate: type : " + userType);
         if (userType == 0) {

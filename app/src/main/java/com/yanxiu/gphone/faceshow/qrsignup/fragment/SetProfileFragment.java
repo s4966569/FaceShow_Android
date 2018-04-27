@@ -256,7 +256,6 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
             @Override
             public void onSuccess(RequestBase request, UpdateProfileResponse ret) {
                 mRootView.hiddenLoadingView();
-//                Log.i(TAG, "onSuccess: "+new Gson().toJson(ret));
                 if (ret.getCode() == 0) {
                     /*这里对 服务器没有返回班级名的情况尽心给一个处理*/
                     StringBuilder message=new StringBuilder();
@@ -355,6 +354,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
     private void createNomalDialog(String msg, DialogInterface.OnClickListener btnListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setMessage(msg).setPositiveButton("确定", btnListener);
+        builder.setCancelable(false);
         alertDialog = builder.create();
         alertDialog.show();
     }
