@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
-import com.yanxiu.gphone.faceshow.customview.LoadingView;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.customview.emoj.EmojiFilter;
 import com.yanxiu.gphone.faceshow.db.SpManager;
