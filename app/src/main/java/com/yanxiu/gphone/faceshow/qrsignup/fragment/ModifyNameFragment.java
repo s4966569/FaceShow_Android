@@ -98,7 +98,7 @@ public class ModifyNameFragment extends Fragment {
                 }
             }
         });
-        editText.setHint(userBean.getRealName());
+        editText.setHint(userBean.getRealName()+"");
     }
     private void hideSoftInput(EditText editText) {
         InputMethodManager inputMethodManager= (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

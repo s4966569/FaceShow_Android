@@ -197,6 +197,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                     userInfo.setSex(Integer.valueOf(sexId));
                     SpManager.saveUserInfo(userInfo);
                     Toast.makeText(getApplicationContext(), "性别修改成功", Toast.LENGTH_SHORT).show();
+                    mSexView.setText(getSex());
 //                    ModifyUserSexActivity.this.setResult(RESULT_OK);
 //                    ModifyUserSexActivity.this.finish();
                 } else {

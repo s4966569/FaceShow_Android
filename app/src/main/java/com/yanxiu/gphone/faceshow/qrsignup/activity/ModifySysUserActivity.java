@@ -232,7 +232,11 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
             public void onClick(View view) {
                 registedUserBean.setSex(0);
                 registedUserBean.setSexName("女");
+                if (profileFragment != null) {
+                    profileFragment.setUserData(registedUserBean);
+                }
                 genderPopWindow.dismiss();
+
             }
         });
 //        点击性别男
@@ -241,6 +245,9 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
             public void onClick(View view) {
                 registedUserBean.setSex(1);
                 registedUserBean.setSexName("男");
+                if (profileFragment != null) {
+                    profileFragment.setUserData(registedUserBean);
+                }
                 genderPopWindow.dismiss();
             }
         });

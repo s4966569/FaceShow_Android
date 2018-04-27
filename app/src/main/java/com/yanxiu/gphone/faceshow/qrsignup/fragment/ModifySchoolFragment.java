@@ -74,14 +74,15 @@ public class ModifySchoolFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 /*点击保存 首先判断 gettext是否为空 为空说明没有编辑 采用hint 进行保存 */
+
                 if (TextUtils.isEmpty(editText.getText())) {
-                    if(TextUtils.isEmpty(editText.getHint())){
+//                    if(TextUtils.isEmpty(editText.getHint())){
                         /*如果text 与 hint都为空 保存空*/
                         saveSchoolName("");
-                    }else {
-                        /*如果text 为空 hint 不为空 保存 hint*/
-                        saveSchoolName(editText.getHint().toString());
-                    }
+//                    }else {
+//                        /*如果text 为空 hint 不为空 保存 hint*/
+//                        saveSchoolName(editText.getHint().toString());
+//                    }
                 }else {
                     /*text 不为空 保存 text*/
                     saveSchoolName(editText.getText().toString());
@@ -93,7 +94,11 @@ public class ModifySchoolFragment extends Fragment {
                 }
             }
         });
-        editText.setHint(userBean.getRealName());
+        if (TextUtils.isEmpty(userBean.getSchool())) {
+            editText.setHint("请输入单位/学校名称");
+        }else {
+            editText.setText(userBean.getSchool()+"");
+        }
     }
     private void hideSoftInput(EditText editText) {
         InputMethodManager inputMethodManager= (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

@@ -146,7 +146,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
     /**
      * 设置 用户信息到UI
      */
-    private void setUserData(SysUserBean userData) {
+    public void setUserData(SysUserBean userData) {
 
         TextView nameTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_name);
@@ -165,7 +165,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         TextView schoolTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_school);
-        schoolTv.setText(String.format("%s", TextUtils.isEmpty(userData.getSchool()) ? "" : userData.getSchool()));
+        schoolTv.setText(String.format("%s", TextUtils.isEmpty(userData.getSchool()) ? "暂无" : userData.getSchool()));
 
         StringBuilder stageSubject = new StringBuilder();
         /*拼接 学段*/
