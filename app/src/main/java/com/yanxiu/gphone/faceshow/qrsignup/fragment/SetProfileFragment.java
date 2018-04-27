@@ -65,6 +65,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
     private View phoneItem;
     private View sexItem;
     private View stageItem;
+    private View schoolItem;
 
     /**
      * 控制notice显示
@@ -127,6 +128,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         sexItem = profileView.findViewById(R.id.rl_sex);
         stageItem = profileView.findViewById(R.id.rl_stage_subject);
         phoneItem = profileView.findViewById(R.id.rl_phone);
+        schoolItem = profileView.findViewById(R.id.rl_school);
 
         /*这里要隐藏 personal 部分*/
         personalView.setVisibility(View.GONE);
@@ -136,6 +138,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         stageItem.setOnClickListener(this);
         phoneItem.setOnClickListener(this);
         phoneItem.setOnClickListener(this);
+        schoolItem.setOnClickListener(this);
 
         root.findViewById(R.id.notice_tv).setVisibility(showNotice ? View.VISIBLE : View.GONE);
     }
@@ -159,6 +162,10 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 
         TextView stagetSunjectTv = mRootView.findViewById(R.id.profile_layout)
                 .findViewById(R.id.tv_stage_subject);
+
+        TextView schoolTv = mRootView.findViewById(R.id.profile_layout)
+                .findViewById(R.id.tv_school);
+        schoolTv.setText(String.format("%s", TextUtils.isEmpty(userData.getSchool()) ? "" : userData.getSchool()));
 
         StringBuilder stageSubject = new StringBuilder();
         /*拼接 学段*/
@@ -244,6 +251,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         updateProfileRequest.sex = userBean.getSex() + "";
         updateProfileRequest.stage = userBean.getStage() + "";
         updateProfileRequest.subject = userBean.getSubject() + "";
+        updateProfileRequest.school=userBean.getSchool()+"";
 
         updateProfileRequest.startRequest(UpdateProfileResponse.class, new HttpCallback<UpdateProfileResponse>() {
             @Override
@@ -332,6 +340,9 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 case R.id.rl_phone:
                     itemClickListener.onPhoneItemClicked();
                     break;
+                case R.id.rl_school:
+                    itemClickListener.onSchoolItemClicked();
+                    break;
                 default:
                     break;
             }
@@ -363,5 +374,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         void onSexItemClicked();
 
         void onStageItemClicked();
+
+        void onSchoolItemClicked();
     }
 }

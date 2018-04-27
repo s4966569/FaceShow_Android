@@ -49,7 +49,7 @@ public class UserInfo {
         private int subject;
         private int userStatus;
         private Object ucnterId;
-        private Object school;
+        private String school;
         private String avatar;
         private String sexName;
         private int sex;
@@ -148,11 +148,11 @@ public class UserInfo {
             this.ucnterId = ucnterId;
         }
 
-        public Object getSchool() {
+        public String getSchool() {
             return school;
         }
 
-        public void setSchool(Object school) {
+        public void setSchool(String school) {
             this.school = school;
         }
 

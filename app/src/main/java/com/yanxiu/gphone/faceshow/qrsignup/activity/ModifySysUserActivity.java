@@ -1,7 +1,13 @@
 package com.yanxiu.gphone.faceshow.qrsignup.activity;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.yanxiu.gphone.faceshow.R;
 import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
@@ -9,6 +15,7 @@ import com.yanxiu.gphone.faceshow.qrsignup.SysUserBean;
 import com.yanxiu.gphone.faceshow.qrsignup.ToolbarActionCallback;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifyNameFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifyPhoneFragment;
+import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySchoolFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySexFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifyStageFragment;
 import com.yanxiu.gphone.faceshow.qrsignup.fragment.ModifySubjectFragment;
@@ -34,6 +41,7 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
      * 懒加载 设置界面
      */
     private ModifyNameFragment modifyNameFragment;
+    private ModifySchoolFragment modifySchoolFragment;
     private ModifyPhoneFragment modifyPhoneFragment;
     private ModifySexFragment modifySexFragment;
     private ModifyStageFragment modifyStageFragment;
@@ -112,8 +120,41 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
                 /*点击了 学段与学科*/
                 modifyStageAndSubj();
             }
+
+            @Override
+            public void onSchoolItemClicked() {
+                /*点击了编辑学校名称*/
+                modifySchool();
+            }
         });
     }
+
+    /**
+     * 设置学校
+     */
+    private void modifySchool() {
+        isProfilePage = false;
+        if (modifySchoolFragment == null) {
+            modifySchoolFragment = new ModifySchoolFragment();
+            modifySchoolFragment.setUserBean(registedUserBean);
+            modifySchoolFragment.setToolbarActionCallback(new ToolbarActionCallback() {
+                @Override
+                public void onLeftComponentClick() {
+                    /*点击返回 返回到 信息展示*/
+                    backToProfileFragment();
+                }
+
+                @Override
+                public void onRightComponentClick() {
+                    /*点击保存 保存后返回到信息展示*/
+                    backToProfileFragment();
+                }
+            });
+        }
+        /*切换到 设置姓名fragment*/
+        transaction(modifySchoolFragment);
+    }
+
 
     /**
      * 设置姓名
@@ -170,23 +211,46 @@ public class ModifySysUserActivity extends FaceShowBaseActivity {
      * 设置性别
      */
     private void modifyGender() {
-        isProfilePage = false;
-        if (modifySexFragment == null) {
-            modifySexFragment = new ModifySexFragment();
-            modifySexFragment.setUserBean(registedUserBean);
-            modifySexFragment.setToolbarActionCallback(new ToolbarActionCallback() {
-                @Override
-                public void onLeftComponentClick() {
-                    backToProfileFragment();
-                }
+        showGeneralPopWindow();
+    }
 
-                @Override
-                public void onRightComponentClick() {
-                    backToProfileFragment();
-                }
-            });
-        }
-        transaction(modifySexFragment);
+    private void showGeneralPopWindow() {
+        final PopupWindow genderPopWindow;
+        View contentView = getLayoutInflater().inflate(R.layout.popwindow_select_gender, null);
+        genderPopWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        genderPopWindow.setAnimationStyle(R.style.pop_anim);
+        genderPopWindow.setFocusable(true);
+        genderPopWindow.setBackgroundDrawable(new ColorDrawable(0));
+        genderPopWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+
+        TextView genderMale = contentView.findViewById(R.id.gender_male);
+        TextView genderFemale = contentView.findViewById(R.id.gender_female);
+        TextView cancleBtn = contentView.findViewById(R.id.tv_cancel);
+//        点击 性别女
+        genderFemale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registedUserBean.setSex(0);
+                registedUserBean.setSexName("女");
+                genderPopWindow.dismiss();
+            }
+        });
+//        点击性别男
+        genderMale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registedUserBean.setSex(1);
+                registedUserBean.setSexName("男");
+                genderPopWindow.dismiss();
+            }
+        });
+//        点击取消
+        cancleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                genderPopWindow.dismiss();
+            }
+        });
 
     }
 

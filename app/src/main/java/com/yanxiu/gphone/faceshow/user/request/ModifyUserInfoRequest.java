@@ -12,7 +12,7 @@ public class ModifyUserInfoRequest extends FaceShowBaseRequest {
     public String sex;
     public String subject;
     public String stage;
-    public String schoolName;
+    public String school;
     public String url;
 
     @Override

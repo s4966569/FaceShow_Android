@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.test.yanxiu.common_base.utils.UrlRepository;
+import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.R;
@@ -31,16 +33,17 @@ import com.yanxiu.gphone.faceshow.base.FaceShowBaseActivity;
 import com.yanxiu.gphone.faceshow.classcircle.response.HeadimgUploadBean;
 import com.yanxiu.gphone.faceshow.customview.PublicLoadLayout;
 import com.yanxiu.gphone.faceshow.db.SpManager;
+import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseCallback;
 import com.yanxiu.gphone.faceshow.http.base.FaceShowBaseResponse;
-import com.test.yanxiu.common_base.utils.UrlRepository;
 import com.yanxiu.gphone.faceshow.http.request.UpLoadRequest;
 import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
+import com.yanxiu.gphone.faceshow.user.request.ModifyUserInfoRequest;
 import com.yanxiu.gphone.faceshow.user.request.UpdataUserMessageRequest;
+import com.yanxiu.gphone.faceshow.user.response.ModifyUserInfoResponse;
 import com.yanxiu.gphone.faceshow.util.CornersImageTarget;
 import com.yanxiu.gphone.faceshow.util.FileUtils;
 import com.yanxiu.gphone.faceshow.util.ToastUtil;
-import com.test.yanxiu.common_base.utils.talkingdata.EventUpdate;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,6 +68,9 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     RelativeLayout rlName;
     @BindView(R.id.rl_sex)
     RelativeLayout rlSex;
+    @BindView(R.id.rl_school)
+    RelativeLayout rlSchool;
+
     private Unbinder unbinder;
     private Context mContext;
     private PublicLoadLayout rootView;
@@ -78,6 +84,9 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     TextView mSexView;
     @BindView(R.id.tv_stage_subject)
     TextView mStageSubjectView;
+    @BindView(R.id.tv_school)
+    TextView mSchoolView;
+
     @BindView(R.id.title_layout_title)
     TextView mTitleView;
     @BindView(R.id.title_layout_left_img)
@@ -92,6 +101,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
     private static final int MODIFY_NAME = 4;
     private static final int MODIFY_SEX = 5;
     private static final int MODIFY_STAGE_SUBJECT = 6;
+    private static final int MODIFY_SCHOOL = 7;
     private File portraitFile, photoFile; //拍照裁剪后的照片文件，拍照之后存储的照片文件
     private String path;
     private String crop_path;
@@ -116,6 +126,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         mNameView.setText(UserInfo.getInstance().getInfo().getRealName());
         mMobileView.setText(UserInfo.getInstance().getInfo().getMobilePhone());
         mSexView.setText(getSex());
+        mSchoolView.setText(TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSchool())?"暂无":UserInfo.getInstance().getInfo().getSchool());
         String stageName = TextUtils.isEmpty(UserInfo.getInstance().getInfo().getStageName()) ? "暂无" : UserInfo.getInstance().getInfo().getStageName();
         String subjectName = TextUtils.isEmpty(UserInfo.getInstance().getInfo().getSubjectName()) ? "暂无" : UserInfo.getInstance().getInfo().getSubjectName();
         if (stageName.equals("暂无")) {
@@ -138,7 +149,7 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
         return sex;
     }
 
-    @OnClick({R.id.person_info, R.id.title_layout_left_img, R.id.rl_name, R.id.rl_sex, R.id.rl_stage_subject})
+    @OnClick({R.id.person_info, R.id.title_layout_left_img, R.id.rl_name, R.id.rl_sex, R.id.rl_stage_subject,R.id.rl_school})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             //点击修改头像
@@ -154,16 +165,100 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                 break;
             case R.id.rl_sex:
                 //修改用户性别
-                startActivityForResult(new Intent(this, ModifyUserSexActivity.class), MODIFY_SEX);
+                showGeneralPopWindow();
+//                startActivityForResult(new Intent(this, ModifyUserSexActivity.class), MODIFY_SEX);
                 break;
             case R.id.rl_stage_subject:
                 //修改用户学段学科
                 EventUpdate.onChooseStageSubjectButton(this);
                 startActivityForResult(new Intent(this, ModifyUserStageActivity.class), MODIFY_STAGE_SUBJECT);
+
+                break;
+            case R.id.rl_school:
+                startActivityForResult(new Intent(this, ModifyUserSchoolActivity.class), MODIFY_SCHOOL);
                 break;
             default:
 
         }
+    }
+
+
+    private void modifyUserInfo() {
+//        publicLoadLayout.showLoadingView();
+        ModifyUserInfoRequest modifyUserInfoRequest = new ModifyUserInfoRequest();
+        modifyUserInfoRequest.sex = sexId;
+        modifyUserInfoRequest.startRequest(ModifyUserInfoResponse.class, new FaceShowBaseCallback<ModifyUserInfoResponse>() {
+            @Override
+            protected void onResponse(RequestBase request, ModifyUserInfoResponse response) {
+//                publicLoadLayout.hiddenLoadingView();
+                if (response.getCode() == 0) {
+                    UserInfo.Info userInfo = UserInfo.getInstance().getInfo();
+                    userInfo.setSexName(sexName);
+                    userInfo.setSex(Integer.valueOf(sexId));
+                    SpManager.saveUserInfo(userInfo);
+                    Toast.makeText(getApplicationContext(), "性别修改成功", Toast.LENGTH_SHORT).show();
+//                    ModifyUserSexActivity.this.setResult(RESULT_OK);
+//                    ModifyUserSexActivity.this.finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "性别修改失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+//                publicLoadLayout.hiddenLoadingView();
+                Toast.makeText(getApplicationContext(), "性别修改失败", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * 性别的popwindow
+     */
+
+    private String sexId = "1";
+    private String sexName = "男";
+
+    private void showGeneralPopWindow() {
+        final PopupWindow genderPopWindow;
+        View contentView = getLayoutInflater().inflate(R.layout.popwindow_select_gender, null);
+        genderPopWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        genderPopWindow.setAnimationStyle(R.style.pop_anim);
+        genderPopWindow.setFocusable(true);
+        genderPopWindow.setBackgroundDrawable(new ColorDrawable(0));
+        genderPopWindow.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+
+        TextView genderMale = contentView.findViewById(R.id.gender_male);
+        TextView genderFemale = contentView.findViewById(R.id.gender_female);
+        TextView cancleBtn = contentView.findViewById(R.id.tv_cancel);
+//        点击 性别女
+        genderFemale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sexId="0";
+                sexName="女";
+                genderPopWindow.dismiss();
+                modifyUserInfo();
+            }
+        });
+//        点击性别男
+        genderMale.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sexId="1";
+                sexName="男";
+                genderPopWindow.dismiss();
+                modifyUserInfo();
+            }
+        });
+//        点击取消
+        cancleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                genderPopWindow.dismiss();
+            }
+        });
+
     }
 
     /**
@@ -323,6 +418,8 @@ public class ProfileActivity extends FaceShowBaseActivity implements OnPermissio
                         mStageSubjectView.setText(data.getStringExtra("stageSubjectName"));
                     }
                     break;
+                case MODIFY_SCHOOL:
+                    mSchoolView.setText(UserInfo.getInstance().getInfo().getSchool());
                 default:
                     break;
 
