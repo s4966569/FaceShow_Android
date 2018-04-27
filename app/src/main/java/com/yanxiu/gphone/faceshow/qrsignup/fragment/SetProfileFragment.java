@@ -136,8 +136,7 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
         nameItem.setOnClickListener(this);
         sexItem.setOnClickListener(this);
         stageItem.setOnClickListener(this);
-        phoneItem.setOnClickListener(this);
-        phoneItem.setOnClickListener(this);
+//        phoneItem.setOnClickListener(this);
         schoolItem.setOnClickListener(this);
 
         root.findViewById(R.id.notice_tv).setVisibility(showNotice ? View.VISIBLE : View.GONE);
@@ -337,9 +336,9 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
                 case R.id.rl_stage_subject:
                     itemClickListener.onStageItemClicked();
                     break;
-                case R.id.rl_phone:
-                    itemClickListener.onPhoneItemClicked();
-                    break;
+//                case R.id.rl_phone:
+//                    itemClickListener.onPhoneItemClicked();
+//                    break;
                 case R.id.rl_school:
                     itemClickListener.onSchoolItemClicked();
                     break;
