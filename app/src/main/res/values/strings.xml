@@ -133,7 +133,7 @@
     <string name="stagena">学段</string>
     <string name="subjectname">学科</string>
     <string name="stage_subject">学段学科</string>
-    <string name="school_name">单位/学校</string>
+    <string name="school_name">学校</string>
     <string name="logout">退出登录</string>
     <string name="pregistration">签到记录</string>
     <string name="lecturer">讲师</string>
