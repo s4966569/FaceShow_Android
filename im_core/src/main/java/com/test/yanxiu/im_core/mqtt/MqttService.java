@@ -147,7 +147,7 @@ public class MqttService extends Service {
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        SrtLogger.log("immqtt", "mqtt failed to connect");
+                        SrtLogger.log("immqtt", "mqtt failed to connect :"+exception.getMessage());
                         if (mMqttServiceCallback != null) {
                             mMqttServiceCallback.onDisconnect();
                         }
