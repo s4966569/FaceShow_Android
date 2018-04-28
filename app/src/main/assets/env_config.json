@@ -11,7 +11,7 @@
       "initializeUrl": "http://appadmin.yanxiu.com",
       "chooseClassServer":"http://yxb.yanxiu.com/pxt/v1.1/platform/data.api",
       "qiNiuServer": "http://niuugcupload.yanxiu.com/7up/platform/data.api",
-      "imServer":"http://yxb.yanxiu.com/im/platform/data.api",
+      "imServer":" http://im.yanxiu.com/im/platform/data.api",
       "mode": "release",
       "index": 0
     },
