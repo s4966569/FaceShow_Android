@@ -73,8 +73,11 @@ public class MqttService extends Service {
     }
 
     private String host = "tcp://";
-    private String userName = "admin";
-    private String passWord = "public";
+
+    /*正式线mqtt 用户名和密码
+   测试线没有对用户名和密码进行校验*/
+    private String userName = "yxwork";
+    private String passWord = "79A6g3pHb4tz2Bs8";
     private String clientId = "android01";
 
     protected MqttAndroidClient mClient;

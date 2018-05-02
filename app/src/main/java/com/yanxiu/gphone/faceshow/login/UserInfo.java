@@ -39,6 +39,13 @@ public class UserInfo {
     public class Info {
         public ImTokenInfo imTokenInfo;
 
+        public ImTokenInfo getImTokenInfo() {
+            return imTokenInfo;
+        }
+
+        public void setImTokenInfo(ImTokenInfo imTokenInfo) {
+            this.imTokenInfo = imTokenInfo;
+        }
 
         private int id;
         private int userId;

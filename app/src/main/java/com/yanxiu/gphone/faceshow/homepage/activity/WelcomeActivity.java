@@ -10,7 +10,6 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
@@ -18,6 +17,9 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.orhanobut.logger.Logger;
+import com.test.yanxiu.im_core.http.LoginAppRequest;
+import com.test.yanxiu.im_core.http.LoginAppResponse;
+import com.test.yanxiu.im_core.http.common.ImTokenInfo;
 import com.test.yanxiu.network.HttpCallback;
 import com.test.yanxiu.network.RequestBase;
 import com.yanxiu.gphone.faceshow.FaceShowApplication;
@@ -40,7 +42,6 @@ import com.yanxiu.gphone.faceshow.login.UserInfo;
 import com.yanxiu.gphone.faceshow.permission.OnPermissionCallback;
 import com.yanxiu.gphone.faceshow.service.UpdateService;
 import com.yanxiu.gphone.faceshow.util.LBSManager;
-import com.yanxiu.gphone.faceshow.util.ToastUtil;
 import com.yanxiu.gphone.faceshow.util.Utils;
 
 import java.lang.ref.WeakReference;
@@ -290,7 +291,7 @@ public class WelcomeActivity extends FaceShowBaseActivity {
         }
     }
 
-    private static void getCurrentClassId(final WelcomeActivity activity) {
+    private static void  getCurrentClassId(final WelcomeActivity activity) {
         if (SpManager.getUserInfo() != null && !TextUtils.isEmpty(SpManager.getUserInfo().getClassId())) {
             getUserInfo(activity);
         } else {
@@ -322,6 +323,37 @@ public class WelcomeActivity extends FaceShowBaseActivity {
     private static void toNoClassPage(WelcomeActivity activity) {
         activity.startActivity(new Intent(activity, ClassManagerActivity.class));
         activity.finish();
+    }
+
+    /**
+     * 获取用户的im 信息
+     * */
+    private static void getImTokenInfo(final Activity activity){
+        LoginAppRequest loginAppRequest=new LoginAppRequest();
+        loginAppRequest.bizToken=SpManager.getToken();
+        loginAppRequest.startRequest(LoginAppResponse.class, new HttpCallback<LoginAppResponse>() {
+            @Override
+            public void onSuccess(RequestBase request, LoginAppResponse ret) {
+                if (ret != null&& ret.code==0) {
+                    //保存 imInfo信息
+                    ImTokenInfo imTokenInfo=new ImTokenInfo();
+                    imTokenInfo.imMember=ret.data.imMember;
+                    imTokenInfo.imToken=ret.data.imToken;
+                    SpManager.getUserInfo().setImTokenInfo(imTokenInfo);
+                    SpManager.saveUserInfo(SpManager.getUserInfo());
+                    //获取im信息成功 执行正常跳转流程 进入 首页
+                }else {
+                    //获取im信息失败 提示跳转到登录页
+                    LoginActivity.toThisAct(activity);
+                }
+            }
+
+            @Override
+            public void onFail(RequestBase request, Error error) {
+                //获取im 信息失败 提示跳转到登录页
+                LoginActivity.toThisAct(activity);
+            }
+        });
     }
 
     private static void getUserInfo(final WelcomeActivity activity) {
