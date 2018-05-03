@@ -1,14 +1,13 @@
 package com.test.yanxiu.im_ui.contacts.model;
 
-import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
 
 import com.test.yanxiu.im_core.http.GetContactsResponse;
 import com.test.yanxiu.im_ui.Constants;
 import com.test.yanxiu.im_ui.contacts.DatabaseFramework.db.BaseDaoFactory;
-import com.test.yanxiu.im_ui.contacts.db.ClassDao;
 import com.test.yanxiu.im_ui.contacts.bean.ClassBean;
 import com.test.yanxiu.im_ui.contacts.bean.ContactsPlayerBean;
+import com.test.yanxiu.im_ui.contacts.db.ClassDao;
 import com.test.yanxiu.im_ui.contacts.db.ContactsDao;
 
 import java.util.ArrayList;
@@ -83,6 +82,10 @@ public class ContactsModel {
             ArrayList<ContactsPlayerBean> contactsPlayerBeanArrayList = new ArrayList<>();
             //存储班级下成员信息
             for (GetContactsResponse.ContactsBean contactsBean : groupsBean.getContacts()) {
+                if (contactsBean.getMemberInfo() == null) {
+                    //处理member 脏数据  对于有成员 但是没有完整的成员信息的抛弃该成员数据
+                    continue;
+                }
                 ContactsPlayerBean contactsPlayerBean = new ContactsPlayerBean(contactsBean.getMemberInfo(), groupsBean.getGroupId(), groupsBean.getGroupName());
                 contactsPlayerBeanArrayList.add(contactsPlayerBean);
                 contactsDao.insert(contactsPlayerBean);

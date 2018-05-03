@@ -395,6 +395,11 @@ public class DatabaseDealer {
         }
         for (ImTopic.Member member : imTopic.members) {
             ImMember imMember = member.memberInfo;
+            //检查member 信息为空
+            if (imMember == null) {
+                //跳过 异常member 不将异常member 加入的ui中
+                continue;
+            }
             DbMember dbMember = null;
             for (DbMember m : dbTopic.getMembers()) {
                 if (m.getImId() == imMember.imId) {
