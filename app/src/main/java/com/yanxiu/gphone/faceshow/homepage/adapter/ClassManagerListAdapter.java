@@ -39,7 +39,7 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.classmanger_item_title.setText(data.get(position).getClazsName());
         String start = data.get(position).getStartTime().split(" ")[0];
@@ -59,6 +59,7 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
                         views.get(i).setSelected(false);
                     }
                 }
+                mSelectedPosition=position;
                 holder.itemView.setSelected(true);
                 if (mIRecyclerViewItemClick != null) {
                     mIRecyclerViewItemClick.onItemClick(view, holder.getAdapterPosition());
@@ -67,7 +68,7 @@ public class ClassManagerListAdapter extends RecyclerView.Adapter {
         });
 
         //如果 本地保存的班级id 还在用户列表中 默认显示 选择的班级
-        if (hasLocalClassId) {
+        if (hasLocalClassId&&mSelectedPosition==-1) {
             if (String.valueOf(data.get(position).getId()).equals( SpManager.getUserInfo().getClassId())) {
                 holder.itemView.setSelected(true);
             }else {
