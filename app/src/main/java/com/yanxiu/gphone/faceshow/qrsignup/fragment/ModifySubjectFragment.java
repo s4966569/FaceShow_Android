@@ -100,7 +100,7 @@ public class ModifySubjectFragment extends Fragment {
     private IRecyclerViewItemClick mIRecyclerViewItemClick= new IRecyclerViewItemClick() {
         @Override
         public void onItemClick(View view, int postion) {
-            String subjectId=mStageSubjectModel.getData().get(postion).getId();
+            String subjectId=mStageSubjectModel.getData().get(mSelectedPosition).getSub().get(postion).getId();
             userBean.setSubject(Integer.valueOf(subjectId));
             userBean.setSubjectName(mStageSubjectModel.getData().get(mSelectedPosition).getSub().get(postion).getName());
         }

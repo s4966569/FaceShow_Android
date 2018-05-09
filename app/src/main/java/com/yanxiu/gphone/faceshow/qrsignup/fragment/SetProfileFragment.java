@@ -247,11 +247,13 @@ public class SetProfileFragment extends FaceShowBaseFragment implements View.OnC
 //        Log.i(TAG, "updateSysUserInfoRequest:  " +new Gson().toJson(userBean));
         updateProfileRequest.userId = userBean.getUserId() + "";
         updateProfileRequest.realName = userBean.getRealName();
+
         updateProfileRequest.sex = userBean.getSex() + "";
         updateProfileRequest.stage = userBean.getStage() + "";
         updateProfileRequest.subject = userBean.getSubject() + "";
-        updateProfileRequest.school=userBean.getSchool()+"";
-
+        if (!TextUtils.isEmpty(userBean.getSchool())) {
+            updateProfileRequest.school=userBean.getSchool()+"";
+        }
         updateProfileRequest.startRequest(UpdateProfileResponse.class, new HttpCallback<UpdateProfileResponse>() {
             @Override
             public void onSuccess(RequestBase request, UpdateProfileResponse ret) {
